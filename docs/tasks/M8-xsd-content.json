@@ -35,24 +35,32 @@
     {
       "id": "M8-xsd-content-A1",
       "description": "Compile occurrence/compositor/wildcard constraints and schema content-model restrictions.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
-        "review-batch-correctness"
+        "verified-repair-focused-checks",
+        "immutable-review-closure",
+        "indexed-wildcard-correctness",
+        "indexed-wildcard-review-closure"
       ]
     },
     {
       "id": "M8-xsd-content-A2",
       "description": "Test sequence/choice/all, extension/restriction, wildcards, determinism and occurrence boundaries.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
-        "review-batch-correctness"
+        "verified-repair-focused-checks",
+        "immutable-review-closure",
+        "indexed-wildcard-correctness",
+        "indexed-wildcard-review-closure"
       ]
     },
     {
       "id": "M8-xsd-content-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "measurement-1-failed"
+      ]
     }
   ],
   "implementation": [
@@ -84,24 +92,105 @@
       "id": "corrected-empty-expectations",
       "kind": "check",
       "revision": "05a08eaac946552cd1885a779d18d13d8b04021c",
-      "command": "Owned102case selection reported by worker; see review-corrections.md",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdContent -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-content/effective-empty.xml",
       "result": "failed",
       "summary": "Actual99passed/3failed/0errors/skips/not-run. Two effective-empty extension positive cases fail at retained compiler ContentKind (Empty/ElementOnly expectedMixed), plus unchanged invalidwildcardintermediate. Prior101/1 run preserved; two incorrect negative expectations corrected after normative review, nonempty element-only extension negative unchanged.",
+      "artifact": "artifacts/M8-xsd-content/effective-empty.xml"
+    },
+    {
+      "id": "verified-repair-focused-checks",
+      "kind": "check",
+      "revision": "ccb384811d47099f931854c7b2a79c962d4ba2d1",
+      "command": "python3 docs/reports/M8-xsd-content/check.py > artifacts/M8-xsd-content/verified-check.log 2>&1",
+      "result": "passed",
+      "summary": "Merged verified main6de242de. 243 focused cases (102 owned, including unchanged lost-intermediate negative, two corrected effective-empty positives, and unchanged nonempty mixedness rejection; plus prerequisite/11 wildcard/28 effective-content cases) and42 approved safe resolver cases:285passed,zero errors/failures/skips/not-run on .NET10.0.11 Arm64. Release builds0warnings/errors;1400 public members and9 frozen members match; actual XML-only compiler/content consumer passes. Planning179/diff clean. Runtime f098 and owned tests05a08eaa unchanged; source review and allocation/timing acceptance remain pending.",
+      "artifact": "artifacts/M8-xsd-content/verified-check.log"
+    },
+    {
+      "id": "verified-repair-disabled-controls",
+      "kind": "check",
+      "revision": "ccb384811d47099f931854c7b2a79c962d4ba2d1",
+      "command": "Pinned Release Content.Probe.csproj/Content.Bdn.csproj restore/build; prebuilt --control output; BDN --control and --discover artifacts/M8-xsd-content/discovery",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11: both Release builds0warnings/errors. All10 probe routes consume32warm/64samples with every allocation/retention counter and timer disabled; five BDN semantic controls consumed; discovery asserts exactly5 MemoryDiagnoser ShortRun InProcessNoEmit cases, no generated compilation or benchmark execution. Control zeros are disabled instrumentation, not allocation evidence.",
+      "artifact": "artifacts/M8-xsd-content/control.json"
+    },
+    {
+      "id": "frozen-measurement-preparation",
+      "kind": "check",
+      "revision": "6a3a676bb9c0ed895375df9943ef71f82aa67376",
+      "command": "python3 docs/reports/M8-xsd-content/prepare.py ccb384811d47099f931854c7b2a79c962d4ba2d1; elevated python3 docs/reports/M8-xsd-content/measure.py --verify-only",
+      "result": "passed",
+      "summary": "213 prepared source/config/binary/runtime/control identities verified; manifestSHA256822e37828415de92afcf6c92c35267353a9a6eff9d3db9397205ad5e355af955. Elevated OS process listing confirmed permission (not idle-host evidence). No child workload/allocation counter/timing/BDN run; fixed two commands and600second maximum/10second cleanup reserve/absoluteUTCexpiry supervision. Immutable source closure plus explicit new root grant and all-peerPARK remain required.",
+      "artifact": "docs/reports/M8-xsd-content/preparation.json"
+    },
+    {
+      "id": "immutable-review-closure",
+      "kind": "review",
+      "revision": "ccb384811d47099f931854c7b2a79c962d4ba2d1",
+      "command": "Read-only closure review by /root/review_m8_model, exact receipt relayed by authorized coordinator; no execution",
+      "result": "passed",
+      "summary": "No remaining blockers in bounded four-finding batch. ContentKind before normalization/history; corrected effective-empty positives preserve nonempty negative; NSRecurse preserves original per-child range and total; intensional subset/expressibility plus verified compiler rejects discarded intermediates; overflow reserves before charged/polled arithmetic and preserves state on refusal/cancel. Exact Git subtree IDs ContentModels=e57d843a50efc2ff2da034784067c5dd1eee828b, ownedtests=efe2a8c3f65d8bb75aaded5f5e033fd059e38ec7, unchanged from runtimef098/tests05a08eaa. Review is not a test/measurement.",
+      "artifact": null
+    },
+    {
+      "id": "guarded-measurement-preparation",
+      "kind": "check",
+      "revision": "a5c322410c419e80ab4fa17ec50ed30f6b56e03a",
+      "command": "python3 docs/reports/M8-xsd-content/prepare.py ccb384811d47099f931854c7b2a79c962d4ba2d1; elevated python3 docs/reports/M8-xsd-content/measure.py --verify-only; expired/non-UTC request rejection checks",
+      "result": "passed",
+      "summary": "Refreshed213identity manifestSHA256806a9dc5ad3e673a85ee9093f7da154059bfe172077ffbe6a557e419f2b6aa90; elevated identities/OS process-list permission pass. Only measure.py/prepare.py changed from previous frozen input identities; runtime/probes unchanged. Explicit --granted SHA latest-start-UTC expiry-UTC validated before output/child; late and non-UTC requests refused with no directory/child. Existing measurement directory refused, exclusive fresh mkdir; no raw overwrite. Fixed600smaximum/590work10cleanup, exact2commands/stopfirstfailure/groupcleanup/RELEASE-before-inspection retained. No workload/counter/timing/BDN started, no build or functional rerun.",
+      "artifact": "docs/reports/M8-xsd-content/preparation.json"
+    },
+    {
+      "id": "measurement-1-failed",
+      "kind": "check",
+      "revision": "4637ebe8ae4f23cacf826cfd248c61cb96bee264",
+      "command": "Root: python3 docs/reports/M8-xsd-content/measure.py --granted 806a9dc5ad3e673a85ee9093f7da154059bfe172077ffbe6a557e419f2b6aa90 2026-10-12T01:35:00Z 2026-10-12T01:37:44.273488Z",
+      "result": "failed",
+      "summary": "Root grantc7c7ca49/durable cleanupRELEASEf2e5dae0 before inspection. Supervisorstatus1/0.31723220797721297s; first child85004exit-6 with Allocation ownership control failed: warm wildcard cursor;213identities stable before/after, childreaped/groupabsent/logclosed. allocations.json absent: no byte count/distribution available; BDN never started; no retry. Post-release source/IL shows interface GetEnumerator on ReadOnlyCollection over List. Preserved original log/lifecycle; bounded owned correction prepared, new source checks/review/grant pending.",
+      "artifact": "docs/reports/M8-xsd-content/measurement-1.md"
+    },
+    {
+      "id": "indexed-wildcard-correctness",
+      "kind": "check",
+      "revision": "127d15b2fedd1675572bad17b4822c80ee94d241",
+      "command": "python3 docs/reports/M8-xsd-content/check.py > artifacts/M8-xsd-content/attempt-2-check.log 2>&1; pinned InspectIl.dll on built runtime",
+      "result": "passed",
+      "summary": "285actual .NET10.0.11 Arm64 cases pass (102owned included),zero errors/failures/skips/not-run;1400public/9frozen match; genuineXML-only consumer passes; Release builds0warnings/errors/planning179/diffclean. Before IL had GetEnumerator/Current/MoveNext/Dispose over frozen ReadOnlyCollection<List>; corrected Allows IL uses get_Item/get_Count with original Tick/ordinal semantics, no enumerator calls. Owned test subtree unchanged efe2a8c3f65d8bb75aaded5f5e033fd059e38ec7; corrected runtime subtree5331aa4bd823d48b55beb53b7bd2f1ec9960e570. No allocation claim from IL.",
+      "artifact": "artifacts/M8-xsd-content/attempt-2-check.log"
+    },
+    {
+      "id": "attempt-2-disabled-preparation",
+      "kind": "check",
+      "revision": "127d15b2fedd1675572bad17b4822c80ee94d241",
+      "command": "Pinned Release Content.Probe/Content.Bdn build; prebuilt probe --control, BDN --control/--discover; prepare.py127d15b2; elevated measure.py --verify-only",
+      "result": "passed",
+      "summary": "Both payloads0warnings/errors;10probe32warm/64sample routes consumed with every allocation/retention counter and timer disabled, statuspassed/unrunfailurefields null;5BDNsemantic controls/5exact MemoryDiagnoser ShortRun InProcessNoEmit discovery pass.213identities and elevated process-list permission pass. Newmanifest40775B/SHA8bcc6182e3e89db9f8a3e627cc1f58e3c635b6d89f3a072a352eb7f0d1fb52a9; supervisor7428B/SHAb77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552. Fresh measurement-2 paths preserve originalraw. No actualmeasurement/BDN run; sourceclosure/rootfreshgrant pending.",
+      "artifact": "docs/reports/M8-xsd-content/preparation.json"
+    },
+    {
+      "id": "indexed-wildcard-review-closure",
+      "kind": "review",
+      "revision": "127d15b2fedd1675572bad17b4822c80ee94d241",
+      "command": "Independent bounded read-only correction review receipt relayed by authorized coordinator; no execution",
+      "result": "passed",
+      "summary": "Indexed borrowed traversal preserves exact per-item accounting/order/short-circuit semantics; probe persists completed distributions before assertions with unrun fields null; fresh output attempt preserves original failure. No allocation claim. Accepted exactSHA256 Supportfe2eae4e2ace2d86b08ed73a3241cdf49c9fe334e1d5a06c2bb725d01756b1d0, probef68f8e3b650ddcecc3e291f5bdbb6e3a7e7baaff00590632a2df3d06b9366523, supervisorb77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552.",
       "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Both compiler owner repairs verified on main at combined8917aceb. Root returns taskJSON ownership to worker for verified-main refresh, required102-case rerun and fresh measurement preparation; prior failures/evidence preserved.",
+    "summary": "Bounded indexed wildcard/probe correction accepted by independent read-only review;285checks/API/XML-only/IL and disabled controls/discovery pass. Fresh213identity attempt2manifest8bcc6182 verified/frozen; new root/all-host grant pending. First failed measurement preserved, no measured zero/timing claim.",
     "checks": [
-      "Initial scoped check.py:228passed,1393public/9frozen,XML-only consumer,planning176/diff clean atfe30b556 (superseded for acceptance by source review).",
-      "Correction runtime/tests Release builds:zero warnings/errors.102owned cases atf098c72f:101pass/1requirednegative fail/0skips.",
-      "Warm allocation/timing not run; only one probe payload build completed before hostPARK."
+      "285 actual .NET10.0.11 cases pass;1400public/9frozen match; actualXML-only consumer; planning179/diff clean; Release builds0warnings/errors.",
+      "10 counter/timer-disabled probe routes and5 semantic BDN controls pass; exactly5 ShortRun MemoryDiagnoser NoEmit cases discovered. No allocation/timing run.",
+      "Prior101/1 and corrected99/3 failures preserved as historical evidence before verified compiler repairs.",
+      "Correction127d15b2:285passed/API1400/frozen9/XML-only/IL noenumerator;10disabledprobe/5BDNcontrols/5NoEmitdiscovery;213preparedidentities verified, no new measurements."
     ],
     "remaining": [
-      "Consume verified main with wildcard/effective-content repairs; rerun all102 owned cases including original lost-wildcard negative, corrected positive empty extensions and unchanged nonempty extension negative, then all applicable checks.",
-      "Finish counters-disabled probe/NoEmit controls and frozen identities/process supervision; explicit all-peerPARK/rootgrant required before allocation/timing.",
-      "Later facade/facet join MUST discharge typed element fixed/default value equality and declaration/binding lexical-value consistency using retained IDs/types/contexts/locations, including unused declarations. No datatype fallback supplied."
+      "Obtain fresh root/all-hostPARK grant for frozen attempt2manifest8bcc6182; no oldgrant reuse. Inspect observations only after durable cleanupRELEASE and record actual costs/limitations before implemented status.",
+      "Later facade/facet join MUST discharge typed element fixed/default equality, declaration/binding lexical-value consistency and simple-type/facet validity including unused declarations from retained IDs/types/contexts/locations. No datatype fallback."
     ],
     "requests": []
   }
