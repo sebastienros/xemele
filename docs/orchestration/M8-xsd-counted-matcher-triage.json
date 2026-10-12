@@ -6,7 +6,22 @@
   "matcher_blob": "258e88b8df9f79beded3737907b757e87bd6e929",
   "baseline_policy": {
     "validation_work": 100000000,
-    "child_seconds": 30
+    "child_seconds": 30,
+    "limits": {
+      "DocumentCharacters": 67108864,
+      "Depth": 1024,
+      "AttributesPerElement": 4096,
+      "TokenCharacters": 16777216,
+      "InternedNames": 262144,
+      "ExternalBytes": 67108864,
+      "ExternalResources": 1024,
+      "InclusionDepth": 128,
+      "Diagnostics": 1024,
+      "EvaluationWork": 100000000
+    },
+    "compile_max_operations": 100000000,
+    "compile_max_components": 1000000,
+    "validate_max_operations": 100000000
   },
   "cause": "Matcher.Add retains each differing non-nullable counter even once both satisfy the minimum. Repeated content partitions grow without useful language distinction; Q005 (e1+){1,1000} on 1000 e1 children forces at least C(1000,3)=166167000 charged pair inspections in one state family. This is a static lower bound, not timing or runtime measurement.",
   "proposed_boundary": "Same PC/flags and componentwise smaller repetition counters after both meet minimum can represent a superset of future continuations. Prove this using independent finite-language enumeration; retain differing below-minimum states and actual finite maxima. Use existing charges/polls, no cap increase or clamp shortcut.",
@@ -295,5 +310,6 @@
         }
       ]
     }
-  ]
+  ],
+  "policy_clarification": "Original80cd6bac Runner exact limits recovered from Git after own worker baseline used default diagnostic128; preserve that actual narrower run and corrected original policy separately. No finite cap increase from executed corpus policy; no repeat of prior100M refusal baselines required."
 }
