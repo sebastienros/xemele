@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-xsd-validate",
-  "last_integrated_revision": "bb7d3837bf37dae5df9676942059560ced0439cd",
+  "last_verified_task": "M8-xsd-publication-checkpoints",
+  "last_integrated_revision": "1112f8bbb40b292ed427f0edb0d6bde1fd850ad5",
   "active_assignments": [
     {
       "task_id": "M8-xsd-facade",
@@ -36,26 +36,6 @@
       "review": "docs/orchestration/review-M8-xsd-facade.json"
     },
     {
-      "task_id": "M8-xsd-publication-checkpoints",
-      "branch": "codex/m8-xsd-publication-checkpoints",
-      "base_revision": "c83751ab53eda7702b955ea103115c2159695080",
-      "claim_revision": "d9be8f76bfb128e8f5b8f47046cdd3df2e9a369e",
-      "client_thread_id": "client-new-thread:c2df0415-c5f6-4974-a9e7-f5541e208161",
-      "host_id": "local",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "stage": "970/970 worker checks pass;bounded contract source review active;allocation preparation permitted without counters",
-      "acceptance_before_dispatch": {
-        "mandatory": "Concrete facade A1/A2 blocker, exact own task criteria and paths only; no unverified facade/peer dependency",
-        "integration": "Independent negative+legal controls, budgets/cancel/provenance/compiledAPI/XML-only, affected checks, controlled owned allocations",
-        "review": "Bounded owning seam review; preserve prior failures and exact old interfaces"
-      },
-      "chat_id": "01a12e78-60a1-7bb2-ae11-45c809f2ac76",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/f74e/xemele",
-      "setup_revision": "d9be8f76bfb128e8f5b8f47046cdd3df2e9a369e",
-      "source_revision": "233aa3cf738ffffe4ae7b52e37e8ddb96eb9c8a7"
-    },
-    {
       "task_id": "M8-xsd-fixed-restriction",
       "branch": "codex/m8-xsd-fixed-restriction",
       "base_revision": "d9be8f76bfb128e8f5b8f47046cdd3df2e9a369e",
@@ -78,9 +58,8 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Close bounded source reviews for both owning repairs; prepare and measure owned allocation evidence in one fresh bounded serial window if ready together.",
-    "Integrate/verify repairs serially before facade consumes joins; preserve actual nine failing public witnesses.",
-    "Finish facade, XSDcorpus, CLI and M8gate; cleanup and sole-writer handoff. No M9."
+    "Integrate/verify accepted typedfixed repair, then release facade with bothverified dependencies.",
+    "Finish facade/XSDcorpus/CLI/M8gate and terminalcleanup/solewriterhandoff.NoM9."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -210,7 +189,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "29 of35 M8 tasks verified; facade batch1 plus two ordered publication repairs active. Corpus/CLI/gate follow verified facade.",
+  "milestone_progress": "30of35M8tasks verified;fixedrepair finalhandoff ready,facade awaits verifiedjoins.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -775,6 +754,30 @@
       "final_integration_revision": "bb7d3837bf37dae5df9676942059560ced0439cd",
       "review": "docs/orchestration/review-M8-xsd-validate.json",
       "cleanup": "docs/orchestration/cleanup-M8-xsd-core.json"
+    },
+    {
+      "task_id": "M8-xsd-publication-checkpoints",
+      "branch": "codex/m8-xsd-publication-checkpoints",
+      "base_revision": "c83751ab53eda7702b955ea103115c2159695080",
+      "claim_revision": "d9be8f76bfb128e8f5b8f47046cdd3df2e9a369e",
+      "client_thread_id": "client-new-thread:c2df0415-c5f6-4974-a9e7-f5541e208161",
+      "host_id": "local",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "stage": "Verified;terminal allwriteshandback;cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Concrete facade A1/A2 blocker, exact own task criteria and paths only; no unverified facade/peer dependency",
+        "integration": "Independent negative+legal controls, budgets/cancel/provenance/compiledAPI/XML-only, affected checks, controlled owned allocations",
+        "review": "Bounded owning seam review; preserve prior failures and exact old interfaces"
+      },
+      "chat_id": "01a12e78-60a1-7bb2-ae11-45c809f2ac76",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/f74e/xemele",
+      "setup_revision": "d9be8f76bfb128e8f5b8f47046cdd3df2e9a369e",
+      "source_revision": "233aa3cf738ffffe4ae7b52e37e8ddb96eb9c8a7",
+      "implementation_revision": "233aa3cf738ffffe4ae7b52e37e8ddb96eb9c8a7",
+      "handoff_revision": "43e2334c3678e212b0fed0ee23dcb6cd43e3db0c",
+      "integration_revision": "5e2dcd18742981d9c9ed4d5a1f82f6d072d95a76",
+      "integration_worktree": "/private/tmp/xemele-M8-xsd-publication-checkpoints-integration"
     }
   ],
   "measurement_lease_history": [
