@@ -1,6 +1,6 @@
 {
   "scope": "M8-xsd-joins-233aa3cf-0c54888b-alloc-only",
-  "status": "PARK requested; no grant or launch",
+  "status": "GRANTED",
   "maximum_seconds": 120,
   "latest_start_rule": "Actual durable grant UTC +60 seconds",
   "absolute_expiry_rule": "Actual durable grant UTC +120 seconds",
@@ -90,18 +90,19 @@
     }
   ],
   "constraints": "Serial four prebuilt children only; no builds/tests/BDN/timing/newactors/frozeninputwrites/rawinspection/retries/extensions. Stopfirstfailure, children reaped/groups absent/logs closed, immediate durable RELEASE before raw.",
-  "fresh_acks": {},
-  "pending_acks": [
-    "main",
-    "facade",
-    "publication",
-    "fixed",
-    "gregs5"
-  ],
+  "fresh_acks": {
+    "evidence": "docs/orchestration/M8-xsd-joins-ack-evidence.json",
+    "unique_other_actors": 12,
+    "root": "Own jobs complete;zero active sessions/cells/children;root sole launcher"
+  },
+  "pending_acks": [],
   "reviewers": "All three original fresh scope ACK received; exact text retained before grant.",
   "retired_actor": {
     "chat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
     "evidence": "send_message tool returned archived; read_thread latest turn01a12e67-70d1-7601-8479-3217184f631c completed with nojobs/researchcomplete. Excluded; no unarchive."
   },
-  "root_ack": "Own integrated970checks and two verify-only calls completed. No running jobs/sessions/cells. Root holds work except coordination until release."
+  "root_ack": "Own integrated970checks and two verify-only calls completed. No running jobs/sessions/cells. Root holds work except coordination until release.",
+  "granted_at": "2026-10-12T05:18:27.107796+00:00",
+  "latest_start": "2026-10-12T05:19:27.107796+00:00",
+  "absolute_expiry": "2026-10-12T05:20:27.107796+00:00"
 }
