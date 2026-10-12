@@ -171,10 +171,11 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
                         if (value.Value is null)
                         {
                             IdentityWork.Tick(op, at);
-                            // A valid nil element has no value and cannot qualify a tuple.
+                            // Nil prevents tuple qualification but does not waive
+                            // the selected field's effective simple-type requirement.
                             string? nil = attribute is null ? node.GetAttribute("nil", "http://www.w3.org/2001/XMLSchema-instance") : null;
                             var lexical = nil.AsSpan().Trim(" \t\r\n");
-                            if (!(nillable && (lexical.SequenceEqual("true") || lexical.SequenceEqual("1"))))
+                            if (!(nillable && (lexical.SequenceEqual("true") || lexical.SequenceEqual("1")) && SimpleFieldType(value.Type, op, at)))
                                 Bad(run, row, op, at, "Identity field requires a simple typed value.");
                             continue;
                         }
@@ -183,6 +184,17 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
                 }
             }
         }
+    }
+    private bool SimpleFieldType(SchemaName name, ISchemaOperation op, XmlLocation at)
+    {
+        IdentityWork.Tick(op, at);
+        if (program.Schema.Datatypes.FindType(name) is not null) return true;
+        foreach (var type in program.Schema.Types)
+        {
+            IdentityWork.Tick(op, at);
+            if (type.Name == name) return type.ContentKind == XsdContentKind.Simple && type.SimpleType is not null;
+        }
+        return false;
     }
     private static void Bad(Run run, Row row, ISchemaOperation op, XmlLocation at, string message)
     { run.Valid = row.Valid = false; IdentityWork.Error(op, at, message); }

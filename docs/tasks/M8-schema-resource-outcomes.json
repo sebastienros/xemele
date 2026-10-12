@@ -42,20 +42,29 @@
     {
       "id": "M8-schema-resource-outcomes-A1",
       "description": "Freeze and compile the exact additive result/status/virtual ResolveResult surface in the accepted coordinator brief before runtime implementation. Default result is Denied/null; only a non-null resource factory yields Resolved; legacy Resolve and ResolveAsync declarations and all old API rows remain unchanged. No public stubs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-fixture",
+        "correctness"
+      ]
     },
     {
       "id": "M8-schema-resource-outcomes-A2",
       "description": "Implement default synchronous adapter with identical request/token, one legacy callback and null-to-Denied mapping, preserving caller exceptions. Add only a concrete optional loader seam; explicit Unavailable can return absence before Refuse, mandatory Load stays strict, and missing resolver/legacy null/Denied still refuse. Preserve parsing, source identity, quotas/cancellation, ownership and exactly-once disposal. No async or non-schema consumer changes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "accounting-compatibility"
+      ]
     },
     {
       "id": "M8-schema-resource-outcomes-A3",
       "description": "Prove default/factory invariants, legacy consumers, explicit unavailable/denied at optional and mandatory sites, exception propagation, cancellation before/after acquisition or unavailable, disposal failures, aggregate resource/work boundaries, redirected bases and shared principal/external parsing. Unavailable cannot create a document/cache entry/fresh budget or evade bounded attempted-work checks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "correctness"
+      ]
     },
     {
       "id": "M8-schema-resource-outcomes-A4",
@@ -64,13 +73,104 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Resolution/Core/ResourceResolution.cs: XmlResourceResolutionStatus and readonly non-disposable factory-only XmlResourceResolution",
+    "src/Xemele/Resolution/Core/Resources.cs: XmlResourceResolver.ResolveResult synchronous legacy adapter; Resolve/ResolveAsync unchanged",
+    "src/Xemele/Validation/SchemaCommon/ResourceLoader.cs: concrete TryLoadOptional and shared LoadCore acquisition/parsing/cleanup, optional attempt work debit",
+    "tests/Contracts/Fixtures/M8/ResourceOutcomes/: exact independent compiled fixture and 46-row freeze; docs/api/M8-schema-resource-outcomes.txt adds 13 rows",
+    "tests/Xemele.Tests/M8-schema-resource-outcomes/ResourceOutcomeTests.cs: 38 invariant/callback/outcome/cancellation/cleanup/shared-budget witnesses",
+    "samples/M8-schema-resource-outcomes/: normal and true XML-only consumers; docs/reports/M8-schema-resource-outcomes/check.py reuses established scoped checks",
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/ and docs/reports/M8-schema-resource-outcomes/{allocation-plan.md,prepare.py,measure.py}: source-reviewed, offline-prepared allocation proposal;disabled control/preflight pass;actual measurement unrun"
+  ],
+  "evidence": [
+    {
+      "id": "contract-fixture",
+      "kind": "check",
+      "revision": "37f8176aa7147135db106d0b817564aa8ac438b1",
+      "command": "dotnet build tests/Contracts/Fixtures/M8/ResourceOutcomes/ResourceOutcomes.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false -p:RuntimeFrameworkVersion=10.0.11 --source /Users/sebastienros/.nuget/packages; dotnet --fx-version 10.0.11 ResourceOutcomes.dll; ApiCheck compare ResourceOutcomes.dll Public.golden.txt",
+      "result": "passed",
+      "summary": "Pinned SDK10.0.400/runtime10.0.11 exact additive fixture compiled/executed before runtime edits (freeze commit 2164e612eeae9e0d3ead82aba6131ae7ceebdadc); usage and all46compiled rows checked again at implementation revision. No runtime stubs;13additive rows, legacy resolver declarations unchanged.",
+      "artifact": null
+    },
+    {
+      "id": "focused",
+      "kind": "check",
+      "revision": "37f8176aa7147135db106d0b817564aa8ac438b1",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8SchemaResourceOutcomes -method- *WarmBorrowed* -parallelMode none -noLogo -noColor -result-xml artifacts/M8-schema-resource-outcomes/focused-final.xml",
+      "result": "passed",
+      "summary": "38passed;0failed/errors/skipped/not-run. Default/factory/identity; legacy null/resource/exception adapter; optional/mandatory outcomes; cancellation before/after unavailable/acquisition/read; primary/disposal failure identity and exactly-once cleanup; optional exact5work and repeated unavailable exact2work; shared principal4+attempts3+external4=11; resources/bytes/scalars/expansion/depth/cycles/redirectedbase/non-schema legacy consumer.",
+      "artifact": "artifacts/M8-schema-resource-outcomes/focused-final.xml"
+    },
+    {
+      "id": "correctness",
+      "kind": "check",
+      "revision": "37f8176aa7147135db106d0b817564aa8ac438b1",
+      "command": "python3 docs/reports/M8-schema-resource-outcomes/check.py",
+      "result": "passed",
+      "summary": "Release SDK10.0.400/runtime10.0.11 offline build flags.1530affected+42safe legacy resolver passed,0failed/errors/skipped/not-run, WarmBorrowed excluded.1430public rows=1417old+13additive;46exact fixture rows;8frozen lane subsets(Model316/Regex316/Datatypes316/Facets316/RNG444/XSD615/SCH479/Reporting319) and earlier compiler/content/identity/evaluation shapes match. Normal+trueXMLonly consumers pass;194task validation and diffcheck pass. Preserved mandatory principal4+external4 exactMaxOperations8 witness. No allocation/heap/timing performed.",
+      "artifact": "artifacts/M8-schema-resource-outcomes/check-final.log"
+    },
+    {
+      "id": "accounting-compatibility",
+      "kind": "review",
+      "revision": "37f8176aa7147135db106d0b817564aa8ac438b1",
+      "command": "Coordinator01a12c6c-b333-71d3-877f-0d186618e21d accepted bounded accounting interpretation in authorized follow-up",
+      "result": "passed",
+      "summary": "Preserve mandatory Charge(0)+accepted scalar debit including frozen4+4=8. Charge1peroptionalattempt before callback with shared poll/resource capacity guards; no shared-test edits or broader accounting change.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-pending",
+      "kind": "check",
+      "revision": "37f8176aa7147135db106d0b817564aa8ac438b1",
+      "command": "Not executed: source review, prepare/control/freeze/preflight, then fresh root-granted bounded allocation supervisor",
+      "result": "skipped",
+      "summary": "Fiveowned/threeprimitive source-only probe and reused120/110/10supervisor drafted for root review. No probe build/control/preparation, counters/heap/WarmBorrowed/BDN or measurement. A4 pending actual bounded allocation evidence.",
+      "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "f8e885a08a10df4e208df3fd64d44abaaad6f1a5",
+      "command": "Durable coordinator source review ff0751cfaf6625b289b3291b95c7bcd25b493fa9: docs/orchestration/review-M8-schema-resource-outcomes.json",
+      "result": "passed",
+      "summary": "Independent reviewer accepted runtime37f8176/API/ownership;root accepted exactf8e885a probe sources and30/20/10proposal. Fourreviewed source hashes matched before authorized offline preparation. No measurement grant.",
+      "artifact": null
+    },
+    {
+      "id": "offline-preparation",
+      "kind": "check",
+      "revision": "f8e885a08a10df4e208df3fd64d44abaaad6f1a5",
+      "command": "python3 docs/reports/M8-schema-resource-outcomes/prepare.py --source-accepted",
+      "result": "passed",
+      "summary": "Pinned offline Release restore/build passed0warnings/errors. Disabledcontrol5owned+3primitive routes,3536totalcalls,5616consumed,16retained docs. Allallocation/heap fields disabledzero placeholders.448identities frozen;manifestSHA256=e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b. No counters/heap/BDN/WarmBorrowed/measurement.",
+      "artifact": "docs/reports/M8-schema-resource-outcomes/preparation-summary.json"
+    },
+    {
+      "id": "disabled-preflight",
+      "kind": "check",
+      "revision": "f8e885a08a10df4e208df3fd64d44abaaad6f1a5",
+      "command": "python3 docs/reports/M8-schema-resource-outcomes/measure.py --verify-only && python3 docs/reports/M8-schema-resource-outcomes/measure.py --preflight",
+      "result": "passed",
+      "summary": "Elevated verify-only448identities/processinspection passed. Countersdisabled supervised control childPID9408 exit0/reapedTrue/groupabsentTrue/logclosedTrue/groupMembers[]. Frozen448identities matched before/after;actualcontrol3536calls/5616consumed/16retained and binaryhashes match. Copied preflightsourceRevision=null;manifest/binaryidentities authoritative. Zeroownedactivejobs;no measurementgrant/counters.",
+      "artifact": "docs/reports/M8-schema-resource-outcomes/preparation-summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed compatible additive resource-result repair under accepted bounded design. No runtime implementation or checks claimed. Preserve all legacy resolver and non-schema behavior; compiler semantics remain separately owned.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Source review and authorized offline preparation complete;execution standby. A1-A3passed;A4pending actual allocation.448frozen identities,manifestSHA256=e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b;5owned+3primitive disabledcontrol3536calls/5616consumed/16retained;preflightPID9408exit0/reaped/groupabsent/logclosed. Earlier38+1530+42/API/frozen/consumerchecks unchanged. No measurement grant.",
+    "checks": [
+      "Exact fixture compiled/executed before runtime;46-row compiled comparison passed again.",
+      "38focused/1530affected/42resolver passed at implementation revision;1430public rows and8frozen lane extracts match;normal+trueXMLonly consumers pass.",
+      "Planning194/diffcheck passed. Initial draft build/check-driver issues fixed and documented;no production failure hidden.",
+      "Actual allocation measurement unrun;no grant exists. Authorized disabled preparation/preflight results recorded below.",
+      "OfflineReleasebuild/disabledcontrol/freeze/verify-only/superviseddisabledpreflight passed atf8e885a;448identities,PID9408clean;zeros are disabled placeholders,not measured."
+    ],
+    "remaining": [
+      "Root obtains all livehostACKs and issues fresh exclusive grant binding e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b/30total20work10cleanup/latest-start+60/expiry+90;root sole measurementlauncher.",
+      "After durable lifecycle release inspect actual allocation results,record honest evidence/completeA4onlyifactualpass;preserveallfrozeninputs.",
+      "Coordinator integrates/reruns applicable checks and verifies;later ordered compiler task consumes seam."
+    ],
     "requests": []
   }
 }

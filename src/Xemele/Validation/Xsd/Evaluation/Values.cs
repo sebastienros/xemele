@@ -39,7 +39,14 @@ internal sealed partial class XsdValidationRun
             }
             XsdAttributeBinding? binding = null; XsdAttributeDeclaration? declaration = null;
             if (frame.Type is not null) foreach (var candidate in frame.Type.Attributes)
-            { Work(); var component = schema.Attributes[candidate.DeclarationId]; if (component.Name == name) { binding = candidate; declaration = component; break; } }
+            {
+                Work();
+                // A prohibition removes an attribute use; the wildcard still
+                // assesses an instance attribute with that expanded name.
+                if (candidate.Use == XsdAttributeUse.Prohibited) continue;
+                var component = schema.Attributes[candidate.DeclarationId];
+                if (component.Name == name) { binding = candidate; declaration = component; break; }
+            }
             bool attributeValid = true;
             if (!frame.Skip && declaration is null)
             {
@@ -51,7 +58,6 @@ internal sealed partial class XsdValidationRun
                     else if (wildcard.ProcessContents == XsdProcessContents.Strict) attributeValid = Error("XSD.Attribute", "Strict wildcard requires an attribute declaration.");
                 }
             }
-            if (binding?.Use == XsdAttributeUse.Prohibited) attributeValid = Error("XSD.Attribute", "Attribute use is prohibited.");
             XmlDatatypeValue? parsed = null; var declaredType = declaration?.Type ?? new SchemaName(Xs, "anySimpleType");
             if (declaration is not null && !frame.Skip)
             {

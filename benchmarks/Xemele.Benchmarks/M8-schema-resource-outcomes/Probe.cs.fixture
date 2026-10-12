@@ -1,0 +1,47 @@
+// Counter and heap readings are entirely disabled in --control. No timing/BDN.
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele;
+using Xemele.Benchmarks.M8SchemaResourceOutcomes;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure output.");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Pinned runtime required.");
+bool measure = mode == "--measure";
+long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+using var fixture = new OutcomeFixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldBefore : 0;
+var rows = new List<object>();
+for (int route = 0; route < OutcomeFixture.OwnedRoutes.Length; route++)
+{
+    for (int warm = 0; warm < 16; warm++) fixture.RunOwned(route);
+    long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < 64; i++) fixture.RunOwned(route);
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    if (measure && bytes <= 0) throw new Exception("Owned allocation control failed.");
+    rows.Add(new { route, name = OutcomeFixture.OwnedRoutes[route], operations = 64, bytes });
+}
+var primitiveRows = new List<object>();
+for (int route = 0; route < 3; route++)
+{
+    for (int warm = 0; warm < 16; warm++) fixture.RunPrimitive(route);
+    long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < 1024; i++) fixture.RunPrimitive(route);
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    if (measure && bytes != 0) throw new Exception("Primitive allocated.");
+    primitiveRows.Add(new { route, name = route switch { 0 => "direct-legacy-denied", 1 => "adapted-denied", _ => "result-factory" }, operations = 1024, bytes });
+}
+long positiveBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveBefore : 0;
+if (measure && positiveBytes < 1024) throw new Exception("Positive allocation control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var documents = new object[16];
+for (int i = 0; i < documents.Length; i++) documents[i] = fixture.RunOwned(1);
+long retainedAfterResults = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(documents); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, status = "passed", runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription, serverGc = System.Runtime.GCSettings.IsServerGC,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_OUTCOMES_REVISION"), assemblySha256 = Hash(typeof(XmlResourceResolution).Assembly.Location), probeSha256 = Hash(typeof(OutcomeFixture).Assembly.Location),
+    coldSetupBytes, positiveBytes, retainedBefore, retainedAfterResults, retainedResults = documents.Length, consumed = fixture.Consume(), rows, primitiveRows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: five owned and three primitive routes consumed; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));

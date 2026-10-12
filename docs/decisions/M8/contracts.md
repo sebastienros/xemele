@@ -492,3 +492,16 @@ not an excluded case or a contract-time pass. Corpus/CLI/gate owners run actual
 engines only after their lane joins are verified, preserve earlier checks and
 keep unsupported features fail-closed. No release/cumulative conformance or
 allocation/throughput result is inferred from these declaration tests.
+
+## Additive explicit resource outcomes
+
+The ordered `M8-schema-resource-outcomes` repair freezes
+[resource outcomes](resource-outcomes.md). It adds readonly explicit
+Denied/Unavailable/Resolved outcomes and virtual synchronous ResolveResult;
+legacy null remains Denied and existing Resolve/ResolveAsync stay unchanged.
+Only the concrete optional schema loader seam may return absence for explicit
+Unavailable. Mandatory loads remain strict; attempts share the work ledger,
+absence creates no document/cache entry/resource allowance, and ownership,
+parsing, redirected bases, quotas and cancellation remain common. Frozen lane
+interfaces and non-schema consumers are unchanged. XSD directive semantics are
+owned by the later ordered compiler repair.
