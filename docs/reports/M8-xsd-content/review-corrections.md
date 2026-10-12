@@ -110,5 +110,11 @@ controls consume all ten probe routes and five BDN semantic methods; discovery
 confirms exactly five MemoryDiagnoser ShortRun InProcessNoEmit cases. No actual
 allocation or timing run occurred. Preparation requires all 243 focused cases,
 both corrected positives and the retained negative to pass before freezing.
-Immutable content-source closure review and a fresh root/all-peer grant are
-still required before measurement acceptance.
+The coordinator then relayed explicit read-only closure acceptance from
+`/root/review_m8_model` on integrated source
+`ccb384811d47099f931854c7b2a79c962d4ba2d1`: no remaining blockers in the bounded
+four-finding batch. Exact Git subtree IDs are
+`e57d843a50efc2ff2da034784067c5dd1eee828b` for ContentModels and
+`efe2a8c3f65d8bb75aaded5f5e033fd059e38ec7` for owned tests. These equal the
+runtime/test revisions above. This review performed no execution. A fresh
+root/all-peer grant and actual evidence remain required for measurement acceptance.

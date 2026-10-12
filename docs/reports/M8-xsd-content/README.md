@@ -86,7 +86,11 @@ zero errors/failures/skips/not-run, .NET 10.0.11 Arm64. Public API comparison
 matches 1,400 members; all nine frozen content members and the actual XML-only
 consumer pass. Release builds have zero warnings/errors; planning validates
 179 tasks and the diff check passes. Task-record ownership has returned to the
-worker. Immutable content-source closure review and measurements remain pending.
+worker. The coordinator subsequently relayed accepted read-only closure from
+`/root/review_m8_model`: no remaining blockers in the bounded four-finding batch,
+Git subtree IDs `e57d843a50efc2ff2da034784067c5dd1eee828b` (ContentModels) and
+`efe2a8c3f65d8bb75aaded5f5e033fd059e38ec7` (owned tests), unchanged at the
+verified merge. Measurements remain pending.
 
 The probe payload and BDN payload build successfully on SDK 10.0.400/runtime
 10.0.11. Counter-disabled control consumed ten routes with 32 warm/64 samples;
@@ -106,3 +110,12 @@ cursor workloads have separate grammar semantics, so their baseline ratios are
 not comparative optimizations. No new SearchValues/vocabulary optimization is
 introduced. Real facade composition and x64 confirmation remain later-owner
 release checks; this is provisional synchronous Arm64 evidence preparation.
+
+The final guarded supervisor requires `--granted SHA latest-start-UTC expiry-UTC`.
+It rejects late/non-UTC input before creating output/children and refuses any
+existing measurement directory, using exclusive fresh creation. The refreshed
+manifest SHA256 is `806a9dc5ad3e673a85ee9093f7da154059bfe172077ffbe6a557e419f2b6aa90`.
+All 213 identities and elevated process-list permission pass; only the two owned
+supervisor/preparer files changed from the previous frozen inputs. Late/non-UTC
+refusal checks create no directory/child. Runtime/probe rebuilds and functional
+reruns were unnecessary. No measurement grant or workload started.
