@@ -34,7 +34,8 @@
       "claim_revision": "860c378cf992cb688e842603e8a854e98c5ec54a",
       "stage": "Source/correctness1263+42/API/consumers accepted; prepared fe72a347 allocation frozen. Ungranted proposal aborted/released3f3dceaaa; fresh host coordination pending.",
       "model": "gpt-6.1-sol",
-      "thinking": "high"
+      "thinking": "high",
+      "execution_status": "Standby: source, correctness and frozen allocation preparation complete; no further writes or execution pending fresh host coordination."
     },
     {
       "task_id": "M8-xsd-instance-assessment",
@@ -46,12 +47,21 @@
       "branch": "codex/m8-xsd-instance-assessment",
       "base_revision": "bc950104a4f5acce37e3b2b7f71a60f8765e33c6",
       "claim_revision": "7be79c1dcb884c5a627e898f964b0633eb40911a",
-      "stage": "Original4 baseline failures preserved at6e03b7b1c; repaired44 owned checks pass; source handoff and affected checks in progress.",
+      "stage": "Independent source PASS16687e8; owned44+syntax1146+fixed45+safe42/API/consumers pass; reviewed frozen092a3ba4 allocation462identities prepared at4f48e85b. Actual allocation pending.",
       "model": "gpt-6.1-sol",
-      "thinking": "high"
+      "thinking": "high",
+      "execution_status": "Standby: source, correctness and frozen allocation preparation complete; no further writes or execution pending fresh host coordination."
     }
   ],
-  "integration_queue": [],
+  "integration_queue": [
+    {
+      "task_id": "M8-xsd-component-mapping",
+      "candidate_revision": "4278909b35c676e00bf6a9f1d7c96752ff29723e",
+      "path": "/Users/sebastienros/.codex/worktrees/m8-component-integration/xemele",
+      "branch": "codex/m8-component-integration",
+      "status": "Combined correctness1427/API/consumers passed; awaiting actual allocation before main integration."
+    }
+  ],
   "next_actions": [
     "Run official XSD corpus through verified public facade with original metadata/oracles.",
     "Batch concrete runtime gaps into ordered repairs; do not hide incomplete checks as invalidity.",
