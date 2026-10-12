@@ -95,18 +95,37 @@
       "result": "passed",
       "summary": "Only missing schema-syntax33/attribute-fixed45/Datatypes77 executed:155 unique IDs,0fail/errors/skipped/not-run, runtime10.0.11. Earlier1152+42+148 retained, no repeats. EvaluatorSHA256ca44f5ca2e559cc17dcbdc1bbc06f3532f91c6c1814052d91c3445de0a1fbe53 and DLLSHA256a75f848d14f7d2c42009182d21dc81d349e4046fb2ceaf5cdb46fc89148c01fb identical before/after. Correctness cumulative1497. Probe bound proposal now30s total/20s work/10s cleanup; no preparation or counters executed.",
       "artifact": null
+    },
+    {
+      "id": "root-source-review",
+      "kind": "review",
+      "revision": "488d5cb52604d07730b4d3b8e45b31c71ed7db06",
+      "command": "Coordinator source acceptance recorded at ff0751cfaf6625b289b3291b95c7bcd25b493fa9 docs/orchestration/review-M8-xsd-content-failure-assessment.json",
+      "result": "passed",
+      "summary": "Coordinator reports independent XPath reviewer accepted eb2dd42 runtime/tests; root accepted488d5cb probe source/bounds and1497actualchecks. Source review only. Offline preparation released; no allocation grant.",
+      "artifact": null
+    },
+    {
+      "id": "disabled-allocation-preparation",
+      "kind": "check",
+      "revision": "488d5cb52604d07730b4d3b8e45b31c71ed7db06",
+      "command": "python3 docs/reports/M8-xsd-content-failure-assessment/prepare.py; python3 docs/reports/M8-xsd-content-failure-assessment/measure.py --verify-only; python3 docs/reports/M8-xsd-content-failure-assessment/preflight.py; owned probe process inventory",
+      "result": "passed",
+      "summary": "Pinned offline Release build0warnings/errors; actual7route disabled576calls/82992consumed/16retainedresults, all counters/heap fields disabled. Manifest91e27bfdf2352ebedb9196aaeee883492af44c5f0caa727f629a93f34f720f38,448identities before/after matched. Initial sandbox verify-only ps denied before child; elevated verify-only/preflight passed child9401exit0,reaped,groupabsent,logclosed;zeroownedjobs. Frozen source488d5cb,sourceDLL2D20A79635BB972766B84903B5930BD351916391A1D68D94E96EA3689A7EAE51,probeDLL224B77B9566333AC2F5924DC76BE3FAFD2D65D9DD65D4A27863122F55A7917AC.30stotal/20swork/10scleanup; no correctness repeat, counter/heap/BDN/WarmBorrowed/measurement.",
+      "artifact": "docs/reports/M8-xsd-content-failure-assessment/preparation-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Evaluator-only repair implemented at runtime/test revision; source review requested. Keep in_progress pending reviewed probe preparation and fresh root-granted actual allocation.",
+    "summary": "Source accepted; actual disabled allocation preparation/freeze/cleanup passed. In execution standby pending fresh root lease; A4 remains pending actual allocation.",
     "checks": [
       "Exact-policy baseline279403dad: two desired-oracle failures, each1024 terminaldiagnostic refusal.",
       "Runtime/test eb2dd42c8:39own/1152affected+42resolver+148TextBinary allpass;public/frozen/normal/XMLonly/planning/diff pass. No counters.",
-      "Missing-only155uniquechecks pass at0388fdd4a; no runtime or DLL change, no repeats. Cumulative1497passed. Source-onlyprobe bounds30/20/10."
+      "Missing-only155uniquechecks pass at0388fdd4a; no runtime or DLL change, no repeats. Cumulative1497passed. Source-onlyprobe bounds30/20/10.",
+      "Offline prepared488d5cb:7routes576calls82992consumed,16retainedresults,countersdisabled;448identities;child9401exit0reapedgroupabsentlogclosed;zerojobs."
     ],
     "remaining": [
-      "A4 actual allocation requires source review, explicit preparation release, disabled control/freeze/preflight, fresh root lease (latest-start+60/expiry+90, 30s total/20s work/10s cleanup) and actual run.",
+      "A4 actual allocation pending fresh root sole-launcher lease for manifest 91e27bfdf2352ebedb9196aaeee883492af44c5f0caa727f629a93f34f720f38; latest-start+60/expiry+90,30stotal20swork10scleanup. No allocation grant exists.",
       "Three actual Z034_a2/a3/b counted-matcher original diagnostic-limit failures remain pending integration evidence; independent standalone witnesses do not repair or replace their executions."
     ],
     "requests": []
