@@ -14,6 +14,8 @@ assembly=tests.find('assembly')
 assert int(assembly.attrib['passed'])==204 and all(int(assembly.attrib[k])==0 for k in ['failed','errors','skipped','not-run'])
 required=[t for t in tests.iter('test') if 'NonExpressibleIntermediateMustBeRejectedBeforeCompilerDiscardsIt' in t.attrib['name']]
 assert len(required)==1 and required[0].attrib['result']=='Pass', 'Verified compiler repair regression must pass before preparation.'
+effective_empty=[t for t in tests.iter('test') if 'EffectiveEmptyExtensionInheritsMixedBaseContent' in t.attrib['name']]
+assert len(effective_empty)==2 and all(t.attrib['result']=='Pass' for t in effective_empty), 'Both corrected effective-empty mapping positives must pass before preparation.'
 control=json.loads((root/'artifacts/M8-xsd-content/control.json').read_text())
 assert control['mode']=='--control' and control['runtime']=='.NET 10.0.11' and len(control['rows'])==10
 assert all(row['operations']==64 and row['bytes']==0 and row['distribution']==[0]*64 for row in control['rows'])

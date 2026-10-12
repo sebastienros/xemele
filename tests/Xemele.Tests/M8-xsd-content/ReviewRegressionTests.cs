@@ -10,8 +10,6 @@ public sealed class ReviewRegressionTests
     [InlineData("", "", "false", "true", "restriction", false)]
     [InlineData("<xs:sequence><xs:element name='a' minOccurs='0'/></xs:sequence>", "", "false", "true", "restriction", false)]
     [InlineData("<xs:sequence/>", "<xs:sequence/>", "false", "true", "restriction", false)]
-    [InlineData("", "", "true", "false", "extension", false)]
-    [InlineData("<xs:sequence/>", "<xs:sequence/>", "true", "false", "extension", false)]
     [InlineData("", "", "true", "true", "extension", true)]
     [InlineData("<xs:sequence/>", "<xs:sequence/>", "true", "true", "extension", true)]
     [InlineData("", "", "true", "false", "restriction", true)]
@@ -20,6 +18,17 @@ public sealed class ReviewRegressionTests
     {
         var graph = ContentTests.Schema($"<xs:complexType name='B' mixed='{baseMixed}'>{basis}</xs:complexType><xs:complexType name='T'><xs:complexContent mixed='{mixed}'><xs:{method} base='B'>{content}</xs:{method}></xs:complexContent></xs:complexType>");
         if (valid) Assert.NotNull(ContentTests.Program(graph)); else Assert.Throws<SchemaCompileException>(() => ContentTests.Program(graph));
+    }
+    [Theory]
+    [InlineData("", "")]
+    [InlineData("<xs:sequence/>", "<xs:sequence/>")]
+    public void EffectiveEmptyExtensionInheritsMixedBaseContent(string basis, string content)
+    {
+        var graph = ContentTests.Schema($"<xs:complexType name='B' mixed='true'>{basis}</xs:complexType><xs:complexType name='T'><xs:complexContent mixed='false'><xs:extension base='B'>{content}</xs:extension></xs:complexContent></xs:complexType>");
+        // Structures 2E §3.4.2, content type 3.2.1: effective-empty
+        // extension inherits the base content type, even with mixed=false.
+        Assert.Equal(XsdContentKind.Mixed, ContentTests.Type(graph).ContentKind);
+        Assert.True(ContentTests.Accepts(ContentTests.Program(graph)));
     }
     [Theory]
     [InlineData(2, false)]
@@ -36,9 +45,12 @@ public sealed class ReviewRegressionTests
     public void IntensionalAttributeWildcardUnionMustBeExpressible(string extension, bool valid)
     {
         var context = new SchemaCompileContext(); var document = context.Parse($"<xs:schema xmlns:xs='{ContentTests.Xs}' xmlns:t='urn:t' targetNamespace='urn:t'><xs:complexType name='B'><xs:anyAttribute namespace='##other'/></xs:complexType><xs:complexType name='T'><xs:complexContent><xs:extension base='t:B'><xs:anyAttribute namespace='{extension}'/></xs:extension></xs:complexContent></xs:complexType></xs:schema>").Document;
-        var graph = new XmlSchemaCompiler().Compile(document, context.Options, context.Operation); var type = graph.Types.Single(t => t.Name == new SchemaName("urn:t", "T"));
-        if (valid) Assert.NotNull(new XsdContentCompiler().Compile(graph, type, new OperationTests.Ledger()));
-        else Assert.Throws<SchemaCompileException>(() => new XsdContentCompiler().Compile(graph, type, new OperationTests.Ledger()));
+        void Compile()
+        {
+            var graph = new XmlSchemaCompiler().Compile(document, context.Options, context.Operation); var type = graph.Types.Single(t => t.Name == new SchemaName("urn:t", "T"));
+            Assert.NotNull(new XsdContentCompiler().Compile(graph, type, new OperationTests.Ledger()));
+        }
+        if (valid) Compile(); else Assert.Throws<SchemaCompileException>(Compile);
     }
     [Fact]
     public void IntensionalNegatedSubsetDoesNotUseOrdinarySetContainment()
