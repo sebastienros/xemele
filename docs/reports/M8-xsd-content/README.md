@@ -65,18 +65,23 @@ prerequisite checks are being prepared; no unrun checks or measurements pass.
 
 ## Current review/harness state
 
-Source correction `f098c72fd2f94bea18c46194de1795ea26439a4d` addresses the
-bounded review batch. Actual 102 owned cases: 101 passed and one required
-negative failed; see [review-corrections.md](review-corrections.md) for the exact
-lost compiler operand and ordered owner request. Source closure review and the
-verified compiler repair remain pending. Task-record writes were transferred
+Content runtime correction `f098c72fd2f94bea18c46194de1795ea26439a4d` addresses
+the bounded review batch. Its historical run passed 101/102 cases. Follow-up
+review corrected two effective-empty extension expectations at owned test
+revision `05a08eaac946552cd1885a779d18d13d8b04021c`; the actual latest run passes
+99/102, exposing two declaration-compiler content-mapping failures in addition
+to the retained lost-intermediate wildcard negative. See
+[review-corrections.md](review-corrections.md) for both distinct ordered owner
+requests. Content runtime source is unchanged. Source closure review and
+verified compiler repairs remain pending. Task-record writes were transferred
 to the coordinator; source/tests/reports remain worker-owned.
 
 The probe payload and BDN payload build successfully on SDK 10.0.400/runtime
 10.0.11. Counter-disabled control consumed ten routes with 32 warm/64 samples;
 five BDN semantic methods passed without timing/counters, and discovery asserted
 exactly five MemoryDiagnoser ShortRun InProcessNoEmit cases. No allocation or
-timing run occurred. `prepare.py` requires the mandatory negative and all 204
+timing run occurred. `prepare.py` requires the mandatory negative, both corrected
+effective-empty positives and all 204
 combined focused cases to pass before freezing; `measure.py` checks exact
 identities/process permissions and absolute grant expiry, reaps every process
 group, closes logs and emits lifecycle RELEASE before any result inspection.

@@ -49,3 +49,40 @@ After the ordered repair is integrated and verified, update the worker from that
 verified revision and rerun the unchanged required negative, all focused checks,
 frozen/public API comparison and real XML-only consumer. Measurements and the
 final implemented status remain pending.
+
+## Effective-empty expectation correction and separate owner blocker
+
+The 101/102 result above remains historical evidence at `f098c72f`. Further
+review corrected two test expectations, rather than weakening the content-kind
+rules. [Structures 2E §3.4.2, content type clause 3.2.1](https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#Complex_Type_Definition_details)
+requires an extension with empty effective content to inherit the base content
+type, including when the authored `complexContent mixed` is false. Missing
+particles and empty authored sequences in these cases therefore extend the
+mixed base legally. The original nonempty element-only extension remains
+invalid and its existing rejection test is unchanged.
+
+Owned test/preparation correction `05a08eaac946552cd1885a779d18d13d8b04021c`
+replaces those two negatives with positive
+`EffectiveEmptyExtensionInheritsMixedBaseContent` cases. Each first asserts
+the declaration compiler's `ContentKind.Mixed`, then runs the actual content
+program and empty-sequence cursor acceptance. The wildcard-union negative now
+wraps the complete declaration/compiler-content operation, allowing either
+owner to reject it without requiring a particular error stage.
+
+Actual .NET 10.0.11 run on the existing verified compiler: 102 owned cases,
+99 passed, 3 failed, zero errors/skips/not-run. The new positives fail before
+content compilation because the declaration graph incorrectly says `Empty`
+(no particle) or `ElementOnly` (empty sequences); the existing lost-intermediate
+wildcard negative remains the third failure. Artifacts:
+`artifacts/M8-xsd-content/effective-empty.xml` and `effective-empty.log`.
+Release build completed with zero warnings/errors; planning validation checks
+176 tasks and `git diff --check` passes. No measurements occurred.
+
+Separate outside-ownership repair: the ordered declaration-compiler owner must
+map effective-empty extension content according to §3.4.2 before retaining the
+graph, with correct inherited content kind and particle. This request is
+distinct from preserving/rejecting intermediate wildcard algebra. The root's
+private wildcard repair is still under independent review and was not consumed.
+Content runtime source remains unchanged at `f098c72f`; task-record writes
+remain root-owned. Preparation now requires both corrected positives and the
+lost-intermediate negative to pass in the complete focused selection.
