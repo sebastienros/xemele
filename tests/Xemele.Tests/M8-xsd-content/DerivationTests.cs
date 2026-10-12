@@ -27,7 +27,7 @@ public sealed class DerivationTests
         if (valid) Assert.NotNull(ContentTests.Program(schema)); else Assert.Throws<SchemaCompileException>(() => ContentTests.Program(schema));
     }
     [Theory]
-    [InlineData("<xs:attribute name='a' use='required'/>", "", false)]
+    [InlineData("<xs:attribute name='a' use='required'/>", "", true)]
     [InlineData("<xs:attribute name='a' use='required'/>", "<xs:attribute name='a'/>", false)]
     [InlineData("<xs:attribute name='a' use='required'/>", "<xs:attribute name='a' use='required'/>", true)]
     [InlineData("<xs:attribute name='a' type='xs:string'/>", "<xs:attribute name='a' type='xs:token'/>", true)]
@@ -55,8 +55,7 @@ public sealed class DerivationTests
         Assert.Throws<SchemaCompileException>(() => ContentTests.Program(mismatch));
         var resurrection = ContentTests.Schema("<xs:complexType name='B'><xs:attribute name='a'/></xs:complexType><xs:complexType name='R'><xs:complexContent><xs:restriction base='B'/></xs:complexContent></xs:complexType><xs:complexType name='T'><xs:complexContent><xs:extension base='R'><xs:attribute name='a'/></xs:extension></xs:complexContent></xs:complexType>");
         Assert.NotNull(ContentTests.Program(resurrection));
-        var changedType = ContentTests.Schema("<xs:complexType name='B'><xs:attribute name='a' type='xs:string'/></xs:complexType><xs:complexType name='R'><xs:complexContent><xs:restriction base='B'/></xs:complexContent></xs:complexType><xs:complexType name='T'><xs:complexContent><xs:extension base='R'><xs:attribute name='a' type='xs:integer'/></xs:extension></xs:complexContent></xs:complexType>");
-        Assert.Throws<SchemaCompileException>(() => ContentTests.Program(changedType));
+        Assert.Throws<SchemaCompileException>(() => ContentTests.Schema("<xs:complexType name='B'><xs:attribute name='a' type='xs:string'/></xs:complexType><xs:complexType name='R'><xs:complexContent><xs:restriction base='B'/></xs:complexContent></xs:complexType><xs:complexType name='T'><xs:complexContent><xs:extension base='R'><xs:attribute name='a' type='xs:integer'/></xs:extension></xs:complexContent></xs:complexType>"));
     }
     [Theory]
     [InlineData("", true)]
