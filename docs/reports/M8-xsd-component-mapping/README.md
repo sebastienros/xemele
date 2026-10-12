@@ -66,3 +66,10 @@ the borrowed canonical string; otherwise each actual normalization scalar is
 charged at the authored source. Four independent padding-work formulas and
 null-cap cancellation 128scalars into normalization are asserted. No timing or
 allocation measurement has been launched; A3 stays pending coordinator evidence.
+
+Source review PASS at bc8d1916 accepted the normalization repair and prior mapping
+semantics. Final preparation at fe72a347:19-route disabled control1555calls /
+36643consumed; probe build0warnings/errors; frozen464identities, actual elevated
+verify-only and disabled preflightPID96986 exit0/reaped/groupabsent/logclosed.
+See proposal.md and allocation-preflight.json. Cleanup supervision is reused
+unchanged. No worker measurement has run; A3 remains pending root-only grant.
