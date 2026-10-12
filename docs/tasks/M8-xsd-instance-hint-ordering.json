@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Validate XSD instance hint order without fetching resources",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated M8-xsd-instance-hint-ordering worker",
   "branch": "codex/m8-xsd-instance-hint-ordering",
   "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
@@ -64,11 +64,12 @@
     {
       "id": "M8-xsd-instance-hint-ordering-A4",
       "description": "Preserve charged borrowed scanning, ordinal comparisons, bounded per-run retention and no global state. Prove exact/one-short work/diagnostic limits, cancellation inside long tokens/comparisons with null caps, source locations, repeat/concurrent isolation and immutability. Pass affected evaluator/identity/facade checks, unchanged public/frozen APIs, normal and true XML-only consumers, planning validation and actual allocation evidence through existing infrastructure with actual counters, meaningful controls, frozen source/workload identities and bounded process cleanup; no isolation, PARK, exclusivity or coordination lease is required.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "focused-correctness",
         "disabled-preparation",
-        "lifecycle-correction"
+        "lifecycle-correction",
+        "root-actual-allocation"
       ]
     }
   ],
@@ -78,7 +79,8 @@
     "docs/decisions/M8/instance-hint-ordering.md: pre-runtime freeze of complete profile and explicit skip interpretation",
     "tests/Xemele.Tests/M8-xsd-instance-hint-ordering/: 58 owned witnesses; seven pinned unchanged originals and51 independent neighbors",
     "docs/reports/M8-xsd-instance-hint-ordering/check.py: actual1557 affected +42 resolver/public1430/all8 frozen/normal+XML-only checks",
-    "benchmarks/Xemele.Benchmarks/M8-xsd-instance-hint-ordering/: six borrowed/seven owned prebuilt routes; counter-disabled preparation only"
+    "benchmarks/Xemele.Benchmarks/M8-xsd-instance-hint-ordering/: six borrowed/seven owned prebuilt routes; counter-disabled preparation only",
+    "docs/reports/M8-xsd-instance-hint-ordering/allocations.md: root actual6borrowed0/sevenownedpositive allocation, controls/setup/coarse retention and cleanup evidence"
   ],
   "evidence": [
     {
@@ -143,21 +145,31 @@
       "result": "passed",
       "summary": "Preserved actual independent reviewer P2 at supervisor26076be0/source6eeb573ef: preflight/measurement ignored reason after cleanup exit overwrite. Corrected shared completed predicate requires reasoncompleted+exit0/reaped/groupabsent/logclosed; shared sequence stops first failed workload,cleanup success remains separate. Finite6stotal/1work/5cleanup actualcontrol child52932reasonTimeoutExpired+SIGTERMexit0/workloadstatus1;reaped/groupabsent/logclosed;1sequenceentry/no nextlaunch;nocounters. Manifested1a79edf6755f7067a7b081cb9d8633940ada223c676c23ac4d2d56db7ab6d5,466identitiesonlysupervisorchanged;465others including runtime/probe source/binarymatch,no rebuild/test/13routecontrolrepeat. Originalpre-correctioncontrolnotrun/claimed.",
       "artifact": "docs/reports/M8-xsd-instance-hint-ordering/preparation-summary.json"
+    },
+    {
+      "id": "root-actual-allocation",
+      "kind": "check",
+      "revision": "417b46aec229ba40142a4d129c16d3eb3426e3bc",
+      "command": "Root sole launcher of frozen measure.py --granted ed1a79edf6755f7067a7b081cb9d8633940ada223c676c23ac4d2d56db7ab6d5 2026-10-12T14:22:46.135967+00:00 2026-10-12T14:23:16.135967+00:00; durablecleanup57dcf90cc before raw inspection",
+      "result": "passed",
+      "summary": "Actual nonisolated Arm64.NET10.0.11:6borrowed16warm/64calls each0bytes;7owned aggregate839168/1041408/1061376/895488/5557248/2037808/1137152positive. Coldfixture3120352;positive1024bytearray1048;wholeheap846744to852216delta5472with16results+fixturealive,coarseonly. Separate disabledcontrol13routesallcounter/heapfields0,same657312consumed. Emitted417b46aec is supervisorcorrection,accepted7cb runtime/6eebprobebinariesunchanged.466identitiesbeforeaftermatch;53665control/53667measurecompletedexit0/reaped/groupsabsent/logsclosed,supervisorterminal0,durablecleanup57dcf90ccbeforeinspection.30total/20work/10cleanup,no retries/rebuild/testrepeat;no isolation/PARK/exclusivity/leasegate. No firstcall/distribution/throughput/x64/AOT/async/fullcorpus/globalidleclaim.",
+      "artifact": "docs/reports/M8-xsd-instance-hint-ordering/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Independent runtime sourcePASS b18ea9f99;allocation supervisor P2 corrected at417b46aec229ba40142a4d129c16d3eb3426e3bc. Actual finite timeout/SIGTERMexit0 lifecycle control passes with workloadfailurestatus1 and no nextlaunch. Refreshed466identity manifested1a79edf6755f7067a7b081cb9d8633940ada223c676c23ac4d2d56db7ab6d5,only supervisorchanged;runtime/probesource/binaryunchanged,no rebuild/repeated13routecontrol. Actual allocation still pending root launch;noisolation/PARK/exclusive/leasegate.",
+    "summary": "Implemented evaluator-only atomic global hint ordering without fetching. Pre-runtime decision freezes explicit skipped-subtree ordering project interpretation;7unchanged originalINVALID outcomes and1599focusedchecks pass. Independent runtime sourcePASS;allocation supervisorP2 corrected with actual finitecontrol. Root actual nonisolated466identity allocationPASS:6borrowed0/sevenownedpositive,cold/positive/disabled/coarse-retention separate,cleancompletedchildren. All criteria pass on branch; root integration/verification pending. Worker relinquishes writes.",
     "checks": [
       "Baseline354550f94:seven original complete-valid outcomes fail expected INVALID assertions; unchanged bytes/statuses/hashes and prior adapter history retained.",
       "Runtime/test7cb790009:58own corrected pass;combined1557affected+42resolver1599pass;public1430/all8frozen/emittedAPIs;normal+trueXML-only,fiveReleasebuild0warnings/errors,planning196/diffpass.",
       "Prepared6eeb573ef:probe build0warnings/errors,466identity manifestbc0afa40,disabled13routes1056calls,countersheapall0;child50523exit0/reaped/groupabsent/logclosed. Sandboxpsdenial preserved; elevatedcleanup passes. Noactualcounter/timingmeasurement.",
-      "Lifecycle correction actualcontrol:child52932exit0afterTimeoutExpired/workloadstatus1,reaped/groupabsent/logclosed,no nextlaunch;6/1/5bounds,no counters. Manifest466 refreshed supervisoronly."
+      "Lifecycle correction actualcontrol:child52932exit0afterTimeoutExpired/workloadstatus1,reaped/groupabsent/logclosed,no nextlaunch;6/1/5bounds,no counters. Manifest466 refreshed supervisoronly.",
+      "Root actual allocation afterdurablecleanup57dcf90cc:6borrowed0/sevenownedpositive16warm64calls;3120352cold/1048positive/5472coarsewholeheapdelta16results;disabledall0/same657312consumed.466identitiesmatch;53665/53667completedexit0/reaped/groupsabsent/logsclosed;no measurementrepeat/rebuild/testrepeat.",
+      "Coordinator separately reportscombinedcandidate3735a8e8163d7c59f48968caad25f3abba3dbfdf:1804distinctchecks/sevenbuild/publicall8/facade+recursive normaltrueXMLonlyPASS;not rerun by worker and not yet taskverified."
     ],
     "remaining": [
-      "A4:allocation source acceptance and actual allocation evidence through bounded root execution with controls,identities and cleanup; no isolation/PARK/exclusivity/lease gate. Worker does not launch counters.",
-      "Root integrates and verifies final branch after all branch criteria pass.",
-      "No throughput/x64/AOT/async/fullcorpus or independently adjudicated skipped-corner claim."
+      "Coordinator integrates reviewed runtime and final metadata,verifies combined code and records integration_revision before setting verified.",
+      "Evidence limits: no throughput/x64/AOT/async/fullcorpus/globalhostidle or independently W3C-adjudicated skipped-corner claim."
     ],
     "requests": []
   }
