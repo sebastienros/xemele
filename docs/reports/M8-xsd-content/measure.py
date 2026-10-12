@@ -76,7 +76,8 @@ remaining = (expires - datetime.now(timezone.utc)).total_seconds()
 if remaining <= 10: raise SystemExit('Grant expired or no cleanup reserve remains; no child started.')
 started = time.monotonic(); hard_deadline = started + min(600, remaining); work_deadline = hard_deadline - 10
 out.mkdir(parents=True, exist_ok=True)
-lifecycle = {'status': 1, 'beforeIdentities': False, 'afterIdentities': False, 'sequence': [], 'rawResultsInspected': False}
+lifecycle = {'status': 1, 'beforeIdentities': False, 'afterIdentities': False, 'sequence': [], 'rawResultsInspected': False,
+ 'grantExpiryUtc': expires.astimezone(timezone.utc).isoformat(), 'maximumSeconds': min(600, remaining)}
 manifest = None
 try:
  if digest(manifest_path) != sys.argv[2]: raise ValueError('Manifest differs from durable grant.')
@@ -88,6 +89,7 @@ try:
  lifecycle['beforeIdentities'] = True; lifecycle['identityCount'] = len(manifest['identities'])
  if not any(int(row[0]) == os.getpid() for row in processes()): raise ValueError('Process permission preflight failed.')
  env = os.environ.copy(); env['PATH'] = str(Path(net).parent) + os.pathsep + env.get('PATH', '')
+ env.update(manifest['environment'])
  env['XEMELE_CONTENT_REVISION'] = manifest['sourceRevision']
  env['NuGetAudit'] = 'false'; env['RuntimeFrameworkVersion'] = '10.0.11'; env['UseSharedCompilation'] = 'false'
  for index, argv in enumerate(commands):
@@ -105,7 +107,7 @@ finally:
  except BaseException as error:
   lifecycle['status'] = 1; lifecycle['afterError'] = type(error).__name__
  lifecycle['elapsedSeconds'] = time.monotonic()-started
- if lifecycle['elapsedSeconds'] > 600: lifecycle['status'] = 1; lifecycle['deadlineExceeded'] = True
+ if time.monotonic() > hard_deadline: lifecycle['status'] = 1; lifecycle['deadlineExceeded'] = True
  (out / 'lifecycle.json').write_text(json.dumps(lifecycle, indent=2))
  clean = all(row['directChildReaped'] and row['ownedGroupAbsent'] and row['logClosed'] for row in lifecycle['sequence'])
  print(f"LIFECYCLE {'RELEASE' if clean else 'CLEANUP FAILURE'}: status={lifecycle['status']}; identityCount={lifecycle.get('identityCount',0)}; children reaped/groups absent/logs closed={clean}; raw results unopened.", flush=True)
