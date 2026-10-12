@@ -37,29 +37,124 @@
     {
       "id": "M8-xsd-component-mapping-A1",
       "description": "Reproduce original groupN007 failure, then accept unchanged original mixed=true zero-occurrence instance and reject forbidden child occurrence. Resolve documented R-204 mapping gap consistently with accepted corpus by charged empty-sequence synthesis for effective mixed=true after validated top-level0..0; retain mixed=false empty content, extension inheritance, duplicate/invalid occurrence validation, locations and limits. Explicitly correct exactly the earlier three mixed=true MappingTests expectations, old probe route3 and README inference while preserving history.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-component-mapping-A2",
       "description": "Reject original xv001/xv004 schemas under the independently adjudicated XSD Second Edition NCName profile, while preserving XML Fifth Edition parser behavior. Compiler-local borrowed scalar scanning reuses verified TextBinaryNames tables; cover legal names, declaration/schema IDs/QName prefix-local components, multilingual and supplementary invalid names, source locations, charged budgets and cancellation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-component-mapping-A3",
       "description": "Actual unchanged-original baseline failures and repaired outcomes, independent original/profile oracles, affected facade/compiler/effective-content tests, public1417 and frozen APIs, normal/trueXML-only consumers, planning validation and bounded actual allocation evidence. Preserve original upstream validity disagreements separately from profile adjudication.",
       "status": "pending",
       "evidence": []
+    },
+    {
+      "id": "M8-xsd-component-mapping-A4",
+      "description": "Accept unchanged original wildK001/wildC030/wildZ010 schemas including original import; map explicit empty or XML-whitespace-only wildcard namespace lists to positive empty sets for any/anyAttribute, preserving omitted ##any, ##local/targetNamespace/other, required unsatisfiable versus optional no-child validation, invalid tokens/processContents, locations, shared charged budgets/cancellation, and bounded allocation route. Coordinator amendment docs/orchestration/M8-xsd-component-mapping-amendment.md authorizes this existing-owned-path correction.",
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: ComponentCollapse / ComponentNCName / Complex / Wildcard",
+    "tests/Xemele.Tests/M8-xsd-component-mapping/: 117 independently inventoried cases, including unchanged original witnesses",
+    "tests/Xemele.Tests/M8-xsd-effective-content/MappingTests.cs: correct exactly three mixed=true zero-occurrence expectations",
+    "docs/reports/M8-xsd-effective-content/Probe/Program.cs route3 and README.md ordered correction preserving historical evidence"
+  ],
+  "evidence": [
+    {
+      "id": "original-public-baseline",
+      "kind": "check",
+      "revision": "9fcb4a58cb04f132bb4c12a3368ab43d4940dacb",
+      "command": "Pinned SDK10.0.400 offline restore/build; dotnet --fx-version 10.0.11 Xemele.Tests.dll -namespace Xemele.Tests.M8XsdComponentMapping -parallelMode none -result-xml artifacts/M8-xsd-component-mapping/baseline.xml",
+      "result": "failed",
+      "summary": "Build0warnings/errors. Four intended witnesses:1pass/3fail,0errors/skips/not-run. Original groupN007 BCL-valid/product complete-invalid XSD.Content characters. xv001 facade accepts; xv004 facade rejects NCName facet at13:25 byte541 but does not diagnose names. Original/profile expectations kept separate.",
+      "artifact": null
+    },
+    {
+      "id": "original-compiler-baseline",
+      "kind": "check",
+      "revision": "f433b15ca2e0839e33e7d10f703e8a286f45dbd8",
+      "command": "Pinned Release build and same owned namespace runner to baseline-direct.xml",
+      "result": "failed",
+      "summary": "Six intended witnesses:1pass/5fail,0errors/skips/not-run. Both unchanged xv001/xv004 incorrectly publish compiler definitions. Confirms xv004 compiler name acceptance independently from later public facet rejection.",
+      "artifact": null
+    },
+    {
+      "id": "first-postrepair-build",
+      "kind": "check",
+      "revision": "29e596a03228cc9ba7a50ec3faefffdcfb98c288",
+      "command": "python3 docs/reports/M8-xsd-component-mapping/check.py (checker then uncommitted)",
+      "result": "failed",
+      "summary": "Build stopped on xUnit1051 parser test missing ambient cancellation token; no postrepair tests/API/consumer checks ran in this attempt. Corrected test call before wildcard baseline.",
+      "artifact": null
+    },
+    {
+      "id": "original-wildcard-baseline",
+      "kind": "check",
+      "revision": "92b327ff3bed20c2781565cd7b69e1c8757a6eb4",
+      "command": "Pinned Release build and owned namespace runner to baseline-wildcard.xml",
+      "result": "failed",
+      "summary": "84cases:81existing component passes/3original wildcard failures,0errors/skips/not-run. All three independent BCL original schema compilations pass; product compilation fails. Includes unchanged wildZ010 import, original/license/hashmanifest preserved.",
+      "artifact": null
+    },
+    {
+      "id": "first-combined-checker",
+      "kind": "check",
+      "revision": "fb89e6ad03f175c254edfbe27bfecaa9cb9ffad0",
+      "command": "python3 docs/reports/M8-xsd-component-mapping/check.py",
+      "result": "failed",
+      "summary": "Actual1259 tests pass,42safe resolver/API/consumers/planning pass. Script exits1 from checker: independently fixed expected total omitted predecessor33; later validation found unpaired-high/low xUnit display identity collision. No product test failures. Corrected explicit case labels and inventory before next run.",
+      "artifact": null
+    },
+    {
+      "id": "pre-normalization-correctness",
+      "kind": "check",
+      "revision": "aef609a213823d9c3215e7c9955006d1bf87e87f",
+      "command": "python3 docs/reports/M8-xsd-component-mapping/check.py; saved-output validation and omitted-row negative control",
+      "result": "passed",
+      "summary": "1259=113owned+33syntax+1113affected;42safe;0errors/failures/skips/not-run. Public1417/frozen316+139/257/24/9/2/7; normal/trueXML-only consumers;5builds0warnings/errors;187-task planning/diff. Missing-row control rejects. Subsequent review required actual normalization-loop accounting.",
+      "artifact": null
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "bc8d191609fc48d84ae66d0a42ea8657ecb4a0fe",
+      "command": "python3 docs/reports/M8-xsd-component-mapping/check.py",
+      "result": "passed",
+      "summary": "1263=117owned+33syntax+1113affected;42safe resolver,0errors/failures/skips/not-run. Public1417 and frozen model316+139/compiler257/identity24/content9/evaluation2/facade7 match. Normal and true source-linked XML-only consumers pass;5Release builds0warnings/errors;187-task planning and diff pass. Original groupH007 invalid restriction and wildcard3 repaired outcomes pass. Four normalization cases independently verify padding-work algebra, exact/one-short budgets, nullcap cancellation128scalars inside normalization after full canonical scan, actual source-located refusal. SDK10.0.400/runtime10.0.11 Arm64. No allocation counters/timing used.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "fe72a34773e28a776c223d628fcccbd91f4b9bec",
+      "command": "python3 docs/reports/M8-xsd-component-mapping/prepare.py; actual elevated measure.py --verify-only and --preflight",
+      "result": "passed",
+      "summary": "SDK10.0.400/.NET10.0.11:19routes/1555calls/36643consumed, all allocation/GC/timing disabled. Probe build0warnings/errors. Manifest25b4d9c5.../464identities matched; actual ps permission; disabled preflightPID96986 exit0/reaped/groupabsent/logclosed, before/after identities matched.6borrowed0B target routes,13ownedpositive controls prepared; cold/first/positive/retained separate. No worker measurements. Final source review PASS bc8d1916; compiler3f54c130... matches accepted source.",
+      "artifact": "docs/reports/M8-xsd-component-mapping/allocation-preflight.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered compiler repair after verified schema syntax; bounded source/standards triage confirms groupN007 R-204 mapping conflict and concrete NCName edition defect. No dependency on active corpus or attribute-fixed peer.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Bounded mixed0..0, Second Edition component-name and empty wildcard mapping fixes; original oracles retained; correctness and compatibility pass. Await final source acceptance/allocation preparation and root-only measurement.",
+    "checks": [
+      "1263focused correctness +42safe; public1417/frozen APIs; normal/trueXML-only;5builds0warning/error;planning187/diff pass.",
+      "Earlier failed witnesses/build/checker attempts retained as evidence."
+    ],
+    "remaining": [
+      "A3 actual root-only allocation launch under fresh host lease, durable cleanup RELEASE and bounded summary; final evidence/handoff afterward."
+    ],
     "requests": []
   }
 }

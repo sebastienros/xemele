@@ -48,6 +48,7 @@ internal sealed class XsdCompilation
     private readonly Dictionary<SchemaName, XsdNotationDeclaration> notations = new();
     private readonly HashSet<(string, SchemaName)> expanding = new();
     private int anonymousId, redefineId, depth;
+    private ComponentNameOperation? nameOperation;
 
     private sealed class Source(SchemaDocumentScope scope, string target, bool chameleon)
     {
@@ -255,18 +256,84 @@ internal sealed class XsdCompilation
             else { if (pending) builder.Append(' '); builder.Append(c); pending = false; }
         return builder.ToString();
     }
+    // These component mapping inputs own a normalized value only when necessary.
+    // Charge/poll in each actual canonical-check and normalization loop; a prior
+    // scan cannot account for later unchecked normalization or arbitrary padding.
+    private string ComponentCollapse(string text, XmlLocation at)
+    {
+        Tick(at, 0);
+        bool canonical = true, first = true, previousSpace = false;
+        foreach (var scalar in text.AsSpan().EnumerateRunes())
+        {
+            Tick(at); int c = scalar.Value;
+            if (c is '\t' or '\r' or '\n' || c == ' ' && (first || previousSpace)) canonical = false;
+            previousSpace = c == ' '; first = false;
+        }
+        if (previousSpace) canonical = false;
+        if (canonical) return text;
+        var builder = new StringBuilder(); bool pending = false; int position = 0;
+        foreach (var scalar in text.AsSpan().EnumerateRunes())
+        {
+            Tick(at); int c = scalar.Value;
+            if (c is ' ' or '\t' or '\r' or '\n') pending = builder.Length != 0;
+            else
+            {
+                if (pending) builder.Append(' ');
+                builder.Append(text.AsSpan(position, scalar.Utf16SequenceLength)); pending = false;
+            }
+            position += scalar.Utf16SequenceLength;
+        }
+        Tick(at, 0); return builder.ToString();
+    }
     private string Required(Source source, XmlNode node, string attribute)
     { var value = node.GetAttribute(attribute); if (value is null) Error("Required schema attribute is missing.", At(source, node)); return value!; }
     private string NCName(string text, Source source, XmlNode node)
     {
-        text = Collapse(text); Tick(At(source, node), text.Length);
-        try { TreeValidation.Name(text); } catch (ArgumentException) { Error("Invalid NCName.", At(source, node)); }
+        var at = At(source, node); text = ComponentCollapse(text, at);
+        if (nameOperation is null) { Components(at); nameOperation = new(op); }
+        nameOperation.Location = at;
+        bool valid = ComponentNCName(text.AsSpan(), nameOperation);
+        if (!op.IsComplete) throw SchemaSnapshots.Failure(op);
+        if (!valid) Error("Invalid NCName.", at);
         return text;
+    }
+    // Schema component names use the frozen XML Second Edition productions,
+    // independently of the parser/tree's Fifth Edition name grammar. The span
+    // and source-located shared operation remain borrowed for this call only.
+    internal static bool ComponentNCName(ReadOnlySpan<char> text, ISchemaOperation operation)
+    {
+        if (!operation.Charge(0, default) || text.IsEmpty) return false;
+        for (int position = 0; position < text.Length;)
+        {
+            bool continuation = position != 0;
+            if (!operation.Charge(1, default)) return false;
+            char first = text[position++]; int scalar = first;
+            if (char.IsSurrogate(first))
+            {
+                if (!char.IsHighSurrogate(first) || position == text.Length || !char.IsLowSurrogate(text[position])) return false;
+                scalar = char.ConvertToUtf32(first, text[position++]);
+            }
+            if (scalar == ':' || !TextBinaryNames.Contains(scalar, continuation, operation)) return false;
+        }
+        return operation.Charge(0, default);
+    }
+    // One reusable adapter per compilation, never one allocation per scalar/name.
+    private sealed class ComponentNameOperation(ISchemaOperation inner) : ISchemaOperation
+    {
+        internal XmlLocation Location;
+        public XmlResourceLimits Limits => inner.Limits;
+        public CancellationToken CancellationToken => inner.CancellationToken;
+        public bool IsComplete => inner.IsComplete;
+        public long? RemainingWork => inner.RemainingWork;
+        public bool Charge(long work, XmlLocation location) => inner.Charge(work, Location);
+        public bool ChargeComponents(int count, XmlLocation location) => inner.ChargeComponents(count, Location);
+        public bool AddDiagnostic(XmlDiagnostic diagnostic) => inner.AddDiagnostic(diagnostic);
+        public void Refuse(string code, string message, XmlLocation location) => inner.Refuse(code, message, Location);
     }
     private SchemaName Named(Source source, XmlNode node) => new(source.Target, NCName(Required(source, node, "name"), source, node));
     private SchemaName QName(Declaration owner, XmlNode node, string lexical, string? previousSpace = null)
     {
-        var source = owner.Source; lexical = Collapse(lexical); Tick(At(source, node), lexical.Length);
+        var source = owner.Source; lexical = ComponentCollapse(lexical, At(source, node));
         int colon = lexical.IndexOf(':'); string prefix = colon < 0 ? "" : lexical[..colon]; string local = colon < 0 ? lexical : lexical[(colon + 1)..];
         NCName(local, source, node); if (colon >= 0) NCName(prefix, source, node);
         var context = Context(source, node);
@@ -556,7 +623,10 @@ internal sealed class XsdCompilation
         {
             Tick(At(s, body));
             // Structures 3.4.2 clause 2.1 is syntactic, not general nullability.
-            bool emptySyntax = authoredParticle.IsDefault ||
+            // R-204 documents its gap with 3.7.2/3.8.2 when min=max=0.
+            // Fold only a validated top-level zero occurrence into the same mixed
+            // empty-sequence synthesis, consistent with the accepted 1.0 corpus.
+            bool emptySyntax = authoredParticle.IsDefault || particle!.MaxOccurs == BigInteger.Zero ||
                 particle!.Term is XsdGroupTerm { Particles.Count: 0 } &&
                 (authoredParticle.LocalName is "sequence" or "all" ||
                  authoredParticle.LocalName == "choice" && particle.MinOccurs == BigInteger.Zero);
@@ -570,8 +640,6 @@ internal sealed class XsdCompilation
                     particle = new(new XsdGroupTerm(XsdCompositor.Sequence, []), BigInteger.One, BigInteger.One, at);
                 }
             }
-            else if (particle!.MaxOccurs == BigInteger.Zero)
-                particle = null; // A validated 0..0 top-level particle maps to no component.
         }
         AttributeBody(owner, body, bindings, out wildcard);
         if (baseType is not null)
@@ -817,11 +885,14 @@ internal sealed class XsdCompilation
         ComposeWildcard(first, second, false, first.ProcessContents, at);
     private XsdWildcard Wildcard(Declaration owner, XmlNode node)
     {
-        var s = owner.Source; string lexical = Collapse(node.GetAttribute("namespace") ?? "##any");
+        var s = owner.Source; var at = At(s, node);
+        string lexical = ComponentCollapse(node.GetAttribute("namespace") ?? "##any", at);
         var namespaces = new List<string>(); bool negated = false;
         if (lexical == "##any") negated = true;
         else if (lexical == "##other") { negated = true; namespaces.Add(s.Target); if (s.Target.Length != 0) namespaces.Add(""); }
-        else
+        // namespaceList's unrestricted list alternative permits an empty set.
+        // Omitted namespace remains ##any; explicit empty never means ##local.
+        else if (lexical.Length != 0)
         {
             foreach (var range in lexical.AsSpan().Split(' '))
             {
