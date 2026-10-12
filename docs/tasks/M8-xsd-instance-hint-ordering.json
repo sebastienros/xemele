@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Validate XSD instance hint order without fetching resources",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated M8-xsd-instance-hint-ordering worker",
   "branch": "codex/m8-xsd-instance-hint-ordering",
   "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
-  "integration_revision": null,
+  "integration_revision": "dda9ff6d837aa773193d6185e0f6b4c736aa5021",
   "depends_on": [
     "M8-xsd-content-failure-assessment"
   ],
@@ -36,34 +36,150 @@
     {
       "id": "M8-xsd-instance-hint-ordering-A1",
       "description": "Freeze the explicit project interpretation in the owned decision before runtime edits: check global validation-root hint ordering independently of fetching, including skipped subtree names/hints without enabling skipped type/content/lexical assessment. Preserve that this skip corner is a project interpretation, not a W3C-adjudicated oracle. Reproduce and preserve the seven exact original failures/statuses/hashes from the coordinator triage.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "decision-freeze",
+        "original-baseline",
+        "integrated-combined-verification"
+      ]
     },
     {
       "id": "M8-xsd-instance-hint-ordering-A2",
       "description": "Add only SchemaHints.cs and minimal Evaluator.Enter hook. A per-validation ordinal set tracks earlier physical element/attribute namespace names. Check every hint namespace against preceding tags before recording the entire current tag; same-tag order is irrelevant. Empty namespace is real; namespace declarations, QName values and hint tokens/locations do not establish use. Report one source-located ordering error per offending hint attribute, preserve normal typed values/identity hooks, no fetching or document mutation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "independent-runtime-review",
+        "integrated-combined-verification"
+      ]
     },
     {
       "id": "M8-xsd-instance-hint-ordering-A3",
       "description": "Complete all seven unchanged original instances as invalid using explicitly compiled original first-hint schemas. Verify same-tag permutations, first-use and prior attribute-only use, unqualified attributes, repeated/multiple hints, non-use declarations/QName values, explicit skip interpretation and preserved skip behavior, lexical errors, recovery after a content failure and zero resolver calls. No invalid-pass credit from a refusal or missing prerequisite.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "draft-corrections",
+        "focused-correctness",
+        "integrated-combined-verification"
+      ]
     },
     {
       "id": "M8-xsd-instance-hint-ordering-A4",
-      "description": "Preserve charged borrowed scanning, ordinal comparisons, bounded per-run retention and no global state. Prove exact/one-short work/diagnostic limits, cancellation inside long tokens/comparisons with null caps, source locations, repeat/concurrent isolation and immutability. Pass affected evaluator/identity/facade checks, unchanged public/frozen APIs, normal and true XML-only consumers, planning validation and actual allocation evidence through existing infrastructure under a fresh root lease.",
-      "status": "pending",
-      "evidence": []
+      "description": "Preserve charged borrowed scanning, ordinal comparisons, bounded per-run retention and no global state. Prove exact/one-short work/diagnostic limits, cancellation inside long tokens/comparisons with null caps, source locations, repeat/concurrent isolation and immutability. Pass affected evaluator/identity/facade checks, unchanged public/frozen APIs, normal and true XML-only consumers, planning validation and actual allocation evidence through existing infrastructure with actual counters, meaningful controls, frozen source/workload identities and bounded process cleanup; no isolation, PARK, exclusivity or coordination lease is required.",
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "disabled-preparation",
+        "lifecycle-correction",
+        "root-actual-allocation",
+        "integrated-combined-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs: single SchemaHints Enter hook before current tag physical-name retention",
+    "src/Xemele/Validation/Xsd/Evaluation/SchemaHints.cs: per-run borrowed namespace table, charged/cancellable ordinal probes and XML-whitespace pairs",
+    "docs/decisions/M8/instance-hint-ordering.md: pre-runtime freeze of complete profile and explicit skip interpretation",
+    "tests/Xemele.Tests/M8-xsd-instance-hint-ordering/: 58 owned witnesses; seven pinned unchanged originals and51 independent neighbors",
+    "docs/reports/M8-xsd-instance-hint-ordering/check.py: actual1557 affected +42 resolver/public1430/all8 frozen/normal+XML-only checks",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-instance-hint-ordering/: six borrowed/seven owned prebuilt routes; counter-disabled preparation only",
+    "docs/reports/M8-xsd-instance-hint-ordering/allocations.md: root actual6borrowed0/sevenownedpositive allocation, controls/setup/coarse retention and cleanup evidence"
+  ],
+  "evidence": [
+    {
+      "id": "decision-freeze",
+      "kind": "review",
+      "revision": "dbde48ae2a7a792eac5ced2a0553f63dd9e82f92",
+      "command": "Owned decision committed before runtime edits; accepted coordinator brief/triage copied as original provenance",
+      "result": "passed",
+      "summary": "Explicit complete XSD1.0 project hint-order profile independent of acquisition; atomically precedingtags,physical element/attributes/empty namespace,global skip bookkeeping only. No independent W3C adjudication claimed for skip corner. Seven original INVALID/status/hash entries preserved.",
+      "artifact": "docs/decisions/M8/instance-hint-ordering.md"
+    },
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "354550f941cd966ecaf61eb7c1027e4888390817",
+      "command": "Pinned .NET10.0.11 Release assembly -namespace Xemele.Tests.M8XsdInstanceHintOrdering -parallelMode none -result-xml artifacts/M8-xsd-instance-hint-ordering/baseline.xml",
+      "result": "failed",
+      "summary": "Actual seven original desired INVALID assertions all fail at Assert.False(IsValid) after Assert.True(IsComplete):7tests/7fail/0errors/skipped/notrun. All original first schemas explicitly compiled, original source bytes/SHA256 checked; no compile refusal/missing prerequisite credit. Initial Release build0warnings/errors. Original prior corpus outcomes/unassessed adapter limitation preserved in provenance.",
+      "artifact": null
+    },
+    {
+      "id": "draft-corrections",
+      "kind": "check",
+      "revision": "7cb7900097490846259133cb0c7e3fdc10a75f7b",
+      "command": "Initial owned Release build, then pinned owned test execution artifacts/M8-xsd-instance-hint-ordering/owned-draft.xml; corrected build/owned-corrected.xml",
+      "result": "passed",
+      "summary": "Preserved actual draft build failure CS0411 Children.Single plus xUnit1051 missing token; corrected before fresh run. First repaired58:55pass/3work-boundaryfail due custom-hook allowance versus real identity session. Tests now use same hook on each run,runtime unchanged; corrected58pass/0fail/errors/skips/notrun.",
+      "artifact": "docs/reports/M8-xsd-instance-hint-ordering/README.md"
+    },
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "7cb7900097490846259133cb0c7e3fdc10a75f7b",
+      "command": "python3 docs/reports/M8-xsd-instance-hint-ordering/check.py",
+      "result": "passed",
+      "summary": "Actual1557distinct affected incl58own +42resolver=1599pass;0fail/error/skips/notrun. Seven unchanged originals completeINVALID with XSD.HintOrder and preserved source URI. Independent atomic same-tag,attribute-only/empty namespace,nonuse declarations/QNames/hint tokens,repeated/multiple hints,explicit skip with retained ignored semantic/lexical behavior,normal lexical,content recovery,typed hooks exactlyonce,source locations,zero hint acquisitions,exact/one-short work+diagnostic+document,cancellationlongtoken/comparisonnullcaps,repeat/concurrent+immutability. Public1430/all8frozen/emitted model139/facade7/compiler257/identity24/content9/evaluator2 match. FiveReleasebuilds0warnings/errors;normal+true source-linkedXML-only consumers;planning196/diff pass. NoWarmBorrowed/counters/heap/timing/BDN.",
+      "artifact": "docs/reports/M8-xsd-instance-hint-ordering/README.md"
+    },
+    {
+      "id": "disabled-preparation",
+      "kind": "check",
+      "revision": "6eeb573efd25fb7d97f4fc3bb9dbd28a8a9c8c8b",
+      "command": "python3 docs/reports/M8-xsd-instance-hint-ordering/prepare.py; measure.py --verify-only (initial sandboxpsdenied); elevated --verify-only and preflight.py",
+      "result": "passed",
+      "summary": "Offline probeReleasebuild0warnings/errors;13routes6borrowed/7owned,16warm64calls each plus16retainedresults;actualconsumed657312,counter/heapfieldsall0. Frozen466identitiesbefore/aftermatch,manifestbc0afa40a9dd4b1f60cd75a0cdeb95911f66aa3740602157c4b2a6fdb237b75e;child50523exit0/reaped/groupabsent/logclosed. Initialsandboxverifypsdeniedbeforeworkload;actualelevatedpassed. Supersededmanifest e5158246/source96bf only supervisorrevisionenvironment corrected before grant;no binary/runtime/testchanges or repeatedcorrectness. Bounds30total/20work/10cleanup. Noactualmeasurement,rootlaunchpending;noisolation/PARK/exclusivehostgate.",
+      "artifact": "docs/reports/M8-xsd-instance-hint-ordering/preparation-summary.json"
+    },
+    {
+      "id": "independent-runtime-review",
+      "kind": "review",
+      "revision": "7cb7900097490846259133cb0c7e3fdc10a75f7b",
+      "command": "Coordinator persisted /root/review_m8_xpath source PASS at b18ea9f99 docs/orchestration/review-M8-xsd-instance-hint-ordering.json; current allocation policy411907159",
+      "result": "passed",
+      "summary": "Independent source-only PASS: atomic prior-tags/physical element+attribute/empty namespace,one located error per hint,non-use declarations/QNames/tokens,no fetching,explicit skip ordering without semantic assessment or duplicate identity hooks,charged scans/comparisons/growth/retention and exactlimit/cancel/mutation/isolation/original7 coverage. Runtime unchanged through4c5eee54; reviewer reran no execution. Root verified466prepared identities+ps,no counters. Actual allocation pending independent source review/root execution; human policy requires no isolation/PARK/exclusivity/lease,retains controls/identities/actualcounter/boundedcleanup.",
+      "artifact": null
+    },
+    {
+      "id": "lifecycle-correction",
+      "kind": "check",
+      "revision": "417b46aec229ba40142a4d129c16d3eb3426e3bc",
+      "command": "python3 docs/reports/M8-xsd-instance-hint-ordering/measure.py --lifecycle-control; manifest identity-only refresh without rebuild",
+      "result": "passed",
+      "summary": "Preserved actual independent reviewer P2 at supervisor26076be0/source6eeb573ef: preflight/measurement ignored reason after cleanup exit overwrite. Corrected shared completed predicate requires reasoncompleted+exit0/reaped/groupabsent/logclosed; shared sequence stops first failed workload,cleanup success remains separate. Finite6stotal/1work/5cleanup actualcontrol child52932reasonTimeoutExpired+SIGTERMexit0/workloadstatus1;reaped/groupabsent/logclosed;1sequenceentry/no nextlaunch;nocounters. Manifested1a79edf6755f7067a7b081cb9d8633940ada223c676c23ac4d2d56db7ab6d5,466identitiesonlysupervisorchanged;465others including runtime/probe source/binarymatch,no rebuild/test/13routecontrolrepeat. Originalpre-correctioncontrolnotrun/claimed.",
+      "artifact": "docs/reports/M8-xsd-instance-hint-ordering/preparation-summary.json"
+    },
+    {
+      "id": "root-actual-allocation",
+      "kind": "check",
+      "revision": "417b46aec229ba40142a4d129c16d3eb3426e3bc",
+      "command": "Root sole launcher of frozen measure.py --granted ed1a79edf6755f7067a7b081cb9d8633940ada223c676c23ac4d2d56db7ab6d5 2026-10-12T14:22:46.135967+00:00 2026-10-12T14:23:16.135967+00:00; durablecleanup57dcf90cc before raw inspection",
+      "result": "passed",
+      "summary": "Actual nonisolated Arm64.NET10.0.11:6borrowed16warm/64calls each0bytes;7owned aggregate839168/1041408/1061376/895488/5557248/2037808/1137152positive. Coldfixture3120352;positive1024bytearray1048;wholeheap846744to852216delta5472with16results+fixturealive,coarseonly. Separate disabledcontrol13routesallcounter/heapfields0,same657312consumed. Emitted417b46aec is supervisorcorrection,accepted7cb runtime/6eebprobebinariesunchanged.466identitiesbeforeaftermatch;53665control/53667measurecompletedexit0/reaped/groupsabsent/logsclosed,supervisorterminal0,durablecleanup57dcf90ccbeforeinspection.30total/20work/10cleanup,no retries/rebuild/testrepeat;no isolation/PARK/exclusivity/leasegate. No firstcall/distribution/throughput/x64/AOT/async/fullcorpus/globalidleclaim.",
+      "artifact": "docs/reports/M8-xsd-instance-hint-ordering/allocations.md"
+    },
+    {
+      "id": "integrated-combined-verification",
+      "kind": "integration",
+      "revision": "dda9ff6d837aa773193d6185e0f6b4c736aa5021",
+      "command": "Combined candidate 3735a8e8163d7c59f48968caad25f3abba3dbfdf: hint check.py; separate four owned namespace checks and recursive normal/XML-only consumers; git diff --exit-code 3735a8e8163d7c59f48968caad25f3abba3dbfdf HEAD -- src tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "1804 distinct actual passing checks (1557+42+205); IDs unique within result, types disjoint across results;0fail/errors/skips/notrun.58hint/37recursive own included.7Releasebuilds0warnings/errors,public1430/all8frozen/emitted APIs,facade+recursive normal andtrueXML-only consumers. Final implemented metadata and main integration have exactly unchanged src/tests/samples from tested candidate; no redundant passing checks rerun. Actual corrected bounded nonisolated allocation evidence preserved in own reports and coordinator summaries; no fullcorpus/timing/globalidle claim.",
+      "artifact": "docs/orchestration/M8-hint-recursive-integration-precheck.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Planned ordered evaluator-only repair after root/independent source/main scope review. No-fetch suppresses acquisition, not hint-order checking. Exact accepted project interpretation and original pins in coordinator brief/triage. No implementation before verified content-failure prerequisite.",
-    "checks": [],
+    "summary": "Integrated and verified on main at dda9ff6d837aa773193d6185e0f6b4c736aa5021. Implemented evaluator-only atomic global hint ordering without fetching. Pre-runtime decision freezes explicit skipped-subtree ordering project interpretation;7unchanged originalINVALID outcomes and1599focusedchecks pass. Independent runtime sourcePASS;allocation supervisorP2 corrected with actual finitecontrol. Root actual nonisolated466identity allocationPASS:6borrowed0/sevenownedpositive,cold/positive/disabled/coarse-retention separate,cleancompletedchildren. All criteria pass on branch; root integration/verification pending. Worker relinquishes writes.",
+    "checks": [
+      "Baseline354550f94:seven original complete-valid outcomes fail expected INVALID assertions; unchanged bytes/statuses/hashes and prior adapter history retained.",
+      "Runtime/test7cb790009:58own corrected pass;combined1557affected+42resolver1599pass;public1430/all8frozen/emittedAPIs;normal+trueXML-only,fiveReleasebuild0warnings/errors,planning196/diffpass.",
+      "Prepared6eeb573ef:probe build0warnings/errors,466identity manifestbc0afa40,disabled13routes1056calls,countersheapall0;child50523exit0/reaped/groupabsent/logclosed. Sandboxpsdenial preserved; elevatedcleanup passes. Noactualcounter/timingmeasurement.",
+      "Lifecycle correction actualcontrol:child52932exit0afterTimeoutExpired/workloadstatus1,reaped/groupabsent/logclosed,no nextlaunch;6/1/5bounds,no counters. Manifest466 refreshed supervisoronly.",
+      "Root actual allocation afterdurablecleanup57dcf90cc:6borrowed0/sevenownedpositive16warm64calls;3120352cold/1048positive/5472coarsewholeheapdelta16results;disabledall0/same657312consumed.466identitiesmatch;53665/53667completedexit0/reaped/groupsabsent/logsclosed;no measurementrepeat/rebuild/testrepeat.",
+      "Coordinator separately reportscombinedcandidate3735a8e8163d7c59f48968caad25f3abba3dbfdf:1804distinctchecks/sevenbuild/publicall8/facade+recursive normaltrueXMLonlyPASS;not rerun by worker and not yet taskverified."
+    ],
     "remaining": [],
     "requests": []
   }
