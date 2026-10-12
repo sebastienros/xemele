@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Compose and verify the XSD datatype value library",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes",
   "base_revision": "878fd5572c565eb104c73c74bb1c8d4e2a04e317",
-  "integration_revision": null,
+  "integration_revision": "c6da4a5425cbdcd7104330d351f62b59c72fdf2b",
   "depends_on": [
     "M8-model",
     "M8-datatypes-core",
@@ -43,7 +43,8 @@
         "composition-correctness-2",
         "composition-review-2",
         "composition-measurement-2",
-        "composition-measurement-review"
+        "composition-measurement-review",
+        "integrated-checks"
       ]
     },
     {
@@ -54,7 +55,8 @@
         "composition-correctness-2",
         "composition-review-2",
         "composition-measurement-2",
-        "composition-measurement-review"
+        "composition-measurement-review",
+        "integrated-checks"
       ]
     },
     {
@@ -65,7 +67,8 @@
         "composition-correctness-2",
         "composition-review-2",
         "composition-measurement-2",
-        "composition-measurement-review"
+        "composition-measurement-review",
+        "integrated-checks"
       ]
     },
     {
@@ -76,7 +79,8 @@
         "composition-correctness-2",
         "composition-review-2",
         "composition-measurement-2",
-        "composition-measurement-review"
+        "composition-measurement-review",
+        "integrated-checks"
       ]
     }
   ],
@@ -168,21 +172,27 @@
       "result": "passed",
       "summary": "Root independently inspected successful released18route distributions/all6GCrows/lifecycle and confirmed512warmzeros, owned/cold/retained samples, exact residuals and completecleanup; no further measurement authorized. Raw cleanup authorized after concise evidence is committed.",
       "artifact": "docs/reports/M8-datatypes/measurement-summary.json"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "c6da4a5425cbdcd7104330d351f62b59c72fdf2b",
+      "command": "python3 docs/reports/M8-datatypes/checks.py",
+      "result": "passed",
+      "summary": "354 actual integrated tests=77 composition+277 verified child/model checks, zero failures/errors/skips/not-run; public1393/frozen316; normal and true XML-only consumers; Release0warnings/errors;177task validation. Final worker evidence merge changed only two reports and own task JSON; src/tests/benchmarks/samples/build/API inputs equal tested revision. Measurement source fb8fc3b5 accepted separately; no rerun claimed.",
+      "artifact": "docs/reports/M8-datatypes/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Complete45-built-in XSD1.0 library/immutable registry composed from verified families; explicit RNG namespaces, nonempty NMTOKENS/IDREFS/ENTITIES, all frozen value hooks and usable schema definitions. Accepted sourcefb8fc3b5;354correctness/API/consumers/IL pass. First allocation failure honestly preserved; authorized indexed core hash correction gives512warmzeros and complete6case measurement. Child source/evidence preserved except exact later-owner core loop; no shared/public API changes.",
+    "summary": "Verified complete45-built-in datatype composition with accepted indexed list-hash correction, actual354 integration checks and eight warm allocation targets. Facets may start from verified main.",
     "checks": [
       "python3 docs/reports/M8-datatypes/checks.py atfb8fc3b5:354passed=77composition+277families/model,0fail/errors/skips/notrun; public1393/frozen316; normal+genuineXML-only consumer; cache-only Release0warnings/errors; planning176/diff passed.",
       "Actual IL --assert-indexed and elevated counters-disabled18route/3semantic/6ShortRunNoEmit preflight passed.",
       "Root-only granted measurement-2 passed456identities before/after,18probe routes/6BDNcases, completecleanup; RELEASE before rawinspection; exact allocations/GCresiduals/cold/approxretention/limitations recorded.",
       "Root independently reviewed corrected source and successful raw results; no remaining source/measurement blocker."
     ],
-    "remaining": [
-      "Coordinator integrated verification and verified status; no worker merge to main.",
-      "Later owning validator/cumulative gate and release tasks provide end-to-end/cross-architecture/repeatability confirmation; current timing is informational."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
