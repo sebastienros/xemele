@@ -1,11 +1,11 @@
 # Missing-components harness source packet
 
-SOURCE READY / HOLD. This packet authorizes no execution. Every harness import,
+SOURCE READY / HOLD. This refreshed packet authorizes no execution. Its harness import,
 control, restore, build, test, API emission, consumer, preparation, probe and
 allocation counter remains UNRUN. Root owns review/release and task state.
 
-Runtime binding: `013f8c3d81f6a62f203f6a95d34d764b221b9db8`, source manifest
-`6e2467ec205aa56cfe5271eb55b0fe223bece43b7d7955080174823e2ed4af12`.
+Runtime binding: `9a19d681f8c7e226fa3e674f22ce3da03c588ba0`, source manifest
+`aa2d90bf0f16ec8a6b10ad22624d9fc8a016c1a08af9c77c47e633496a5eccc9`.
 The runtime includes exact G03a literal substitution leaves, G04u member
 whitespace/enclosing patterns, and G03c provisional dependency proof corrections.
 Runtime bytes remain held for concurrent review.
@@ -89,3 +89,15 @@ controls09/10; count remains15 and all control execution remains UNRUN.
 Runtime013f source-5 correction binds actual Choice-to-Choice omitted proof
 transitions, including synthesized and expanded derived choices. Updated fixed
 selection is687 methods/2192 cases; all execution remains UNRUN.
+
+Coordinator-reported actual prior700500 outcomes:15 positive controls PASS,
+counters off, whole family absent and313raw deleted. First correctness restore
+passed, tests build failed CS0534 Support.Resolver; tests/API/counters did not
+run. Failed root-check-e3fcc73c8a2c4ab2b2e99b897bd8ab3f terminal with3groups
+absent and66raw deleted. Refreshed runtime adds only the required synchronous
+Resolve delegation to the existing structured ResolveResult.Resource path.
+All current-packet executable checks remain UNRUN, and prior results earn no
+current-source passing credit. Coordinator-owned harness-review.json remains
+untouched; its old source stamp is revoked by source mismatch. Selection remains
+687/2192 with unchanged cardinality/source-selection bytes. Fresh root review
+and controls/check are required. Worker performed static/planning checks only.
