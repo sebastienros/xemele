@@ -1,0 +1,48 @@
+{
+  "task": "M8-xsd-corpus",
+  "source_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "decision": "Preserve original conditional metadata; independently derive Unicode16 outcomes for seven applicable instances and one supplemental instance. No global Unicode6 support claim.",
+  "reviewer": "/root/review_m8_contract",
+  "review": "Source-only accepted; independently checked original patterns/documents and pinned category data. No runtime result or conformance pass inferred.",
+  "sources": [
+    {
+      "url": "https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#charcter-classes",
+      "basis": "F.1.1 permits later Unicode category data and defines d/D/w category semantics."
+    },
+    {
+      "url": "https://www.w3.org/Bugs/Public/show_bug.cgi?id=13607",
+      "basis": "Records the eight tests whose outcomes depend on Unicode categories."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/dotnet/runtime/v10.0.11/src/libraries/System.Private.CoreLib/Tools/GenUnicodeProp/GenUnicodeProp.csproj",
+      "sha256": "1d3057bba07cc5defe6173d4f0cb8a9c7b309c8380f29f41f07f169017ef9afd",
+      "cache": "/private/tmp/xemele-dotnet10-unicode-project.xml",
+      "basis": "UnicodeUcdVersion16.0; regex blocks independently use17 and do not identify category version."
+    },
+    {
+      "url": "https://www.unicode.org/Public/16.0.0/ucd/UnicodeData.txt",
+      "sha256": "ff58e5823bd095166564a006e47d111130813dcf8bf234ef79fa51a870edb48f",
+      "cache": "/private/tmp/xemele-unicode-16.0.0-data.txt",
+      "categories": {
+        "1369": "No",
+        "1371": "No",
+        "0BE6": "Nd",
+        "023F": "Ll"
+      }
+    }
+  ],
+  "applicable_expected": {
+    "reS38.v": "invalid",
+    "reS51.i": "valid",
+    "reT17.i": "valid",
+    "reT38.i": "valid",
+    "reT51.v": "invalid",
+    "reU6.i": "valid",
+    "reZ004v.v": "invalid"
+  },
+  "supplemental_expected": {
+    "reS17.v": "invalid"
+  },
+  "accounting": "reS17.v original instance-level Unicode4 gate excludes only that original instance for actual configuration; schema stays applicable. Run its original bytes as additional Unicode16 regression. Other seven have no such gate and remain applicable, with explicit independently derived expectation alongside original conditionals.",
+  "pending": "Owning worker must implement reproducible per-ID adjudication and execute all eight; this decision is not test evidence."
+}
