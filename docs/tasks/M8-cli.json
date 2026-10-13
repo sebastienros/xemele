@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Schema CLI and cross-validator integration",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / authorized isolated schema CLI worker",
   "branch": "codex/m8-cli",
   "base_revision": "c203781f9c9935b2fefbdd78e932abdf00d8b949",
-  "integration_revision": null,
+  "integration_revision": "247203d78c7f4ff6d480ed8c24cc5a548d86f103",
   "depends_on": [
     "M8-rng-corpus",
     "M8-xsd-corpus",
@@ -45,7 +45,9 @@
       "evidence": [
         "branch-preparation",
         "branch-checks",
-        "integrated-source-review"
+        "integrated-source-review",
+        "primary-preparation",
+        "primary-checks"
       ]
     },
     {
@@ -55,7 +57,9 @@
       "evidence": [
         "branch-preparation",
         "branch-checks",
-        "integrated-source-review"
+        "integrated-source-review",
+        "primary-preparation",
+        "primary-checks"
       ]
     },
     {
@@ -65,7 +69,9 @@
       "evidence": [
         "branch-preparation",
         "branch-checks",
-        "integrated-source-review"
+        "integrated-source-review",
+        "primary-preparation",
+        "primary-checks"
       ]
     }
   ],
@@ -102,18 +108,37 @@
       "result": "passed",
       "summary": "Exact worker code/fixture/sample/report equivalence; final worker delta only concise handoff; runtime/public API unchanged. Primary executable checks remain unrun.",
       "artifact": "docs/orchestration/M8-cli-integration-source-release.json"
+    },
+    {
+      "id": "primary-preparation",
+      "kind": "integration",
+      "revision": "247203d78c7f4ff6d480ed8c24cc5a548d86f103",
+      "command": "Root finite primary preparation parent: eight offline restore/build commands",
+      "result": "passed",
+      "summary": "All eight commands passed, zero build warnings/errors, exact source/runtime/environment and six output directory hashes; externally observed exit0 with all owned families terminal before root certificate.",
+      "artifact": "docs/orchestration/M8-cli-primary-preparation.json"
+    },
+    {
+      "id": "primary-checks",
+      "kind": "integration",
+      "revision": "247203d78c7f4ff6d480ed8c24cc5a548d86f103",
+      "command": "Root exact certificate-bound primary check parent: seven finite commands",
+      "result": "passed",
+      "summary": "Normal1156/XML-only1157 assertions; 288 fuzz cases per composition, seed81677; ten guard controls; 38 real CLI controls including prior XML/HTML and observable read-only stdout refusal; complete public API/task201/diff checks. Inputs/binaries/certificate matched, no deadline/lifecycle failure; pinned EPIPE suppression has zero delivery credit.",
+      "artifact": "docs/orchestration/M8-cli-primary-checks.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented branch and integrated source; actual primary preparation/checks pending before verified.",
+    "summary": "Integrated and verified at 247203d7. All actual primary preparation and seven check commands pass; library public API and earlier validators unchanged. Three original branch failures remain recorded; no EPIPE delivery-success claim.",
     "checks": [
-      "All seven branch commands passed at ae20a73c; original preparation/check failures preserved."
+      "Normal1156/XML-only1157 assertions; 288 deterministic fuzz cases each",
+      "Ten phase guards; 38 real CLI controls preserving earlier XML/HTML",
+      "Full public API, 201 task validation and whitespace passed"
     ],
     "remaining": [
-      "Primary preparation and certificate-bound checks",
-      "Terminal transient cleanup and worker archive",
-      "M8-gate"
+      "Terminal CLI transient cleanup and worker archive",
+      "M8-gate cumulative/API/corpus/package/trim/NativeAOT verification"
     ],
     "requests": []
   }
