@@ -1,0 +1,62 @@
+using System.Text;
+using Xemele;
+using Xemele.Css;
+using Xemele.IntegrationSamples;
+using System.Runtime.InteropServices;
+using Xemele.Html;
+
+Console.WriteLine(await ToolkitScenario.RunAsync(args.Single()));
+Console.Error.WriteLine($"Framework={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+var html = Html5Parser.Parse("<!doctype html><body><input disabled><template><?marker ?><p>é &amp; 尾</template><script>if(a<b)c()</script>");
+var html5 = new HtmlSaveOptions { Mode = HtmlSerializationMode.Html5 };
+var legacy = new HtmlSaveOptions { Mode = HtmlSerializationMode.Legacy };
+const string expected = "<!DOCTYPE html><html><head></head><body><input disabled=\"\"><template><?marker ?><p>é &amp; 尾</p></template><script>if(a<b)c()</script></body></html>";
+if (HtmlSerializer.Serialize(html, html5) != expected) throw new Exception("HTML5 document serialization.");
+if (HtmlSerializer.Serialize(html.RootElement.Children[1].FirstChild!, html5) != "<input disabled=\"\">") throw new Exception("Outer node serialization.");
+string native = HtmlSerializer.Serialize(html, legacy);
+if (!native.StartsWith("<!DOCTYPE html>\n", StringComparison.Ordinal) || !native.Contains("<input disabled>", StringComparison.Ordinal) || !native.Contains("<?marker >", StringComparison.Ordinal) || !native.EndsWith("\n", StringComparison.Ordinal)) throw new Exception("Legacy explicit mode.");
+using var stream = new MemoryStream(); HtmlSerializer.Save(html, stream, html5);
+if (!stream.CanWrite || !stream.ToArray().AsSpan().SequenceEqual(Encoding.UTF8.GetBytes(expected))) throw new Exception("Caller-owned UTF8 stream.");
+var fragment = Html5Parser.ParseFragment("<tr><td>&lt;&amp;", new(new HtmlDocument().CreateElement("tbody")));
+if (HtmlSerializer.Serialize(fragment) != "<tr><td>&lt;&amp;</td></tr>") throw new Exception("Detached fragment.");
+var xml = XmlDocument.Parse("<x>&lt;&amp;</x>");
+if (XmlSerializer.Serialize(xml, options: new() { OmitXmlDeclaration = true }) != "<x>&lt;&amp;</x>") throw new Exception("Earlier XML.");
+Console.WriteLine(expected); Console.WriteLine("All three APIs, both modes, outer node/template/fragment, UTF8 caller stream and earlier XML passed.");
+
+var legacyDocument = HtmlParser.Parse("<p class=selected>first<p>second");
+var selected = CssSelector.Compile("p.selected:first-child");
+if (selected.Select(legacyDocument.DocumentNode).Count != 1) throw new Exception("Legacy CSS composition.");
+if (CssSelector.Compile("body > input[disabled]").Select(html.DocumentNode).Count != 1) throw new Exception("HTML5 CSS composition.");
+if (CssSelector.Compile("x").Select(xml.DocumentNode).Count != 1) throw new Exception("XML CSS composition.");
+Console.WriteLine("CSS passed on XML, legacy and HTML5 graphs.");
+
+// Independent schema/profile expectations, shared by managed/trim/NativeAOT external consumers.
+const string rngText = "<element xmlns='http://relaxng.org/ns/structure/1.0' name='r'><element name='n'><data datatypeLibrary='http://www.w3.org/2001/XMLSchema-datatypes' type='integer'/></element></element>";
+const string xsdText = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:element name='n' type='xs:integer'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+const string schText = "<schema xmlns='http://purl.oclc.org/dsdl/schematron'><pattern id='p'><rule context='r'><assert id='positive' test='number(n)&gt;0'>positive</assert></rule></pattern></schema>";
+var rng = Xemele.Validation.RelaxNgSchema.Compile(rngText);
+var xsd = Xemele.Validation.XmlSchema.Compile(xsdText);
+var sch = Xemele.Validation.SchematronSchema.Compile(schText);
+foreach (var instance in new[] { "<r><n>7</n></r>", "<r><n>bad</n></r>" })
+{
+    bool valid = instance.Contains(">7<", StringComparison.Ordinal);
+    foreach (var validator in new Func<string, Xemele.Validation.ValidationResult>[] { s => rng.Validate(s), s => xsd.Validate(s) })
+    {
+        var result = validator(instance);
+        if (!result.IsComplete || result.IsValid != valid) throw new Exception("Independent schema valid/invalid expectation.");
+    }
+    var resultSch = sch.Validate(instance);
+    if (!resultSch.Validation.IsComplete || resultSch.Validation.IsValid != valid || resultSch.FiredRules.Count != 1 || resultSch.Findings.Count != (valid ? 0 : 1)) throw new Exception("Schematron result expectation.");
+    string svrl = Xemele.Validation.SchematronReport.SerializeSvrl(resultSch);
+    var report = System.Xml.Linq.XElement.Parse(svrl);
+    System.Xml.Linq.XNamespace ns = "http://purl.oclc.org/dsdl/svrl";
+    if (report.Name != ns+"schematron-output" || report.Elements(ns+"active-pattern").Count() != 1 || report.Elements(ns+"fired-rule").Count() != 1 || report.Elements(ns+"failed-assert").Count() != (valid ? 0 : 1)) throw new Exception("Independent SVRL structure.");
+    if (!valid)
+    {
+        var finding = report.Element(ns+"failed-assert")!;
+        if ((string?)finding.Attribute("id") != "positive" || (string?)finding.Attribute("test") != "number(n)>0" || finding.Element(ns+"text")?.Value != "positive" || (string?)finding.Attribute("location") != "/*[local-name()='r' and namespace-uri()=''][1]") throw new Exception("Independent SVRL values.");
+    }
+    using var svrlBytes = new MemoryStream(); Xemele.Validation.SchematronReport.SaveSvrl(resultSch, svrlBytes);
+    if (!svrlBytes.CanWrite || !svrlBytes.ToArray().AsSpan().SequenceEqual(Encoding.UTF8.GetBytes(svrl))) throw new Exception("SVRL UTF8 ownership.");
+}
+Console.WriteLine("RNG/XSD/Schematron valid/invalid and independent SVRL passed.");

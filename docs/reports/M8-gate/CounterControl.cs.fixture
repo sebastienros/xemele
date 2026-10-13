@@ -1,0 +1,14 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele;
+if (args is not [var mode] || mode is not ("--positive" or "--disabled")) throw new ArgumentException("exact control mode");
+bool enabled = mode == "--positive";
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11" || RuntimeInformation.ProcessArchitecture != Architecture.Arm64) throw new Exception("runtime identity");
+if (Environment.GetEnvironmentVariable("DOTNET_TieredCompilation") != "0" || Environment.GetEnvironmentVariable("DOTNET_TieredPGO") != "0" || Environment.GetEnvironmentVariable("DOTNET_ReadyToRun") != "0") throw new Exception("counter environment");
+long start = enabled ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var escaped = new byte[4096];
+long bytes = enabled ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+if (enabled ? bytes < 4096 : bytes != 0) throw new Exception("positive/disabled counter control");
+GC.KeepAlive(escaped);
+Console.WriteLine(JsonSerializer.Serialize(new { mode, countersEnabled=enabled, allocatedBytes=bytes, escapedLength=escaped.Length, runtime=RuntimeInformation.FrameworkDescription, architecture=RuntimeInformation.ProcessArchitecture.ToString(), productSha256=Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(typeof(XmlDocument).Assembly.Location))) }));
