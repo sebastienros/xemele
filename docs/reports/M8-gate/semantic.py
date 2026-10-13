@@ -1,6 +1,7 @@
 """Finite semantic checks and concise output inspection; never builds or restores."""
 import sys
 sys.dont_write_bytecode=True
+from collections import Counter
 import asyncio,hashlib,importlib.util,json,os,subprocess,time,xml.etree.ElementTree as ET
 from pathlib import Path
 from recipes import ROOT,HERE,NET,PACKAGE_WORK as WORK,dll
@@ -102,7 +103,9 @@ def inspect_suite(path,baseline):
  group=path.stem;old=next(r for r in baseline['cumulative']['groups'] if r['group']==group)
  identities=[t.get('id') for t in tests];names=[t.get('name') for t in tests]
  assert all(identities) and len(set(identities))==len(tests), 'Missing/duplicate runtime identities'
- assert all(names) and len(set(names))==len(tests), 'Missing/duplicate display identities'
+ assert all(names), 'Missing display identities'
+ # xUnit truncates long theory arguments; preserve every row and use its unique runtime ID.
+ display_collisions={name:count for name,count in Counter(names).items() if count>1}
  inherited_types=json.loads((HERE/'m7-types.json').read_text())[group]
  earlier=sorted(t.get('name') for t in tests if t.get('type') in inherited_types)
  transition=None
@@ -116,7 +119,7 @@ def inspect_suite(path,baseline):
   earlier=sorted(transition['baseline'] if name==transition['observed'] else name for name in earlier)
  inherited_sha=hashlib.sha256('\n'.join(earlier).encode()).hexdigest()
  result={'group':group,**counts,'uniqueIds':len(identities),'identityIdsSha256':digest(sorted(identities)),
-         'displayNamesSha256':hashlib.sha256('\n'.join(sorted(names)).encode()).hexdigest(),'inheritedCount':len(earlier),
+         'displayNamesSha256':hashlib.sha256('\n'.join(sorted(names)).encode()).hexdigest(),'displayNameCollisions':display_collisions,'inheritedCount':len(earlier),
          'inheritedSha256':inherited_sha,'resourceKindTransition':transition,'nonpasses':bad,
          'xmlSha256':sha(path),'warmBorrowedCases':sum('WarmBorrowed' in name for name in names),
          'newTypes':sorted(set(t.get('type') for t in tests)-set(inherited_types))}
