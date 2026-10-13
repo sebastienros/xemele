@@ -1,0 +1,134 @@
+{
+  "result": "passed",
+  "requiredOS": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "actualRIDs": [
+    "linux-x64",
+    "osx-arm64",
+    "win-x64"
+  ],
+  "SDK": "10.0.400",
+  "runtime": "10.0.11",
+  "cells": [
+    {
+      "rid": "linux-x64",
+      "revision": "a19b7ea866fca5472460365f717875308516f42b",
+      "run": 38457602484,
+      "summary": "docs/reports/M9-distribution/hosted-native-path/release-evidence-linux-x64.json",
+      "commands": 21,
+      "unitTests": 10754,
+      "consumers": {
+        "managed": true,
+        "freshCache": true,
+        "packageReferenceOnly": true,
+        "trim": true,
+        "aot": true,
+        "toolInstall": true
+      },
+      "packages": [
+        {
+          "name": "Xemele.0.9.0-rc.1.nupkg",
+          "sha256": "047c3e83f917d41d42c7368dfd22e2fd847b9325ec83668c03b5afa3583015e1",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        },
+        {
+          "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+          "sha256": "d545f870d5c14570ab43e638b4d39edad1931c46c95ecd26bf8fceaca623b62c",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        }
+      ]
+    },
+    {
+      "rid": "osx-arm64",
+      "revision": "a19b7ea866fca5472460365f717875308516f42b",
+      "run": 38457602484,
+      "summary": "docs/reports/M9-distribution/hosted-native-path/release-evidence-osx-arm64.json",
+      "commands": 21,
+      "unitTests": 10754,
+      "consumers": {
+        "managed": true,
+        "freshCache": true,
+        "packageReferenceOnly": true,
+        "trim": true,
+        "aot": true,
+        "toolInstall": true
+      },
+      "packages": [
+        {
+          "name": "Xemele.0.9.0-rc.1.nupkg",
+          "sha256": "047c3e83f917d41d42c7368dfd22e2fd847b9325ec83668c03b5afa3583015e1",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        },
+        {
+          "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+          "sha256": "d545f870d5c14570ab43e638b4d39edad1931c46c95ecd26bf8fceaca623b62c",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        }
+      ]
+    },
+    {
+      "rid": "win-x64",
+      "revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
+      "run": 38460364837,
+      "summary": "docs/reports/M9-distribution/hosted-windows-final/release-evidence-win-x64.json",
+      "commands": 23,
+      "unitTests": 10754,
+      "consumers": {
+        "managed": true,
+        "freshCache": true,
+        "packageReferenceOnly": true,
+        "trim": true,
+        "aot": true,
+        "toolInstall": true
+      },
+      "packages": [
+        {
+          "name": "Xemele.0.9.0-rc.1.nupkg",
+          "sha256": "053a5460b4b6817c735e5fdb86b3ddc20384297e32f2da515441a44618a459a1",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        },
+        {
+          "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+          "sha256": "504fe645dab27fc92c2c70215c04fffd063ec7213d3474ede5a0974ba6d94e29",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        }
+      ]
+    }
+  ],
+  "sourceBinding": {
+    "runtimeUnitFixtureConsumerPackageBuildPathsUnchanged": [
+      "src/",
+      "tests/Xemele.Tests/",
+      "tests/fixtures/",
+      "tests/PackageSmoke/Release/",
+      "tools/Packaging/Release.targets",
+      "tools/Packaging/README.md",
+      "tools/Packaging/LICENSE",
+      "tools/Packaging/THIRD-PARTY-NOTICES.md",
+      "tools/Packaging/LinkerHost/",
+      "Directory.Build.props",
+      "Directory.Build.targets",
+      "Directory.Packages.props",
+      "global.json"
+    ],
+    "linuxMacRevision": "a19b7ea866fca5472460365f717875308516f42b",
+    "windowsRevision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
+    "currentMainSourceEquivalentToWindows": "8ce7ab8b069e01185aad2784100f6197bb804d8a",
+    "changesBetweenHostedRevisions": "Windows-only explicit NuGet configuration and workflow narrowed to Windows; Unix consumer argv unchanged except removing an identical redundant assignment. Commit/Source Link metadata intentionally identifies each actual run."
+  },
+  "limits": [
+    "Clean package byte identity is established within each OS; Linux/macOS package hashes match each other; Windows archive hashes are separate.",
+    "Embedded exact-revision Source Link verified; remote source fetch not tested.",
+    "Shared runner results provide distribution/correctness evidence, no dedicated performance timing or fuzz campaign credit.",
+    "No package publication or remote main/tag update."
+  ]
+}
