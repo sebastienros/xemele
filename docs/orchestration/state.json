@@ -1,9 +1,9 @@
 {
   "objective": "Execute M8 only through integrated verified M8-gate, terminal cleanup and sole-writer transfer back to main.",
-  "coordinator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+  "coordinator_chat_id": "01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "previous_coordinator_chat_id": "01a1350e-adc0-7b21-9368-3f67534dec0c",
-  "coordinator_write_status": "M8 complete. Completion chat relinquishes all writes/new execution at terminal ACTIVATE MAIN; main sole writer thereafter.",
+  "coordinator_write_status": "M9 sole primary/main/state writes transferred at containing commit and explicit ACTIVATE; main read-only until terminal M9 handoff.",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
@@ -12,7 +12,9 @@
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Main resumes orchestration from verified M8 checkpoint and alone starts M9."
+    "M9-contracts: freeze actual mandatory release criteria and baseline protocol; minimal direct completion plan.",
+    "Execute M9 to verified gate using valid existing evidence and minimal owning fixes, no speculative task/framework expansion.",
+    "M9 returns terminal handoff to main; no further milestone or publication."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -36,16 +38,15 @@
   "successor_creation_owner": "Main orchestrator 01a12849-d2be-7292-8cd9-27c1c14b5a3d only",
   "handoff_destination_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "milestone_handoff": {
-    "from_milestone": "M8",
-    "to_milestone": "main orchestration",
-    "from_chat_id": "01a1350e-adc0-7b21-9368-3f67534dec0c",
-    "thread_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "from_milestone": "main orchestration",
+    "to_milestone": "M9",
+    "from_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "thread_id": "01a13526-d4ff-7dc0-86d1-505ef7f29975",
     "host_id": "local",
-    "status": "Integrated verified M8 complete; terminal ACTIVATE MAIN follows final cleanup commit",
+    "status": "Created read-only; explicit ACTIVATE follows containing commit",
     "verified_gate_revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1",
-    "setup_ready": true,
-    "activation_sent": false,
-    "cleanup_record": "docs/orchestration/cleanup-M8-gate.json"
+    "M8_terminal_transfer_revision": "6a91706a1c03f0535ea11f02df5581cf33b642e9",
+    "activation_sent": false
   },
   "benchmark_policy": "Allocation-only: no isolation, PARK, ACK or exclusivity workflow per direct human instruction. Keep preparation identities, correctness, controls, actual counters and bounded cleanup. Genuine throughput/timing requirements unchanged; foreign communication/synchronization prohibited.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
@@ -1814,5 +1815,28 @@
     "integration_report": "docs/reports/M8-gate/integration.json",
     "cleanup_record": "docs/orchestration/cleanup-M8-gate.json",
     "verified_metadata_revision": "76b9efd851fd6db44e004e7c5b6f77a978f13e7f"
+  },
+  "coordinator_handoff_history": [
+    {
+      "from_milestone": "M8",
+      "to_milestone": "main orchestration",
+      "from_chat_id": "01a1350e-adc0-7b21-9368-3f67534dec0c",
+      "thread_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+      "host_id": "local",
+      "status": "Main acknowledged verified terminal M8 handoff and sole write custody",
+      "verified_gate_revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1",
+      "setup_ready": true,
+      "activation_sent": true,
+      "cleanup_record": "docs/orchestration/cleanup-M8-gate.json",
+      "transfer_revision": "6a91706a1c03f0535ea11f02df5581cf33b642e9"
+    }
+  ],
+  "execution_policy": {
+    "communication": "Xemele only; coordination authorized; never synchronize other projects",
+    "allocation": "No isolation/PARK/exclusiveusage/grant needed; actual controls/provenance/finitecleanup",
+    "implementation_model": "gpt-6.1-sol",
+    "reasoning": "high",
+    "delegation": "Prefer direct serial work; at most3isolated implementation workers when materially useful",
+    "scope": "Existing required release gates only; preserve honest failures/155approvedzero-creditdispositions; no speculative expansion"
   }
 }
