@@ -1,0 +1,69 @@
+{
+  "baselineRevision": "2d38e67fc809341fef1cdd2f9aeb9f6ef13e1059",
+  "candidateRevision": "2842616676b884998fad5e2a550386f375f4efbc",
+  "result": "failed",
+  "controlledTimingCredit": false,
+  "commands": [
+    {
+      "label": "baseline",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 63744,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "6d7f07084b6fd0da783fa9c4dc5193e25aff9d6b97bd9205dbbefc506cbda0b5"
+    },
+    {
+      "label": "baseline",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 63759,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "c459c0b2770db22041e449ae0cd1079e76c8969224944cb68eee42bc476da585",
+      "failureTail": "  Xemele -> /private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/src/Xemele/bin/Release/net10.0/Xemele.dll\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-compile/Program.cs(6,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-report/Program.cs(7,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-rule-scope/Program.cs(6,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-validate/Program.cs(7,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Program.cs(3,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n\nBuild FAILED.\n\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-compile/Program.cs(6,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-report/Program.cs(7,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-rule-scope/Program.cs(6,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/M8-sch-validate/Program.cs(7,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Program.cs(3,1): error CS8802: Only one compilation unit can have top-level statements. [/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations/baseline/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n    0 Warning(s)\n    5 Error(s)\n\nTime Elapsed 00:00:07.05\n"
+    }
+  ],
+  "summaries": {},
+  "baselineArchiveSha256": "96622566c4fd0c5e2aeaa08348c65f6d6ecd7f72995bddf12f6fe3e808ab6f89",
+  "benchmarkSha256": "da1ab69c117d5b895ae71ba787c7e3776a58333b5cb516aca300463210790b15",
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0",
+    "DOTNET_gcServer": "0",
+    "DOTNET_GCConcurrent": "0"
+  }
+}
