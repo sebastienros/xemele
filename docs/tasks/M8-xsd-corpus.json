@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "XSD 1.0 conformance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / authorized isolated XSD corpus worker",
   "branch": "codex/m8-xsd-corpus",
   "base_revision": "d63a37316b4a6f8c780df10c6a6911509775a92c",
@@ -37,32 +37,83 @@
     {
       "id": "M8-xsd-corpus-A1",
       "description": "Import W3C XSD suite metadata and all applicable 1.0 schema/instance cases plus regressions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "fresh-preparation"
+      ]
     },
     {
       "id": "M8-xsd-corpus-A2",
       "description": "All applicable declared XSD 1.0 cases pass, apart from exact human-approved documented gate dispositions: time_maxInclusive007_119; additional14 original standards disagreements and9dependent unassessed cases in docs/orchestration/M8-xsd-standards-policy-pending.json;9nonpassing input-boundary instances and3indeterminate schemas in docs/orchestration/M8-xsd-input-boundaries-policy-pending.json. Preserve each original outcome and never count these dispositions as passes. XSD1.1 exclusions, source revisions and separate standards-derived profiles are explicit; derived profiles do not turn original nonpasses into passes. Any other unresolved applicable original remains blocking unless separately adjudicated and authorized. Additionally human-approved exact58 documented dispositions in docs/orchestration/M8-xsd-additional-profile-policy-pending.json and exact53 dispositions (42original false/11null) in docs/orchestration/M8-xsd-residual-policy-pending.json are nonblocking, never passes. Compiler/import/annotation defects, missing-component support and optional-resource mapping work remain outside these dispositions; all other unresolved applicable originals remain blocking. Additionally human-approved exact four original missing-instance nonassessment limitations in docs/orchestration/M8-xsd-missing-nonassessment-policy-pending.json (approval call_2d4e05aaef41499293e682fe147c9db5) and exact four missing-explicit-type schema-oracle disagreements in docs/orchestration/M8-xsd-missing-schema-oracles-policy-pending.json (approval call_d75eafbe87064aa3a95b17175cf85308) are nonblocking, retaining all eight original false results and zero original/gate pass credit. Total155 exact dispositions retain144 original false and11null; annotZ002 work refusal is not waived and requires repair.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "fresh-full-campaign",
+        "fresh-separate-supplements"
+      ]
     },
     {
       "id": "M8-xsd-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "fresh-preparation",
+        "branch-source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/xsd/: exact pinned W3C original metadata/resources/applicability and155 human-approved zero-credit dispositions",
+    "tests/Xemele.Conformance.Tests/Xsd/: runner controls, exact optional-resource mappings and separate five supplemental profiles",
+    "tests/Xemele.Differential.Tests/Xsd/: pinned BCL reference-engine exception and resource-policy behavior",
+    "docs/reports/M8-xsd-corpus/: finite supervised campaign, current verified runtime/API bindings and concise final implementation handoff"
+  ],
+  "evidence": [
+    {
+      "id": "fresh-preparation",
+      "kind": "check",
+      "revision": "db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6",
+      "command": "Root reviewed /private/tmp/xemele-m8-corpus-final-preparation-parent.py executed10 finite preparation commands",
+      "result": "passed",
+      "summary": "Fresh build0warnings/errors; native45/hint16/optional715 controls; import6/supervision39/disposition25/approval12 tests;42270original hashes/41843ordered references/0applicable missing; clean40pins and terminalfamilies.",
+      "artifact": "docs/orchestration/M8-xsd-corpus-repair-preparation.json"
+    },
+    {
+      "id": "fresh-full-campaign",
+      "kind": "check",
+      "revision": "db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6",
+      "command": "Root reviewed /private/tmp/xemele-m8-corpus-final-campaign-parent.py executed fresh frozen product93 then BCL93 children",
+      "result": "passed",
+      "summary": "186children83472rows/42987identities. Product39329originalpasses/144false11null;all155exactapproved zero-credit scopes matched/no uncovered;annotZ002fresh originalVALIDpass UNWAIVED. BCL37684passes1784false16null/21reference exceptions9policyrefusals/Unicode16 supplementalFAIL retained.",
+      "artifact": "docs/orchestration/M8-xsd-corpus-repair-campaign.json"
+    },
+    {
+      "id": "fresh-separate-supplements",
+      "kind": "check",
+      "revision": "db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6",
+      "command": "Root reviewed /private/tmp/xemele-m8-corpus-final-supplements-parent.py executed fresh separate profile build/controls/five assessments",
+      "result": "passed",
+      "summary": "Threechildren/fivecompleteprofilepasses/42879identities;fourXMLapplicationrows+latehintXSD.HintOrder. Every supplemental originalPassed null and zero original/gate credit; all families terminal.",
+      "artifact": "docs/orchestration/M8-xsd-corpus-repair-supplements.json"
+    },
+    {
+      "id": "branch-source-review",
+      "kind": "review",
+      "revision": "db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6",
+      "command": "Three existing reviewers and root inspected immutable40pin source packet and final handoff byte equivalence",
+      "result": "passed",
+      "summary": "Current verified availability runtime/API evidence bound;public1430/55/full93canonical/frozen615/257/nullable3 unchanged;exact155authoritytuples;finite supervision and whole-campaign boundary timing. Final9deb38d1 changes only concise handoff;original/historical failures stay unchanged.",
+      "artifact": "docs/orchestration/M8-xsd-corpus-repair-source-release.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed by M8 coordinator after public XSD facade verification; isolated worker dispatch follows. Original W3C metadata and applicability remain authoritative.",
-    "checks": [],
+    "summary": "Branch implementation complete at9deb38d1; actual root phases ran at byte-identical db2e6e2ca source. All original expectations retained;155approved144false11null zero-credit dispositions;annotZ002unwaived repaired freshpass. Separate five profiles passed with no original/gate credit. All consumed phase raw outputs terminally removed; no archive.",
+    "checks": [
+      "Fresh root preparation/full186children/separate3supplementchildren passed with exact observed counts and lifecycle records; planning201 and handoff checks passed."
+    ],
     "remaining": [
-      "Fresh complete campaign91fbc847 has186children/83472rows and full clean family/source receipts. Source-runtime API bindings remain valid at this observed checkpoint, but annotation work refusal blocks corpus verification. Claimed M8-xsd-resolved-availability repair must integrate/verify before a new final freeze and fresh corpus campaign.",
-      "155 exact human-approved dispositions retain144false/11null with no passcredit; bind both new exact four-case approvals in current report guards and verify original schema regressions. Separate five application supplements remain UNRUN and require fresh profile build after final full campaign.",
-      "Resolved-availability repair verified at primary c4d194545 after fresh integrated controls/checks. Join this ordered dependency and re-freeze the155 exact approved zero-credit scopes, current runtime/API/task bindings and finite fresh full/supplementary campaign. Previous campaign original results remain unchanged; no historical pass promotion."
+      "Integrate final worker branch; fresh applicable primary checks and exact source equivalence before verified state.",
+      "Terminal worker cleanup and eligible archival/preserved clean checkout; CLI and milestone gate remain subsequent work."
     ],
     "requests": []
   }
