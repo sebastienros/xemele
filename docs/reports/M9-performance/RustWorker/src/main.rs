@@ -18,7 +18,7 @@ fn semantic(doc: &Document, id: NodeId, output: &mut Vec<u8>) -> Result<(), Box<
             for child in doc.children(id) {
                 match &doc.node(child).kind {
                     NodeKind::Text{content}|NodeKind::CData{content} => pending.push_str(content),
-                    NodeKind::EntityRef{value:Some(content),..} => pending.push_str(content),
+                    NodeKind::EntityRef{..} => pending.push_str(&doc.text_content(child)),
                     _ => { if !pending.is_empty() { frame(output,b'T', &[&pending]); pending.clear(); } semantic(doc,child,output)?; }
                 }
             }
