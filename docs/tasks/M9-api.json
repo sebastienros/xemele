@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Public API and migration review",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-api",
   "base_revision": "cc9bcfdb48bd89e2452c2e565a5bc44fe38d15f5",
@@ -29,29 +29,66 @@
     {
       "id": "M9-api-A1",
       "description": "Review composed API fragments against actual assembly, nullability, exceptions and documented migration examples.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api-migration",
+        "api-behavior-review"
+      ]
     },
     {
       "id": "M9-api-A2",
       "description": "Compile examples and API compatibility checks; record findings as explicitly owned repair requests.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api-migration",
+        "api-behavior-review"
+      ]
     },
     {
       "id": "M9-api-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api-migration",
+        "api-behavior-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/migration/README.md",
+    "docs/migration/Examples/Program.cs",
+    "docs/api-review/README.md",
+    "docs/reports/M9-api/check.py"
+  ],
+  "evidence": [
+    {
+      "id": "compiled-api-migration",
+      "kind": "check",
+      "revision": "9a87a1fc80b5c3b0abd80805b340ffbe2dc10cab",
+      "command": "Pinned SDK10.0.400 offline restore/build Examples and approved ApiCheck; dotnet --fx-version10.0.11 Examples.dll; python3 docs/reports/M9-api/check.py; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual1430members/55fragments match; firstpreview222unchanged; missing/changed controls refuse;20migration behavior checks pass;0warnings/errors;.NET10.0.11Arm64;201tasks valid.",
+      "artifact": "docs/reports/M9-api/checks.json"
+    },
+    {
+      "id": "api-behavior-review",
+      "kind": "review",
+      "revision": "9a87a1fc80b5c3b0abd80805b340ffbe2dc10cab",
+      "command": "Review approved API metadata, public entry source, previous verified contract evidence and managed migration examples.",
+      "result": "passed",
+      "summary": "Nullability/exception/ownership/default/recovery/cancellation behavior documented; no runtime repair requests; normalizer limitations explicit.",
+      "artifact": "docs/api-review/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Reviewed actual public API and added documented executable managed migration examples; no product change.",
+    "checks": [
+      "1430actual API members match55fragments;222preview unchanged;2negative controls refuse;20behavior checks;201taskvalidation/diff passed."
+    ],
+    "remaining": [
+      "Platform and other mandatory release lanes remain separate."
+    ],
     "requests": []
   }
 }

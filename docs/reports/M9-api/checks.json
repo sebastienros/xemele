@@ -1,0 +1,53 @@
+{
+  "task": "M9-api",
+  "revision": "9a87a1fc80b5c3b0abd80805b340ffbe2dc10cab",
+  "result": "passed",
+  "assemblySha256": "5501667cec1e2b4272020632fec6730cc1029fdd1732e015543684a0c1d85f1e",
+  "checkerSha256": "7ca04505605b594765a546e615ac001323fbdd17570fb1bbb073d21efb751e81",
+  "approvedExtractor": "docs/reports/M0-contracts/ApiCheck/Program.cs",
+  "apiFragments": 55,
+  "matchedCompiledMembers": 1430,
+  "firstPreview": {
+    "source": "docs/reports/M1-gate/integration/runtime-api.json",
+    "sourceSha256": "7576f07e67c69eb2253c5e68d2c7833be1a7782b7fc782084b289d468a6415b4",
+    "matchedUnchanged": 222,
+    "removed": 0,
+    "changed": 0,
+    "addedSincePreview": 1208
+  },
+  "negativeControls": {
+    "missing": {
+      "exit": 1,
+      "refused": true
+    },
+    "changed": {
+      "exit": 1,
+      "refused": true
+    }
+  },
+  "migration": {
+    "checks": 20,
+    "result": "passed",
+    "warnings": 0,
+    "errors": 0,
+    "runtime": "10.0.11",
+    "architecture": "Arm64"
+  },
+  "commands": [
+    "Pinned SDK10.0.400 offline restore/build migration Examples.csproj and approved ApiCheck.csproj",
+    "Pinned dotnet --fx-version10.0.11 Examples.dll",
+    "python3 docs/reports/M9-api/check.py",
+    "python3 tools/planning/tasks.py validate; git diff --check"
+  ],
+  "review": "docs/api-review/README.md",
+  "repairRequests": [],
+  "priorReportingAttempt": {
+    "result": "failed",
+    "cause": "Compared row dictionary to declaration string during first-preview assertion; underlying1430assembly match passed. Offline assertion corrected."
+  },
+  "limitations": [
+    "Local macOS arm64 behavior only",
+    "Historical metadata normalizer ABI/custom attribute scope remains explicit"
+  ],
+  "rawOutputs": "Temporary union/emitted/control files inspected and deleted; concise summary only"
+}
