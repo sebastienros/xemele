@@ -1,0 +1,42 @@
+{
+  "framework": "net10.0",
+  "sdk": "10.0.400",
+  "runtime": "10.0.11",
+  "fixtureManifest": "fixtures.json",
+  "fixtureManifestSha256": "d14e74167c1d552be721c121e6a6c6a267d30e2ad4a53d3ef71ce82031363fb0",
+  "input": "Preloaded exact UTF-8 bytes; strict XML, internal DTD/entities expanded, whitespace/comments/PI retained, no external resolver.",
+  "retention": "Fresh child per fixture/engine; warm parser and common-model digest; three parse/consumed-digest/root-held-full-GC/root-cleared-full-GC cycles. Retention is held-live minus released-live after the same parse, avoiding unrelated pool trimming against a pre-parse baseline. Pre-parse heap and released delta also reported. Input bytes preloaded; parse allocations separate; retained 9 MiB positive control.",
+  "retentionTarget": "sum(candidate fixture medians) / sum(BCL fixture medians) <= 0.75; publish every fixture without exclusions and geometric mean separately.",
+  "xpathLimits": {
+    "MaxInputItems": 1000000,
+    "MaxNodeSetItems": 1000000,
+    "MaxOperations": 100000000,
+    "MaxInputCharacters": 16777216,
+    "MaxStringCharacters": 16777216
+  },
+  "steadyOperations": [
+    {
+      "id": "utf8-owned-dom",
+      "semantics": "Decode and construct owned DOM from same UTF-8 bytes; consume real root; destruction/GC lifecycle additionally reported."
+    },
+    {
+      "id": "dom-utf8-serialize",
+      "semantics": "Existing DOM outside timing; serialize complete owned document to UTF-8 bytes, formatting disabled; consume output length and verify parsed common-model digest."
+    },
+    {
+      "id": "compiled-xpath",
+      "semantics": "Existing DOM and compiled fixture expression outside timing; evaluate same count expression; consume verified numeric result."
+    },
+    {
+      "id": "forward-read-sax",
+      "semantics": "Same preloaded UTF-8 byte stream; include reader construction/disposal, consume every element/text event; BCL reader versus Xemele reader and SAX."
+    }
+  ],
+  "references": {
+    "libxml2": "96498992efa48d52b0e8b83058bd88dbdaf153c1",
+    "xmloxide": "555055f1ea6bf9944488fd96415b6f03b5b43696"
+  },
+  "timing": "Dedicated hardware still required; no local qualification/retention run supplies throughput or regression credit. Native/Rust steady timing excludes startup and IPC and repeats in-process operations. Managed BenchmarkDotNet classes require MemoryDiagnoser and ShortRunJob.",
+  "referenceEntityExpansionCount": 1000000,
+  "referenceEntityExpansionReason": "Pinned xmloxide default10000 rejects the frozen entity and text fixtures. This finite reference option admits their original bytes and matches the declared expanded-entity semantics; no product or release threshold changed."
+}
