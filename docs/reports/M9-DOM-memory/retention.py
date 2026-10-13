@@ -46,6 +46,7 @@ def main():
             row['failureTail'] = log.read_text(errors='replace')[-4000:]; raise RuntimeError(row['failureTail'])
     try:
         project = ROOT / 'docs/reports/M9-performance/ManagedWorker/ManagedWorker.csproj'
+        run([host,'restore',project,'--source','/private/tmp','-p:NuGetAudit=false','--disable-build-servers'],300)
         run([host,'build',project,'-c','Release','--no-restore','--disable-build-servers','-m:1','-p:UseSharedCompilation=false'],300)
         binary = ROOT / 'docs/reports/M9-performance/ManagedWorker/bin/Release/net10.0/ManagedWorker.dll'
         for fixture in manifest['fixtures']:

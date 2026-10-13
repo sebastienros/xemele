@@ -19,8 +19,8 @@ env = dict(os.environ, DOTNET_ROOT=str(host.parent), DOTNET_ROLL_FORWARD='Disabl
 report = dict(revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
               phase=args.phase, result='failed', commands=[])
 commands = [
-    ([host,'restore','tests/Xemele.Tests/Xemele.Tests.csproj','--source','/private/tmp','-p:NuGetAudit=false','--disable-build-servers'],300),
-    ([host,'build','tests/Xemele.Tests/Xemele.Tests.csproj','-c','Release','--no-restore','--disable-build-servers','-m:1','-p:UseSharedCompilation=false'],300),
+    ([host,'restore','tests/Xemele.Tests/Xemele.Tests.csproj','--source','/private/tmp','-p:NuGetAudit=false','-p:RuntimeFrameworkVersion=10.0.11','--disable-build-servers'],300),
+    ([host,'build','tests/Xemele.Tests/Xemele.Tests.csproj','-c','Release','--no-restore','--disable-build-servers','-m:1','-p:UseSharedCompilation=false','-p:RuntimeFrameworkVersion=10.0.11'],300),
     ([host,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll','-parallelMode','none','-culture','invariant','-noColor','-result-xml',out/'tests.xml'],300),
     (['python3','tools/planning/tasks.py','validate'],30),
 ]
