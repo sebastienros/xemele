@@ -11,10 +11,10 @@ All runtime source remains identical to verified M8, so its actual cumulative
 allocation checks retain their original scopes. Earlier 1GiB streaming memory
 reports retain observed bounds and missing-RSS limitations. Their older exact
 closure is compared to current source; changed files require requalification,
-not a silent whole-release memory pass. Earlier DOM and XPath microbenchmarks
+not a silent whole-release memory pass. Current [five-mode requalification](current-memory.md) now passes the exact 1GiB profile: maximum sampled whole managed live heap291304bytes, below8MiB; retained9MiB control exceeds the bound, all direct outer exits0, and actual RSS is recorded separately. Earlier DOM and XPath microbenchmarks
 are provisional single-host evidence, not equivalent native/Rust/BCL primary-suite
 geometric comparisons. The documented unexplained7B/op64KiB push observation
-remains7B, not zero. No new throughput, retained DOM ratio or regression credit.
+remains7B, not zero. No new throughput, retained DOM ratio or regression credit. No fuzz work was executed by the memory runner.
 
 When controlled hardware is available: finish the exact representative
 fixture/reference operation freeze; prepare all consumers before timing; alternate
