@@ -1,0 +1,70 @@
+{
+  "result": "failed",
+  "revision": "2d3809260f357c99b38beefc0dfade655fae645c",
+  "upstreamRevision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj",
+        "--source",
+        "/private/tmp",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": null,
+        "exit": null,
+        "reason": "AssertionError",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M9-robustness/current-xsd/nested-000",
+          "groups": [],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputTail": ""
+    }
+  ],
+  "reviewedRuntimeChanges": {
+    "src/Xemele/Tree/Document.cs": {
+      "originalSha256": "7df85d8795f88a097128b3155ada77ef27baac953d97053593a6164fb24e0b25",
+      "currentSha256": "44f99bab6457a796c64aac9fddae607964f27d34550b4307d744525fd7117907",
+      "verifiedOwner": "M9-dom-memory",
+      "integrationRevision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69"
+    },
+    "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs": {
+      "originalSha256": "d468ff27b9d3b30696fd3e45a195b51a1e02e0fec9919e2ba98c788800fa67c1",
+      "currentSha256": "ec3e975900354547ea6cc3b94edce3a1a72e91aa1bb5839185ab041bd9bac6e8",
+      "verifiedOwner": "M9-dom-memory",
+      "integrationRevision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69"
+    },
+    "src/Xemele/XPath/Evaluation/Evaluator.cs": {
+      "originalSha256": "82889d4deae35708f1c4f30fcf9db97eee62249aaeb2cf985e1dd2404829f6b0",
+      "currentSha256": "0c99ff0114589f3db1a1e6a45d53d2064af2e49a69060e726d01c4a9a2795f2d",
+      "verifiedOwner": "M9-xpath-order",
+      "integrationRevision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac"
+    },
+    "src/Xemele/XPath/Navigation/XPathNavigator.cs": {
+      "originalSha256": "ea48aac307e25172801101ecf68779b661061c12e434947503ee9596e25ed25b",
+      "currentSha256": "38aa6b0d19b640cbc9b4362bcd22201165edefe98af87c9ce786a19dc4498954",
+      "verifiedOwner": "M9-xpath-order",
+      "integrationRevision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac"
+    }
+  },
+  "sourceManifestSha256": "b731ab4fe47320b6054e02527217552deec17e96df2dbfac8f722eb63d851ba8",
+  "fuzzExecuted": false,
+  "originalPassCredit": 0,
+  "gateCredit": 0,
+  "identityChanges": [],
+  "totalDeadlineExceeded": false
+}

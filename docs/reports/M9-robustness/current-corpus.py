@@ -14,7 +14,7 @@ def module(name,path):
     spec=importlib.util.spec_from_file_location(name,path);value=importlib.util.module_from_spec(spec);spec.loader.exec_module(value);return value
 released=module('released_xsd',ROOT/'docs/reports/M8-xsd-corpus/run.py')
 approved=module('approved_xsd',ROOT/'docs/reports/M8-xsd-corpus/approved_dispositions.py')
-out=ROOT/'artifacts/M9-robustness/current-xsd';out.mkdir(parents=True,exist_ok=False)
+out=ROOT/'artifacts/M8-xsd-corpus/m9-current-xsd';out.mkdir(parents=True,exist_ok=False)
 host=Path(released.D);corpus=ROOT/'tests/corpora/xsd'
 revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
 assert not subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True).strip(),'Reviewed source must be committed'
