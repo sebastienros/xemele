@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Portable pinned-corpus roots for two cumulative unit checks",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-corpus-portability",
   "base_revision": "4aade285427f3976f5d7591538c3458894ed71a3",
@@ -30,16 +30,33 @@
     {
       "id": "M9-corpus-portability-A1",
       "description": "Both formerly fixed local corpus paths honor the existing corpus-root environment setting; original byte/hash/model assertions pass from an isolated root.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "isolated-original-bytes"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Xemele.Tests/M2-conformance/OriginalStandaloneTests.cs: configured corpus root with original bytes/model unchanged",
+    "tests/Xemele.Tests/Xml/UndeclaredReferences/ContentTests.cs: configured corpus root with exact original SHA-256 retained"
+  ],
+  "evidence": [
+    {
+      "id": "isolated-original-bytes",
+      "kind": "check",
+      "revision": "308c982fe0d558e23445d92c4705a70bf9ec6e02",
+      "command": "Pinned 10.0.400 build and .NET10.0.11 focused OriginalInvNotSa14/OriginalE13 tests with XEMELE_CORPUS_RESOURCES pointing to isolated three-file fixture copy",
+      "result": "passed",
+      "summary": "Build zero warnings/errors; 2/2 original-byte/model tests passed, zero failures/skips; exact original hashes and every-split assertions unchanged; bounded processes reaped.",
+      "artifact": "docs/reports/M9-corpus-portability/checks.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Demonstrated hosted missing-file failures expose two remaining fixed local paths; repair is limited to selecting the existing corpus-root environment setting.",
-    "checks": [],
+    "summary": "Two remaining fixed local corpus paths now honor the established corpus-root setting.",
+    "checks": [
+      "Pinned build and 2/2 focused original-byte/model tests pass from an isolated root."
+    ],
     "remaining": [],
     "requests": []
   }
