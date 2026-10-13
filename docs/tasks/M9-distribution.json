@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-windows-consumer-outcome",
   "base_revision": "8aacc464d71af0d9fe10a67f0b16f69b036a9e78",
@@ -36,23 +36,27 @@
     {
       "id": "M9-distribution-A1",
       "description": "Build reproducible package with notices/docs/Source Link and net10.0 consumption/trimming/AOT matrix.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "local-package",
         "missing-platform-matrix",
         "current-local-package",
-        "hosted-current-three-os"
+        "hosted-current-three-os",
+        "hosted-windows-consumers-pass",
+        "required-os-matrix-source-bound"
       ]
     },
     {
       "id": "M9-distribution-A2",
       "description": "Install package into isolated consumers on required OS/architectures; no publication is performed.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "local-package",
         "missing-platform-matrix",
         "current-local-package",
-        "hosted-current-three-os"
+        "hosted-current-three-os",
+        "hosted-windows-consumers-pass",
+        "required-os-matrix-source-bound"
       ]
     },
     {
@@ -62,7 +66,9 @@
       "evidence": [
         "local-package",
         "partial-local-integration",
-        "current-local-package"
+        "current-local-package",
+        "hosted-windows-consumers-pass",
+        "required-os-matrix-source-bound"
       ]
     }
   ],
@@ -220,22 +226,37 @@
       "result": "passed",
       "summary": "Source-equivalent explicitWindowsNuGetconfig +1job20min workflow integrated. Actual allOS10754unitpass andLinux/mac consumerpass retained. Windowsconsumer execution remains outstanding; no fullmatrix pass or further run budget inferred.208tasksvalidate.",
       "artifact": "docs/reports/M9-distribution/windows-source-config/checks.json"
+    },
+    {
+      "id": "hosted-windows-consumers-pass",
+      "kind": "check",
+      "revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
+      "command": "Direct human-approved single validation push; GitHub run38460364837 attempt1, one Windowsx64 job cap20min; inspect API and downloaded actual summary",
+      "result": "passed",
+      "summary": "10754/10754 units pass, zero nonpasses; 23 commands exit0/direct children reaped/logs closed. Deterministic clean package pairs, notices/docs/exact embedded Source Link, fresh isolated managed/trim/NativeAOT consumer and tool install/help pass. Explicit NuGet config used; one job8.05 elapsedmin; no extras/fuzz/publication. Windows group-absence assertion not inferred.",
+      "artifact": "docs/reports/M9-distribution/hosted-windows-final/outcome.json"
+    },
+    {
+      "id": "required-os-matrix-source-bound",
+      "kind": "check",
+      "revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
+      "command": "Inspect passing Linux/macOS run38457602484 and Windows run38460364837; compare exact runtime/unit/fixture/consumer/package/build source paths and Unix command behavior",
+      "result": "passed",
+      "summary": "Required Windows/Linux/macOS and x64/arm64 represented by actual managed/trim/NativeAOT/tool execution; each10754 units pass. Runtime/unit/fixture/consumer/package inputs unchanged; only Windows config/workflow selection and actual Git/SourceLink identity differ. Each OS clean package pairs reproducible. No dedicated timing or sustained fuzz credit.",
+      "artifact": "docs/reports/M9-distribution/hosted-windows-final/matrix.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Direct human approved one Windowsx64job20min for b2e2457c; execute once and preserve validLinux/macOS evidence.",
+    "summary": "Required OS/architecture distribution matrix passed with actual isolated managed/trim/NativeAOT/tool execution; all three OS10754-unit suites pass. Earlier failures retained and both narrow harness/Windows feed fixes verified.",
     "checks": [
-      "All3OS10754/10754unitspass on a19b7ea8, confirmingWindows pathrepair; Linux/macOS21commands allconsumer modes pass",
-      "Windows13commands stoppedat freshconsumerrestoreNU1301, after canonicalpackagepairs/notices/docs/embeddedSourceLink checks",
-      "6fresh localexplicitconfig/restore/managed/tool checks pass with clean receipts; actual asset sources preserve localandHTTPS feeds"
+      "Windows23 commands passed at b2e2457c; Linux/macOS21 commands each passed at a19b7ea8; source applicability reviewed",
+      "Each OS canonical clean package pairs byte-identical; notices/docs/embedded exact Source Link and private PackageReference consumers verified",
+      "One approved Windows job8.05 elapsed minutes; no extra job/publication/fuzz; 208 task records validate"
     ],
-    "remaining": [
-      "Actual passingWindowsmanaged/trim/NativeAOT/tool run after explicitconfigrepair",
-      "Fresh directhuman budget for1Windowsx64job capped20minutes; no extra matrix inferred"
-    ],
+    "remaining": [],
     "requests": [
-      "Preserve validLinux/macOS results; nextworkflow hasonly1Windowsjob; fuzzdeferred, dedicatedtiming notcredited."
+      "Final M9 gate still requires remaining performance/robustness evidence and any affected checks after future runtime changes; this is a distribution-lane handoff, not terminal M9 completion."
     ]
   }
 }

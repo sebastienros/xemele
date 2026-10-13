@@ -12,8 +12,8 @@
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Execute approved singleWindowsjob at b2e2457c and retain exact results.",
-    "No further run budget; fuzz remainsdeferred and dedicated timing stillrequired."
+    "Integrate and verify the source-bound passing distribution lane.",
+    "Preserve dedicated timing and deferred sustained fuzz blockers; no terminal M9 gate completion or further runner budget."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -1884,7 +1884,7 @@
     "Managed XPath normalization/uniqueness has demonstrated quadratic work-limit failure; assign its exact module owner after current storage repair."
   ],
   "hosted_platform_request": {
-    "status": "One Windows20min job approved; source/workflow preflight matches current integrated candidate, pushpending",
+    "status": "Required source-bound OS distribution matrix passed; Windows single job succeeded; no further runner budget",
     "repository": "sebastienros/xemele",
     "visibility": "PRIVATE",
     "local_branch": "codex/m9-os-validation",
@@ -1978,11 +1978,25 @@
           115504227626
         ],
         "report": "docs/reports/M9-distribution/hosted-native-path/outcome.json"
+      },
+      {
+        "id": 38460364837,
+        "revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
+        "url": "https://github.com/sebastienros/xemele/actions/runs/38460364837",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "event": "push",
+        "scope": "OneWindowsx64job cap20min directly approved; no further runner budget",
+        "jobIds": [
+          115513645384
+        ],
+        "report": "docs/reports/M9-distribution/hosted-windows-final/outcome.json"
       }
     ],
     "authorization": "Direct human reply: Approve validation branch and jobs",
     "authorized_scope": "Only new private codex/m9-os-validation branch and3standard20minjobs; no remote main/tag/package publication.",
-    "remote_revision": "a19b7ea866fca5472460365f717875308516f42b",
+    "remote_revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
     "retry_revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
     "retry_job_timeout_minutes": 20,
     "retry_max_runner_minutes": 20,
@@ -2015,7 +2029,7 @@
       "maxTotalRunnerMinutes": 20,
       "fuzzIncluded": false,
       "humanReply": "Approve one Windows job, 20-minute cap",
-      "consumed": false
+      "consumed": true
     }
   },
   "current_memory_evidence": {
@@ -2032,8 +2046,8 @@
     "revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
     "integratedSourceRevision": "140b737333474b8f19dba5aeec697b13aa1ff5e0",
     "sourceTreeIdentical": true,
-    "pushed": false,
-    "jobsStarted": 0,
+    "pushed": true,
+    "jobsStarted": 1,
     "retryBudgetApproval": "Direct human reply: Approve one Windows job, 20-minute cap",
     "jobCount": 1,
     "rid": "win-x64",
@@ -2042,7 +2056,12 @@
     "fuzzIncluded": false,
     "remoteMainTagsPublicationChanged": false,
     "remoteRevision": "a19b7ea866fca5472460365f717875308516f42b",
-    "scope": "ExplicitWindowsNuGetconfig and singleWindows workflow only; runtime/unit/consumer/build sources unchanged from allOS10754unit passing source"
+    "scope": "ExplicitWindowsNuGetconfig and singleWindows workflow only; runtime/unit/consumer/build sources unchanged from allOS10754unit passing source",
+    "run": 38460364837,
+    "runUrl": "https://github.com/sebastienros/xemele/actions/runs/38460364837",
+    "runStatus": "completed",
+    "runConclusion": "success",
+    "retryBudgetConsumed": true
   },
   "goal_blocked_audit": {
     "consecutiveNoProgressTurns": 3,
@@ -2082,11 +2101,14 @@
     "hostedRetryAuthorizationNowAvailable": true,
     "goalStatusNote": "Goal tool remains blocked; authorized hosted distribution work resumes locally. Tool offers no active/resume status mutation.",
     "latestHostedResult": {
-      "run": 38457602484,
-      "allThreeUnitSuitesPassed": true,
-      "linuxAndMacConsumersPassed": true,
-      "windowsConsumerFailure": "NU1301 local-first feed normalization; explicit config locally verified",
-      "newBudgetRequired": "1Windowsjob20minutes"
+      "run": 38460364837,
+      "conclusion": "success",
+      "requiredOSDistributionMatrixPassed": true,
+      "report": "docs/reports/M9-distribution/hosted-windows-final/matrix.json",
+      "remainingMandatoryEvidence": [
+        "Dedicated comparative timing",
+        "Deferred sustained fuzz/crash-positive requirements"
+      ]
     }
   },
   "hosted_validation_candidate_history": [
