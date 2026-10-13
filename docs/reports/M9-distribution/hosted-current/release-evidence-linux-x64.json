@@ -1,0 +1,812 @@
+{
+  "task": "M9-distribution",
+  "revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+  "result": "passed",
+  "rid": "linux-x64",
+  "runtime": "10.0.11",
+  "commands": [
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "--version"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 2629,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "d0c8e5a09a2e5655cffdca9e350ecbba59a860154f5adadb92398b844f705ed0"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "restore",
+        "/home/runner/work/xemele/xemele/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 2638,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "abd3320305183a13f5166c65ff5bc325f5248de19b123c23860ccb5d188a8d9d"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "build",
+        "/home/runner/work/xemele/xemele/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 2705,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "712bfa6686fc1dbbc298ceb58befb0994e695393a0750cfbb0b584566832f545"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/unit.xml"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 2805,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "417cfd53844e0f2318dee2569723e0f7296bdf3f59103242977d650d4f5748d2"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "restore",
+        "/home/runner/work/xemele/xemele/src/Xemele/Xemele.csproj",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 4,
+        "pid": 3019,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "cdf0e774499285ea0bda1c778d68bd59e3d2cb0aa26fdce819ca95672854cf98"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "restore",
+        "/home/runner/work/xemele/xemele/src/Xemele.Tool/Xemele.Tool.csproj",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 5,
+        "pid": 3038,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "75e1b0e435aaa8194f2e7902d2a14ebe4c984c60852b4d173edda6946b29af88"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "clean",
+        "/home/runner/work/xemele/xemele/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 6,
+        "pid": 3060,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7858eb961e3e3cb8d328be04875c4eecc430adc78dbc0094efbf48c340b35dc9"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "pack",
+        "/home/runner/work/xemele/xemele/src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/pack-0"
+      ],
+      "receipt": {
+        "command": 7,
+        "pid": 3078,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "0f339ad8e42750772028191ebd8e92dae2f2908618e025e68ab57a817d38336b"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "pack",
+        "/home/runner/work/xemele/xemele/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/pack-0"
+      ],
+      "receipt": {
+        "command": 8,
+        "pid": 3118,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "6e5bd4288484ac4af0c994282f1db03483e9aa12b78624f7e2dc2572ad10df33"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "clean",
+        "/home/runner/work/xemele/xemele/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 9,
+        "pid": 3160,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "3f0c7fa280cf18986f9630ca86aace912d514ebc5222eff7e6f7a353870e9289"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "pack",
+        "/home/runner/work/xemele/xemele/src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/pack-1"
+      ],
+      "receipt": {
+        "command": 10,
+        "pid": 3179,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "8d4dc2c4ac6737532ddb336105faa46450e6a878ecf6b0564e0dac9ce06c3bfb"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "pack",
+        "/home/runner/work/xemele/xemele/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/home/runner/work/xemele/xemele/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/pack-1"
+      ],
+      "receipt": {
+        "command": 11,
+        "pid": 3225,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "2a58187b03245072644eab6be5e6cc10d2c9adfd74973c0460b9805e0309e622"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "restore",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "--packages",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer-cache",
+        "--source",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/feed",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-r",
+        "linux-x64",
+        "-p:PublishAot=true",
+        "-p:PublishTrimmed=true",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 12,
+        "pid": 3267,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "5f02252d5ed7ed317024b273341d9ebfe3f1a6a234236252205350ef317c8c5e"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "build",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 13,
+        "pid": 3294,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "68e622c94bec30c63a3e97faacfe4baf92e1dc4ff7062bc34cc86da43f5ca13b"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer/bin/Release/net10.0/Consumer.dll"
+      ],
+      "receipt": {
+        "command": 14,
+        "pid": 3322,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "33c071fa5a9de9809ec39726ae6dfb9188a930cc7bbb8d0509735bd538b3b906"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "publish",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "-r",
+        "linux-x64",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:SelfContained=true",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:PublishTrimmed=true",
+        "-p:PublishAot=false",
+        "-p:PinnedLinkerHost=/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer/linker-host",
+        "-o",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/trim"
+      ],
+      "receipt": {
+        "command": 15,
+        "pid": 3330,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7c21568d81f93454fd453822519f6a44caea4a9c6da51909ed097f5a2aacdd3a"
+    },
+    {
+      "argv": [
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/trim/Consumer"
+      ],
+      "receipt": {
+        "command": 16,
+        "pid": 3390,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "33c071fa5a9de9809ec39726ae6dfb9188a930cc7bbb8d0509735bd538b3b906"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "publish",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "-r",
+        "linux-x64",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:SelfContained=true",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:PublishTrimmed=true",
+        "-p:PublishAot=true",
+        "-p:PinnedLinkerHost=/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/consumer/linker-host",
+        "-o",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/aot"
+      ],
+      "receipt": {
+        "command": 17,
+        "pid": 3398,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "a779063f11fb9b456e17f0025cb66afa78ec80f18fb3dc6d322f5f2a1dfba599"
+    },
+    {
+      "argv": [
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/aot/Consumer"
+      ],
+      "receipt": {
+        "command": 18,
+        "pid": 3470,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "33c071fa5a9de9809ec39726ae6dfb9188a930cc7bbb8d0509735bd538b3b906"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "tool",
+        "install",
+        "Xemele.Tool",
+        "--version",
+        "0.9.0-rc.1",
+        "--tool-path",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/installed-tool",
+        "--source",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/feed",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-parallel"
+      ],
+      "receipt": {
+        "command": 19,
+        "pid": 3474,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7b1da78db886c2fce653c153e3412f9efbb642b53f7f678767a1fda3396bb5e3"
+    },
+    {
+      "argv": [
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/installed-tool/xemele",
+        "--help"
+      ],
+      "receipt": {
+        "command": 20,
+        "pid": 3492,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "4548de9199602331500ec31062da18fb4472e5682892470670a1015036d00efc"
+    }
+  ],
+  "packages": [
+    {
+      "name": "Xemele.0.9.0-rc.1.nupkg",
+      "sha256": "3ec0b57b91ade06498d7cef92ade882b80515bd4fc1583cdbb9d334d8ed5d1bb",
+      "byteIdenticalCleanRebuild": true,
+      "noticesDocsMetadata": true
+    },
+    {
+      "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+      "sha256": "af45d8fa299c655a8f56a96e08db881bed56e8fabec6bf0a27315213f96af1ae",
+      "byteIdenticalCleanRebuild": true,
+      "noticesDocsMetadata": true
+    }
+  ],
+  "published": false,
+  "sdk": "10.0.400",
+  "unitCorpus": {
+    "sourceUrl": "https://www.w3.org/XML/Test/xmlts20130923.tar.gz",
+    "archiveSha256": "9b61db9f5dbffa545f4b8d78422167083a8568c59bd1129f94138f936cf6fc1f",
+    "manifestSha256": "e655b802f4c3a6247ed02d2ed50f7b5482e901a608076361017a4f0984d75e2c",
+    "inventorySha256": "8c2f37c0e8881f145874d413d1b6447ce116ab3d25b1994de483d5ef3e5d5c0c",
+    "files": 3386,
+    "exactOriginalBytes": true,
+    "parserCasesExecuted": 0
+  },
+  "unitCorrectness": {
+    "total": 10754,
+    "passed": 10754,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "not-run": 0
+  },
+  "documentation": "Packaged user guide and notices; full per-member XML comment coverage not claimed.",
+  "sourceLink": {
+    "embedded": true,
+    "mappings": {
+      "/_/*": "https://raw.githubusercontent.com/sebastienros/xemele/929585ddf1a5413d9560fb7cef4b4180d640da67/*"
+    },
+    "remoteFetchVerified": false
+  },
+  "consumers": {
+    "managed": true,
+    "freshCache": true,
+    "packageReferenceOnly": true,
+    "trim": true,
+    "aot": true,
+    "toolInstall": true
+  },
+  "matrixCredit": [
+    "linux-x64"
+  ],
+  "downloadedArtifactSha256": "c8ae41eea5d22348faab9c0bbb0b0a6c2ab2b8f7c926099697ed03e92758a539",
+  "unitFailureDetails": [],
+  "unitChildDiagnosticsInspected": [
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/positive.exit.json",
+      "sha256": "a5a52912feeafa63edcfc4a10976dfd4f6a4e4015e5d76bca872d319d0a3cf36",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2950}"
+    },
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/positive.invocation.json",
+      "sha256": "24469842113e134662c102481a49634003cc363d6e73da87c7016dcd64413dbd",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/positive.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha256\":\"256A7A0"
+    },
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/positive.stdout.txt",
+      "sha256": "4651e8d94c01024283abdbe81d0fb650a0aaf865d0a442a917022eaf077a3cd6",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.892s\n"
+    },
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/real.exit.json",
+      "sha256": "f95c653eefbde9aedf8579c43de9455f5b50deaa8e77da88238b81e9e7d1cc55",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2938}"
+    },
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/real.invocation.json",
+      "sha256": "dbe5d24b5db2a2cfe01ea07d42781d08f154c669da1b81cb087cb6c107165523",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/real.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha256\":\"256A7A0C1E7"
+    },
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-dtd-framing-allocation-probe/child-runs/2805-ee33a4aa1ff4431a8878e9d00e58db35/real.stdout.txt",
+      "sha256": "23748490a0ca951bcb0bce977b13bfc379729508bf85bb9bb1282da2e0cfc721",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.884s\n"
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/positive.exit.json",
+      "sha256": "be193ccee4320ecd68f551d6c136a56984d39d7650e278f1526d7fc2a49009a0",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2831}"
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/positive.invocation.json",
+      "sha256": "f9d7269800762350a897b6f799d7b3251c6bac304d1e5b1b20da793aabb251ea",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/positive.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xeme"
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/positive.stdout.txt",
+      "sha256": "b9a1c1da6fec5f186f9bb404d2dfe4a4fca1347fcb13a36132cfe3046f5df6fb",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.859s\n"
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/real.exit.json",
+      "sha256": "9fca5d2303cf85d9433b8e6d716687160290adaf8f60374a6f9c2c2c416dd339",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2817}"
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/real.invocation.json",
+      "sha256": "f4f49df4f1fbc6c026a3f0312ac296b1fccb3cb13b5348cc69937296a9a3d056",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/real.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.T"
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-encoding-allocation-probe/child-runs/2805-27e55919bf4848cdb4d52904e8384b48/real.stdout.txt",
+      "sha256": "40572969b9b36057de31409ff8b21e14f7bad5488066e8c0aaf5d1a90b5c9a2c",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.816s\n"
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/positive.exit.json",
+      "sha256": "a2172888b8a65ba6aa92c4325ade1f575d84ea7076d148734d211f36aa3cc790",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2920}"
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/positive.invocation.json",
+      "sha256": "0bf11625b455d9cd91f1889e98c136fe101292665cff0874efd7ffd153d7f18a",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/positive.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha25"
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/positive.stdout.txt",
+      "sha256": "f5997f8f16aa299b65ff55ef7f977fb22f5f5c7d63092fffabd95ad5a21e2591",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.864s\n"
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/real.exit.json",
+      "sha256": "0f2003699ee7483933061b53d5fa5fa067e07a21c2d0a9d57fcba711a712ca76",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2908}"
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/real.invocation.json",
+      "sha256": "6bdb6343316133863598d81426b5bb09524b8dbf5c9e73a2d0df72c58245b4e5",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/real.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha256\":\""
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-pi-allocation-probe/child-runs/2805-b2338d0fe3d5452a85be9eb4baae3f77/real.stdout.txt",
+      "sha256": "93961ba4a253ea69641d1e206e441bccb527ca94195f6881b2f5acdebe6dd7de",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.850s\n"
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/positive.exit.json",
+      "sha256": "cbf805eebd662c8927da1414bdd57d65b17df54f2340bd7db297301a72519515",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2884}"
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/positive.invocation.json",
+      "sha256": "0ce5c70734a16f0b4be6b872e5aa24dcbf41042c5677e1e4605afc735b7201b0",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/positive.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha256\":\"256A7"
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/positive.stdout.txt",
+      "sha256": "b24a157dcad6753c26d06a5a407a8b5e6e94e24b1e8563b941b853c7630771b1",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.913s\n"
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/real.exit.json",
+      "sha256": "b9799bb7e8f3df6970c195220647cedae6bd1e2c604af3a861b686f73c58891c",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2855}"
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/real.invocation.json",
+      "sha256": "457d6e261df0dedf1e8ab04fc06738ad1821356b9a3dfea7a761f75da5fe5ca5",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/real.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha256\":\"256A7A0C1"
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-resolver-allocation-probe/child-runs/2805-7f9b0e07dc3d4036be797fd9af4dfeba/real.stdout.txt",
+      "sha256": "39f6968f5dc166cc04013ac4914fab4e33a00cbce6bfc68eba2fa1b97bb3d99c",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.911s\n"
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/positive.exit.json",
+      "sha256": "4abe9ad7e7f1e414db14df10064f779816ee5e9cfb9937215ae2d180ecd2c5d1",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":3005}"
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/positive.invocation.json",
+      "sha256": "53cb4538f7a4f782e488e263b69dea972b27c9bed5350aff86950be4efaf637b",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/positive.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll"
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/positive.stdout.txt",
+      "sha256": "41dd93b07cac6a4f0697910739fa245df7979fe7e7ad906fac23dfe7e1a58772",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.881s\n"
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/real.exit.json",
+      "sha256": "0e37e8599477913b7aca4e43cb9e91821938d47ca1028ec4b99ec7c102176920",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2993}"
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/real.invocation.json",
+      "sha256": "507553acfdeb552d7d132052ebad906dd0b244050211ae0d25e717111bf66d1e",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/real.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"T"
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-streaming-allocation-probe/child-runs/2805-e33aa2eba89744e69acc6b26bbb1cd25/real.stdout.txt",
+      "sha256": "ccec8261d5b65b6e1bded5ff5e53fcc4b109f4790673973baa7b2a1565e3c58f",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.874s\n"
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/positive.exit.json",
+      "sha256": "d5e9ae181735ff9348a0ae2a4d0b3be3cc78facf0bd573a66dff91171bc9e184",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2974}"
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/positive.invocation.json",
+      "sha256": "da10983983a63ca9343097732978ec5a9840189ff210f3f4601fe7ac3555a36d",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/positive.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha25"
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/positive.stdout.txt",
+      "sha256": "2580efcb82e84af236437c805f8cfdfc0f13bcff97ce0c7fcf8f99df96b1c6cf",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.781s\n"
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/real.exit.json",
+      "sha256": "3ba490797f4317ce9671640b9a7b6fec8a2250212075209ecfa289c38cc42a8f",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":2962}"
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/real.invocation.json",
+      "sha256": "e2e4ddb806894e060459b8f024252519b1934affbf0881ab96b810d2d212e06d",
+      "excerpt": "{\"executable\":\"/usr/share/dotnet/dotnet\",\"arguments\":[\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing\",\"-result-xml\",\"/home/runner/work/xemele/xemele/artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/real.xml\"],\"expected\":{\"Executable\":\"/usr/share/dotnet/dotnet\",\"ExecutableSha256\":\"7DDA7A639BC35FBA05C40D308B0296450AA4E628D109245A6312C385DA9B0931\",\"TestAssembly\":\"/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\",\"TestSha256\":\""
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts/M2-tree-allocation-probe/child-runs/2805-38974ba992da44b2bdf1b73ec0f91297/real.stdout.txt",
+      "sha256": "5d3b6766d5c2efd6f3094a489f070ee3804111787e619c810a55e6f1599e2a41",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.784s\n"
+    }
+  ],
+  "rawArtifactPolicy": "Downloaded summary inspected; concise command identities/receipts, hashes, all failure identities/messages and bounded child diagnostics retained; transient downloads removed after integration."
+}

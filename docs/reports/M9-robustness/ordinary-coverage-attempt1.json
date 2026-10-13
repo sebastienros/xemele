@@ -1,0 +1,196 @@
+{
+  "result": "failed",
+  "revision": "f502402dbe50b1920385dc600d7984b3e125a394",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageControl/CoverageControl.csproj",
+        "--source",
+        "/private/tmp",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 87734,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "b66dc322645c294bcab225b497eb3b78cab966a8582997ba2f390d83ce133150",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageControl/CoverageControl.csproj (in 142 ms).\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageControl/CoverageControl.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 87736,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "864b318aee146d52402aca8220c3decc19a772eeecb36d3bccb68e13a776ef6c",
+      "outputTail": "  CoverageControl -> /private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageControl/bin/Release/net10.0/CoverageControl.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:03.58\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/tool/coverlet.console.dll",
+        "/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/control/CoverageControl.dll",
+        "--target",
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--targetargs",
+        "--fx-version 10.0.11 \"/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/control/CoverageControl.dll\"",
+        "--include-test-assembly",
+        "--include",
+        "[CoverageControl]*",
+        "--exclude-assemblies-without-sources",
+        "None",
+        "--format",
+        "json",
+        "--output",
+        "/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/control-coverage.json"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 87751,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "046b968c1f3e4e0088c25984b3a2a2485c5f422527217136cf92441bab1396b8",
+      "outputTail": "1\n\nCalculating coverage result...\n  Generating report '/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/control-coverage.json'\n+-----------------+--------+--------+--------+\n| Module          | Line   | Branch | Method |\n+-----------------+--------+--------+--------+\n| CoverageControl | 66.66% | 50%    | 100%   |\n+-----------------+--------+--------+--------+\n\n+---------+--------+--------+--------+\n|         | Line   | Branch | Method |\n+---------+--------+--------+--------+\n| Total   | 66.66% | 50%    | 100%   |\n+---------+--------+--------+--------+\n| Average | 66.66% | 50%    | 100%   |\n+---------+--------+--------+--------+\n\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-ordinary-coverage/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "/private/tmp",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 87755,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "69a0be968b2b6d7adcabfa3aaea2889382284624ad3d3a2079803846fa5fe433",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-ordinary-coverage/src/Xemele/Xemele.csproj (in 149 ms).\n  Restored /private/tmp/xemele-m9-ordinary-coverage/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 149 ms).\n  Restored /private/tmp/xemele-m9-ordinary-coverage/tests/Xemele.Tests/Xemele.Tests.csproj (in 244 ms).\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-ordinary-coverage/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 4,
+        "pid": 87759,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "ce5f712eb80addf52e5d9e8eefa5f2a86abc70ba7f92b8f1cda61d478a5abfa6",
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-ordinary-coverage/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Xemele.TestUtilities -> /private/tmp/xemele-m9-ordinary-coverage/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll\n  Xemele.Tests -> /private/tmp/xemele-m9-ordinary-coverage/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:12.51\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/tool/coverlet.console.dll",
+        "/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/tests/Xemele.Tests.dll",
+        "--target",
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--targetargs",
+        "--fx-version 10.0.11 \"/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/tests/Xemele.Tests.dll\" -parallelMode none -culture invariant -noColor -result-xml \"/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/unit.xml\"",
+        "--include",
+        "[Xemele]*",
+        "--exclude-assemblies-without-sources",
+        "None",
+        "--format",
+        "json",
+        "--output",
+        "/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/unit-coverage.json"
+      ],
+      "receipt": {
+        "command": 5,
+        "pid": 87799,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7b3a37fecbb73e6e8f9085edbf5f049f14181cf77081cf74ff98fd669b1aabe9",
+      "outputTail": "seInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.DtdDeclarationProvenance.DeclarationProvenanceTests.ModelDiagnosticIsGetOnlyAndItsGetterIlIsSingleReferenceLoad [FAIL]\n      Assert.Equal() Failure: Values differ\n      Expected: 7\n      Actual:   17\n      Stack Trace:\n        /_/tests/Xemele.Tests/M5-dtd-declaration-provenance/DeclarationProvenanceTests.cs(157,0): at Xemele.Tests.DtdDeclarationProvenance.DeclarationProvenanceTests.ModelDiagnosticIsGetOnlyAndItsGetterIlIsSingleReferenceLoad()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.ValidationMetadata.ValidationMetadataTests.SetterIlContainsOnlyTwoValueFieldStoresAndReturn [FAIL]\n      Assert.Equal() Failure: Values differ\n      Expected: 2\n      Actual:   32\n      Stack Trace:\n        /_/tests/Xemele.Tests/M5-validation-metadata/ValidationMetadataTests.cs(134,0): at Xemele.Tests.ValidationMetadata.ValidationMetadataTests.SetterIlContainsOnlyTwoValueFieldStoresAndReturn()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.M5ValidationSourceProvenance.SourceProvenanceTests.ScalarPayloadAndGeneratedGetterSetterHaveNoHeapConstruction [FAIL]\n      Assert.Equal() Failure: Values differ\n      Expected: 2\n      Actual:   32\n      Stack Trace:\n        /_/tests/Xemele.Tests/M5-validation-source-provenance/SourceProvenanceTests.cs(134,0): at Xemele.Tests.M5ValidationSourceProvenance.SourceProvenanceTests.ScalarPayloadAndGeneratedGetterSetterHaveNoHeapConstruction()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n  Finished:    Xemele.Tests (ID = '7a19e66c8aafe59b286637fcf909802fc7ffca30dd9178fee9dc0829c2c61f7a')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 10754, Errors: 0, Failed: 4, Skipped: 0, Not Run: 0, Time: 48.154s\n\nCalculating coverage result...\n  Generating report '/private/tmp/xemele-m9-ordinary-coverage/artifacts/M9-robustness/ordinary-coverage/unit-coverage.json'\n+--------+--------+--------+--------+\n| Module | Line   | Branch | Method |\n+--------+--------+--------+--------+\n| Xemele | 98.04% | 90.12% | 96.66% |\n+--------+--------+--------+--------+\n\n+---------+--------+--------+--------+\n|         | Line   | Branch | Method |\n+---------+--------+--------+--------+\n| Total   | 98.04% | 90.12% | 96.66% |\n+---------+--------+--------+--------+\n| Average | 98.04% | 90.12% | 96.66% |\n+---------+--------+--------+--------+\n\n"
+    }
+  ],
+  "tool": {
+    "package": "coverlet.console",
+    "version": "6.0.4",
+    "packageSha256": "48ad640bc67eb52e0f95c2f80f6368b24088033c5792e834d7ec4ae2ae543217",
+    "documentation": "https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/GlobalTool.md"
+  },
+  "fuzzExecuted": false,
+  "productionInstrumented": false,
+  "collectorControl": {
+    "total": 2,
+    "covered": 1,
+    "uncovered": 1,
+    "realBranchesObserved": true
+  },
+  "productionSha256Before": "c7400a8afc40671a95adc165f2248a13e93b32c792c93e0b523ab03cfc549f1b",
+  "productionHashUnchangedAfterFailedRun": true,
+  "failureMeaning": "Four exact-IL scalar accessor assertions correctly reject all-module coverage instrumentation; current production unchanged and this run gets no passing test/coverage credit."
+}

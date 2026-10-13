@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "id": "M9-xml-performance",
+  "milestone": "M9",
+  "title": "Improve XML parsing throughput and allocations against BCL and native references",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "XML performance lane 01a1361b-a82b-7f52-8c53-9988c0c55811",
+  "branch": "codex/xml-performance",
+  "base_revision": "b44a2d24feab66ec7f11f56703d48983cc525c2d",
+  "integration_revision": null,
+  "depends_on": [
+    "M9-dom-memory"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/tasks/README.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Input/XmlInputDecoder.cs",
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs",
+    "src/Xemele/Parsing/Dom/DomSink.cs",
+    "src/Xemele/Tree/SlotArena.cs",
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs",
+    "src/Xemele/Internal/Operations/ScalarLocation.cs",
+    "src/Xemele/Internal/Operations/OperationBudget.cs",
+    "src/Xemele/Options/XmlParseOptions.cs",
+    "tests/Xemele.Tests/M9-xml-performance/",
+    "benchmarks/Xemele.Benchmarks/M9-xml-performance/",
+    "docs/reports/M9-xml-performance/"
+  ],
+  "api_or_output": "Measured compatible XML hot-path improvements, pinned BCL/libxml2/xmloxide comparisons and explicit measured feature-cost tradeoffs. Preserve all default XML correctness, diagnostics, quotas, source coordinates and earlier APIs; any public feature switch requires owning-contract follow-up.",
+  "acceptance": [
+    {
+      "id": "M9-xml-performance-A1",
+      "description": "On all ten frozen XML fixtures, establish semantic-equivalent byte-DOM comparisons with current BCL, pinned libxml2 and xmloxide; record unmodified baseline, allocation/retention controls, native lifecycle differences, versions and raw local evidence outside tracked reports.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-xml-performance-A2",
+      "description": "Improve raw throughput and allocations toward BCL parity: target geometric-mean latency and allocated-byte ratios <=1.10 and no per-fixture ratio >1.25 for the agreed equivalent default-feature profile; report every deficit honestly and do not relax semantics or exclude fixtures to claim parity.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-xml-performance-A3",
+      "description": "Preserve default parsing, normalization, source mappings/locations, callbacks/pause/chunk boundaries, cancellation, quotas, DTD/entity provenance and recovery; pass focused and relevant cumulative tests plus task validation, with explicit allocation evidence for new borrowed primitives.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-xml-performance-A4",
+      "description": "Inspect faster native/Rust implementations and quantify representative feature costs; document techniques to adopt and any proposed pay-for-play/default contract changes without dropping existing features silently.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "User-authorized performance lane after the measured current-main XML/BCL deficit; coordinator creates an explicitly owned repair task because no ready task existed.",
+    "checks": [],
+    "remaining": [
+      "Implement and measure default-compatible hot paths in isolated worktree."
+    ],
+    "requests": []
+  }
+}

@@ -6,9 +6,9 @@
   "kind": "verification",
   "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-current-corpus",
-  "base_revision": "aaa0065e08d7ed0d3e30311fa7f28c60ae09b0f0",
-  "integration_revision": "5163669e6fc0009a94c35aad22be830e78d708da",
+  "branch": "codex/m9-ordinary-coverage",
+  "base_revision": "9e99f4b47e6b44decf0391c47cc9d25a0c3c317c",
+  "integration_revision": "837ef54b5a2b080110699d2c47dc126f257ae460",
   "depends_on": [
     "M9-contracts",
     "M9-dom-memory",
@@ -33,7 +33,8 @@
       "status": "pending",
       "evidence": [
         "current-suites",
-        "current-original-xsd"
+        "current-original-xsd",
+        "ordinary-core-branch-coverage"
       ]
     },
     {
@@ -42,7 +43,8 @@
       "status": "pending",
       "evidence": [
         "current-suites",
-        "current-original-xsd"
+        "current-original-xsd",
+        "ordinary-core-branch-coverage"
       ]
     },
     {
@@ -51,7 +53,8 @@
       "status": "pending",
       "evidence": [
         "current-suites",
-        "current-original-xsd"
+        "current-original-xsd",
+        "ordinary-core-branch-coverage"
       ]
     }
   ],
@@ -62,7 +65,10 @@
     "docs/reports/M9-robustness/reuse.py: exact unchanged conformance closure and retained original-profile accounting",
     "docs/reports/M9-robustness/current-corpus.py: exact verified four-file M9 runtime renewal and unchanged released fixed-corpus executor/row inspection",
     "docs/reports/M9-robustness/historical-controls.py: unchanged39historical guards on exact copied original binding fixtures; current production separately verified",
-    "docs/reports/M9-robustness/current-suite-binding.json,current-xsd.json: current10754/920/618source-equivalent suites and actual83472row corpus reassessment"
+    "docs/reports/M9-robustness/current-suite-binding.json,current-xsd.json: current10754/920/618source-equivalent suites and actual83472row corpus reassessment",
+    "tests/ReleaseCampaign/CoverageControl/: fixed realcovered/uncovered collector control; no fuzz target",
+    "tests/ReleaseCampaign/CoverageCases/:32fixed byte/character DOCTYPEerror/normalization checks",
+    "docs/reports/M9-robustness/ordinary-coverage.py,ordinary-coverage-scope.json,core-coverage-summary.json,core-coverage-review.md: complete reviewed11fileXMLcore branchscope, noexclusions"
   ],
   "evidence": [
     {
@@ -118,20 +124,39 @@
       "result": "passed",
       "summary": "Current10754/920/618suite evidence andactual83472row original-XSD run source-equivalent on integrated main.155exactzero-creditdispositions andannotZ002true preserved; mandatorydeferredfuzz/branch gates remainunverified.",
       "artifact": "docs/reports/M9-robustness/current-integration.json"
+    },
+    {
+      "id": "ordinary-core-branch-coverage",
+      "kind": "check",
+      "revision": "0c571cd5d8df81b6640a509530f7637d72043205",
+      "command": "PinnedCoverlet6.0.4/explicit.NET10.0.11collectorcontrol;10754ordinarytests on copiedcore-onlyinstrumentedDLL;32fixedDOCTYPEchecks with exactDLL/PDB mergedhits",
+      "result": "passed",
+      "summary": "Complete11fileXMLcore/parser+decoder2086/2268branches=91.9753%,0exclusions; collector1hit/1misscontrol, all10754tests pass;32namedcases normal/instrumentedpass. Productionunchanged. Firstall-moduleIL-shapefailure retained; nofuzz/campaigncredit.",
+      "artifact": "docs/reports/M9-robustness/core-coverage-review.md"
+    },
+    {
+      "id": "ordinary-coverage-integrated",
+      "kind": "integration",
+      "revision": "837ef54b5a2b080110699d2c47dc126f257ae460",
+      "command": "Exact frozen core/ordinary-test/control/build source comparison onmain; planning/diff checks",
+      "result": "passed",
+      "summary": "Current unchangedXMLcore2086/2268branches=91.9753% source-boundon integratedmain;10754ordinarytests and32namedcases pass, collectorpositive/negativecontrol proven. No exclusions/campaigncredit; sustainedfuzzstilldeferred.",
+      "artifact": "docs/reports/M9-robustness/coverage-integration.json"
     }
   ],
   "blockers": [
-    "Fuzz planning/execution explicitly deferred by direct human instruction; required24hcampaigns/90%branchcoverage and crash-positive qualification remain unverified."
+    "Required24hourcoverage-guided campaigns/crash-positive qualification remain unverified under explicit human fuzz planning/execution deferral. Ordinary completeXMLcore branchcoverage nowpasses91.9753%; no campaign substitute."
   ],
   "handoff": {
     "summary": "Current ordinary suites and complete fixed XSD corpus reassessed after verified runtime repairs; exact approved original outcomes preserved. Fuzz remains deferred and lane remainsblocked.",
     "checks": [
       "10754units+920conformance+618differential current-source bound; currentperformance1GiBresourcecontrols preserved separately",
       "Actual83472two-engine rows,186clean children; original39329true/144false/11null,155exactzero-creditdispositions,annotZ002true",
-      "Initialprelaunch ownership failure and historicalfreeze-positive rejection retained;39unchangedhistorical controls use exactcopied originalfixtures, currentproduction reviewed separately"
+      "Initialprelaunch ownership failure and historicalfreeze-positive rejection retained;39unchangedhistorical controls use exactcopied originalfixtures, currentproduction reviewed separately",
+      "Ordinary XMLcore/decodercoverage2086/2268=91.9753% with0exclusions; all10754tests+32newfixedchecks pass; originalproductionunchanged."
     ],
     "remaining": [
-      "Sustained fuzz/branch/crash-positive gates remain pending under explicit human deferral; no further fuzz planning or execution."
+      "Sustained fuzz/crash-positive gates remain pending under explicit human deferral; no further fuzz planning/execution."
     ],
     "requests": [
       "Current local distribution/package checks must reflect the verified repaired runtime; hostedretry awaits existing budget approval."

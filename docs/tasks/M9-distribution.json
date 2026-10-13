@@ -6,16 +6,17 @@
   "kind": "verification",
   "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-current-package",
-  "base_revision": "1e4eb2c0062eaffb385db6ee2fe3f5312215c358",
-  "integration_revision": "a8385a21c58ecdc4ed7a361d275c4c7e05a7b371",
+  "branch": "codex/m9-hosted-validation-outcome",
+  "base_revision": "6f5d31b1f5f57d7dfe76cec15f53150ab6aa57b9",
+  "integration_revision": "782f86da3773e63ad992a6b14f438be8c815f761",
   "depends_on": [
     "M9-contracts",
     "M9-build-compatibility",
     "M9-corpus-portability",
     "M9-dom-memory",
     "M9-xpath-order",
-    "M9-benchmark-build"
+    "M9-benchmark-build",
+    "M9-windows-test-paths"
   ],
   "goals": [
     "G16",
@@ -39,7 +40,8 @@
       "evidence": [
         "local-package",
         "missing-platform-matrix",
-        "current-local-package"
+        "current-local-package",
+        "hosted-current-three-os"
       ]
     },
     {
@@ -49,7 +51,8 @@
       "evidence": [
         "local-package",
         "missing-platform-matrix",
-        "current-local-package"
+        "current-local-package",
+        "hosted-current-three-os"
       ]
     },
     {
@@ -153,23 +156,59 @@
       "result": "passed",
       "summary": "Current localpackage/managed/trim/AOT/tool/symbol source closure unchanged onmain; canonicalcheckpoint retained andunpublished. Only optionalhostedunitguard changed, toverified10754; requiredOS/x64 execution stillpendingbudget.",
       "artifact": "docs/reports/M9-distribution/current-integration.json"
+    },
+    {
+      "id": "hosted-old-revision-attempt2",
+      "kind": "check",
+      "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
+      "command": "Read-only gh api run38404776386 (run_attempt2), jobs, and attempt1; inspect supplied failed log; compare prepared candidate source closure",
+      "result": "failed",
+      "summary": "Human-triggered second attempt executed all three jobs on the old commit: Linux/macOS10741 tests52 failures each; Windows10741 tests120 failures. Missing-corpus failures retained; packaging not reached. Historical attempt1 canceled/jobs=[] remains true. Candidate929585dd is still local and includes later corpus/portability/runtime10754 repairs; no new run/push.",
+      "artifact": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
+    },
+    {
+      "id": "hosted-rerun-reconciliation-integrated",
+      "kind": "integration",
+      "revision": "f1ca9c15b5c7294620322155b569538d489cd95b",
+      "command": "Merge report-only reconciliation preserving non-overlapping XML performance task claim; python3 tools/planning/tasks.py validate; git diff --check; source closure comparison",
+      "result": "passed",
+      "summary": "Reconciled both run38404776386 attempts and preserved all3 old-revision failures without adding matrix credit.207 task records validate; source/workflow/package inputs unchanged. Current candidate remains local; no push/jobs/fuzz. Distribution remains blocked.",
+      "artifact": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
+    },
+    {
+      "id": "hosted-current-three-os",
+      "kind": "check",
+      "revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+      "command": "Authorized single git push to codex/m9-os-validation; push-triggered GitHub run38454912150 attempt1; read API jobs and download/inspect all3 summary artifacts",
+      "result": "failed",
+      "summary": "Linuxx64/macOSarm64:10754unitspass and21commands pass canonical packages/isolatedmanaged/trim/NativeAOT/tool with clean receipts. Windowsx64:10712pass42fail (38schemafixtureguards,4allocationchildguards), packaging not reached. All3386 original corpus bytes verified perOS. Exactly3jobs completed under20min each,14.27observedjobmin; budget consumed, no extra push/run/fuzz/publication.",
+      "artifact": "docs/reports/M9-distribution/hosted-current/outcome.json"
+    },
+    {
+      "id": "hosted-current-integrated",
+      "kind": "integration",
+      "revision": "782f86da3773e63ad992a6b14f438be8c815f761",
+      "command": "Integrate hosted summaries; inspect exact929585dd artifact source identities; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual Linux/macOS pass and Windows42fail evidence integrated; no runtime changes, no full-matrix pass.207 task records validate; consumedbudget retained.",
+      "artifact": "docs/reports/M9-distribution/hosted-current/outcome.json"
     }
   ],
   "blockers": [
-    "Required Windows/Linux/x64 current-runtime execution stillmissing; initial authorized three-job run failed before packaging. One additional three-job20minute/60runner-minute retry awaits its existing humanbudget question."
+    "Windowsx64 current42 test path failures have an integrated local43/43focused passing repair; actual Windows cumulative/package/trim/AOT/tool execution after repair is still unrun. Prior three-job budget consumed; fresh explicit runner authorization required."
   ],
   "handoff": {
-    "summary": "Current repaired-runtime local package/trim/NativeAOT/tool validation passed; originalcheckpoints and failed hostedattempt preserved. RequiredOS/x64 evidence remainspending.",
+    "summary": "Authorized current repaired three-OS matrix completed: Linuxx64/macOSarm64 unit and package/managed/trim/AOT/tool passed; Windows42 path-guard failures before packaging. Required full matrix remains blocked.",
     "checks": [
-      "18localcommands pass withcleanprocessreceipts;two canonicalruntime/tool packages andsymbol pairs identical",
-      "Freshisolatedmanaged/trim/NativeAOT consumers andtoolinstall/help pass;nativeMachO64arm64;embeddedSourceLink exactpackagecommit",
-      "Hostedunitguard alignedto alreadyverified10754currenttests; no hostedjob orpush performed"
+      "Exactlyone push-triggered three-job run38454912150 at929585dd; observed14.27jobmin,20mincapperjob",
+      "Linux/macOS10754unitspass;21commands each clean process receipts and fresh package consumer modes",
+      "All3OS3386pinnedcorpusfilesexact;Windows10712pass42failedwithfullfailureidentitiesandchilddiagnostics retained"
     ],
     "remaining": [
-      "Additionalapprovedbudget for three cappedhostedjobs andactual Windows/Linux/x64execution; laneA1/A2remainpending."
+      "Fresh explicit runner budget and actual Windows validation after integrated test-only path repair; no matrix pass without execution."
     ],
     "requests": [
-      "Keep existing additional runner-budget question pending; do not infer retry approval from general continuation or coordination-message authorization."
+      "Preserve passing Linux/macOS source-applicable evidence and exact failed Windows identities; no new runner execution inferred."
     ]
   }
 }

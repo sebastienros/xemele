@@ -1,0 +1,11 @@
+# Hosted rerun of the old revision
+
+[Run 38404776386](https://github.com/sebastienros/xemele/actions/runs/38404776386) has two attempts. Attempt 1 was canceled with no jobs (API update 2026-10-13T13:25:34Z). That earlier observation remains valid. The later human-triggered attempt 2 completed with failure at 2026-10-13T18:37:14Z, with all three jobs executed. This reconciliation launched no jobs.
+
+Both attempts used `eea84f5838f43452df16b0d00384f628c0aab186`. Linux and macOS each ran 10,741 tests with 52 failures; Windows ran 10,741 with 120 failures. All stopped in the cumulative unit phase before package consumption. Retained log samples show the old missing `/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources` setup, including `RepairTests.Read` on macOS. The old harness retained only output tails, so the additional Windows failures remain undiagnosed. No current OS package acceptance passes.
+
+The correct prepared local validation branch is `codex/m9-os-validation`, commit `929585ddf1a5413d9560fb7cef4b4180d640da67`. Its tree is identical to integrated `4478ad4fff818bfafa3514feb0914295a81f9507`; its runtime, unit tests, package consumers, packaging tools, release workflow and build configuration are unchanged on the reconciliation base. It provisions and checks the pinned W3C corpus, passes its path through `XEMELE_CORPUS_RESOURCES`, preserves fixture bytes on checkout, retains full failed unit and child diagnostics, and expects the current 10,754-test population. It also includes the verified DOM and XPath repairs. The old rerun includes none of these later repairs.
+
+The remote validation branch still points to `eea84f5838f43452df16b0d00384f628c0aab186`. The prepared candidate has not been pushed. The existing question for one additional three-job run, capped at 20 minutes per job and 60 runner-minutes total, remains pending; reporting this rerun does not authorize another push or run. Fuzzing remains deferred. The goal and M9 distribution lane remain blocked.
+
+`outcome.json` contains API metadata, exact job IDs/times, log hash and source comparison paths. `failed.log` preserves the supplied failed output. This is a reconciliation of evidence, not a new test execution.

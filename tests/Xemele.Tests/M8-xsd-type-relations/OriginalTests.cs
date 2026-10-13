@@ -14,8 +14,8 @@ public sealed class OriginalTests
     internal static string Root()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir is not null && !Directory.Exists(Path.Combine(dir.FullName, "tests/fixtures/M8-xsd-type-relations"))) dir = dir.Parent;
-        return Path.Combine(dir!.FullName, "tests/fixtures/M8-xsd-type-relations");
+        while (dir is not null && !Directory.Exists(Path.Combine(dir.FullName, "tests", "fixtures", "M8-xsd-type-relations"))) dir = dir.Parent;
+        return Path.Combine(dir!.FullName, "tests", "fixtures", "M8-xsd-type-relations");
     }
     [Theory]
     [InlineData(0, "particlesZ002/particlesZ002")]

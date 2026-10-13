@@ -8,13 +8,12 @@
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
   "last_verified_task": "M9-benchmark-build",
-  "last_integrated_revision": "a8385a21c58ecdc4ed7a361d275c4c7e05a7b371",
+  "last_integrated_revision": "837ef54b5a2b080110699d2c47dc126f257ae460",
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Await the existing additional three capped hosted-job budget answer before pushing/running the prepared current validation candidate.",
-    "Dedicated controlled x64/arm64 comparative timing requires eligible hardware or existing evidence; sharedCI does not satisfy it.",
-    "Fuzz planning/execution remains explicitly deferred;24h/90%branch gates receive no credit."
+    "Repair narrowly owned Windows test path guards locally, preserving strict ownership/provenance and allcases.",
+    "Fresh runner execution requires new direct human budget; fuzz remains deferred; dedicated timing still outstanding."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -144,11 +143,11 @@
   },
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
-  "milestone_progress": "All independent current local M9repairs,benchmarkpreparation,memory,cumulative/fixedcorpus andpackage/trim/AOT/tool checks integrated. RequiredhostedOS/x64retrybudget,dedicatedtiming andexplicitlydeferredfuzz/branchgates remain; M9gateunverified.",
+  "milestone_progress": "Currentlocalrepairs/performance/corpus/packageevidence integrated; ordinarycompleteXMLcore2086/2268branches=91.9753% nowpasseswith0exclusions. Hostedretrybudget,dedicatedtiming andexplicitlydeferredsustainedfuzzgates remain; M9unverified.",
   "blockers": [
     "Additional three-job20minute hosted retry remains pending the existing runner-budget question; initial authorized run failed.",
-    "Required dedicated-machine timing evidence unavailable.",
-    "Fuzz planning/execution explicitly deferred by human;24h campaigns and90% branch coverage remain unverified."
+    "Required dedicated-machine x64/arm64 comparative timing evidence unavailable.",
+    "Required24hourcoverage-guided campaigns/crash-positive qualification remain explicitly deferred; ordinaryXMLcore branch coverage nowpasses91.9753%."
   ],
   "pending_decisions": [],
   "timing_queue": [],
@@ -1885,7 +1884,7 @@
     "Managed XPath normalization/uniqueness has demonstrated quadratic work-limit failure; assign its exact module owner after current storage repair."
   ],
   "hosted_platform_request": {
-    "status": "first attempt failed; concrete locally verified retry prepared; awaiting additional three-job approval",
+    "status": "Approved repaired run completed; Linux/macOS pass, Windows42pathguards fail before packaging; no further run authorized",
     "repository": "sebastienros/xemele",
     "visibility": "PRIVATE",
     "local_branch": "codex/m9-os-validation",
@@ -1906,17 +1905,80 @@
         "id": 38404776386,
         "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
         "status": "completed",
-        "reason": "Registration delay caused code-identical empty trigger; cancel queued duplicate to preserve three-job budget.",
-        "conclusion": "cancelled",
-        "jobs": []
+        "reason": "Earlier empty-trigger attempt1 canceled; later human rerun attempt2 executed all3jobs and failed on old source.",
+        "conclusion": "failure",
+        "jobs": [
+          {
+            "id": 115470645635,
+            "name": "distribution (ubuntu-latest, linux-x64)",
+            "conclusion": "failure"
+          },
+          {
+            "id": 115470646092,
+            "name": "distribution (windows-latest, win-x64)",
+            "conclusion": "failure"
+          },
+          {
+            "id": 115470646130,
+            "name": "distribution (macos-latest, osx-arm64)",
+            "conclusion": "failure"
+          }
+        ],
+        "attempts": [
+          {
+            "runAttempt": 1,
+            "status": "completed",
+            "conclusion": "cancelled",
+            "jobs": []
+          },
+          {
+            "runAttempt": 2,
+            "status": "completed",
+            "conclusion": "failure",
+            "jobIds": [
+              115470645635,
+              115470646092,
+              115470646130
+            ],
+            "updatedAt": "2026-10-13T18:37:14Z",
+            "origin": "Later direct-human rerun of the old revision"
+          }
+        ],
+        "run_attempt": 2,
+        "report": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
+      },
+      {
+        "id": 38454912150,
+        "revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+        "url": "https://github.com/sebastienros/xemele/actions/runs/38454912150",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_attempt": 1,
+        "event": "push",
+        "scope": "Approved one additional three-job20minute matrix; no further retry authorization",
+        "jobIds": [
+          115495031603,
+          115495031933,
+          115495032004
+        ],
+        "report": "docs/reports/M9-distribution/hosted-current/outcome.json"
       }
     ],
     "authorization": "Direct human reply: Approve validation branch and jobs",
     "authorized_scope": "Only new private codex/m9-os-validation branch and3standard20minjobs; no remote main/tag/package publication.",
-    "remote_revision": "eea84f5838f43452df16b0d00384f628c0aab186",
-    "retry_revision": "ebea25df6995b428c1852770a50c12025931a7b2",
+    "remote_revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+    "retry_revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
     "retry_job_timeout_minutes": 20,
-    "retry_max_runner_minutes": 60
+    "retry_max_runner_minutes": 60,
+    "retry_authorization": {
+      "humanRequest": "Push the repaired validation branch and run the three OS jobs yourself.",
+      "sourceChat": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+      "candidate": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+      "jobs": 3,
+      "maxMinutesPerJob": 20,
+      "maxTotalRunnerMinutes": 60,
+      "consumed": true
+    }
   },
   "current_memory_evidence": {
     "integration_revision": "6a62f81f325d1cdd1b0111ed469fff3ee48959a2",
@@ -1926,5 +1988,69 @@
     "maximum_sampled_managed_live_bytes": 291304,
     "positive_control_managed_live_bytes": 9627776,
     "all_owned_processes_terminal": true
+  },
+  "current_hosted_validation_candidate": {
+    "branch": "codex/m9-os-validation",
+    "revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+    "integratedSourceRevision": "4478ad4fff818bfafa3514feb0914295a81f9507",
+    "sourceTreeIdentical": true,
+    "pushed": true,
+    "jobsStarted": 3,
+    "retryBudgetApproval": "approved by direct human: Push the repaired validation branch and run the three OS jobs yourself.",
+    "capPerJobMinutes": 20,
+    "maximumAdditionalRunnerMinutes": 60,
+    "jobCount": 3,
+    "fuzzIncluded": false,
+    "remoteMainTagsPublicationChanged": false,
+    "run": 38454912150,
+    "runUrl": "https://github.com/sebastienros/xemele/actions/runs/38454912150",
+    "runStatus": "completed",
+    "runConclusion": "failure",
+    "retryBudgetConsumed": true
+  },
+  "goal_blocked_audit": {
+    "consecutiveNoProgressTurns": 3,
+    "previousGoalTurn": "no progress: second verified impasse audit",
+    "currentTurn": "no progress: third unchanged audit, no ready task/live workload/new approval",
+    "condition": "Existing additional hosted retry approval, eligible dedicated timing evidence, and explicitly deferred mandatory sustained fuzz requirements remain unavailable.",
+    "knownRuns": [
+      {
+        "id": 38404705596,
+        "status": "completed",
+        "conclusion": "failure",
+        "runAttempt": 1
+      },
+      {
+        "id": 38404776386,
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runAttempt": 1
+      }
+    ],
+    "goalStatus": "blocked",
+    "gateCompletionProven": false,
+    "resumeConditions": [
+      "Explicit additional three-job20minute hosted retry approval",
+      "Eligible dedicated x64/arm64 comparative timing machine or required prior evidence",
+      "Explicit resumption of deferred sustained fuzz work, followed by actual mandatory campaign/crash-positive evidence"
+    ],
+    "knownRunsHistoricalAtAudit": true,
+    "laterRunReconciliation": {
+      "run": 38404776386,
+      "runAttempt": 2,
+      "conclusion": "failure",
+      "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
+      "report": "docs/reports/M9-distribution/hosted-attempt2/outcome.json",
+      "goalStillBlocked": true
+    },
+    "hostedRetryAuthorizationNowAvailable": true,
+    "goalStatusNote": "Goal tool remains blocked; authorized hosted distribution work resumes locally. Tool offers no active/resume status mutation.",
+    "latestHostedResult": {
+      "run": 38454912150,
+      "conclusion": "failure",
+      "linuxAndMacPassed": true,
+      "windowsFailures": 42,
+      "budgetConsumed": true
+    }
   }
 }

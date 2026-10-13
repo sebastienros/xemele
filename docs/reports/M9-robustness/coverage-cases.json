@@ -1,0 +1,75 @@
+{
+  "result": "passed",
+  "revision": "0c571cd5d8df81b6640a509530f7637d72043205",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageCases/CoverageCases.csproj",
+        "--source",
+        "/private/tmp",
+        "--disable-build-servers",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 88409,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageCases/CoverageCases.csproj (in 170 ms).\n  1 of 2 projects are up-to-date for restore.\n",
+      "outputSha256": "395fdc28277ad0862142bc2ee32425605334213bd7449576dd564a635a40c2fb"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageCases/CoverageCases.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 88411,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-ordinary-coverage/src/Xemele/bin/Release/net10.0/Xemele.dll\n  CoverageCases -> /private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageCases/bin/Release/net10.0/CoverageCases.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:07.55\n",
+      "outputSha256": "badc7e75cd8ad369dc3d58a41bf03d9ba0e1b2f33467ac8c677ee2cf14f2a2f0"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-ordinary-coverage/tests/ReleaseCampaign/CoverageCases/bin/Release/net10.0/CoverageCases.dll"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 88415,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputTail": "PASS 32 fixed character/byte DOCTYPE rejection and public-identifier normalization cases\n",
+      "outputSha256": "6c97c48fc15c4e11c2f8001aab098b81ffd3e3ecfbe308cd03d479a1a59c8e7d"
+    }
+  ],
+  "fuzzExecuted": false
+}

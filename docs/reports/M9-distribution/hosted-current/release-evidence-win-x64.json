@@ -1,0 +1,480 @@
+{
+  "task": "M9-distribution",
+  "revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+  "result": "failed",
+  "rid": "win-x64",
+  "runtime": "10.0.11",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "--version"
+      ],
+      "receipt": {
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "4b509237900912ac8385460ada8a1332f7cfcca46d8728bf019800de733c535f"
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "D:\\a\\xemele\\xemele\\tests\\Xemele.Tests\\Xemele.Tests.csproj",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "a916648cbe6d5ee9ea164f21327cc119d2eb7f0bbe1b99f920351c24c9e8a3b6"
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "build",
+        "D:\\a\\xemele\\xemele\\tests\\Xemele.Tests\\Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "1e72991cbf2a570a1625f1cb6fa5f77678bb24bdf92377853b56c5a85661142d"
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "--fx-version",
+        "10.0.11",
+        "D:\\a\\xemele\\xemele\\tests\\Xemele.Tests\\bin\\Release\\net10.0\\Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "D:\\a\\xemele\\xemele\\artifacts\\M9-distribution\\work\\unit.xml"
+      ],
+      "receipt": {
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "136c57a1ac6e70d9206bd3fbd4605d66ebcf489eb1c3117ff233f7f77db5f1be",
+      "failureTail": ".Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations [FAIL]\n      System.InvalidOperationException : Framing real child failed/timeout; retained artifacts: D:\\a\\xemele\\xemele\\artifacts/M2-dtd-framing-allocation-probe/child-runs\\8408-628ede9fef79495991c0aa18f6199df2\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs(175,0): at Xemele.Tests.FramingAllocationChild.<RunPair>g__Run|20_0(String mode, <>c__DisplayClass20_0&)\n        /_/tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs(170,0): at Xemele.Tests.FramingAllocationChild.RunPair()\n        /_/tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs(318,0): at Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing [FAIL]\n      System.InvalidOperationException : Tree real child failed/timeout; retained artifacts: D:\\a\\xemele\\xemele\\artifacts/M2-tree-allocation-probe/child-runs\\8408-62478638058e4cb79a29d18618e8bcdd\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(137,0): at Xemele.Tests.Tree.TreeAllocationChild.<RunPair>g__Run|18_0(String mode, <>c__DisplayClass18_0&)\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(132,0): at Xemele.Tests.Tree.TreeAllocationChild.RunPair()\n        /_/tests/Xemele.Tests/M1-tree/TreeTests.cs(171,0): at Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n  Finished:    Xemele.Tests (ID = 'a746a353aab3e56fd0a0d745281813cda5d6264d90879d99861896a9efe1fd58')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 10754, Errors: 0, Failed: 42, Skipped: 0, Not Run: 0, Time: 60.621s\n"
+    }
+  ],
+  "packages": [],
+  "published": false,
+  "sdk": "10.0.400",
+  "unitCorpus": {
+    "sourceUrl": "https://www.w3.org/XML/Test/xmlts20130923.tar.gz",
+    "archiveSha256": "9b61db9f5dbffa545f4b8d78422167083a8568c59bd1129f94138f936cf6fc1f",
+    "manifestSha256": "e655b802f4c3a6247ed02d2ed50f7b5482e901a608076361017a4f0984d75e2c",
+    "inventorySha256": "8c2f37c0e8881f145874d413d1b6447ce116ab3d25b1994de483d5ef3e5d5c0c",
+    "files": 3386,
+    "exactOriginalBytes": true,
+    "parserCasesExecuted": 0
+  },
+  "unitCorrectness": {
+    "total": 10754,
+    "passed": 10712,
+    "failed": 42,
+    "errors": 0,
+    "skipped": 0,
+    "not-run": 0
+  },
+  "downloadedArtifactSha256": "82d8af304126507ff080e3f264b278424d8236c5f50fab94ea083257b4f72582",
+  "unitFailureDetails": [
+    {
+      "name": "Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.InvalidOperationException\"><message>System.InvalidOperationException : PI real child failed/timeout; retained artifacts: D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-pi-allocation-probe/child-runs\\\\8408-5ef0bb27b32e4646b424bec8b088c968</message>"
+    },
+    {
+      "name": "Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.InvalidOperationException\"><message>System.InvalidOperationException : Streaming real child failed/timeout; retained artifacts: D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-streaming-allocation-probe/child-runs\\\\8408-bf642e0996094b989093e0dc85730221</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 0, identity: \\\"particlesZ002/particlesZ002\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 21, identity: \\\"stZ047/stZ047.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 22, identity: \\\"stZ055/stZ055\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 23, identity: \\\"stZ055/stZ055.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 24, identity: \\\"test009/test\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 25, identity: \\\"test009/test.13.n\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 26, identity: \\\"test009/test.8.n\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 27, identity: \\\"test009/test.1.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 28, identity: \\\"test009/test.10.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 29, identity: \\\"test009/test.11.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 30, identity: \\\"test009/test.12.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 31, identity: \\\"test009/test.2.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 32, identity: \\\"test009/test.3.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 33, identity: \\\"test009/test.4.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 34, identity: \\\"test009/test.5.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 35, identity: \\\"test009/test.6.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 20, identity: \\\"stZ047/stZ047\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 19, identity: \\\"stZ007/stZ007.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 18, identity: \\\"stZ007/stZ007\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 17, identity: \\\"ctG013/ctG013.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 1, identity: \\\"particlesZ002/particlesZ002.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 2, identity: \\\"particlesZ012/particlesZ012\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 3, identity: \\\"particlesZ012/particlesZ012.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 4, identity: \\\"particlesZ015/particlesZ015\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 5, identity: \\\"particlesZ015/particlesZ015.i\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 6, identity: \\\"particlesZ020/particlesZ020\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 7, identity: \\\"particlesZ031/particlesZ031\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 36, identity: \\\"test009/test.7.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 8, identity: \\\"attZ015/attZ015\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 10, identity: \\\"ctE019/ctE019\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"Xemele.Validation.SchemaCompileException\"><message>Xemele.Validation.SchemaCompileException : Schema compilation failed.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 11, identity: \\\"ctE019/ctE019.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"Xemele.Validation.SchemaCompileException\"><message>Xemele.Validation.SchemaCompileException : Schema compilation failed.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 12, identity: \\\"ctF013/ctF013\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 13, identity: \\\"ctF013/ctF013.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 14, identity: \\\"ctG001/ctG001\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 15, identity: \\\"ctG001/ctG001.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 16, identity: \\\"ctG013/ctG013\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 9, identity: \\\"attZ015/attZ015.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.M8XsdTypeRelations.OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle(index: 37, identity: \\\"test009/test.9.v\\\")",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.Xml.XmlException\"><message>System.Xml.XmlException : Denied outside fixtures.</message>"
+    },
+    {
+      "name": "Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.InvalidOperationException\"><message>System.InvalidOperationException : Tree real child failed/timeout; retained artifacts: D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-tree-allocation-probe/child-runs\\\\8408-62478638058e4cb79a29d18618e8bcdd</message>"
+    },
+    {
+      "name": "Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations",
+      "result": "Fail",
+      "failureMessage": "<failure exception-type=\"System.InvalidOperationException\"><message>System.InvalidOperationException : Framing real child failed/timeout; retained artifacts: D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-dtd-framing-allocation-probe/child-runs\\\\8408-628ede9fef79495991c0aa18f6199df2</message>"
+    }
+  ],
+  "unitChildDiagnosticsInspected": [
+    {
+      "path": "artifacts\\M2-dtd-framing-allocation-probe\\child-runs\\8408-628ede9fef79495991c0aa18f6199df2\\real.exit.json",
+      "sha256": "8a08da1a3014a004ea106cdf7c0365ee15f6a732d65834350c30a15139a9e6d8",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":1,\"pid\":9048}"
+    },
+    {
+      "path": "artifacts\\M2-dtd-framing-allocation-probe\\child-runs\\8408-628ede9fef79495991c0aa18f6199df2\\real.invocation.json",
+      "sha256": "01cb6a660c3c9c17740d67438a3533ed4e7db6377cb4744a19f652ce898cce2c",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-dtd-framing-allocation-probe/child-runs\\\\8408-628ede9fef79495991c0aa18f6199df2\\\\real.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"TestSha256\":\""
+    },
+    {
+      "path": "artifacts\\M2-dtd-framing-allocation-probe\\child-runs\\8408-628ede9fef79495991c0aa18f6199df2\\real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-dtd-framing-allocation-probe\\child-runs\\8408-628ede9fef79495991c0aa18f6199df2\\real.stdout.txt",
+      "sha256": "b2a96d0901fb8f0012ad12999c3861c3c3848b1b229db328ca6915e8aeb2cfcd",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n    Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations [FAIL]\n      System.InvalidOperationException : Child request outside owned artifacts.\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs(131,0): at Xemele.Tests.FramingAllocationChild.EnterChild()\n        /_/tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs(315,0): at Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations()\n           at System.RuntimeMet"
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\positive.exit.json",
+      "sha256": "3151abe696e0454bae5d924ddbfcbd6863cc282856ee69a70aebea24f44183ed",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":9152}"
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\positive.invocation.json",
+      "sha256": "214399bf60ed2f4ae7c0871084ca82e9bd6ec93bc81b61dc383bbf24d417b517",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-encoding-allocation-probe/child-runs\\\\8408-0565f93794d24b8b9749e5d0c4572284\\\\positive.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\ne"
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\positive.stdout.txt",
+      "sha256": "946d94fc5f44fadd7fc9e4c688654b316b465c7f3152a7315427c834b304fb43",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'a746a353aab3e56fd0a0d745281813cda5d6264d90879d99861896a9efe1fd58')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 1.029s\n"
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\real.exit.json",
+      "sha256": "0b28541aaa46716ec3746cf92a3b5a5ad504d78bb39d8b8105ba74a1544b8aab",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":1268}"
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\real.invocation.json",
+      "sha256": "31942cac20993dc09b75e23e094488f147a763f5d4aa31312c22ea96d8116d4b",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-encoding-allocation-probe/child-runs\\\\8408-0565f93794d24b8b9749e5d0c4572284\\\\real.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10."
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-encoding-allocation-probe\\child-runs\\8408-0565f93794d24b8b9749e5d0c4572284\\real.stdout.txt",
+      "sha256": "a1f075898d008082fc695f468d35347918edfee092801431a100c941e447a81b",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'a746a353aab3e56fd0a0d745281813cda5d6264d90879d99861896a9efe1fd58')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 1.039s\n"
+    },
+    {
+      "path": "artifacts\\M2-pi-allocation-probe\\child-runs\\8408-5ef0bb27b32e4646b424bec8b088c968\\real.exit.json",
+      "sha256": "a864ad6e08ed398cffd8c7929fd9b04959cef0f3cacf593b0bf9f3d1f87bc998",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":1,\"pid\":8696}"
+    },
+    {
+      "path": "artifacts\\M2-pi-allocation-probe\\child-runs\\8408-5ef0bb27b32e4646b424bec8b088c968\\real.invocation.json",
+      "sha256": "e182689a830283017ace9a07d0b08b5e7fa2eb64cb025447a17a6688ea33b730",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-pi-allocation-probe/child-runs\\\\8408-5ef0bb27b32e4646b424bec8b088c968\\\\real.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"Te"
+    },
+    {
+      "path": "artifacts\\M2-pi-allocation-probe\\child-runs\\8408-5ef0bb27b32e4646b424bec8b088c968\\real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-pi-allocation-probe\\child-runs\\8408-5ef0bb27b32e4646b424bec8b088c968\\real.stdout.txt",
+      "sha256": "8fcf31e307e4d391027cc583ed19b60dc355cb6bba11f5578137aad238906eff",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n    Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup [FAIL]\n      System.InvalidOperationException : Child request outside owned artifacts.\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationChild.cs(106,0): at Xemele.Tests.PiTargets.PiAllocationChild.EnterChild()\n        /_/tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs(143,0): at Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup()\n"
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\positive.exit.json",
+      "sha256": "faa24f633ab7fdd2eaab732333eb2f1ca489e941e91aca8e21f69e079244593f",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":6204}"
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\positive.invocation.json",
+      "sha256": "657cacab5fccdb616be062b1dc476a4fbe295e06801badeafc935cb7ddc42e01",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-resolver-allocation-probe/child-runs\\\\8408-33836b0a14924df6b6f726115c5936d3\\\\positive.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"TestSha"
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\positive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\positive.stdout.txt",
+      "sha256": "5910371651d3b68047bef057265b6abc0a698ff6c2b67366492adaddf798047c",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'a746a353aab3e56fd0a0d745281813cda5d6264d90879d99861896a9efe1fd58')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 1.120s\n"
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\real.exit.json",
+      "sha256": "df8a687678c0adebef28ef0320ae23a7d06d0784eda4e9329c9f4600b4dba04a",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":0,\"pid\":6964}"
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\real.invocation.json",
+      "sha256": "c3f1e4b98be145ff63633d1754c015dd6063c4f0ede04be6d44c712226cad5e5",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-resolver-allocation-probe/child-runs\\\\8408-33836b0a14924df6b6f726115c5936d3\\\\real.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"TestSha256\""
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-resolver-allocation-probe\\child-runs\\8408-33836b0a14924df6b6f726115c5936d3\\real.stdout.txt",
+      "sha256": "17fea8ca495a93b80120b62d49a13850df05f787ad88b22e4818f17d8bac1073",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = 'a746a353aab3e56fd0a0d745281813cda5d6264d90879d99861896a9efe1fd58')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 1.206s\n"
+    },
+    {
+      "path": "artifacts\\M2-streaming-allocation-probe\\child-runs\\8408-bf642e0996094b989093e0dc85730221\\real.exit.json",
+      "sha256": "d15627e306ddfc6503f110cd97a3056eb6a3758d096ea8a7024aa735d01dee71",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":1,\"pid\":5740}"
+    },
+    {
+      "path": "artifacts\\M2-streaming-allocation-probe\\child-runs\\8408-bf642e0996094b989093e0dc85730221\\real.invocation.json",
+      "sha256": "906519f1fad73627afd06e2f7bfb53a4a230933cd5da404705b9238e0c5c2177",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-streaming-allocation-probe/child-runs\\\\8408-bf642e0996094b989093e0dc85730221\\\\real.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Te"
+    },
+    {
+      "path": "artifacts\\M2-streaming-allocation-probe\\child-runs\\8408-bf642e0996094b989093e0dc85730221\\real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-streaming-allocation-probe\\child-runs\\8408-bf642e0996094b989093e0dc85730221\\real.stdout.txt",
+      "sha256": "faaddf03942259c0ceb8038bf6f6c47f38dce2a72388ff4822d4b3dbd5622c7f",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n    Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero [FAIL]\n      System.InvalidOperationException : Child request outside owned artifacts.\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationChild.cs(107,0): at Xemele.Tests.Syntax.StreamingAllocationChild.EnterChild()\n        /_/tests/Xemele.Tests/M1-syntax/StreamingTests.cs(50,0): at Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicod"
+    },
+    {
+      "path": "artifacts\\M2-tree-allocation-probe\\child-runs\\8408-62478638058e4cb79a29d18618e8bcdd\\real.exit.json",
+      "sha256": "69754ad8ab7bfbee86e654f4b527ffbabdcb1a70de778c4c54f3d525e44eb35d",
+      "excerpt": "{\"started\":true,\"exited\":true,\"drained\":true,\"exitCode\":1,\"pid\":6812}"
+    },
+    {
+      "path": "artifacts\\M2-tree-allocation-probe\\child-runs\\8408-62478638058e4cb79a29d18618e8bcdd\\real.invocation.json",
+      "sha256": "bb50e5c8942c2c0c8c8fd43cb7adc7829fd83e7b9f0e2f9d438da01108c9985e",
+      "excerpt": "{\"executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"arguments\":[\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"-noColor\",\"-method\",\"Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing\",\"-result-xml\",\"D:\\\\a\\\\xemele\\\\xemele\\\\artifacts/M2-tree-allocation-probe/child-runs\\\\8408-62478638058e4cb79a29d18618e8bcdd\\\\real.xml\"],\"expected\":{\"Executable\":\"C:\\\\Program Files\\\\dotnet\\\\dotnet.exe\",\"ExecutableSha256\":\"AB1B71FD3DD71062E074C9FAB8312081A81B7F2B3E0327C48C4D249C8D1A3135\",\"TestAssembly\":\"D:\\\\a\\\\xemele\\\\xemele\\\\tests\\\\Xemele.Tests\\\\bin\\\\Release\\\\net10.0\\\\Xemele.Tests.dll\",\"Te"
+    },
+    {
+      "path": "artifacts\\M2-tree-allocation-probe\\child-runs\\8408-62478638058e4cb79a29d18618e8bcdd\\real.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "excerpt": ""
+    },
+    {
+      "path": "artifacts\\M2-tree-allocation-probe\\child-runs\\8408-62478638058e4cb79a29d18618e8bcdd\\real.stdout.txt",
+      "sha256": "a673595609b8980ea4447ded60c5bc4d410afa389f5732262c81cd598e647b0b",
+      "excerpt": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n    Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing [FAIL]\n      System.InvalidOperationException : Child request outside owned artifacts.\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(104,0): at Xemele.Tests.Tree.TreeAllocationChild.EnterChild()\n        /_/tests/Xemele.Tests/M1-tree/TreeTests.cs(168,0): at Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing()\n           at"
+    }
+  ],
+  "rawArtifactPolicy": "Downloaded summary inspected; concise command identities/receipts, hashes, all failure identities/messages and bounded child diagnostics retained; transient downloads removed after integration."
+}
