@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-hosted-validation-outcome",
   "base_revision": "6f5d31b1f5f57d7dfe76cec15f53150ab6aa57b9",
@@ -39,7 +39,8 @@
       "evidence": [
         "local-package",
         "missing-platform-matrix",
-        "current-local-package"
+        "current-local-package",
+        "hosted-current-three-os"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "evidence": [
         "local-package",
         "missing-platform-matrix",
-        "current-local-package"
+        "current-local-package",
+        "hosted-current-three-os"
       ]
     },
     {
@@ -171,22 +173,33 @@
       "result": "passed",
       "summary": "Reconciled both run38404776386 attempts and preserved all3 old-revision failures without adding matrix credit.207 task records validate; source/workflow/package inputs unchanged. Current candidate remains local; no push/jobs/fuzz. Distribution remains blocked.",
       "artifact": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
+    },
+    {
+      "id": "hosted-current-three-os",
+      "kind": "check",
+      "revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+      "command": "Authorized single git push to codex/m9-os-validation; push-triggered GitHub run38454912150 attempt1; read API jobs and download/inspect all3 summary artifacts",
+      "result": "failed",
+      "summary": "Linuxx64/macOSarm64:10754unitspass and21commands pass canonical packages/isolatedmanaged/trim/NativeAOT/tool with clean receipts. Windowsx64:10712pass42fail (38schemafixtureguards,4allocationchildguards), packaging not reached. All3386 original corpus bytes verified perOS. Exactly3jobs completed under20min each,14.27observedjobmin; budget consumed, no extra push/run/fuzz/publication.",
+      "artifact": "docs/reports/M9-distribution/hosted-current/outcome.json"
     }
   ],
-  "blockers": [],
+  "blockers": [
+    "Windowsx64 current unit suite fails42 test-harness path guards before package/trim/AOT execution; Linuxx64/macOSarm64 passed. Repair scoped test portability locally; any new remote run needs fresh explicit runner budget."
+  ],
   "handoff": {
-    "summary": "Direct human approved one new current-candidate three-OS run,20min/job60runner-min total; executing the authorized validation attempt.",
+    "summary": "Authorized current repaired three-OS matrix completed: Linuxx64/macOSarm64 unit and package/managed/trim/AOT/tool passed; Windows42 path-guard failures before packaging. Required full matrix remains blocked.",
     "checks": [
-      "18localcommands pass withcleanprocessreceipts;two canonicalruntime/tool packages andsymbol pairs identical",
-      "Freshisolatedmanaged/trim/NativeAOT consumers andtoolinstall/help pass;nativeMachO64arm64;embeddedSourceLink exactpackagecommit",
-      "Hostedunitguard alignedto alreadyverified10754currenttests; no hostedjob orpush performed",
-      "Read-only API confirms attempt2 failure at oldeea84f58; candidate929585dd source closure equals integrated current runtime/unit/package/workflow inputs; no new jobs or push."
+      "Exactlyone push-triggered three-job run38454912150 at929585dd; observed14.27jobmin,20mincapperjob",
+      "Linux/macOS10754unitspass;21commands each clean process receipts and fresh package consumer modes",
+      "All3OS3386pinnedcorpusfilesexact;Windows10712pass42failedwithfullfailureidentitiesandchilddiagnostics retained"
     ],
     "remaining": [
-      "Additionalapprovedbudget for three cappedhostedjobs andactual Windows/Linux/x64execution; laneA1/A2remainpending."
+      "Scoped Windows harness path repair and actual passing Windows package/trim/AOT/tool execution",
+      "Any further GitHub runner attempt requires fresh direct human approval"
     ],
     "requests": [
-      "No extra runner attempts beyond this new three-job budget without direct human approval."
+      "Create narrowly owned Windows test portability repair; preserve all test cases/strict descendant and provenance guards; no skipped tests or weakened assertions."
     ]
   }
 }
