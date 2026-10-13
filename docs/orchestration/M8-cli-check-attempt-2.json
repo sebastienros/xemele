@@ -1,0 +1,83 @@
+{
+  "task": "M8-cli",
+  "phase": "check",
+  "result": "failed",
+  "workerRevision": "aeda803f69a8955594b88e5d16c574ab1bd6785c",
+  "source": {
+    "files": 332,
+    "sha256": "d819c21574166cf7d3a3ef0559676aa19e50e7bb8580752d265c9647912a49a4"
+  },
+  "outerSession": 67980,
+  "actualOuterExit": 1,
+  "resultsSha256": "8ec3357924f6bd3fb0f73da4c55de37383b76f0c623cc4271faff80766095b85",
+  "commands": [
+    {
+      "index": 0,
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "BOUNDARY rng compileWork=2129 components=474 validationWork=83",
+        "BOUNDARY xsd compileWork=27466 components=3765 validationWork=157",
+        "BOUNDARY schematron compileWork=1315 components=50 validationWork=904",
+        "BOUNDARY rng nestedCompileWork=2328",
+        "BOUNDARY xsd nestedCompileWork=27701",
+        "BOUNDARY schematron nestedCompileWork=449",
+        "PASS schema CLI/library/resource/fuzz: 1156 assertions; fuzz seed=81677 cases=288"
+      ]
+    },
+    {
+      "index": 1,
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "BOUNDARY rng compileWork=2129 components=474 validationWork=83",
+        "BOUNDARY xsd compileWork=27466 components=3765 validationWork=157",
+        "BOUNDARY schematron compileWork=1315 components=50 validationWork=904",
+        "BOUNDARY rng nestedCompileWork=2328",
+        "BOUNDARY xsd nestedCompileWork=27701",
+        "BOUNDARY schematron nestedCompileWork=449",
+        "PASS schema CLI/library/resource/fuzz: 1157 assertions; fuzz seed=81677 cases=288"
+      ]
+    },
+    {
+      "index": 2,
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS phase guards: 10 bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion"
+      ]
+    },
+    {
+      "index": 3,
+      "exit": 1,
+      "reason": "failed",
+      "summary": []
+    }
+  ],
+  "originalFailure": "process_controls.py line 77 closed stdout expected exit 3 and error; observed exit 0 and empty error.",
+  "commandsUnrun": 3,
+  "guards": {
+    "rawDeleted": true,
+    "deadlineExceeded": false,
+    "logsInspected": true,
+    "allOwnedGroupsAbsent": true,
+    "allDirectChildrenReaped": true
+  },
+  "inputsMatched": true,
+  "groups": [
+    95230,
+    95234,
+    95240,
+    95245,
+    95246,
+    95249,
+    95252,
+    95257,
+    95260,
+    95264,
+    95269,
+    95273,
+    95278
+  ],
+  "followUp": "Investigate installed runtime standard-output broken-pipe behavior before a narrowly correct repair; no expectation weakened or platform interop added by this record."
+}
