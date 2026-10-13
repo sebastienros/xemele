@@ -1,0 +1,117 @@
+using System.Text;
+using System.Text.Json;
+using Xemele;
+using Xemele.Tool;
+using Xemele.Validation;
+
+namespace SchemaCliChecks;
+
+internal static class Probe
+{
+    internal static int assertions;
+    internal static void Check(bool condition, string message)
+    { assertions++; if (!condition) throw new InvalidOperationException(message); }
+    internal static void Throws<T>(Action action) where T : Exception
+    { try { action(); } catch (T) { assertions++; return; } throw new InvalidOperationException("Expected " + typeof(T).Name); }
+    internal static int Main()
+    {
+        try
+        {
+#if SCHEMA_XML_ONLY
+            Check(!typeof(XmlDocument).Assembly.GetTypes().Any(type => type.Namespace is { } ns && (ns.StartsWith("Xemele.Html", StringComparison.Ordinal) || ns.StartsWith("Xemele.Css", StringComparison.Ordinal))), "XML-only library has no HTML/CSS types");
+#endif
+            PublicCases.Run();
+            CliCases();
+            ResourceCases.Run();
+            SchemaFuzz.Run();
+            Console.WriteLine($"PASS schema CLI/library/resource/fuzz: {assertions} assertions; fuzz seed=81677 cases=288");
+            return 0;
+        }
+        catch (Exception error) { Console.Error.WriteLine(error); return 1; }
+    }
+    internal static (int Code, string Out, string Error) Invoke(string command, string[] options, string xml = "<root>7</root>", CancellationToken token = default, Stream? input = null)
+    {
+        var oldOut = Console.Out; var oldError = Console.Error;
+        using var output = new StringWriter(); using var error = new StringWriter();
+        using var instance = new MemoryStream(Encoding.UTF8.GetBytes(xml));
+        try
+        {
+            Console.SetOut(output); Console.SetError(error);
+            return (SchemaCommands.Run(command, options, token, input ?? instance), output.ToString(), error.ToString());
+        }
+        finally { Console.SetOut(oldOut); Console.SetError(oldError); }
+    }
+    private static void CliCases()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "xemele-m8-cli-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            string input = Path.Combine(directory, "input.xml"); File.WriteAllText(input, "<root>7</root>");
+            foreach (string language in PublicCases.Languages)
+            {
+                string command = "validate-" + language;
+                string schema = Path.Combine(directory, language + ".xml"); File.WriteAllText(schema, PublicCases.Schema(language));
+                string[] args = ["--schema", schema];
+                Check(Invoke(command, ["--help"]).Code == 0, language + " help");
+                Check(Invoke(command, args).Code == 0, language + " stdin valid");
+                Check(Invoke(command, [..args, "--input", input]).Code == 0, language + " file valid");
+                Check(Invoke(command, args, "<root>bad</root>").Code == 1, language + " invalid value");
+                Check(Invoke(command, args, "<wrong/>").Code == 1, language + " invalid root");
+                var malformed = Invoke(command, [..args, "--input", input, "--diagnostics", "json"], input: new MemoryStream());
+                Check(malformed.Code == 0, "explicit file takes priority over injected stdin");
+                var invalid = Invoke(command, [..args, "--diagnostics", "json"], "<root>");
+                using (var json = JsonDocument.Parse(invalid.Error))
+                {
+                    Check(invalid.Code == 1 && !json.RootElement.GetProperty("isComplete").GetBoolean(), language + " malformed incomplete");
+                    Check(json.RootElement.GetProperty("inputUri").ValueKind == JsonValueKind.Null, "stdin URI stays nullable");
+                    var location = json.RootElement.GetProperty("diagnostics")[0].GetProperty("location");
+                    Check(location.GetProperty("sourceUri").ValueKind == JsonValueKind.Null, "source URI not fabricated");
+                    Check(location.TryGetProperty("byteOffset", out _) && location.TryGetProperty("linePosition", out _), "full location");
+                }
+                File.WriteAllText(input, "<root>bad</root>");
+                var named = Invoke(command, [..args, "--input", input, "--diagnostics", "json"]);
+                using (var json = JsonDocument.Parse(named.Error))
+                    Check(json.RootElement.GetProperty("inputUri").GetString() == new Uri(input).AbsoluteUri, "named input envelope");
+                File.WriteAllText(input, "<root>7</root>");
+                foreach (string[] bad in new string[][] { [], ["--schema"], [..args, "--unknown", "x"], [..args, "--schema", schema],
+                    [..args, "--diagnostics", "xml"], [..args, "--schema-base-uri", "relative"], [..args, "--compile-max-operations", "0"],
+                    [..args, "--validation-max-operations", "unlimited"], [..args, "--compile-max-components", "2147483648"], [..args, "--input", Path.Combine(directory, "missing")] })
+                    Check(Invoke(command, bad).Code == 2, language + " invocation rejection");
+                Check(Invoke(command, [..args, "--compile-max-operations", "1"]).Code == 1, language + " compile quota");
+                Check(Invoke(command, [..args, "--compile-max-components", "1"]).Code == 1, language + " component quota");
+                Check(Invoke(command, [..args, "--validation-max-operations", "1"]).Code == 1, language + " run quota");
+                using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
+                Check(Invoke(command, args, token: cancelled.Token).Code == 3, language + " cancelled");
+                using var caller = new MemoryStream("<root>7</root>"u8.ToArray());
+                Check(Invoke(command, args, input: caller).Code == 0 && caller.CanRead, language + " caller stdin ownership");
+                using var failure = new BrokenInput();
+                Check(Invoke(command, args, input: failure).Code == 3 && failure.CanRead, language + " unexpected caller I/O");
+                File.WriteAllText(schema, "<not-a-schema/>"); Check(Invoke(command, args).Code == 1, language + " invalid schema");
+                File.WriteAllText(schema, "<root>"); Check(Invoke(command, args).Code == 1, language + " malformed schema");
+            }
+            string sch = Path.Combine(directory, "phase.sch"); string report = Path.Combine(directory, "report.xml");
+            File.WriteAllText(sch, PublicCases.PhaseSchema);
+            string[] phaseArgs = ["--schema", sch, "--svrl", report];
+            File.WriteAllText(report, "sentinel");
+            Check(Invoke("validate-schematron", [..phaseArgs, "--phase", "missing"]).Code == 2 && File.ReadAllText(report) == "sentinel", "unknown phase preserves target");
+            Check(Invoke("validate-schematron", phaseArgs, "<root>bad</root>").Code == 1 && File.ReadAllText(report) == "sentinel", "invalid report preserves target");
+            Check(Invoke("validate-schematron", phaseArgs, "<root>").Code == 1 && File.ReadAllText(report) == "sentinel", "incomplete report preserves target");
+            Check(Invoke("validate-schematron", [..phaseArgs, "--validation-max-operations", "1"]).Code == 1 && File.ReadAllText(report) == "sentinel", "quota report preserves target");
+            using (var cancel = new CancellationTokenSource()) { cancel.Cancel(); Check(Invoke("validate-schematron", phaseArgs, token: cancel.Token).Code == 3 && File.ReadAllText(report) == "sentinel", "cancel preserves target"); }
+            Check(Invoke("validate-schematron", [..phaseArgs, "--phase", "warn"]).Code == 0, "warning-only exit");
+            Check(File.ReadAllText(report).Contains("successful-report", StringComparison.Ordinal), "warning SVRL serialized");
+            Check(Invoke("validate-schematron", ["--schema", sch, "--svrl", Path.Combine(directory, "absent/out")]).Code == 2, "report file failure");
+            Check(!Directory.EnumerateFiles(directory, ".xemele-*.tmp").Any(), "staged files cleaned");
+            // The owned harness compiles actual existing commands; focused subprocess preservation is separate.
+            using var help = new StringWriter(); var old = Console.Out;
+            try { Console.SetOut(help); Check(new CommandRegistry().Run(["--help"]) == 0, "registry help"); }
+            finally { Console.SetOut(old); }
+            foreach (string command in new[] { "parse", "format", "xpath", "validate-dtd", "canonicalize", "catalog", "xinclude", "validate-rng", "validate-xsd", "validate-schematron" })
+                Check(help.ToString().Contains("  " + command + "  ", StringComparison.Ordinal), "registry preserves " + command);
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+    private sealed class BrokenInput : MemoryStream
+    { public override int Read(Span<byte> buffer) => throw new IOException("caller failure"); }
+}

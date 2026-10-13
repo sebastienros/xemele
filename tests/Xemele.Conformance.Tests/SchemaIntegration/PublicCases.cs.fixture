@@ -1,0 +1,95 @@
+using System.Text;
+using Xemele;
+using Xemele.Serialization;
+using Xemele.Validation;
+using static SchemaCliChecks.Probe;
+
+namespace SchemaCliChecks;
+
+internal static class PublicCases
+{
+    internal static readonly string[] Languages = ["rng", "xsd", "schematron"];
+    internal const string PhaseSchema = "<schema xmlns='http://purl.oclc.org/dsdl/schematron' defaultPhase='valid'><phase id='valid'><active pattern='value'/></phase><phase id='warn'><active pattern='warning'/></phase><pattern id='value'><rule context='/'><assert test='count(root)=1'>root required</assert></rule><rule context='root'><assert test='number(.) &gt;= 1 and number(.) = floor(number(.))'>positive integer required</assert></rule></pattern><pattern id='warning'><rule context='root'><report test='true()' role='warning'>advisory</report></rule></pattern></schema>";
+    internal static string Schema(string language) => language switch
+    {
+        "rng" => "<element xmlns='http://relaxng.org/ns/structure/1.0' name='root' datatypeLibrary='http://www.w3.org/2001/XMLSchema-datatypes'><data type='positiveInteger'/></element>",
+        "xsd" => "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='root' type='xs:positiveInteger'/></xs:schema>",
+        _ => PhaseSchema
+    };
+    internal static Func<string, ValidationOptions?, ValidationResult> Compile(string language, string? source = null, SchemaCompileOptions? options = null)
+    {
+        source ??= Schema(language);
+        return language switch
+        {
+            "rng" => RelaxNgSchema.Compile(source, options).Validate,
+            "xsd" => XmlSchema.Compile(source, options).Validate,
+            _ => Adapt(SchematronSchema.Compile(source, new() { Schema = options ?? new() }))
+        };
+    }
+    private static Func<string, ValidationOptions?, ValidationResult> Adapt(SchematronSchema schema)
+        => (input, options) => schema.Validate(input, new() { Validation = options ?? new() }).Validation;
+    internal static void Result(ValidationResult result, bool valid, string context)
+    { Check(result.IsComplete && result.IsValid == valid, context); }
+    internal static void Run()
+    {
+        foreach (string language in Languages)
+        {
+            var validate = Compile(language);
+            foreach (string valid in new[] { "<root>1</root>", "<root>07</root>", "<root>123</root>" }) Result(validate(valid, null), true, language + " valid public");
+            foreach (string invalid in new[] { "<root>0</root>", "<root>-1</root>", "<root>x</root>", "<root>1.5</root>", "<wrong/>" }) Result(validate(invalid, null), false, language + " independent invalid public");
+            foreach (string malformed in new[] { "<root>", "<!DOCTYPE root><root>1</root>", "<root>&missing;</root>" })
+                Check(!validate(malformed, null).IsComplete, language + " malformed stopped");
+            Throws<SchemaCompileException>(() => Compile(language, "<bad/>"));
+            using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
+            Throws<OperationCanceledException>(() => Compile(language, options: new() { CancellationToken = cancellation.Token }));
+            Throws<OperationCanceledException>(() => validate("<root>1</root>", new() { CancellationToken = cancellation.Token }));
+            // Find an actual boundary from monotone public success/refusal, then assert exact and one-short.
+            long compileWork = Minimum(n => CanCompile(language, new() { MaxOperations = n }), 10_000_000);
+            Check(CanCompile(language, new() { MaxOperations = compileWork }), language + " exact compile work");
+            Check(!CanCompile(language, new() { MaxOperations = compileWork - 1 }), language + " short compile work");
+            long components = Minimum(n => CanCompile(language, new() { MaxComponents = (int)n }), 100_000);
+            Check(CanCompile(language, new() { MaxComponents = (int)components }), language + " exact components");
+            Check(!CanCompile(language, new() { MaxComponents = (int)components - 1 }), language + " short components");
+            long work = Minimum(n => validate("<root>7</root>", new() { MaxOperations = n }).IsComplete, 10_000_000);
+            Result(validate("<root>7</root>", new() { MaxOperations = work }), true, language + " exact validation work");
+            Check(!validate("<root>7</root>", new() { MaxOperations = work - 1 }).IsComplete, language + " short validation work");
+            StreamAndDom(language);
+            Console.WriteLine($"BOUNDARY {language} compileWork={compileWork} components={components} validationWork={work}");
+        }
+    }
+    private static bool CanCompile(string language, SchemaCompileOptions options)
+    { try { Compile(language, options: options); return true; } catch (SchemaCompileException) { return false; } }
+    private static long Minimum(Func<long, bool> succeeds, long upper)
+    {
+        Check(succeeds(upper), "finite upper boundary succeeds");
+        long lower = 0;
+        while (lower + 1 < upper) { long middle = lower + (upper - lower) / 2; if (succeeds(middle)) upper = middle; else lower = middle; }
+        return upper;
+    }
+    private static void StreamAndDom(string language)
+    {
+        using var schemaStream = new MemoryStream(Encoding.UTF8.GetBytes(Schema(language)));
+        using var input = new MemoryStream("<root>7</root>"u8.ToArray());
+        var source = XmlDocument.Parse(Schema(language)); var document = XmlDocument.Parse("<root>7</root>");
+        string before = XmlSerializer.Serialize(document);
+        Func<XmlDocument, ValidationResult> validate;
+        ValidationResult streamed;
+        switch (language)
+        {
+            case "rng":
+                streamed = RelaxNgSchema.Compile(schemaStream).Validate(input);
+                var rng = RelaxNgSchema.Compile(source); validate = xml => rng.Validate(xml); break;
+            case "xsd":
+                streamed = XmlSchema.Compile(schemaStream).Validate(input);
+                var xsd = XmlSchema.Compile(source); validate = xml => xsd.Validate(xml); break;
+            default:
+                streamed = SchematronSchema.Compile(schemaStream).Validate(input).Validation;
+                var sch = SchematronSchema.Compile(source); validate = xml => sch.Validate(xml).Validation; break;
+        }
+        Result(streamed, true, language + " streams"); Check(schemaStream.CanRead && input.CanRead, language + " caller streams open");
+        source.RootElement.Remove();
+        var results = Task.WhenAll(Enumerable.Range(0, 12).Select(i => Task.Run(() => validate(i % 2 == 0 ? document : XmlDocument.Parse("<root>bad</root>"))))).GetAwaiter().GetResult();
+        for (int i = 0; i < results.Length; i++) Result(results[i], i % 2 == 0, language + " independent concurrent run");
+        Check(XmlSerializer.Serialize(document) == before, language + " document unchanged");
+    }
+}
