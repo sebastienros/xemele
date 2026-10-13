@@ -197,6 +197,11 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                     cancellationToken.ThrowIfCancellationRequested();
                     if (high == 0)
                     {
+                        if (state == State.Data && !textActive && input[consumed] == '<' && sink is IXmlDomBatchSink)
+                        {
+                            int completeTag = ConsumeWholeAsciiTag(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : [], hasOpening: true);
+                            if (completeTag != 0) { consumed += completeTag; continue; }
+                        }
                         if (state == State.Data && !textActive && frames.Count != 0 && sink is IXmlDomBatchSink && !RecoveryEnabled &&
                             input[consumed] is not ('<' or '&'))
                         {
@@ -331,14 +336,23 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (high != 0 && char.IsLowSurrogate(unit) && current != highLocation.ByteOffset)
             throw new ArgumentException("Surrogate mappings differ.", parameter);
     }
-    private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets)
+    private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, bool hasOpening = false)
     {
-        if (RecoveryEnabled || sourceMode == 2 && !trustedByteMappings || input[0] is '?' or '!') return 0;
-        if (input[0] != '/' && input[0] is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' or ':')) return 0;
-        int capacity = Math.Min(4096, Math.Min(input.Length, position.ColumnCapacity));
-        capacity = (int)Math.Min(capacity, Math.Min(budget.Remaining(Quota.DocumentCharacters), budget.Remaining(Quota.TokenCharacters) - 1));
+        int leading = hasOpening ? 1 : 0;
+        var units = input[leading..];
+        var mappings = sourceMode == 2 ? offsets[leading..] : default;
+        if (units.IsEmpty) return 0;
+        if (RecoveryEnabled || sourceMode == 2 && !trustedByteMappings || units[0] is '?' or '!') return 0;
+        if (units[0] != '/' && units[0] is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' or ':')) return 0;
+        // A complete primary tag can reset its token scope only after all
+        // preflight succeeds. Partial/malformed/boundary input keeps the scalar
+        // path and its exact first-excess location and callback sequencing.
+        long tokenCapacity = budget.Remaining(Quota.TokenCharacters);
+        if (hasOpening) tokenCapacity += budget.Count(Quota.TokenCharacters);
+        int capacity = Math.Min(4096 - leading, Math.Min(units.Length, position.ColumnCapacity - leading));
+        capacity = (int)Math.Min(capacity, Math.Min(budget.Remaining(Quota.DocumentCharacters) - leading, tokenCapacity - 1));
         if (capacity < 2) return 0;
-        var candidate = input[..capacity];
+        var candidate = units[..capacity];
         int end = 0; char delimiter = '\0';
         bool closing = candidate[0] == '/';
         if (closing)
@@ -358,6 +372,13 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             else delimiter = c;
         }
         if (end == 0 || candidate[end - 1] != '>' || delimiter != 0 || candidate[..end].IndexOfAnyExcept(PrintableTagUnits) >= 0) return 0;
+        if (hasOpening)
+        {
+            opening = position.Current(sourceMode == 2 ? offsets[0] : null);
+            ResetToken();
+            physicalScalar = '<'; attributePhysicalLocation = opening; attributePhysicalOrigin = false;
+            attributePhysicalSpelling = null; attributePhysicalIdentity = null;
+        }
         bool close = candidate[0] == '/';
         int start = close ? 1 : 0, length = end - start - 1;
         if (length > token.Length)
@@ -366,11 +387,12 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             Array.Resize(ref token, size); Array.Resize(ref tokenLocations, size);
         }
         candidate.Slice(start, length).CopyTo(token);
-        var location = position.Current(sourceMode == 2 ? offsets[start] : null);
+        var current = position.Current(sourceMode == 2 ? mappings[start] : null);
+        var location = new XmlLocation(current.SourceUri, current.LineNumber, current.LinePosition + leading, current.ByteOffset);
         tokenLocationRuns?.Clear();
         if (length != 0)
         {
-            long stride = sourceMode == 2 ? offsets[1] - offsets[0] : 0;
+            long stride = sourceMode == 2 ? mappings[1] - mappings[0] : 0;
             (tokenLocationRuns ??= new(8)).Add(new(0, length, new(location.SourceUri, location.LineNumber, location.LinePosition + start, location.ByteOffset), stride));
         }
         if (!close && entities is not null)
@@ -387,19 +409,19 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             for (int i = 0; i < length; i++)
             {
                 var at = new XmlLocation(location.SourceUri, location.LineNumber, location.LinePosition + start + i,
-                    sourceMode == 2 ? offsets[start + i] : null);
+                    sourceMode == 2 ? mappings[start + i] : null);
                 tokenLocations[i] = attributePhysicalLocations[i] = at;
                 physicalStarts[i] = i; attributePhysicalOrigins[i] = false; attributePhysicalIdentities[i] = null;
             }
         }
         tokenLength = length; declarationAllowed = false; quote = '\0';
-        budget.TryCharge(Quota.DocumentCharacters, end); budget.TryCharge(Quota.TokenCharacters, end + 1);
-        position.AdvanceColumns(end); normalizedCr = false;
-        if (sourceMode == 2) lastOffset = offsets[end - 1];
+        budget.TryCharge(Quota.DocumentCharacters, end + leading); budget.TryCharge(Quota.TokenCharacters, end + 1);
+        position.AdvanceColumns(end + leading); normalizedCr = false;
+        if (sourceMode == 2) lastOffset = mappings[end - 1];
         state = close ? State.Close : State.Tag;
         if (close) ParseClose(); else ParseTag();
         state = State.Data;
-        return end;
+        return end + leading;
     }
     private ReadOnlySpan<char> DrainInternalEntityRun(out XmlLocation at)
     {

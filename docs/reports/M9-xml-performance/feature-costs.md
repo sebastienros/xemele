@@ -26,3 +26,11 @@ A conditional `NodeMembers` heap payload experiment shrank general node slots an
 The existing rooted layouts also show why native memory cannot be inferred from speed: libxml2 and xmloxide payload retention exceeds managed BCL on several frozen fixtures. They use different byte-string representations and tree payload shapes, and xmloxide duplicates name/namespace strings across nodes rather than retaining the same canonical managed name triples. Their uninstrumented timing paths remain separate from allocation sidecars.
 
 Raw variant logs/results and the two failing experimental allocation cases are preserved under ignored `artifacts/M9-xml-performance/`. Experimental sources are in `/private/tmp/xemele-no-coordinates`; no experimental source-location suppression is merged into the default library.
+
+## Coarse component timing
+
+`component_costs.py` builds an artifact-only source snapshot and wraps tag parsing, end-tag parsing and private DOM tag persistence in timestamp scopes. All ten instrumented XML semantic/XPath/serialization qualifications pass. The verification XPath input-character limit is raised to 128 MiB to accommodate aggregate ancestor text in text-large; XML parsing limits are unchanged. The first experiment's text-large qualification failed that separate XPath limit and is not credited as a complete run.
+
+In the qualified run, entity-medium takes 6.28 ms total, with 0.37 ms in tag parsing, 0.066 ms in end tags and 0.34 ms in tag persistence. SOAP takes 17.58 ms total, with 2.53/0.97/2.95 ms in those scopes; business takes 83.14 ms, with 14.99/2.65/20.37 ms. These coarse, instrumented scopes include observer and GC effects and are diagnostic estimates, not exact release percentages. Timestamp-pair calibration is about 9 ns. Substantial work remains outside these scopes, so optimizing name lookup or tag persistence alone cannot close the measured latency gap.
+
+The measured borrowed-name prototypes and rejected XML hybrid are documented in [name-lookups.md](name-lookups.md).

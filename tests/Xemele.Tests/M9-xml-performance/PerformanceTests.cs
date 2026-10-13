@@ -141,12 +141,61 @@ public sealed class PerformanceTests
         Assert.Same(first.NamespaceUri, repeated.NamespaceUri);
         Assert.Throws<InvalidOperationException>(() => doc.CreateElement("fourth"));
     }
+    [Fact]
+    public void CollidingNameCachesPreserveExactNamesAndDistinctNameQuota()
+    {
+        string[] names = [..Enumerable.Range(0, 32).Select(i => "item" + i.ToString("D8", System.Globalization.CultureInfo.InvariantCulture)), "名前α", "名前β", "a", "A"];
+        string xml = "<r>" + string.Concat(Enumerable.Range(0, 4).SelectMany(_ => names.Select(n => "<" + n + "/>"))) + "</r>";
+        var document = XmlDocument.Parse(xml, new() { Limits = new() { InternedNames = names.Length + 1 } }, TestContext.Current.CancellationToken);
+        for (int i = 0; i < names.Length * 4; i++)
+        {
+            Assert.Equal(names[i % names.Length], document.RootElement.Children[i].LocalName);
+            if (i >= names.Length) Assert.Same(document.RootElement.Children[i % names.Length].LocalName, document.RootElement.Children[i].LocalName);
+        }
+        Assert.False(XmlDocument.TryParse(xml, out _, out var diagnostics, new() { Limits = new() { InternedNames = names.Length } }, TestContext.Current.CancellationToken));
+        Assert.Equal("XML.ResourceLimit", diagnostics[0].Code);
+    }
+    [Fact]
+    public void PreparedCollidingNamesDispatchAllocatesZero()
+    {
+        string[] names = [..Enumerable.Range(0, 32).Select(i => "item" + i.ToString("D8", System.Globalization.CultureInfo.InvariantCulture))];
+        string tags = string.Concat(names.Select(n => "<" + n + "/>"));
+        using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
+        var sink = new BulkSink(); var cancel = TestContext.Current.CancellationToken;
+        core.Append("<r>", [], false, sink, cancel); sink.ExpectedNames = names;
+        for (int i = 0; i < 20; i++) core.Append(tags, [], false, sink, cancel);
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1000; i++) if (core.Append(tags, [], false, sink, cancel).Consumed != tags.Length) throw new InvalidOperationException("Incomplete colliding-name dispatch");
+        long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Assert.Equal(0, allocated);
+        Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancel).Step);
+    }
+    [Fact]
+    public void CompletePrimaryTagPreflightKeepsFirstExcessByteAndScalarLocations()
+    {
+        byte[] bytes = "<r><n a='v'/></r>"u8.ToArray();
+        for (int maximum = 1; maximum < bytes.Length; maximum++)
+        {
+            Assert.False(XmlDocument.TryParse(bytes.AsSpan(), out _, out var diagnostics,
+                new() { Limits = new() { DocumentCharacters = maximum } }, TestContext.Current.CancellationToken));
+            Assert.Equal("XML.ResourceLimit", diagnostics[0].Code);
+            Assert.Equal(maximum + 1, diagnostics[0].Location.LinePosition);
+            Assert.Equal(maximum, diagnostics[0].Location.ByteOffset);
+        }
+        var document = XmlDocument.Parse(bytes.AsSpan(), new() { Limits = new() { DocumentCharacters = bytes.Length } }, TestContext.Current.CancellationToken);
+        Assert.Equal(new XmlLocation(null, 1, 4, 3), document.OriginalLocation(document.RootElement.Children[0]));
+    }
     private sealed class BulkSink : IXmlBulkTextSink
     {
+        internal string[]? ExpectedNames; private int nameIndex;
         internal bool Capture, PauseRun; internal long Units, Calls; internal readonly StringBuilder Captured = new();
         public bool StartDocument(XmlLocation location) => true;
         public bool Declaration(XmlDeclarationView value) => true;
-        public bool StartElement(XmlNameView name, bool empty, XmlLocation location) => true;
+        public bool StartElement(XmlNameView name, bool empty, XmlLocation location)
+        {
+            if (ExpectedNames is { } expected && !name.LocalName.SequenceEqual(expected[nameIndex++ % expected.Length])) throw new InvalidOperationException("Incorrect interned name.");
+            return true;
+        }
         public bool NamespaceDeclaration(XmlNamespaceView value) => true;
         public bool Attribute(XmlAttributeView value) => true;
         public bool StartElementContent() => true;

@@ -8,6 +8,9 @@ using System.Text.Json;
 using Xemele.Streaming;
 using Candidate=Xemele.XmlDocument;
 using Bcl=System.Xml.XmlDocument;
+if(args[0]=="name-check") { foreach(var shape in new[]{"html","xml","prefix","unicode","long"}) { new BorrowedNames{Shape=shape}.Setup(); Console.WriteLine("PASS exact names "+shape); } return; }
+if(args[0]=="symbols") { BenchmarkRunner.Run<BorrowedNames>(args:args.Skip(1).ToArray()); return; }
+if(args[0]=="names") { BenchmarkRunner.Run<NameCaches>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="scans") { BenchmarkRunner.Run<AttributeScans>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="bdn") { BenchmarkRunner.Run<DomComparison>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="check") {
@@ -16,6 +19,28 @@ if(args[0]=="check") {
   foreach(var m in new[]{"xs","xsc","bsc"})if((int)w.Run(m)!=expected)throw new Exception(f+" "+m+" count mismatch");
   Console.WriteLine("PASS "+f+" element/text counts="+expected);
  }return;
+}
+if(args[0]=="paired") {
+ var all=new List<object>();
+ foreach(var fixture in new[]{"feed-small","svg-small","deep-medium","entity-medium","xhtml-medium","build-medium","soap-large","configuration-large","business-large","text-large"}) {
+  var context=new VariantContext(Path.GetFullPath(args[1]));
+  var assembly=context.LoadFromAssemblyPath(typeof(Workload).Assembly.Location);
+  var type=assembly.GetType("Workload")!;
+  var target=Activator.CreateInstance(type,fixture)!;
+  var previous=type.GetMethod("Run")!.CreateDelegate<Func<string,object>>(target);
+  var current=new Workload(fixture);
+  var methods=new Dictionary<string,Func<object>>{{"before",()=>previous("xb")},{"after",()=>current.Run("xb")},{"bcl",()=>current.Run("bb")}};
+  foreach(var method in methods.Values)for(int i=0;i<5;i++)GC.KeepAlive(method());
+  var rows=methods.Keys.ToDictionary(k=>k,k=>new List<object>());
+  for(int round=0;round<7;round++)foreach(var key in round%2==0?methods.Keys:methods.Keys.Reverse()){
+   GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();var method=methods[key];
+   long allocated=GC.GetAllocatedBytesForCurrentThread();var timer=Stopwatch.StartNew();int count=0;
+   do{GC.KeepAlive(method());count++;}while(timer.Elapsed.TotalMilliseconds<200);
+   timer.Stop();rows[key].Add(new{round,count,us=timer.Elapsed.TotalMicroseconds/count,bytes=(double)(GC.GetAllocatedBytesForCurrentThread()-allocated)/count});
+  }
+  all.Add(new{fixture,rows});Console.WriteLine(fixture);
+ }
+ File.WriteAllText(args[2],JsonSerializer.Serialize(all,new JsonSerializerOptions{WriteIndented=true}));return;
 }
 if(args[0]=="quick") {
  var all=new List<object>();
@@ -76,4 +101,9 @@ public sealed class Workload {
   var doc=new Bcl{PreserveWhitespace=true,XmlResolver=null};doc.Load(reader);return doc;
  }
  private sealed class CountHandler:XmlSaxHandler {public int Elements,TextLength;public override void StartElement(XmlStartElement element)=>Elements++;public override void Text(ReadOnlySpan<char> text)=>TextLength+=text.Length;}
+}
+
+sealed class VariantContext(string candidatePath):System.Runtime.Loader.AssemblyLoadContext
+{
+ protected override System.Reflection.Assembly? Load(System.Reflection.AssemblyName name) => name.Name == "Xemele" ? LoadFromAssemblyPath(candidatePath) : null;
 }
