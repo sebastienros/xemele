@@ -46,7 +46,8 @@
   "implementation": [
     "tests/ReleaseCampaign/Instrumenter/: pinned SharpFuzz2.3.0 instrumenter confined to disposable candidate artifacts",
     "tests/ReleaseCampaign/XmlDriver/: bounded XML byte decoder/parser/internalDTD target, no ambient external resolver or catch-all exception filter",
-    "tests/ReleaseCampaign/seeds/xml/: three original authored replay seeds"
+    "tests/ReleaseCampaign/seeds/xml/: three original authored replay seeds",
+    "docs/reports/M9-robustness/reuse.py: exact unchanged conformance closure and retained original-profile accounting"
   ],
   "evidence": [
     {
@@ -57,17 +58,35 @@
       "result": "passed",
       "summary": "4build/restore commands + actual instrumentation +3replays pass with clean finite process receipts;600types instrumented, productionDLLhash unchanged. No nativeenginecampaign, duration orbranchcoverage credit.",
       "artifact": "docs/reports/M9-robustness/qualification.json"
+    },
+    {
+      "id": "conformance-binding",
+      "kind": "check",
+      "revision": "93b21cf363174c50c66876ca3ebb54f084bf3f09",
+      "command": "python3 -B docs/reports/M9-robustness/reuse.py",
+      "result": "passed",
+      "summary": "44287tracked runtime/corpus/fixture/reference/suite/build inputs unchanged from verifiedM8;920conformance+618differential results reused within original scopes; fresh10741local units bound;155approvedXSDnonpasses keep zero credit and144false/11null.",
+      "artifact": "docs/reports/M9-robustness/conformance-binding.json"
+    },
+    {
+      "id": "local-afl-smoke",
+      "kind": "check",
+      "revision": "0f148a2a26718dfe14f588785d6e1eabea4c64f2",
+      "command": "Pinned upstream AFL2.57b build; bounded AFL_BENCH_JUST_ONE nativeengine smoke against copied instrumented XML target",
+      "result": "passed",
+      "summary": "Actual localengine41677executions,373paths,370newpaths; zero observedcrashes/hangs; clean entiregroup exit. No sustainedduration/branchpercentage/crash-positive qualification credit. Fuzz deferred by human after completion.",
+      "artifact": "docs/reports/M9-robustness/afl-engine-smoke.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Initial concrete .NET10 fuzz instrumentation and XML seed replay compatibility qualified; sustained campaign remains outstanding.",
+    "summary": "Exact non-fuzz conformance closure bound; initial local fuzz evidence retained before direct human deferral.",
     "checks": [
       "PinnedSDK/runtime builds and600type instrumentation pass;3actual instrumented seed replays pass; originalproductionDLLunchanged."
     ],
     "remaining": [
-      "Qualify and execute real nativecoverageguidedengine plus all major targets and finite campaigns; establish actual branchcoverage90%target with exclusions/review.",
-      "Bind source-applicable full conformance/differential/resource/cancellation evidence and exact corpus counts/dispositions."
+      "Fuzz work deferred by direct human instruction; required sustained campaign and branch-coverage evidence remains pending.",
+      "Complete remaining non-fuzz current large-stream/resource evidence; preserve bound conformance profiles and dispositions."
     ],
     "requests": []
   }

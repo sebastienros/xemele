@@ -12,8 +12,12 @@ correction does not alter instrumentation, production code or the replay target.
 The tested revision and exact finite process receipts remain in qualification.json.
 
 This establishes package/build/instrumentation/single-file replay compatibility.
-No native coverage-guided engine has run, no campaign duration has accrued, no
-branch coverage percentage is established, and other major targets remain unqualified.
+A subsequent local AFL 2.57b engine smoke completed 41,677 executions and found
+370 additional coverage paths (373 total), with zero observed crashes/hangs. The
+owned process group exited cleanly. Its failed standalone map-observer attempt is
+also retained. Crash-positive detection is still unqualified, no sustained duration
+credit is claimed, no branch percentage is established, and other targets remain
+unqualified. Fuzz planning/execution is now deferred by direct human request.
 The required sustained campaigns and coverage target are still outstanding.
 
 Primary tool documentation: [SharpFuzz](https://github.com/Metalnem/sharpfuzz) and

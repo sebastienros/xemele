@@ -3,7 +3,18 @@ using Xemele;
 
 // This initial qualification target is the XML byte decoder/parser with internal
 // DTD processing. Engine coverage and sustained duration require a real engine run.
-Fuzzer.LibFuzzer.Run(Exercise);
+if (Environment.GetEnvironmentVariable("XEMELE_FUZZ_ENGINE") == "afl")
+{
+    byte[] input = new byte[65537];
+    Fuzzer.Run(stream =>
+    {
+        int length = 0, read;
+        while (length < input.Length && (read = stream.Read(input, length, input.Length - length)) != 0)
+            length += read;
+        Exercise(input.AsSpan(0, length));
+    });
+}
+else Fuzzer.LibFuzzer.Run(Exercise);
 
 static void Exercise(ReadOnlySpan<byte> bytes)
 {
