@@ -1,3 +1,9 @@
+# M8 gate completion
+
+All mandatory gate checks passed. See [durable results](summary.json) and [handoff](handoff.md). The product, tests, fixtures, recipes, package and runtime remain equivalent to the successful preparation at `61fb064d`; only gate output/reporting assertions changed. Full cumulative suites passed 12,279 tests with zero failures or skips. The 155 approved XSD nonpasses remain separate with zero pass credit.
+
+The source packet and execution details below preserve the historical prepared recipe and its earlier unrun/source-only statements; current observed outcomes are in `summary.json`. The human-directed single-chat continuation reused valid preparation and successful commands rather than replaying whole phases after reporting-only fixes.
+
 # M8 gate source packet
 
 Source repair only. Root attempts1/2/3 remain failed at their original project
