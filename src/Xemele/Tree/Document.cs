@@ -16,11 +16,15 @@ public sealed partial class XmlDocument
     }
     internal struct NodeData(XmlNodeKind kind, NameData? name, string value)
     {
+        // Internal malformed-tree fixtures use the original constructor. Normal
+        // persistence goes through GetName and the shared-name constructor.
+        internal NodeData(XmlNodeKind kind, string local, string uri, string prefix, string value)
+            : this(kind, new NameData(local, uri, prefix), value) { }
         internal readonly XmlNodeKind Kind = kind;
         internal readonly NameData? Name = name;
-        internal readonly string Local => Name?.Local ?? "";
-        internal readonly string Uri => Name?.Uri ?? "";
-        internal readonly string Prefix => Name?.Prefix ?? "";
+        internal readonly string Local => Name is null ? "" : Name.Local;
+        internal readonly string Uri => Name is null ? "" : Name.Uri;
+        internal readonly string Prefix => Name is null ? "" : Name.Prefix;
         internal string Value = value;
         internal int Parent = -1, First = -1, Last = -1, Previous = -1, Next = -1, Count;
         internal int FirstAttribute = -1, LastAttribute = -1, AttributeCount;
@@ -28,11 +32,19 @@ public sealed partial class XmlDocument
     }
     internal struct MemberData(int element, NameData? name, string value)
     {
+        internal MemberData(int element, string local, string uri, string prefix, string value)
+            : this(element, new NameData(local, uri, prefix), value) { }
         internal readonly int Element = element;
         internal NameData? Name = name;
-        internal readonly string Local => Name?.Local ?? "";
-        internal readonly string Uri => Name?.Uri ?? "";
-        internal readonly string Prefix => Name?.Prefix ?? "";
+        internal readonly string Local => Name is null ? "" : Name.Local;
+        internal readonly string Uri => Name is null ? "" : Name.Uri;
+        internal string Prefix
+        {
+            readonly get => Name is null ? "" : Name.Prefix;
+            // Internal adversarial fixtures can replace a prefix directly;
+            // public mutations instead use the document's quota-checked path.
+            set => Name = new(Local, Uri, value);
+        }
         internal string Value = value;
         internal int Previous = -1, Next = -1;
         internal bool Attached = true;

@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
-parser.add_argument('--phase', choices=['branch', 'integration'], required=True)
+parser.add_argument('--phase', required=True)
 args = parser.parse_args()
 host = Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
 out = ROOT / 'artifacts/M9-dom-memory' / ('checks-' + args.phase)
