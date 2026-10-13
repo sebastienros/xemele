@@ -1,0 +1,127 @@
+{
+  "task": "M9-distribution",
+  "revision": "baf99d746df91cbad009f5fe5645016336293858",
+  "result": "failed",
+  "rid": "osx-arm64",
+  "runtime": "10.0.11",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--version"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 53162,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "d0c8e5a09a2e5655cffdca9e350ecbba59a860154f5adadb92398b844f705ed0"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-distribution/src/Xemele/Xemele.csproj",
+        "--source",
+        "/private/tmp/xemele-m9-distribution/artifacts/M9-distribution/work/feed",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-distribution/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 53164,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "1132e3bf85c721471c6184b6f0c81fa5edd2df1aa1cd3997b5fa0d9bf379b52b"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-distribution/src/Xemele.Tool/Xemele.Tool.csproj",
+        "--source",
+        "/private/tmp/xemele-m9-distribution/artifacts/M9-distribution/work/feed",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-distribution/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 53166,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "5bf21ea7b9bbac5244d9885e51a668207d6f9febd4c233ce58904d9f7adeebe6"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "clean",
+        "/private/tmp/xemele-m9-distribution/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-distribution/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 53168,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "3b896b7463c4ff8ec615ca1b28a5c8ccdab3b99f65a13486d809147af25d6c66"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "/private/tmp/xemele-m9-distribution/src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-distribution/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/private/tmp/xemele-m9-distribution/artifacts/M9-distribution/work/pack-0"
+      ],
+      "receipt": {
+        "command": 4,
+        "pid": 53170,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "eebdc7f937ce6dce6475af6d9fb12a2be23873582154f5049ed8293b8bde2a8c",
+      "failureTail": "  Xemele -> /private/tmp/xemele-m9-distribution/src/Xemele/bin/Release/net10.0/Xemele.dll\n/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/NuGet.Build.Tasks.Pack.targets(226,5): error NU5030: The license file 'LICENSE' does not exist in the package. [/private/tmp/xemele-m9-distribution/src/Xemele/Xemele.csproj]\n"
+    }
+  ],
+  "packages": [],
+  "published": false,
+  "sdk": "10.0.400",
+  "diagnosis": "NuGet treats extensionless PackagePath=/LICENSE as directory and appends filename; use empty root PackagePath. Actual source compile passed; package failed honestly."
+}

@@ -1,0 +1,34 @@
+name: Local release evidence (no publication)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  distribution:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: windows-latest
+            rid: win-x64
+          - os: macos-latest
+            rid: osx-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Package and actual managed/trim/NativeAOT consumption
+        run: python tools/Packaging/verify.py --rid ${{ matrix.rid }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-evidence-${{ matrix.rid }}
+          path: artifacts/M9-distribution/summary.json
+          if-no-files-found: error
