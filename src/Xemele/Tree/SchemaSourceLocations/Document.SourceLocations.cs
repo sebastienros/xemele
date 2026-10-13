@@ -2,10 +2,20 @@ namespace Xemele;
 
 public sealed partial class XmlDocument
 {
-    // One owned value per parsed arena entry. Stable slots are never reused;
-    // clones/imports and later programmatic entries deliberately have no entry.
-    // No lexical buffer, parser, or borrowed callback view survives here.
-    private Dictionary<long, XmlLocation>? sourceLocations;
+    // Dense document-owned sidecars use the same stable slots as the tree.
+    // Flags preserve missing entries and nullable offsets without sentinel values.
+    // No parser, lexical buffer, or borrowed callback view survives here.
+    private struct SourceLocationData
+    {
+        internal long Offset;
+        internal int Line, Position, UriIndex;
+        internal byte Flags;
+    }
+    private SlotArena<SourceLocationData>? nodeLocations, attributeLocations, namespaceLocations;
+    private bool locationUriInitialized;
+    private Uri? locationUri;
+    private Dictionary<Uri, int>? locationUriIndices;
+    private List<Uri>? locationUris;
     internal Uri? ParsedSourceUri { get; private set; }
 
     internal void RecordSourceOrigin(XmlLocation location)
@@ -17,43 +27,72 @@ public sealed partial class XmlDocument
     internal void RecordSourceLocation(XmlNode node, XmlLocation location)
     {
         if (!ReferenceEquals(node.Document, this)) throw new ArgumentException("Foreign source node.", nameof(node));
-        RecordLocation(0, node.Slot, location);
+        RecordLocation(ref nodeLocations, node.Slot, location);
     }
     internal void RecordSourceLocation(XmlAttribute attribute, XmlLocation location)
     {
         if (!ReferenceEquals(attribute.Document, this)) throw new ArgumentException("Foreign source attribute.", nameof(attribute));
-        RecordLocation(1, attribute.Slot, location);
+        RecordLocation(ref attributeLocations, attribute.Slot, location);
     }
     internal void RecordSourceLocation(XmlNamespaceDeclaration declaration, XmlLocation location)
     {
         if (!ReferenceEquals(declaration.Document, this)) throw new ArgumentException("Foreign source namespace.", nameof(declaration));
-        RecordLocation(2, declaration.Slot, location);
+        RecordLocation(ref namespaceLocations, declaration.Slot, location);
     }
-    private void RecordLocation(int kind, int slot, XmlLocation location)
-        => (sourceLocations ??= new()).Add(((long)kind << 32) | (uint)slot, location);
+    private int LocationUriIndex(Uri? uri)
+    {
+        if (!locationUriInitialized) { locationUri = uri; locationUriInitialized = true; }
+        if (ReferenceEquals(uri, locationUri)) return 0;
+        if (uri is null) return 1;
+        if (locationUriIndices is not null && locationUriIndices.TryGetValue(uri, out int index)) return index;
+        locationUris ??= new();
+        index = checked(locationUris.Count + 2);
+        (locationUriIndices ??= new(ReferenceEqualityComparer.Instance)).Add(uri, index);
+        locationUris.Add(uri);
+        return index;
+    }
+    private void RecordLocation(ref SlotArena<SourceLocationData>? locations, int slot, XmlLocation location)
+    {
+        locations ??= new();
+        if (slot < locations.Count && locations[slot].Flags != 0) throw new ArgumentException("Duplicate source location.");
+        int uriIndex = LocationUriIndex(location.SourceUri);
+        locations.EnsureCapacity(checked(slot + 1));
+        while (locations.Count <= slot) locations.Add(default);
+        locations[slot] = new()
+        {
+            Offset = location.ByteOffset.GetValueOrDefault(), Line = location.LineNumber,
+            Position = location.LinePosition, UriIndex = uriIndex,
+            Flags = location.ByteOffset.HasValue ? (byte)3 : (byte)1
+        };
+    }
 
     internal XmlLocation OriginalLocation(XmlNode node)
     {
         if (!ReferenceEquals(node.Document, this)) throw new ArgumentException("Foreign source node.", nameof(node));
-        return OriginalLocation(0, node.Slot);
+        return OriginalLocation(nodeLocations, node.Slot);
     }
     internal XmlLocation OriginalLocation(XmlAttribute attribute)
     {
         if (!ReferenceEquals(attribute.Document, this)) throw new ArgumentException("Foreign source attribute.", nameof(attribute));
-        return OriginalLocation(1, attribute.Slot);
+        return OriginalLocation(attributeLocations, attribute.Slot);
     }
     internal XmlLocation OriginalLocation(XmlNamespaceDeclaration declaration)
     {
         if (!ReferenceEquals(declaration.Document, this)) throw new ArgumentException("Foreign source namespace.", nameof(declaration));
-        return OriginalLocation(2, declaration.Slot);
+        return OriginalLocation(namespaceLocations, declaration.Slot);
     }
-    private XmlLocation OriginalLocation(int kind, int slot)
+    private XmlLocation OriginalLocation(SlotArena<SourceLocationData>? locations, int slot)
     {
         // Coordinates describe the original completed input, not a mutated tree.
         // The existing revision stamp also excludes recovery and partial parses.
         if (SourceInputComplete && ContentRevision >= 0 && ValidationSourceContentRevision == ContentRevision &&
-            sourceLocations is not null && sourceLocations.TryGetValue(((long)kind << 32) | (uint)slot, out var location))
-            return location;
+            locations is not null && (uint)slot < (uint)locations.Count)
+        {
+            var location = locations[slot];
+            if (location.Flags != 0)
+                return new(location.UriIndex == 0 ? locationUri : location.UriIndex == 1 ? null : locationUris![location.UriIndex - 2],
+                    location.Line, location.Position, (location.Flags & 2) != 0 ? location.Offset : null);
+        }
         return new(ParsedSourceUri, 0, 0, null);
     }
 }
