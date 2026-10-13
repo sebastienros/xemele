@@ -11,7 +11,7 @@
     "MaxInputItems": 1000000,
     "MaxNodeSetItems": 1000000,
     "MaxOperations": 100000000,
-    "MaxInputCharacters": 16777216,
+    "MaxInputCharacters": 33554432,
     "MaxStringCharacters": 16777216
   },
   "steadyOperations": [
@@ -38,5 +38,14 @@
   },
   "timing": "Dedicated hardware still required; no local qualification/retention run supplies throughput or regression credit. Native/Rust steady timing excludes startup and IPC and repeats in-process operations. Managed BenchmarkDotNet classes require MemoryDiagnoser and ShortRunJob.",
   "referenceEntityExpansionCount": 1000000,
-  "referenceEntityExpansionReason": "Pinned xmloxide default10000 rejects the frozen entity and text fixtures. This finite reference option admits their original bytes and matches the declared expanded-entity semantics; no product or release threshold changed."
+  "referenceEntityExpansionReason": "Pinned xmloxide default10000 rejects the frozen entity and text fixtures. This finite reference option admits their original bytes and matches the declared expanded-entity semantics; no product or release threshold changed.",
+  "profileRevision": 2,
+  "xpathInputProfileCorrection": {
+    "previousMaxInputCharacters": 16777216,
+    "currentMaxInputCharacters": 33554432,
+    "originalRejection": "docs/reports/M9-xpath-order/qualification.json",
+    "reason": "Text-large captured element/document/text values alone require29245440UTF16characters, before names and namespace metadata. The original16Mi aggregate snapshot cap rejected setup.32Mi remains finite and is set before any release timing; per-string16Mi and all item/work limits remain unchanged.",
+    "fixturesAndReleaseTargetsChanged": false
+  },
+  "serializationEncoding": "UTF-8 for every worker; xmloxide Document.encoding is set before serialization/XPath setup, outside measured operations, to disable default non-ASCII numeric-reference reencoding."
 }

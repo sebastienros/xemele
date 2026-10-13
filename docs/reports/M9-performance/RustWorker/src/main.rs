@@ -39,7 +39,9 @@ fn main() -> Result<(),Box<dyn Error>> {
     if args.len()!=6 { return Err("input expression qualify|parse|lifecycle|serialize|xpath iterations output-prefix".into()); }
     let bytes=fs::read(&args[1])?;
     if bytes.is_empty() || bytes.len()>16777216 { return Err("Invalid frozen fixture bytes".into()); }
-    let doc=parse(&bytes)?;
+    let mut doc=parse(&bytes)?;
+    // All output workers serialize UTF-8; setup precedes the timed operations.
+    doc.encoding=Some("UTF-8".to_string());
     let expression=parser::parse(&args[2])?;
     let context=XPathContext::new(&doc,doc.root());
     let expected=context.evaluate(&expression)?.to_number();
