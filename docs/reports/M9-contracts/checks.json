@@ -1,0 +1,33 @@
+{
+  "task": "M9-contracts",
+  "revision": "66744ea0965b44e0e599296ad7762a8902b302d4",
+  "result": "passed",
+  "apiFragments": 55,
+  "uniqueMembers": 1430,
+  "retainedM8PackageHashVerified": true,
+  "originalXsdCountsPreserved": true,
+  "usage": {
+    "result": "passed",
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "runtime": "10.0.11",
+    "architecture": "Arm64",
+    "commands": [
+      "pinned dotnet restore tests/Contracts/Fixtures/M9/ReleaseUsage/ReleaseUsage.csproj --source /private/tmp --disable-build-servers -p:UseSharedCompilation=false",
+      "pinned dotnet build tests/Contracts/Fixtures/M9/ReleaseUsage/ReleaseUsage.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "pinned dotnet --fx-version 10.0.11 tests/Contracts/Fixtures/M9/ReleaseUsage/bin/Release/net10.0/ReleaseUsage.dll"
+    ],
+    "scope": "XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL"
+  },
+  "priorAttempt": {
+    "result": "failed",
+    "stage": "SDK discovery before compilation",
+    "cause": "Default worktree host lacked SDK10.0.400; fixed by explicit installed pinned host."
+  },
+  "outstandingReleaseRequirements": [
+    "Windows/Linux/x64 actual execution unavailable: human answered no",
+    "Dedicated-machine comparative timing unavailable",
+    "24h coverage-guided campaigns not established"
+  ],
+  "noReleaseVerificationClaim": true
+}
