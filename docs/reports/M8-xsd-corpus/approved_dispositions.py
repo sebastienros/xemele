@@ -174,6 +174,47 @@ def approved_sources():
         assert record['original_pass_credit'] is False and record['gate_pass_credit'] is False
         tuple_record(record, row, record['observation']['summary'], 'approved-residual-' + record['category'])
     assert len(records) == 147 and sum(r['passed'] is None for r in records.values()) == 11
+    provenance_path = CORPUS / 'approved-missing-observation-provenance.json'
+    assert sha(provenance_path) == '686da8bbf6913f791b10aee7909643c90be884b122e3e9d95bb4ede8c72c8284'
+    provenance = json.loads(provenance_path.read_text())
+    assert provenance['sourceRevision'] == '91fbc8473ff43c8229acc1387f597645b6215175'
+    assert provenance['frozenManifestSha256'] == '404bc79b127746fed960270717a994df123b06f9856704f9cc0c6d21ac8b6145'
+    assert provenance['actualChildren'] == 186 and provenance['actualRows'] == 83472
+    assert provenance['zeroOriginalAndGatePassCreditForAllDispositions'] is True
+    historical_uncovered = {r['id']:r for r in provenance['uncoveredApplicableProductOriginals']}
+    for approval_name, prepared_name, approval_sha, prepared_sha, question, answer, status in [
+        ('approved-missing-nonassessment-dispositions.json', 'prepared-missing-nonassessment-dispositions.json', '4b1cb646d5386a08b6ca2c259039b61497bc6e1e88472c5f56aea3c239c1d659', '06a4851a1c1e4653c7a87ab9018046e1d14a8be0085aeeb9cb6567d7d93f6f7d', 'call_2d4e05aaef41499293e682fe147c9db5', 'Allow these exact four documented limitations', 'HUMAN APPROVED exact four documented assessment limitations'),
+        ('approved-missing-schema-dispositions.json', 'prepared-missing-schema-dispositions.json', 'f8593c8becc78682aca37ec4b1560b0f03a757948ecf5bc14a41257f12300688', '42b8a89542e7f94b7c1b9f2ad71671ef6c688a3ca92a0aa2e2f8c367e4420ddb', 'call_d75eafbe87064aa3a95b17175cf85308', 'Allow these exact four documented dispositions', 'HUMAN APPROVED exact four documented standards dispositions')]:
+        assert sha(CORPUS / approval_name) == approval_sha and sha(CORPUS / prepared_name) == prepared_sha
+        approval = json.loads((CORPUS / approval_name).read_text()); prepared = json.loads((CORPUS / prepared_name).read_text())
+        assert approval['status'] == status and approval['approvalQuestionId'] == question and approval['humanAnswer'] == answer
+        assert approval['approvedPreparedRecordSha256'] == prepared_sha
+        assert approval['counts']['originalFalse'] == 4 and approval['counts']['originalPassCredit'] == approval['counts']['gatePassCredit'] == 0
+        assert prepared['upstreamRevision'] == PIN and prepared['sourceRevision'] == provenance['sourceRevision']
+        assert prepared['frozenCampaignManifestSha256'] == provenance['frozenManifestSha256']
+        assert len(prepared['originals']) == 4
+        for record in prepared['originals']:
+            row = whole_row(dict(id=record['id'], inventory_record_sha256=record['originalMetadataSha256'],
+                                  metadata=dict(path=record['metadataFile'], sha256=record['metadataFileSha256'])))
+            assert row['expected'] == record['originalExpected'] and record['originalPassCredit'] is False and record['gatePassCredit'] is False
+            files = record.get('schemaAndInstanceSha256', record.get('schemaDocumentsSha256'))
+            for name, checksum in files.items(): pin(dict(path=name, sha256=checksum))
+            if row['kind'] == 'instance':
+                schema = groups[record['id']]['schema']
+                assert list(files) == schema['documents'] + row['documents']
+                assert record['observation']['actual'] == 'incomplete-refusal' and record['observation']['codes'] == ['XSD.MissingComponent']
+                assert prepared['completedSetLifecycle'] == dict(exit=0, directChildReaped=True, logsClosed=True, ownedGroupAbsent=True)
+                assert provenance['matchedNewMissingApproval'] == 4
+            else:
+                assert [name for name in files if name in row['documents']] == row['documents']
+                assert row['currentStatus'] == record['originalCurrentStatus']
+                assert record['observation']['actual'] == 'schema-valid' and record['observation']['codes'] == []
+                assert all(record['observation'][key] == historical_uncovered[record['id']][key] for key in ('expected','actual','passed','codes'))
+            assert record['observation']['engine'] == 'product' and record['observation']['passed'] is False
+            tuple_record(record, row, record['observation'], 'approved-' + record['category'])
+    assert len(records) == 155 and sum(r['passed'] is None for r in records.values()) == 11
+    assert sum(r['passed'] is False for r in records.values()) == 144
+    assert 'msMeta/Annotations_w3c.xml#g78/s:annotZ002' not in records
     return records
 
 

@@ -18,7 +18,7 @@ class ExactApproval(unittest.TestCase):
 
     def test_exact_scope_and_original_nonpasses_are_preserved(self):
         records = m.approved_sources()
-        self.assertEqual(len(records), 147)
+        self.assertEqual(len(records), 155)
         self.assertEqual(sum(r['passed'] is None for r in records.values()), 11)
         for name, record in records.items():
             with self.subTest(id=name):
@@ -107,13 +107,39 @@ class ExactApproval(unittest.TestCase):
         paths = [guard.CORPUS / name for name in [
             'inventory.json', 'resources.json', 'approved-additional-profile-dispositions.json',
             'approved-residual-dispositions.json', 'upstream/msMeta/Additional_w3c.xml',
-            'xml-namespace-profile.json', 'lexical-oracle-adjudication.json']]
+            'xml-namespace-profile.json', 'lexical-oracle-adjudication.json',
+            'approved-missing-nonassessment-dispositions.json', 'prepared-missing-nonassessment-dispositions.json',
+            'approved-missing-schema-dispositions.json', 'prepared-missing-schema-dispositions.json',
+            'approved-missing-observation-provenance.json']]
         for changed in paths:
             guard.approved_sources.cache_clear()
             with self.subTest(path=str(changed)), mock.patch.object(guard, 'sha', side_effect=lambda p: '0' * 64 if p == changed else original_sha(p)):
                 with self.assertRaises(AssertionError):
                     guard.approved_sources()
         guard.approved_sources.cache_clear()
+
+    def test_new_eight_exact_approved_originals_never_gain_pass_credit(self):
+        records = m.approved_sources()
+        new = {name:r for name,r in records.items() if r['category'].startswith(('approved-required-missing-component', 'approved-missing-explicit-type'))}
+        self.assertEqual(len(new), 8)
+        self.assertEqual(sum(r['kind'] == 'schema' for r in new.values()), 4)
+        for name, record in new.items():
+            row = self.row(name); prior = copy.deepcopy(row); view = m.view(row)
+            self.assertEqual(row, prior); self.assertIs(view['originalPassed'], False)
+            self.assertIsNotNone(view['approvedGateDisposition']); self.assertNotEqual(view['profilePassed'], True)
+            if record['kind'] == 'instance':
+                self.assertEqual((row['actual'],row['codes']), ('incomplete-refusal',['XSD.MissingComponent']))
+                self.assertIsNone(m.view({**row,'actual':'instance-invalid'})['approvedGateDisposition'])
+            else:
+                self.assertEqual((row['expected'],row['actual'],row['codes']), ('invalid','schema-valid',[]))
+                self.assertIsNone(m.view({**row,'actual':'schema-invalid'})['approvedGateDisposition'])
+
+    def test_annotation_neighbor_limits_and_missing_diagnostics_are_unwaived(self):
+        name = 'msMeta/Annotations_w3c.xml#g78/s:annotZ002'
+        self.assertNotIn(name,m.approved_sources())
+        for actual,codes in [('incomplete-refusal',['SCHEMA.Limit']),('incomplete-refusal',['XSD.MissingComponent']),('schema-invalid',['XSD.SchemaRestriction'])]:
+            row=dict(id=name,engine='product',classification='applicable',kind='schema',expected='valid',actual=actual,codes=codes,passed=False)
+            self.assertIsNone(m.view(row)['approvedGateDisposition'])
 
     def test_ordered_diagnostic_vector_and_unapproved_neighbors_fail_closed(self):
         for name in m.approved_sources():

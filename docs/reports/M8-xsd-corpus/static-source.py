@@ -179,7 +179,7 @@ xml = supplements['xml_resource']; assert hashlib.sha256((CORPUS / xml['path']).
 api = json.loads((HERE / 'verified-api-preparation.json').read_text()); manifest = ROOT / api['source_manifest']
 assert api['final_freeze_ready'] is True and api['verified_bindings_ready'] is True
 assert api['execution_authorization'].startswith('HOLD;')
-assert hashlib.sha256(manifest.read_bytes()).hexdigest() == api['source_manifest_sha256'] == '838b4db8b5b82b18992f1c646371054a969e9c01d52aaab0520d4f9c74e20960'
+assert hashlib.sha256(manifest.read_bytes()).hexdigest() == api['source_manifest_sha256'] == '5ae428bf0ac9f8c60df880322546c7995b52039807db9802a6d57d4ed170f255'
 assert len(api['apiInputs']) == 55 and api['apiInputs'] == json.loads(manifest.read_text())['apiInputs']
 assert set(api['apiInputs']) == {str(p.relative_to(ROOT)) for p in (ROOT / 'docs/api').glob('*.txt')}
 public = {}
@@ -189,15 +189,26 @@ for name, checksum in api['apiInputs'].items():
         if line:
             row = json.loads(line); assert row['id'] not in public or public[row['id']] == row; public[row['id']] = row
 assert len(public) == 1430 and (ROOT / 'docs/api/M8-xsd-missing-components.txt').read_bytes() == b'xemele-api-v1\n'
-for file, key in [('runtime_source_manifest','runtime_source_manifest_sha256'),('runtime_review_plan','runtime_review_plan_sha256'),('runtime_api_proof','runtime_api_proof_sha256'),('verified_task','verified_task_sha256'),('integration_record','integration_record_sha256')]:
+for file, key in [('runtime_source_manifest','runtime_source_manifest_sha256'),('runtime_review_plan','runtime_review_plan_sha256'),('runtime_api_proof','runtime_api_proof_sha256'),('repair_proof','repair_proof_sha256'),('verified_task','verified_task_sha256'),('integration_record','integration_record_sha256')]:
     assert hashlib.sha256((ROOT / api[file]).read_bytes()).hexdigest() == api[key]
 proof = json.loads((ROOT / api['runtime_api_proof']).read_text()); record = json.loads((ROOT / api['integration_record']).read_text())
-assert record['result'] == 'PASS' and record['summary']['completed'] is True and record['commands'] == 24
-assert record['sourceSha256'] == api['source_manifest_sha256']
-assert proof['canonical_added_projection'] == record['summary']['addedInternalProjection']
+repair = json.loads((ROOT / api['repair_proof']).read_text())
+assert record['result'] == 'passed' and record['summary']['completed'] is True and record['commands'] == 24
+assert record['summary']['sourceSha256'] == api['source_manifest_sha256']
+assert record['full93EqualVerified'] is True and repair['actual_full93_equal_verified'] is True
+assert repair['annotation_waiver'] is False and record['originalAnnotation'] == repair['original_annotation']
+assert record['summary']['tests']['coverage']['observedMethods'] == 704 and record['summary']['tests']['coverage']['observedCases'] == 2222
+assert repair['verified_task_sha256'] == api['verified_task_sha256'] == 'e4fbcc6f346f2aef2d40156a611e0ef4b4b329dab9629aed8448da20a9f08990'
+assert repair['integration_record_sha256'] == api['integration_record_sha256'] == '1e0c31ebe946e50bb5166a4682249561d2b3645d0680d3d80a722e8c4c19206a'
+assert api['runtime_production_inputs']['src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs'] == 'c5ccdab54580f735bf030906951fe2b7ca02ae163036cf98963a53f2888db1e3'
+for name, checksum in [(repair['canonical_projection'],repair['canonical_projection_sha256']),(repair['allocation_custody_record'],repair['allocation_custody_record_sha256'])]: assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == checksum
+historical = api['historical_missing_binding']
+for path_key, sha_key in [('source_manifest','source_manifest_sha256'),('runtime_source_manifest','runtime_source_manifest_sha256'),('runtime_review_plan','runtime_review_plan_sha256'),('verified_task','verified_task_sha256'),('integration_record','integration_record_sha256')]: assert hashlib.sha256((ROOT / historical[path_key]).read_bytes()).hexdigest() == historical[sha_key]
+prior_record = json.loads((ROOT / historical['integration_record']).read_text())
+assert proof['canonical_added_projection'] == prior_record['summary']['addedInternalProjection']
 canonical = 'xemele-api-v1\n' + ''.join(json.dumps(proof['canonical_added_projection'][k], ensure_ascii=False, sort_keys=True, separators=(',', ':')) + '\n' for k in sorted(proof['canonical_added_projection']))
 assert hashlib.sha256(canonical.encode()).hexdigest() == proof['canonical_added_api_sha256'] == '33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d'
-assert proof['released_check_sha256'] == record['receipts']['checks/checks-summary.json']['sha256'] == 'c516fdbae022bf65148a2c420b0412fcd4f1418adacde540bbc48eb0dee95105'
+assert proof['released_check_sha256'] == prior_record['receipts']['checks/checks-summary.json']['sha256'] == 'c516fdbae022bf65148a2c420b0412fcd4f1418adacde540bbc48eb0dee95105'
 projection = proof['canonical_added_projection']; types = {name[2:] for name in projection if name.startswith('T:')}
 type_rows = {k:v for k,v in projection.items() if any(k[2:] == name or k[2:].startswith(name + '.') for name in types)}
 joins = {k:v for k,v in projection.items() if k not in type_rows}
@@ -219,12 +230,12 @@ for name, checksum in api['runtime_production_inputs'].items(): assert hashlib.s
 for name, present in api['root_configuration_presence'].items(): assert (ROOT / name).exists() is present
 for name, checksum in api['reviewed_build_inputs'].items(): assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == checksum
 missing_task = json.loads((ROOT / api['verified_task']).read_text()); assert missing_task['status'] == 'verified' and missing_task['integration_revision'] == api['verified_integration'] == record['testedRevision']
-assert proof['original_bad_case_waivers'] is False and record['originalBadCaseWaivers'] is False
+assert record['originalDispositionPassCredit'] == record['gatePassCredit'] == 0 and repair['annotation_waiver'] is False
 assert proof['actual_root_tests']['nonassessmentControls'] == 4 and proof['actual_root_tests']['nonassessmentGateCredit'] == proof['actual_root_tests']['nonassessmentOriginalPassCredit'] == 0
 subprocess.run(['git','merge-base','--is-ancestor',api['verified_integration'],'HEAD'],cwd=ROOT,check=True,timeout=5)
 import_task = json.loads((ROOT / 'docs/tasks/M8-xsd-import-visibility.json').read_text()); assert import_task['status'] == 'verified'
 subprocess.run(['git','merge-base','--is-ancestor',import_task['integration_revision'],'HEAD'],cwd=ROOT,check=True,timeout=5)
-root_task = subprocess.run(['git','show','043fcffa5812570c759d55df8ca49b371ffe99f1:docs/tasks/M8-xsd-corpus.json'], cwd=ROOT, capture_output=True,check=True,timeout=5).stdout
+root_task = subprocess.run(['git','show','6da00ef1b9a1f16aef7a8768f230ce9ca2c8bc91:docs/tasks/M8-xsd-corpus.json'], cwd=ROOT, capture_output=True,check=True,timeout=5).stdout
 assert (ROOT / 'docs/tasks/M8-xsd-corpus.json').read_bytes() == root_task
 assert hashlib.sha256((ROOT / 'tests/Xemele.Differential.Tests/Xsd/BclEngine.cs.fixture').read_bytes()).hexdigest() == 'b3000849833db1eac95b322f234a183c5e4cc3c1ec39945f9dcc95dedad1d664'
 original_runner = subprocess.run(['git','show','f05c780328613d7b0fec89ba14462eea8a4998cc:tests/Xemele.Conformance.Tests/Xsd/Runner.cs.fixture'],cwd=ROOT,capture_output=True,text=True,check=True,timeout=5).stdout
@@ -254,3 +265,37 @@ assert plan['full_campaign']['effective_limits'] == {k.arg:ast.literal_eval(k.va
 assert hashlib.sha256((HERE / 'controls.py').read_bytes()).hexdigest() == 'e63bbe537edf275a0ce64ffdb75e8716a5c972ddeee6b68bbfc23ef9cae8b69b'
 assert hashlib.sha256((HERE / 'nested_ownership.py').read_bytes()).hexdigest() == 'fe1db7d70cc4b10a04aaa5ac8107cd69a95f7a16e21a0888892ef70c5f05a128'
 print('PASS final SOURCE packet: unchanged ten-child preparation/freeze/campaign/execute functions and caps; exact10+186+3 recipes;root task bytes unchanged;new runtime/API/supplement controls all UNRUN;no project imports or launches')
+
+latest_ids = []
+provenance = json.loads((CORPUS / 'approved-missing-observation-provenance.json').read_text())
+assert hashlib.sha256((CORPUS / 'approved-missing-observation-provenance.json').read_bytes()).hexdigest() == '686da8bbf6913f791b10aee7909643c90be884b122e3e9d95bb4ede8c72c8284'
+for approval, prepared, question, approval_sha, prepared_sha, parent in [
+    ('approved-missing-nonassessment-dispositions.json','prepared-missing-nonassessment-dispositions.json','call_2d4e05aaef41499293e682fe147c9db5','4b1cb646d5386a08b6ca2c259039b61497bc6e1e88472c5f56aea3c239c1d659','06a4851a1c1e4653c7a87ab9018046e1d14a8be0085aeeb9cb6567d7d93f6f7d','M8-xsd-missing-nonassessment-policy'),
+    ('approved-missing-schema-dispositions.json','prepared-missing-schema-dispositions.json','call_d75eafbe87064aa3a95b17175cf85308','f8593c8becc78682aca37ec4b1560b0f03a757948ecf5bc14a41257f12300688','42b8a89542e7f94b7c1b9f2ad71671ef6c688a3ca92a0aa2e2f8c367e4420ddb','M8-xsd-missing-schema-oracles-policy')]:
+    assert (CORPUS / approval).read_bytes() == (ROOT / 'docs/orchestration' / (parent + '-approved.json')).read_bytes()
+    assert (CORPUS / prepared).read_bytes() == (ROOT / 'docs/orchestration' / (parent + '-pending.json')).read_bytes()
+    assert hashlib.sha256((CORPUS / approval).read_bytes()).hexdigest() == approval_sha
+    assert hashlib.sha256((CORPUS / prepared).read_bytes()).hexdigest() == prepared_sha
+    stamp = json.loads((CORPUS / approval).read_text()); prepared_doc = json.loads((CORPUS / prepared).read_text())
+    assert stamp['approvalQuestionId'] == question and stamp['approvedPreparedRecordSha256'] == prepared_sha
+    assert stamp['counts']['originalFalse'] == 4 and stamp['counts']['originalPassCredit'] == stamp['counts']['gatePassCredit'] == 0
+    assert prepared_doc['sourceRevision'] == provenance['sourceRevision'] == '91fbc8473ff43c8229acc1387f597645b6215175'
+    assert prepared_doc['frozenCampaignManifestSha256'] == provenance['frozenManifestSha256'] == '404bc79b127746fed960270717a994df123b06f9856704f9cc0c6d21ac8b6145'
+    assert len(prepared_doc['originals']) == 4
+    for record in prepared_doc['originals']:
+        row = originals[record['id']]; latest_ids.append(record['id'])
+        assert hashlib.sha256(json.dumps(row,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest() == record['originalMetadataSha256']
+        assert groups[record['id']]['metadata'] == record['metadataFile']; checked_file(record['metadataFile'],record['metadataFileSha256'])
+        assert record['originalExpected'] == row['expected'] and record['originalPassCredit'] is False and record['gatePassCredit'] is False
+        files = record.get('schemaAndInstanceSha256',record.get('schemaDocumentsSha256'))
+        for name, checksum in files.items(): checked_file(name,checksum)
+        if row['kind'] == 'instance': assert list(files) == groups[record['id']]['schema']['documents'] + row['documents']
+        else: assert [name for name in files if name in row['documents']] == row['documents'] and row['currentStatus'] == record['originalCurrentStatus']
+        observed = record['observation']; assert observed['engine'] == 'product' and observed['classification'] == 'applicable' and observed['passed'] is False
+        assert observed['kind'] == row['kind'] and observed['expected'] == row['expected']
+assert len(set(latest_ids)) == 8
+latest_additional = [r for key in ['interpretation_disagreements','dependent_unassessed','substrate_refusals','application_input_outcomes'] for r in additional[key]]
+all_approved_ids = {r['id'] for r in records[:35] + latest_additional + residual['cases']} | {'msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119'} | set(latest_ids)
+assert len(all_approved_ids) == 155 and 'msMeta/Annotations_w3c.xml#g78/s:annotZ002' not in all_approved_ids
+assert 136 + len(latest_ids) == 144 and sum(r['observation']['summary']['passed'] is None for r in residual['cases']) == 11
+print('PASS current rebind SOURCE only:155 exact scopes/144false+11null;four new authority/prepared copies and historical provenance pinned;annotZ002 UNWAIVED/current verified ordinary-cap repair;55/full93/nullable baselines preserved;all execution UNRUN')

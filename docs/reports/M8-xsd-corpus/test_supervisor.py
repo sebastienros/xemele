@@ -400,7 +400,11 @@ class Supervisor(unittest.TestCase):
         root = self.root / 'runtime-source'; here = root / 'docs/reports/M8-xsd-corpus'; here.mkdir(parents=True)
         binding = json.loads((m.HERE / 'verified-api-preparation.json').read_text())
         paths = set(binding['runtime_production_inputs']) | set(binding['baselines_sha256']) | {p for p in binding['reviewed_build_inputs'] if not Path(p).is_absolute()}
-        paths.update(binding[key] for key in ['runtime_source_manifest', 'runtime_review_plan', 'runtime_api_proof', 'verified_task', 'integration_record'])
+        paths.update(binding[key] for key in ['runtime_source_manifest', 'runtime_review_plan', 'runtime_api_proof', 'repair_proof', 'verified_task', 'integration_record'])
+        historical = binding['historical_missing_binding']
+        paths.update(historical[k] for k in ['source_manifest','runtime_source_manifest','runtime_review_plan','verified_task','integration_record'])
+        repair = json.loads((m.ROOT / binding['repair_proof']).read_text())
+        paths.update([repair['canonical_projection'],repair['allocation_custody_record']])
         for name in paths:
             target = root / name; target.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(m.ROOT / name, target)
         file = here / 'verified-api-preparation.json'; file.write_text(json.dumps(binding))
@@ -427,7 +431,7 @@ class Supervisor(unittest.TestCase):
 
     def test_changed_verified_task_proof_manifest_or_baseline_refuses_freeze(self):
         root, here, file, binding = self.runtime_binding_fixture()
-        names = [binding[key] for key in ['verified_task', 'runtime_api_proof', 'runtime_source_manifest', 'runtime_review_plan', 'integration_record']] + list(binding['baselines_sha256'])
+        names = [binding[key] for key in ['verified_task', 'runtime_api_proof', 'repair_proof', 'runtime_source_manifest', 'runtime_review_plan', 'integration_record']] + list(binding['baselines_sha256'])
         with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
             for name in names:
                 target = root / name; original = target.read_bytes(); target.write_bytes(original + b' ')
@@ -440,6 +444,23 @@ class Supervisor(unittest.TestCase):
         task_path.write_text(json.dumps(task)); binding['verified_task_sha256'] = m.digest(task_path); file.write_text(json.dumps(binding))
         with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
             with self.assertRaises(AssertionError): m.verified_runtime_inputs()
+
+    def test_rebound_same_count_repair_without_full_api_equality_refuses(self):
+        root, here, file, binding = self.runtime_binding_fixture()
+        record_path = root / binding['integration_record']; record = json.loads(record_path.read_text()); record['full93EqualVerified'] = False
+        record_path.write_text(json.dumps(record)); binding['integration_record_sha256'] = m.digest(record_path)
+        proof_path = root / binding['repair_proof']; repair = json.loads(proof_path.read_text()); repair['integration_record_sha256'] = binding['integration_record_sha256']
+        proof_path.write_text(json.dumps(repair)); binding['repair_proof_sha256'] = m.digest(proof_path); file.write_text(json.dumps(binding))
+        with patch.object(m,'ROOT',root),patch.object(m,'HERE',here):
+            with self.assertRaises(AssertionError):m.verified_runtime_inputs()
+
+    def test_rebound_canonical_api_declaration_drift_refuses(self):
+        root, here, file, binding = self.runtime_binding_fixture()
+        proof_path = root / binding['repair_proof']; repair = json.loads(proof_path.read_text()); canonical = root / repair['canonical_projection']
+        data = canonical.read_text().splitlines(); row=json.loads(data[1]);row['declaration']+=' altered';data[1]=json.dumps(row);canonical.write_text('\n'.join(data)+'\n')
+        repair['canonical_projection_sha256']=m.digest(canonical);proof_path.write_text(json.dumps(repair));binding['repair_proof_sha256']=m.digest(proof_path);file.write_text(json.dumps(binding))
+        with patch.object(m,'ROOT',root),patch.object(m,'HERE',here):
+            with self.assertRaises(AssertionError):m.verified_runtime_inputs()
 
     def supplement_fixture(self):
         with patch.dict(sys.modules, {'run': m}):

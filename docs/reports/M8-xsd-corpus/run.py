@@ -206,6 +206,7 @@ def verified_runtime_inputs():
     for path_key, sha_key in [('runtime_source_manifest', 'runtime_source_manifest_sha256'),
                               ('runtime_review_plan', 'runtime_review_plan_sha256'),
                               ('runtime_api_proof', 'runtime_api_proof_sha256'),
+                              ('repair_proof', 'repair_proof_sha256'),
                               ('verified_task', 'verified_task_sha256'),
                               ('integration_record', 'integration_record_sha256')]:
         name = binding[path_key]
@@ -219,15 +220,36 @@ def verified_runtime_inputs():
     record = json.loads((ROOT / binding['integration_record']).read_text())
     proof = json.loads((ROOT / binding['runtime_api_proof']).read_text())
     assert task['status'] == 'verified' and task['integration_revision'] == binding['verified_integration'] == record['testedRevision']
-    assert binding['verified_task_sha256'] == record['verifiedTaskSha256'] == proof['verified_task_sha256']
-    assert record['result'] == 'PASS' and record['summary']['completed'] is True
-    assert record['originalBadCaseWaivers'] is False and proof['original_bad_case_waivers'] is False
-    assert proof['actual_root_tests']['nonassessmentControls'] == 4
-    assert proof['actual_root_tests']['nonassessmentGateCredit'] == proof['actual_root_tests']['nonassessmentOriginalPassCredit'] == 0
-    assert proof['canonical_added_projection'] == record['summary']['addedInternalProjection']
-    assert proof['canonical_added_api_sha256'] == record['canonicalAddedApiSha256']
-    assert proof['released_check_sha256'] == record['receipts']['checks/checks-summary.json']['sha256']
+    repair = json.loads((ROOT / binding['repair_proof']).read_text())
+    assert binding['verified_task_sha256'] == repair['verified_task_sha256']
+    assert repair['tested_integration'] == task['integration_revision'] and repair['integration_record_sha256'] == binding['integration_record_sha256']
+    assert record['result'] == 'passed' and record['summary']['completed'] is True and record['commands'] == 24
+    assert record['full93EqualVerified'] is True and repair['actual_full93_equal_verified'] is True
+    assert record['summary']['sourceSha256'] == binding['source_manifest_sha256']
+    assert record['originalDispositionPassCredit'] == record['gatePassCredit'] == 0
+    assert repair['annotation_waiver'] is False and repair['original_annotation'] == record['originalAnnotation']
+    assert repair['availability_source_sha256'] == binding['runtime_production_inputs']['src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs'] == 'c5ccdab54580f735bf030906951fe2b7ca02ae163036cf98963a53f2888db1e3'
+    assert repair['prior_api_proof_sha256'] == binding['runtime_api_proof_sha256']
+    assert record['summarySha256'] == repair['released_check_sha256']
+    for name, checksum in [(repair['canonical_projection'],repair['canonical_projection_sha256']),
+                           (repair['allocation_custody_record'],repair['allocation_custody_record_sha256'])]:
+        assert digest(ROOT / name) == checksum, 'verified repair provenance changed: ' + name
+        identities[name] = checksum
+    assert proof['canonical_added_api_sha256'] == repair['canonical_projection_sha256'] == '33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d'
+    historical = binding['historical_missing_binding']
+    for path_key, sha_key in [('source_manifest','source_manifest_sha256'),('runtime_source_manifest','runtime_source_manifest_sha256'),
+                              ('runtime_review_plan','runtime_review_plan_sha256'),('verified_task','verified_task_sha256'),('integration_record','integration_record_sha256')]:
+        name = historical[path_key]
+        assert digest(ROOT / name) == historical[sha_key], 'historical verified API provenance changed: ' + name
+        identities[name] = historical[sha_key]
+    prior = json.loads((ROOT / historical['integration_record']).read_text())
+    assert proof['canonical_added_projection'] == prior['summary']['addedInternalProjection']
+    assert proof['canonical_added_api_sha256'] == prior['canonicalAddedApiSha256']
+    assert proof['released_check_sha256'] == prior['receipts']['checks/checks-summary.json']['sha256']
+    assert record['summary']['tests']['nonassessmentControls'] == 4
+    assert record['summary']['tests']['nonassessmentGateCredit'] == record['summary']['tests']['nonassessmentOriginalPassCredit'] == 0
     assert (proof['public_rows'], proof['api_fragments'], proof['added_internal_rows'], proof['new_type_rows'], proof['new_types'], proof['authored_joins']) == (1430, 55, 93, 80, 11, 13)
+    assert (record['summary']['publicRows'],record['summary']['xsdRows'],record['summary']['compilerRows'],record['summary']['addedInternalRows']) == (1430,615,257,93)
     actual = {str(p.relative_to(ROOT)) for p in (ROOT / 'src/Xemele').rglob('*') if p.is_file()
               and p.suffix in ('.cs', '.csproj', '.props', '.targets')
               and not {'bin', 'obj'}.intersection(p.relative_to(ROOT).parts)}
