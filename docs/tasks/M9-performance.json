@@ -8,7 +8,7 @@
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-performance",
   "base_revision": "69b39292e60fe89b3450cecefef1dc539c0399ce",
-  "integration_revision": null,
+  "integration_revision": "814b6b6e798f330142c09345343572f20f211fd4",
   "depends_on": [
     "M9-contracts"
   ],
@@ -72,6 +72,15 @@
       "result": "skipped",
       "summary": "No eligible hardware/reports supplied; A1/A2 remain pending. Shared-runner timings cannot satisfy the unchanged protocol.",
       "artifact": "docs/reports/M9-performance/README.md"
+    },
+    {
+      "id": "partial-accounting-integration",
+      "kind": "integration",
+      "revision": "814b6b6e798f330142c09345343572f20f211fd4",
+      "command": "Integrate scoped accounting only; inspect owned diff and validate task graph.",
+      "result": "passed",
+      "summary": "Source runtime remains unchanged; accounting integrated, task blocked and mandatory measurements never verified.",
+      "artifact": null
     }
   ],
   "blockers": [
