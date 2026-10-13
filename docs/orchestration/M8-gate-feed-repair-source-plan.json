@@ -1,0 +1,48 @@
+{
+  "task": "M8-gate",
+  "kind": "source repair plan and fixed arithmetic review",
+  "result": "Source-only repair authorized; final immutable source review and executable release pending",
+  "basis": "Actual attempt2 EXIT1 session57039 at9e9c0478f70d83940eb72e5c0e4e36245e16f98b,40normal commands/1failed/10unrun. Original failure and terminal cleanup retained.",
+  "packageReview": {
+    "reviewer": "/root/review_m8_contract",
+    "canonicalArchiveCount": 7387,
+    "genericAliasCount": 28,
+    "allGenericAliasesByteIdenticalToCanonicalPeer": true,
+    "caseFoldedCanonicalTargetCollisions": 0,
+    "collisionGroups": 6,
+    "finding": "All7415 archive files occupy package/version depth; depth glob alone does not fix generic alias collisions across versions. Select canonical version filenames and strictly validate aliases instead of arbitrary selection.",
+    "requiredInputs": "10.0.11 runtime/ILLink/ILCompiler/NativeAOT archives remain present; osx-arm64 host pack is in pinned SDK packs.",
+    "correctedRestoreOutcome": "UNRUN; read-only metadata audit is not package-consumer execution."
+  },
+  "sourceScope": "Owned package_inputs.py,focused synthetic filesystem controls,recipes and refreshed README/handoff/packet/concise audit. No product or API source change.",
+  "controlsRequired": [
+    "Different versions with identical generic filenames",
+    "Identical aliases",
+    "Conflicting aliases",
+    "Missing canonical counterpart",
+    "Identity/path mismatch"
+  ],
+  "unchangedRequirements": [
+    "Fresh initially absent external directory and private cache",
+    "Offline explicit local feed",
+    "No ProjectReference",
+    "Actual archive/product DLL equality",
+    "Actual package rehash before/after checks",
+    "Different byte identity conflicts fail closed"
+  ],
+  "boundsReview": {
+    "reviewer": "/root/review_m8_xpath",
+    "result": "SOURCE arithmetic PASS",
+    "layoutCommandWork": 600,
+    "prepareWork": 14000,
+    "prepareReserve": 180,
+    "childWorkSum": 12180,
+    "childCleanupSum": 510,
+    "sharedWorkSlack": 1310,
+    "innerHard": 14180,
+    "outerWork": 14780,
+    "outerHard": 14800,
+    "policy": "Starts fixed before binding; root initial binding included in shared clock; no extensions or reset. Otherphasebounds unchanged."
+  },
+  "execution": "No gate suites or allocation counters executed. New controls and corrected preparation are unrun. Original40normal prep outcomes remain attributed to attempt2, not future repaired source."
+}
