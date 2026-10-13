@@ -1,0 +1,473 @@
+{
+  "task": "M9-distribution",
+  "revision": "34740332fe6cada9b0e6e9608a9bef6426164c3e",
+  "result": "passed",
+  "rid": "osx-arm64",
+  "runtime": "10.0.11",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--version"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 86228,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "d0c8e5a09a2e5655cffdca9e350ecbba59a860154f5adadb92398b844f705ed0"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-current-package/src/Xemele/Xemele.csproj",
+        "--source",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/feed",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 86230,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "ba4a9fca437a25a0163c7828e5deaf54072065b36581d7c83de8713cddfa71a7"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-current-package/src/Xemele.Tool/Xemele.Tool.csproj",
+        "--source",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/feed",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 86235,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "db9cac0fad94b7d99e456c233c088db0e7e1494850d31f5b4b6793317691a76b"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "clean",
+        "/private/tmp/xemele-m9-current-package/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 86237,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "9f5408a874fabf9b2b427c3ba6e7d5685d59e65a69811ebcaab787082a478f2f"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "/private/tmp/xemele-m9-current-package/src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/pack-0"
+      ],
+      "receipt": {
+        "command": 4,
+        "pid": 86239,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "0adbc9e5b217b76f5896cfa6f458fffd1b8b6536d99c973e2904a49219c14f08"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "/private/tmp/xemele-m9-current-package/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/pack-0"
+      ],
+      "receipt": {
+        "command": 5,
+        "pid": 86245,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "669e0e0a178bdfae538038a0541924e1e3738f9aae100e1ecf9f4cf1c68e3e1b"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "clean",
+        "/private/tmp/xemele-m9-current-package/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 6,
+        "pid": 86255,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "77c2a7d5ddc6eddbfe8721830954d012b41ab84c49e4100737509d07caede572"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "/private/tmp/xemele-m9-current-package/src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/pack-1"
+      ],
+      "receipt": {
+        "command": 7,
+        "pid": 86258,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "9ae754328b94569988a47bb640f57e65b89e71356bf5763d6287870e66f92aa3"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "/private/tmp/xemele-m9-current-package/src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:DirectoryBuildTargetsPath=/private/tmp/xemele-m9-current-package/tools/Packaging/Release.targets",
+        "-p:UseSharedCompilation=false",
+        "-o",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/pack-1"
+      ],
+      "receipt": {
+        "command": 8,
+        "pid": 86268,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "2fa42383d29580f2d737c1c6d5edb58e3fc2d14ecd43fc505ee51bd7fd485029"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "--packages",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer-cache",
+        "--source",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/feed",
+        "--disable-build-servers",
+        "-r",
+        "osx-arm64",
+        "-p:PublishAot=true",
+        "-p:PublishTrimmed=true",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 9,
+        "pid": 86271,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "ce5c08b382e307628e4dfad68e971687f4ce66fa1d773128032834685483879b"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 10,
+        "pid": 86273,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "e2a9c2f22555422e9d8fc5ee5ffac505825354a1d23343401e8fde2e6fff528c"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer/bin/Release/net10.0/Consumer.dll"
+      ],
+      "receipt": {
+        "command": 11,
+        "pid": 86281,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "e11ccba81e8288271b531ab407075941ff61c5e81aa8474d52751b57551547ed"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "publish",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "-r",
+        "osx-arm64",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:SelfContained=true",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:PublishTrimmed=true",
+        "-p:PublishAot=false",
+        "-p:PinnedLinkerHost=/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer/linker-host",
+        "-o",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/trim"
+      ],
+      "receipt": {
+        "command": 12,
+        "pid": 86283,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "791f69e1768588e1c3c82be07aab2dbd1dece0fd81d1e44b9a999f0c33e968e6"
+    },
+    {
+      "argv": [
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/trim/Consumer"
+      ],
+      "receipt": {
+        "command": 13,
+        "pid": 86300,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "e11ccba81e8288271b531ab407075941ff61c5e81aa8474d52751b57551547ed"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "publish",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "-r",
+        "osx-arm64",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:SelfContained=true",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:PublishTrimmed=true",
+        "-p:PublishAot=true",
+        "-p:PinnedLinkerHost=/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/consumer/linker-host",
+        "-o",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/aot"
+      ],
+      "receipt": {
+        "command": 14,
+        "pid": 86305,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "749b8053382744de010685297ae447c23d964e26c92f245e6a76cdb45a390366"
+    },
+    {
+      "argv": [
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/aot/Consumer"
+      ],
+      "receipt": {
+        "command": 15,
+        "pid": 86326,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "e11ccba81e8288271b531ab407075941ff61c5e81aa8474d52751b57551547ed"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "tool",
+        "install",
+        "Xemele.Tool",
+        "--version",
+        "0.9.0-rc.1",
+        "--tool-path",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/installed-tool",
+        "--source",
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/feed",
+        "--disable-parallel"
+      ],
+      "receipt": {
+        "command": 16,
+        "pid": 86331,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "04c2b1c4fab5604443926244d491061215cdf2ed418da66bfe9af7c1db8aa3a5"
+    },
+    {
+      "argv": [
+        "/private/tmp/xemele-m9-current-package/artifacts/M9-distribution/work/installed-tool/xemele",
+        "--help"
+      ],
+      "receipt": {
+        "command": 17,
+        "pid": 86334,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "4548de9199602331500ec31062da18fb4472e5682892470670a1015036d00efc"
+    }
+  ],
+  "packages": [
+    {
+      "name": "Xemele.0.9.0-rc.1.nupkg",
+      "sha256": "92bdf44bed36c279be2608ccda4c95475ba17a0beac0e5e5511673a05d156056",
+      "byteIdenticalCleanRebuild": true,
+      "noticesDocsMetadata": true
+    },
+    {
+      "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+      "sha256": "2a7cb54ada0f0b3f1528506148b37cd13e10caed5944ad58605f489ed5ee55a9",
+      "byteIdenticalCleanRebuild": true,
+      "noticesDocsMetadata": true
+    }
+  ],
+  "published": false,
+  "sdk": "10.0.400",
+  "documentation": "Packaged user guide and notices; full per-member XML comment coverage not claimed.",
+  "sourceLink": {
+    "embedded": true,
+    "mappings": {
+      "/_/*": "https://raw.githubusercontent.com/sebastienros/xemele/34740332fe6cada9b0e6e9608a9bef6426164c3e/*"
+    },
+    "remoteFetchVerified": false
+  },
+  "consumers": {
+    "managed": true,
+    "freshCache": true,
+    "packageReferenceOnly": true,
+    "trim": true,
+    "aot": true,
+    "toolInstall": true
+  },
+  "matrixCredit": [
+    "osx-arm64"
+  ]
+}

@@ -18,6 +18,9 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'artifacts/M9-distribution'
 WORK = OUT / 'work'
 VERSION = '0.9.0-rc.1'
+# Current verified integrated test population, including the narrow M9 repairs.
+# This count is evidence-bound; unrun hosted jobs still receive no matrix credit.
+EXPECTED_UNIT_TESTS = 10754
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -159,7 +162,7 @@ def main():
                         if path.name.endswith(('.stderr.txt', '.stdout.txt', '.exit.json', '.invocation.json')):
                             report['unitChildDiagnostics'].append(dict(path=str(path.relative_to(ROOT)), sha256=sha(path),
                                                                        text=path.read_text(errors='replace')[:16000]))
-                assert counts['total'] == counts['passed'] == 10741 and all(counts[name] == 0 for name in ['failed', 'errors', 'skipped', 'not-run']), counts
+                assert counts['total'] == counts['passed'] == EXPECTED_UNIT_TESTS and all(counts[name] == 0 for name in ['failed', 'errors', 'skipped', 'not-run']), counts
                 result_xml.unlink()
             for candidate in [project, tool]:
                 run([host, 'restore', candidate, *sources, '--disable-build-servers', *props])

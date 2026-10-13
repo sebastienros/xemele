@@ -1,0 +1,179 @@
+{
+  "revision": "03dcbc9f631e3b935834c84badf52bbfafacdbe7",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/ReleaseCampaign/Instrumenter/Instrumenter.csproj",
+        "--disable-build-servers",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 69570,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/ReleaseCampaign/Instrumenter/Instrumenter.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 69575,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/ReleaseCampaign/XmlDriver/XmlDriver.csproj",
+        "--disable-build-servers",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 69579,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/ReleaseCampaign/XmlDriver/XmlDriver.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 69581,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-robustness/tests/ReleaseCampaign/Instrumenter/bin/Release/net10.0/Instrumenter.dll",
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/qualification/candidate/Xemele.dll"
+      ],
+      "receipt": {
+        "command": 4,
+        "pid": 69609,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/qualification/candidate/XmlDriver.dll",
+        "/private/tmp/xemele-m9-robustness/tests/ReleaseCampaign/seeds/xml/internal-dtd.xml"
+      ],
+      "receipt": {
+        "command": 5,
+        "pid": 69612,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/qualification/candidate/XmlDriver.dll",
+        "/private/tmp/xemele-m9-robustness/tests/ReleaseCampaign/seeds/xml/truncated.xml"
+      ],
+      "receipt": {
+        "command": 6,
+        "pid": 69615,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/qualification/candidate/XmlDriver.dll",
+        "/private/tmp/xemele-m9-robustness/tests/ReleaseCampaign/seeds/xml/well-formed.xml"
+      ],
+      "receipt": {
+        "command": 7,
+        "pid": 69617,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    }
+  ],
+  "result": "qualification-passed",
+  "productionSha256": "f2e8a3b9df95cf603e4e4af5cb78ac54c61914d26cae4c65d7c78a6ab639731c",
+  "instrumentation": {
+    "runtime": "10.0.11",
+    "reportedNamesSha256": "7c5174f51284ac0b7c47229032acb755e6f66f2bab4639c906c681cfe2cfdbdd",
+    "types": 600,
+    "reportingCorrection": "Returned entries are qualified type names; original instrumenter output label methods corrected to types."
+  },
+  "instrumentedCopySha256": "706d8505ab6a573ab5e52eceaf2e982e9d91993b35fc921f2475edf4c154b8ab",
+  "productionUntouched": true,
+  "singleFileReplays": 3,
+  "engineCampaignExecuted": false,
+  "coveragePercentageEstablished": false,
+  "campaignHours": 0
+}

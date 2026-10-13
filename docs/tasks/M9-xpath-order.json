@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "id": "M9-xpath-order",
+  "milestone": "M9",
+  "title": "Repair demonstrated quadratic XPath navigation and ordering",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-xpath-order",
+  "base_revision": "c1e68554fe4f76aa0675845ecca4a9f784639176",
+  "integration_revision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac",
+  "depends_on": [
+    "M9-contracts",
+    "M4-navigation",
+    "M4-evaluate",
+    "M9-dom-memory"
+  ],
+  "goals": [
+    "G06",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/xpath.md",
+    "docs/decisions/M4/xpath-profile.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/Navigation/XPathNavigator.cs",
+    "src/Xemele/XPath/Evaluation/Evaluator.cs",
+    "tests/Xemele.Tests/M9-xpath-order/",
+    "benchmarks/Xemele.Benchmarks/M9-xpath-order/",
+    "docs/reports/M9-xpath-order/"
+  ],
+  "api_or_output": "Metered bounded navigation/ordering on existing immutable XPath snapshots, preserving all public semantics and quotas.",
+  "acceptance": [
+    {
+      "id": "M9-xpath-order-A1",
+      "description": "Remove demonstrated quadratic navigation/order work and qualify the original entity-medium release query within100million operations; characterize every original frozen fixture without masking existing input-profile rejections or changing release denominators.",
+      "status": "passed",
+      "evidence": [
+        "quadratic-regression",
+        "integrated-checks"
+      ]
+    },
+    {
+      "id": "M9-xpath-order-A2",
+      "description": "Preserve exact order/deduplication, reverse-axis proximity, foreign/default identity rejection, cancellation and work/node-set bounds; verify earlier tests/API and actual allocation evidence.",
+      "status": "passed",
+      "evidence": [
+        "unit-tests",
+        "allocation-cases",
+        "compatibility",
+        "integrated-checks"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/XPath/Navigation/XPathNavigator.cs: interval-limited axes, stable OrderIndex join, metered sorted/merge-sort normalization",
+    "src/Xemele/XPath/Evaluation/Evaluator.cs: monotone uniqueness fast path and metered bounded balanced-tree fallback",
+    "tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs: five ordering, work/node-set, identity and cancellation checks",
+    "benchmarks/Xemele.Benchmarks/M9-xpath-order/: ten identical baseline/current MemoryDiagnoser/ShortRun workloads",
+    "docs/reports/M9-xpath-order/summary.md: original positive control, full fixture characterization and allocation tradeoffs"
+  ],
+  "evidence": [
+    {
+      "id": "quadratic-regression",
+      "kind": "check",
+      "revision": "e687343f36fa49b910f751e11e44cefaf09e287e",
+      "command": "qualify.py all original fixtures; original-control.py exact pre-repair100million-work failure; explicit corpus characterization",
+      "result": "passed",
+      "summary": "Original entity work rejection reproduced; repaired expected3146 query passes within unchanged100million limit. All ten original fixtures characterized:9qualify, text-large original aggregate-input cap refuses before evaluation; no10th credit or release exclusion.",
+      "artifact": "docs/reports/M9-xpath-order/characterization.json"
+    },
+    {
+      "id": "all-fixture-profile",
+      "kind": "check",
+      "revision": "e687343f36fa49b910f751e11e44cefaf09e287e",
+      "command": "python3 docs/reports/M9-xpath-order/qualify.py",
+      "result": "failed",
+      "summary": "All-ten qualification remainsfailed:9passed and original text-large snapshot-cap rejection retained. Separately owned finite benchmark-profile correction requested; no runtime quota change.",
+      "artifact": "docs/reports/M9-xpath-order/qualification.json"
+    },
+    {
+      "id": "unit-tests",
+      "kind": "check",
+      "revision": "0b12921c0db21a080816391f2f4e21768fdca2d9",
+      "command": "python3 docs/reports/M9-xpath-order/check.py --phase branch2",
+      "result": "passed",
+      "summary": "10754/10754 units passed,0failures/errors/skips/notrun; new bounded normalization/descendant/union/cancellation/identity cases and existing exact-budget accounting pass.",
+      "artifact": "docs/reports/M9-xpath-order/checks-branch2.json"
+    },
+    {
+      "id": "allocation-cases",
+      "kind": "check",
+      "revision": "31345c0edd4236e54b4521558228a77fbf3e44bc",
+      "command": "Isolated allocations.py eight cases; overlap-allocations.py only two new fallback cases",
+      "result": "passed",
+      "summary": "All10identical baseline/current MemoryDiagnoser/ShortRun cases completed. Basic cases allocation flat/decreased; balanced reverse/overlap tree +about1.6% owned allocations. No controlled timing pass; generic-parent build failure retained.",
+      "artifact": "docs/reports/M9-xpath-order/summary.md"
+    },
+    {
+      "id": "compatibility",
+      "kind": "check",
+      "revision": "2a63c84dcb50147933b2b918467fcc1f45e356d1",
+      "command": "python3 docs/reports/M9-xpath-order/compatibility.py --phase branch",
+      "result": "passed",
+      "summary": "920conformance+618differential pass,0nonpasses. Public1430/55 and222preview signatures unchanged; two mismatch controls refuse.",
+      "artifact": "docs/reports/M9-xpath-order/compatibility-branch.json"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac",
+      "command": "check.py --phase integration; exact runtime/test/corpus/worker/API source closure comparison",
+      "result": "passed",
+      "summary": "Integrated10754/10754 units pass; every measured runtime/test/corpus/API closure equals passing component and compatibility checks. Original all-fixture profile failure remainsfailed; no source-changed silent reuse.",
+      "artifact": "docs/reports/M9-xpath-order/integration.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Narrow demonstrated quadratic navigation/order repair is complete; original entity work-budget failure is fixed with metered bounded algorithms and preserved semantics.",
+    "checks": [
+      "10754 units;920conformance;618differential;1430API/222preview unchanged",
+      "10baseline/current allocation workloads complete; original work-limit control reproduced",
+      "All original release fixtures retained:9qualify, text-large input-profile rejection remainsfailed"
+    ],
+    "remaining": [
+      "Separately owned finite benchmark input-profile correction and aggregate benchmark build fix; dedicated timing remains unverified."
+    ],
+    "requests": [
+      "M9-performance owns the finite benchmark-profile correction and affected text-large requalification; no release denominator change.",
+      "The shared aggregate benchmark project includes multiple standalone top-level programs; route its owned build/source-glob fix separately.",
+      "M9-robustness must reassess whole-source evidence after these runtime changes. Fuzz remains explicitly deferred."
+    ]
+  }
+}

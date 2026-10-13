@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "id": "M9-dom-memory",
+  "milestone": "M9",
+  "title": "Repair demonstrated retained-DOM storage target failure",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-dom-memory-repair",
+  "base_revision": "68c7523bf4451152a52e16c522c4a7738c5fe6dc",
+  "integration_revision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69",
+  "depends_on": [
+    "M9-contracts",
+    "M1-tree",
+    "M8-source-locations"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs",
+    "tests/Xemele.Tests/M9-DOM-memory/",
+    "benchmarks/Xemele.Benchmarks/M9-DOM-memory/",
+    "docs/reports/M9-DOM-memory/"
+  ],
+  "api_or_output": "Compact document-owned name/storage and source-location representation, retaining existing APIs and diagnostic provenance.",
+  "acceptance": [
+    {
+      "id": "M9-dom-memory-A1",
+      "description": "Repair the observed 0.935969 retained-DOM ratio to the unchanged 0.75 maximum on the exact frozen representative corpus; preserve all original failed measurements and fixtures.",
+      "status": "passed",
+      "evidence": [
+        "retained-target",
+        "integrated-checks"
+      ]
+    },
+    {
+      "id": "M9-dom-memory-A2",
+      "description": "Preserve node/member identity, mutation/copy behavior, quotas, exact source locations and complete earlier tests/API; provide actual relevant allocation/retention evidence.",
+      "status": "passed",
+      "evidence": [
+        "cumulative-unit",
+        "allocations",
+        "compatibility",
+        "integrated-checks"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Tree/Document.cs: immutable document-owned NameData, compact NodeData/MemberData, quota-preserving persistence and uncached prefix replacement",
+    "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs: dense full-width source coordinates with sparse/mutation/URI identity preservation",
+    "tests/Xemele.Tests/M9-DOM-memory/StorageTests.cs: eight identity/quota/provenance edge regressions",
+    "benchmarks/Xemele.Benchmarks/M9-DOM-memory/DomStorageBenchmarks.cs: identical four-shape MemoryDiagnoser/ShortRun comparison",
+    "docs/reports/M9-DOM-memory/summary.md: retained corpus, allocation tradeoffs, failures and timing limitations"
+  ],
+  "evidence": [
+    {
+      "id": "retained-target",
+      "kind": "check",
+      "revision": "13349589e6a68868e747c6f86c6cf044e256e983",
+      "command": "python3 docs/reports/M9-DOM-memory/retention.py --dotnet pinned10.0.400host --attempt repaired",
+      "result": "passed",
+      "summary": "All ten frozen fixtures /60 cycles; retained aggregate0.687098 <=0.75,9MiB positive controls detected; original0.935969 failure preserved. No dedicated timing credit.",
+      "artifact": "docs/reports/M9-DOM-memory/dom-retention.json"
+    },
+    {
+      "id": "cumulative-unit",
+      "kind": "check",
+      "revision": "8afe00b1aeb15f8f2ed25137c8f41a75b69948d4",
+      "command": "python3 docs/reports/M9-DOM-memory/check.py --phase branch5",
+      "result": "passed",
+      "summary": "10749/10749 units,0failures/errors/skips/notrun; actual pinned10.0.11 parent/child guards; eight new edge cases. Earlier build/config/report failures preserved.",
+      "artifact": "docs/reports/M9-DOM-memory/checks-branch5.json"
+    },
+    {
+      "id": "allocations",
+      "kind": "check",
+      "revision": "96607239948456c12aac0b56bcf6eb29cec33b0c",
+      "command": "python3 docs/reports/M9-DOM-memory/allocations.py; affected candidate-only --resume after project discovery correction",
+      "result": "passed",
+      "summary": "Identical MemoryDiagnoser/ShortRun workloads: distinct-4.61%, multilingual-18.51%, repeated-18.71%, small+0.77% allocated/op. Original baseline reused exactly; no controlled throughput or regression pass.",
+      "artifact": "docs/reports/M9-DOM-memory/allocations.json"
+    },
+    {
+      "id": "compatibility",
+      "kind": "check",
+      "revision": "f4e6887d668a661601e6e6bc79e8ca5fef9710d9",
+      "command": "compatibility.py --phase branch; source-equivalent affected API-only continuation using approved M9 extractor",
+      "result": "passed",
+      "summary": "920conformance+618differential pass;1430compiled public members/55fragments match;222preview unchanged; two mismatch controls refused. Generic API discovery rejection retained.",
+      "artifact": "docs/reports/M9-DOM-memory/compatibility-completed.json"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69",
+      "command": "python3 docs/reports/M9-DOM-memory/check.py --phase integration; exact measured/runtime/test/fixture/API closure comparison",
+      "result": "passed",
+      "summary": "Integrated10749/10749 units pass; every measured runtime/test/corpus/API closure equals passing retained/BDN/920conformance/618differential/API evidence. No redundant timing or source-changed reuse.",
+      "artifact": "docs/reports/M9-DOM-memory/integration.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Focused DOM storage repair passes the unchanged frozen retained-memory target with preserved APIs and provenance.",
+    "checks": [
+      "10749 unit +920conformance +618differential tests passed; public1430 and preview222 unchanged",
+      "Frozen ten-fixture memory0.687098; same9MiB controls; four-shape allocation comparisons complete"
+    ],
+    "remaining": [
+      "Controlled timing remains pending in M9-performance; separate XPath and current robustness reassessment follow."
+    ],
+    "requests": [
+      "M9-performance should import the verified repair evidence and keep dedicated timing pending.",
+      "M9-robustness must reassess its former whole-source reuse after these two runtime files changed; original XSD dispositions remain zero-credit and fuzz remains deferred.",
+      "Separate XPath ordering repair remains required for the demonstrated100million-operation query failure."
+    ]
+  }
+}

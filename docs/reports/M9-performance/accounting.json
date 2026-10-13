@@ -61,7 +61,9 @@
     {
       "workload": "streaming-live-1gib",
       "maximumBytes": 8388608,
-      "status": "historical-results-preserved; closure-requalification-required"
+      "status": "passed-current-local-1gib-five-modes",
+      "evidence": "docs/reports/M9-performance/current-memory.json",
+      "maximumObservedConservativeLiveBytes": 291304
     },
     {
       "workload": "concrete-traversal",
@@ -141,5 +143,15 @@
     "Historical provisional microbenchmarks lack equivalent per-reference frozen representative suite outcomes and cannot establish geometric targets/floor/regression confidence.",
     "Retained managed bytes, cumulative allocations and RSS remain separate; missing RSS is not zero.",
     "No release comparative ratio or regression pass is fabricated."
-  ]
+  ],
+  "currentStreamingMemory": {
+    "evidence": "docs/reports/M9-performance/current-memory.json",
+    "revision": "a9cd65d8ab179e434007816530cc75d18b259723",
+    "result": "passed",
+    "modes": 5,
+    "inputBytesPerMode": 1073741824,
+    "maximumConservativeManagedLiveBytes": 291304,
+    "positiveControlLiveBytes": 9627776,
+    "controlledTimingCredit": false
+  }
 }

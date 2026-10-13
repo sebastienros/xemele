@@ -1,0 +1,185 @@
+{
+  "result": "passed",
+  "revision": "1c950a5693e89760c411ad2f0f5742ab9fdbcf04",
+  "fixtureManifestSha256": "d14e74167c1d552be721c121e6a6c6a267d30e2ad4a53d3ef71ce82031363fb0",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedWorker/ManagedWorker.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 74672,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "06a3dffcb0dcc1b632c480be760a48e61047e215acbcd15ccc6624e7c7c1a778"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedWorker/ManagedWorker.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 74730,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "4c27d7669cecac492f622b84294c017b8a48a260d33c2976e071dd72f5b942c0"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedWorker/bin/Release/net10.0/ManagedWorker.dll",
+        "xemele",
+        "/private/tmp/xemele-m9-performance-profile/benchmarks/baselines/release/fixtures/text-large.xml",
+        "/private/tmp/xemele-m9-performance-profile/benchmarks/baselines/release/fixtures.json",
+        "/private/tmp/xemele-m9-performance-profile/artifacts/M9-performance/profile-check/text-large.json",
+        "qualify"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 74897,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "rows": [
+    {
+      "fixture": "feed-small",
+      "inputSha256": "7fd92cf92f2e4f8c744ff57af92331309f44f41f915c8a5555e1f79d36cfbff5",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "0f6980eaa32d6894a9b593774c7ccf4502432579a90ed0960b4d311364c45b61",
+        "expectedXPath": 40
+      }
+    },
+    {
+      "fixture": "svg-small",
+      "inputSha256": "28c0d831e3e0736f1ce90208bdff30fd7ac37cad01e15090cbebedf3b2bbc429",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "0eaebe70e114f99b6c718aeff129dbeb38babe7d61f01e3c33f9ec6b884cdd0d",
+        "expectedXPath": 207
+      }
+    },
+    {
+      "fixture": "deep-medium",
+      "inputSha256": "35b7c22c5aaeeac9ffdfd26f91742678abe86ceb7fce1fb0ef2aae13eaab698a",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "91ab722ab408bba004c820375403b6b9fade4e19eedfa784a8b4f7d0eb6545cc",
+        "expectedXPath": 1203
+      }
+    },
+    {
+      "fixture": "entity-medium",
+      "inputSha256": "27b6e5fc142d96a61d577415fc7b4399a3b7906aba517d5a5e2dcf582b14d43c",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "bdaa2c77032966864cb9819785c9dc606628a9dd914488d9a8f4cf1c1879a28b",
+        "expectedXPath": 3146
+      }
+    },
+    {
+      "fixture": "xhtml-medium",
+      "inputSha256": "e64b5519362660315fc1f68c101a54abb21f5191fd98eae8d0cd4e283f4c53a1",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "a66379d5e045e7762144c120b2707dcac150bf60be93a994b8e00b28c106213d",
+        "expectedXPath": 2403
+      }
+    },
+    {
+      "fixture": "build-medium",
+      "inputSha256": "2b6c2d2fa56c0235043e4e884d6da9833d58b6dba0495e818a69a553d74ae3a6",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "e224e09e770eec98a5a3273d5633f06bc47e2a83cee2601de29c03aab8696222",
+        "expectedXPath": 6421
+      }
+    },
+    {
+      "fixture": "soap-large",
+      "inputSha256": "5e17a7ed904f73bf72cc100321d90b53029dc255d9e604cc4c69f4c541f60f97",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "d2e66b2cb11be02a383a4e59413e87273c68c9c5ff486b4e8771aaaef473e74c",
+        "expectedXPath": 12450
+      }
+    },
+    {
+      "fixture": "configuration-large",
+      "inputSha256": "c78bb8f8f3173d3ac3f6524edd3016b8febb24f7384661a21e0c56e2db39c799",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "7165055a24326d5bdeafc0c85ccd86818f2a83e4ec422d5f053e05a3fc2811a1",
+        "expectedXPath": 16515
+      }
+    },
+    {
+      "fixture": "business-large",
+      "inputSha256": "f3a00941b81cfb5e6582ba24cc7477ae61b6a7cdf78021dea496f80afcd1ee01",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "889820b64e1fd708848ed2a9f079ef23cb6a20450c905ff2dd6e9ea10db60161",
+        "expectedXPath": 40618
+      }
+    },
+    {
+      "fixture": "text-large",
+      "inputSha256": "fda5cd8c25e617eb75e8082b141e10c9b3a055de2807d9bc6f76d4bfb0748874",
+      "actual": {
+        "engine": "xemele",
+        "qualification": true,
+        "digest": "4afea47057ca49bf18a31df1453179777a905894ad3d30ee9525d08b34fce0d5",
+        "expectedXPath": 952
+      }
+    }
+  ],
+  "reusedNineFrom": "docs/reports/M9-xpath-order/qualification.json",
+  "originalFailurePreserved": true,
+  "profileSha256": "e82e3acb006053c6dfbc6a8cecd0a7f2f53aed639d0369418c573a965532b4e7",
+  "controlledTimingCredit": false,
+  "qualifiedFixtures": 10,
+  "excludedFixtures": 0
+}

@@ -1,0 +1,78 @@
+{
+  "revision": "b6a359af6faf89c2ae492f2b1af47e2b674196ee",
+  "phase": "branch2",
+  "result": "failed",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 53372,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+      "outputTail": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 53377,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "e642bada83dda83f97c0efcbf4d730eb194c21d755389255825dae5a44119a78",
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-dom-memory-repair/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Xemele.TestUtilities -> /private/tmp/xemele-m9-dom-memory-repair/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll\n  Xemele.Tests -> /private/tmp/xemele-m9-dom-memory-repair/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:05.07\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "--report-trx",
+        "--results-directory",
+        "/private/tmp/xemele-m9-dom-memory-repair/artifacts/M9-dom-memory/checks-branch2/tests"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 53437,
+        "exit": 3,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "f6f5860bc0c932f4c16be03cfd15107e4d42553e86d109fa6cfb58bd6f8d931b",
+      "outputTail": "\u001b[91merror: unknown option: --report-trx\n\u001b[0m"
+    }
+  ]
+}

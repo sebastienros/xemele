@@ -6,11 +6,14 @@
   "kind": "verification",
   "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-performance",
-  "base_revision": "69b39292e60fe89b3450cecefef1dc539c0399ce",
-  "integration_revision": "814b6b6e798f330142c09345343572f20f211fd4",
+  "branch": "codex/m9-performance-profile",
+  "base_revision": "e2a86fe2067d6f98c09e7e1910aaa3ac6ff1da15",
+  "integration_revision": "9d14c99c6ca63207af86da2c36819fc34541bbb7",
   "depends_on": [
-    "M9-contracts"
+    "M9-contracts",
+    "M9-dom-memory",
+    "M9-xpath-order",
+    "M9-benchmark-build"
   ],
   "goals": [
     "G18"
@@ -29,7 +32,11 @@
       "description": "Run frozen throughput/allocation/live-memory benchmarks on controlled hardware against each reference.",
       "status": "pending",
       "evidence": [
-        "required-controlled-run"
+        "required-controlled-run",
+        "current-streaming-memory",
+        "retained-dom-target",
+        "current-repaired-dom-memory",
+        "current-repaired-stream-memory"
       ]
     },
     {
@@ -37,7 +44,10 @@
       "description": "Record raw results/environment/confidence and target outcomes; route runtime optimization to separate repair tasks.",
       "status": "pending",
       "evidence": [
-        "required-controlled-run"
+        "required-controlled-run",
+        "current-streaming-memory",
+        "current-all-engine-qualification",
+        "managed-benchmark-oracles"
       ]
     },
     {
@@ -52,7 +62,15 @@
   "implementation": [
     "benchmarks/baselines/release/targets.json",
     "docs/reports/M9-performance/accounting.json",
-    "docs/reports/M9-performance/README.md"
+    "docs/reports/M9-performance/README.md",
+    "docs/reports/M9-performance/MemoryRunner/MemoryRunner.csproj: links unchanged generated memory oracle against current release runtime",
+    "docs/reports/M9-performance/memory.py and current-memory.json: finite five-mode1GiB checks plus retained9MiB control",
+    "benchmarks/baselines/release/fixtures.json, fixtures/ and operations.json: ten frozen original primary workloads and semantic oracle",
+    "docs/reports/M9-performance/ManagedWorker/, NativeWorker/ and RustWorker/: actual equivalent owned-DOM/reference-operation preparation",
+    "benchmarks/baselines/release/operations.json: justified finite profilev2 and equivalent explicitUTF8output; original fixtures unchanged",
+    "docs/reports/M9-performance/current-summary.md,current-preparation.json,managed-qualification-current.json,rust-utf8-qualification.json:30engine/fixture qualifications, all earlier failures preserved",
+    "docs/reports/M9-performance/dom-current.py,dom-retention-current.json,memory-current.py,current-memory2.json: actual current repaired-runtime memory passes",
+    "docs/reports/M9-performance/ManagedBenchmarks/: prepared memory-diagnosed ShortRun managed workloads and90untimed operation oracles"
   ],
   "evidence": [
     {
@@ -81,21 +99,105 @@
       "result": "passed",
       "summary": "Source runtime remains unchanged; accounting integrated, task blocked and mandatory measurements never verified.",
       "artifact": null
+    },
+    {
+      "id": "current-streaming-memory",
+      "kind": "check",
+      "revision": "a9cd65d8ab179e434007816530cc75d18b259723",
+      "command": "python3 -B docs/reports/M9-performance/memory.py --dotnet pinned10.0.400host",
+      "result": "passed",
+      "summary": "Five current1GiBmodes pass exact byte/event/text/earlyEOF oracles;65liveheap samples/mode, max291304bytes<8388608 including buffers/runtime. Retained9MiBcontrol9627776bytes refuses limit. All9outercommands exit0/reaped/groupabsent/logclosed; actual separateRSS. No fuzz or controlledtimingcredit.",
+      "artifact": "docs/reports/M9-performance/current-memory.json"
+    },
+    {
+      "id": "current-memory-integrated",
+      "kind": "integration",
+      "revision": "6a62f81f325d1cdd1b0111ed469fff3ee48959a2",
+      "command": "Compare complete measured runtime/runner/helper/profile/config/caller Git blob closure; planning validate; diff check",
+      "result": "passed",
+      "summary": "Integrated measured source closure exactly matches all five passing1GiB checks and9MiBcontrol. No repeated workload or unrun controlled throughput/retainedDOM credit.",
+      "artifact": "docs/reports/M9-performance/current-memory.json"
+    },
+    {
+      "id": "retained-dom-target",
+      "kind": "check",
+      "revision": "bc20523859dafe7ba41e27205ca443aa941b847d",
+      "command": "Committed paired retained-DOM probe, source-equivalent continuation after control-only correction; all10fixtures and60cycles, no exclusions",
+      "result": "failed",
+      "summary": "Actual retained ratio 0.935969 exceeds0.75 on frozen corpus; all raw metrics and original failed probe attempts retained. Real storage repair required; no timing deficit fabricated.",
+      "artifact": "docs/reports/M9-performance/dom-retention.json"
+    },
+    {
+      "id": "reference-operation-qualification",
+      "kind": "check",
+      "revision": "70dea135410a8bf63e690f0615ab3a45395c8ab4",
+      "command": "Pinned native/Rust builds and original20case qualification with affected-case continuations only",
+      "result": "passed",
+      "summary": "Actual DOM/model/serialization/compiled-XPath outputs qualified for all10fixtures against both references; failed quota/API-mapping attempts preserved. No throughput claim.",
+      "artifact": "docs/reports/M9-performance/reference-qualification.json"
+    },
+    {
+      "id": "current-repaired-dom-memory",
+      "kind": "check",
+      "revision": "17529d1e56ed049366695cc7d6c618957f068154",
+      "command": "python3 docs/reports/M9-performance/dom-current.py --dotnet pinnedhost --attempt profile",
+      "result": "passed",
+      "summary": "All10frozen fixture pairs/60cycles, original failures preserved; current repaired retained aggregate0.687098182 <=0.75; individual geometric mean0.785888009 reported separately.9MiBcontrols detected; no timing credit.",
+      "artifact": "docs/reports/M9-performance/dom-retention-current.json"
+    },
+    {
+      "id": "current-repaired-stream-memory",
+      "kind": "check",
+      "revision": "3145728d4fc908e3ef048bd73f07dc9752faefae",
+      "command": "python3 docs/reports/M9-performance/memory-current.py --dotnet pinnedhost",
+      "result": "passed",
+      "summary": "Fresh exact1GiB profiles for SAX/asyncSAX/pull/asyncpull/push;65fullGCsamples each, complete byte/event counts/early callbacks. Maximumwholemanagedlive289640bytes <8MiB;9MiBretainedcontrol failslimit.9commands exit0,groupsabsent,reaped; RSS separate, no fuzz.",
+      "artifact": "docs/reports/M9-performance/current-memory2.json"
+    },
+    {
+      "id": "current-all-engine-qualification",
+      "kind": "check",
+      "revision": "1c950a5693e89760c411ad2f0f5742ab9fdbcf04",
+      "command": "Affected-only profile-check.py; all10changed RustUTF8 serialization checks; byte-bound unchanged10native qualifications",
+      "result": "passed",
+      "summary": "All10original fixtures qualify for each managed/native/Rust worker,0exclusions. Owned benchmark aggregate cap corrected16\u219232Mi after actual29245440UTF16lowerbound; originalfailure preserved, allruntime/default/targetlimits unchanged. RustUTF8 setup matches serializers, all independent roundtrips pass.",
+      "artifact": "docs/reports/M9-performance/current-preparation.json"
+    },
+    {
+      "id": "managed-benchmark-oracles",
+      "kind": "check",
+      "revision": "e5ca4e766188f1296f2b1bbf75c99dca095904b1",
+      "command": "Finite supervised ManagedBenchmarks restore/build; pinned --qualify90oracles; --list flat; no timing execution",
+      "result": "passed",
+      "summary": "Owned MemoryDiagnoser/ShortRunJob classes compile/list parse, explicitfullGC lifecycle diagnostic,UTF8output,compiledXPath,reader/SAX.90single-operation oracles pass over exact10fixtures/engines. Lifecycle/timing remain unmeasured.",
+      "artifact": "docs/reports/M9-performance/managed-benchmark-preparation.json"
+    },
+    {
+      "id": "current-preparation-integrated",
+      "kind": "integration",
+      "revision": "9d14c99c6ca63207af86da2c36819fc34541bbb7",
+      "command": "Exact measured runtime/worker/fixture/build closure comparisons; preserve prepared reference binaries; tasks.py validate; diff check",
+      "result": "passed",
+      "summary": "Current memory/30enginequalifications/90managedoracles source-equivalent on integrated main; prepared native/Rustbinary hashes preserved. Mandatory controlled timing stillunrun, lane remainsblocked.",
+      "artifact": "docs/reports/M9-performance/current-integration.json"
     }
   ],
   "blockers": [
-    "Stable dedicated timing hardware or valid release comparisons unavailable; human answered no."
+    "Required comparative throughput, confidence, per-fixture floors and regression validation on dedicated hardware across required architectures remain unavailable; no eligible machine or prior report supplied."
   ],
   "handoff": {
-    "summary": "Frozen release target/reference accounting; provisional earlier measurements preserved without pass inflation; task blocked on controlled release evidence.",
+    "summary": "Verified DOM/XPath/build repairs imported; all10unchanged fixtures qualify against three engines, currentDOM0.687098182 and allfive1GiBmemory bounds pass. Timing remains blocked honestly.",
     "checks": [
-      "11outcomes/accounting/inputSHA/runtimeequivalence/oldstreamingclosure checks; planning201/diff passed."
+      "30engine/fixture qualifications, originalscope failures and protocol correction preserved;90managed benchmark operation oracles pass",
+      "Current retainedDOM0.687098182 <=0.75; streamingwholemanagedlive289640bytes <8MiB withpositive9MiBcontrols",
+      "Concrete traversal/repeated intern zero-allocation assertions passed in current integrated10754-unit checks; verified repair allocation tradeoffs imported"
     ],
     "remaining": [
-      "Controlled hardware evidence; representative fixture/reference freeze; current live-memory requalification and retainedDOM ratio; actual confidence/targets/regression outcomes."
+      "Dedicated comparative throughput/confidence/primaryfloor and regression validation on eligiblex64/arm64 hardware; no release timing pass."
     ],
     "requests": [
-      "Supply stable dedicated hardware or existing exact applicable release reports; no runtime repair inferred without actual deficit."
+      "M9-robustness must reassess whole-source and current original XSD evidence after runtime repairs; fuzz remains explicitly deferred.",
+      "M9-distribution must validate the current repaired runtime; additional hosted retry still awaits its existing budget approval."
     ]
   }
 }

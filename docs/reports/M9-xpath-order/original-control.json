@@ -1,0 +1,82 @@
+{
+  "result": "passed",
+  "baselineRevision": "2d38e67fc809341fef1cdd2f9aeb9f6ef13e1059",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations2/baseline/docs/reports/M9-performance/ManagedWorker/ManagedWorker.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 67002,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "204881f20bf45be543d026c24b34fb9e532fc701606ccc725760b73652d56742",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations2/baseline/docs/reports/M9-performance/ManagedWorker/ManagedWorker.csproj (in 190 ms).\n  1 of 2 projects are up-to-date for restore.\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations2/baseline/docs/reports/M9-performance/ManagedWorker/ManagedWorker.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 67023,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7a00f4e026f0416f6c37484b0fde92fb0a89ebd74afa8fa44305615f478df08c",
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations2/baseline/src/Xemele/bin/Release/net10.0/Xemele.dll\n  ManagedWorker -> /private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations2/baseline/docs/reports/M9-performance/ManagedWorker/bin/Release/net10.0/ManagedWorker.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:09.26\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/allocations2/baseline/docs/reports/M9-performance/ManagedWorker/bin/Release/net10.0/ManagedWorker.dll",
+        "xemele",
+        "/private/tmp/xemele-m9-xpath-order/benchmarks/baselines/release/fixtures/entity-medium.xml",
+        "/private/tmp/xemele-m9-xpath-order/benchmarks/baselines/release/fixtures.json",
+        "/private/tmp/xemele-m9-xpath-order/artifacts/M9-xpath-order/original-control/original.json",
+        "qualify"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 67058,
+        "exit": -6,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "9c3b7e388d5f2be3a840bd886378cad3b88e03c5b99d256c82c4c7024cd7a2fb",
+      "outputTail": "Unhandled exception. Xemele.XPath.XPathEvaluationException: XPath evaluation limit exceeded.\n   at Xemele.XPath.Internal.XPathEvaluator.Normalize(IReadOnlyList`1 input, IXPathBudget budget) in /_/artifacts/M9-xpath-order/allocations2/baseline/src/Xemele/XPath/Evaluation/Evaluator.cs:line 197\n   at Xemele.XPath.Internal.XPathEvaluator.Run(Request request)+MoveNext() in /_/artifacts/M9-xpath-order/allocations2/baseline/src/Xemele/XPath/Evaluation/Evaluator.cs:line 187\n   at Xemele.XPath.Internal.XPathEvaluator.Evaluate(XPathAst ast, XPathItem item) in /_/artifacts/M9-xpath-order/allocations2/baseline/src/Xemele/XPath/Evaluation/Evaluator.cs:line 67\n   at Xemele.XPath.XPathExpression.EvaluateWithAccounting(XmlNode context, XPathContext options, Int64& operations) in /_/artifacts/M9-xpath-order/allocations2/baseline/src/Xemele/XPath/XPathExpression.cs:line 28\n   at Program.<<Main>$>g__Verify|0_10(String engine, Object value, String expected, String expression, Double expectedXPath, Boolean qualify) in /_/artifacts/M9-xpath-order/allocations2/baseline/docs/reports/M9-performance/ManagedWorker/Program.cs:line 90\n   at Program.<Main>$(String[] args) in /_/artifacts/M9-xpath-order/allocations2/baseline/docs/reports/M9-performance/ManagedWorker/Program.cs:line 23\n"
+    }
+  ],
+  "originalQueryLimitReproduced": true,
+  "originalFixtureSha256": "27b6e5fc142d96a61d577415fc7b4399a3b7906aba517d5a5e2dcf582b14d43c",
+  "originalMaxOperations": 100000000
+}

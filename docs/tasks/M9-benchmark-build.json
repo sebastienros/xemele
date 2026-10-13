@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "M9-benchmark-build",
+  "milestone": "M9",
+  "title": "Repair aggregate benchmark source-glob collision",
+  "kind": "infrastructure",
+  "status": "verified",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-benchmark-build",
+  "base_revision": "f6dcea774e9ba637bbc8f59ad8955f72b4848057",
+  "integration_revision": "3f3dadd5c177f9193cf7b02a3808f8aa69c0fec9",
+  "depends_on": [
+    "M9-contracts",
+    "M9-build-compatibility",
+    "M9-xpath-order"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md",
+    "docs/tasks/README.md"
+  ],
+  "owns": [
+    "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+    "docs/reports/M9-benchmark-build/"
+  ],
+  "api_or_output": "Buildable aggregate benchmark project without compiling standalone probe entry points or nested generated outputs.",
+  "acceptance": [
+    {
+      "id": "M9-benchmark-build-A1",
+      "description": "Build and list actual aggregate benchmarks including current DOM/XPath cases; exclude independently owned standalone entry points/generated outputs without modifying any earlier source or project.",
+      "status": "passed",
+      "evidence": [
+        "aggregate-and-probes",
+        "resolver-preservation",
+        "integrated-build"
+      ]
+    },
+    {
+      "id": "M9-benchmark-build-A2",
+      "description": "Verify the four proven standalone Schematron entry projects remain independently buildable and task coordination validates.",
+      "status": "passed",
+      "evidence": [
+        "aggregate-and-probes",
+        "resolver-preservation",
+        "integrated-build"
+      ]
+    }
+  ],
+  "implementation": [
+    "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj: exclude standalone Program.cs and RNG Probe.cs, retain aggregate Program.cs, exclude all nested bin/obj outputs",
+    "docs/reports/M9-benchmark-build/check.py: finite aggregate/list/standalone build verification with no benchmark measurement"
+  ],
+  "evidence": [
+    {
+      "id": "aggregate-and-probes",
+      "kind": "check",
+      "revision": "f9f214731672ecb65774fd54630fd0507248e4f7",
+      "command": "python3 docs/reports/M9-benchmark-build/check.py --phase branch2",
+      "result": "passed",
+      "summary": "Aggregate+four standalone Schematron projects+RNG probe restored/built; aggregate rebuilt after nested generation; actual220benchmark methods listed including DOM/XPath. Zero warnings/errors; no measurements run.",
+      "artifact": "docs/reports/M9-benchmark-build/checks-branch2.json"
+    },
+    {
+      "id": "resolver-preservation",
+      "kind": "check",
+      "revision": "fa1296e965a3f478802f8f1c2107fe49de317f9e",
+      "command": "check.py --phase resolver --resolver-only",
+      "result": "passed",
+      "summary": "Original standalone resolver sample builds, aggregate rebuilds and lists exactly the same benchmark methods. All runtime and earlier source/project bytes unchanged.",
+      "artifact": "docs/reports/M9-benchmark-build/checks-resolver.json"
+    },
+    {
+      "id": "integrated-build",
+      "kind": "integration",
+      "revision": "3f3dadd5c177f9193cf7b02a3808f8aa69c0fec9",
+      "command": "check.py --phase integration --resolver-only; exact prior schema/aggregate source closure comparison",
+      "result": "passed",
+      "summary": "Integrated aggregate and resolver build/list pass;220methods match branch, five schema project source closures unchanged; no repeated benchmarks or runtime checks claimed.",
+      "artifact": "docs/reports/M9-benchmark-build/integration.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Shared aggregate build collision repaired entirely in its owned project metadata; all six standalone entry projects remain buildable.",
+    "checks": [
+      "Aggregate220methods list correctly; five schema probes and resolver sample build;206task validation passes"
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}

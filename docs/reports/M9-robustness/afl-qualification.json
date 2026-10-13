@@ -1,0 +1,96 @@
+{
+  "revision": "0f148a2a26718dfe14f588785d6e1eabea4c64f2",
+  "result": "failed",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/ReleaseCampaign/Instrumenter/Instrumenter.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 72346,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/ReleaseCampaign/XmlDriver/XmlDriver.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 72349,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-robustness/tests/ReleaseCampaign/Instrumenter/bin/Release/net10.0/Instrumenter.dll",
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/afl-qualification/candidate/Xemele.dll"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 72353,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/afl-qualification/AFL-61037103ae3722c8060ff7082994836a794f978e/afl-showmap",
+        "-m",
+        "none",
+        "-t",
+        "10000",
+        "-o",
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/afl-qualification/map-0.txt",
+        "--",
+        "/private/tmp/xemele-m9-robustness/artifacts/M9-robustness/afl-qualification/pinned-driver",
+        "/private/tmp/xemele-m9-robustness/tests/ReleaseCampaign/seeds/xml/internal-dtd.xml"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 72355,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    }
+  ],
+  "productionSha256": "bd53a783bd2277ce074a0dd010a8cb5a9cacf66cd3818670d97576ea90b700d5"
+}
