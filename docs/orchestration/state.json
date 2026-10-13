@@ -7,13 +7,13 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
-  "last_verified_task": "M9-benchmark-build",
-  "last_integrated_revision": "837ef54b5a2b080110699d2c47dc126f257ae460",
+  "last_verified_task": "M9-distribution",
+  "last_integrated_revision": "f065b4f5b9c63cd955fc86c8eda0b5213617d5de",
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Integrate and verify the source-bound passing distribution lane.",
-    "Preserve dedicated timing and deferred sustained fuzz blockers; no terminal M9 gate completion or further runner budget."
+    "Preserve the verified source-bound distribution matrix and unpublished package checkpoints.",
+    "Complete eligible remaining performance work/evidence and explicitly deferred robustness requirements before M9-gate; no further runner budget or fuzz resumption inferred."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -143,9 +143,8 @@
   },
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
-  "milestone_progress": "Currentlocalrepairs/performance/corpus/packageevidence integrated; ordinarycompleteXMLcore2086/2268branches=91.9753% nowpasseswith0exclusions. Hostedretrybudget,dedicatedtiming andexplicitlydeferredsustainedfuzzgates remain; M9unverified.",
+  "milestone_progress": "Required OS distribution matrix verified with all three OS 10,754-unit passes and actual managed/trim/NativeAOT/tool execution. API and local compatible repairs remain verified. Dedicated comparative timing, active XML performance work and deferred sustained fuzz requirements still prevent M9-gate completion.",
   "blockers": [
-    "Additional three-job20minute hosted retry remains pending the existing runner-budget question; initial authorized run failed.",
     "Required dedicated-machine x64/arm64 comparative timing evidence unavailable.",
     "Required24hourcoverage-guided campaigns/crash-positive qualification remain explicitly deferred; ordinaryXMLcore branch coverage nowpasses91.9753%."
   ],
@@ -2109,7 +2108,13 @@
         "Dedicated comparative timing",
         "Deferred sustained fuzz/crash-positive requirements"
       ]
-    }
+    },
+    "currentRemainingConditions": [
+      "Dedicated x64/arm64 comparative timing evidence",
+      "Explicitly deferred sustained fuzz and crash-positive qualification",
+      "Remaining active XML performance lane"
+    ],
+    "distributionConditionResolved": true
   },
   "hosted_validation_candidate_history": [
     {

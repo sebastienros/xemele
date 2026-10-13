@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-windows-consumer-outcome",
   "base_revision": "8aacc464d71af0d9fe10a67f0b16f69b036a9e78",
-  "integration_revision": "f0f5ea4acbaec6325cd93cb2aca4d2869d76c370",
+  "integration_revision": "f065b4f5b9c63cd955fc86c8eda0b5213617d5de",
   "depends_on": [
     "M9-contracts",
     "M9-build-compatibility",
@@ -43,7 +43,8 @@
         "current-local-package",
         "hosted-current-three-os",
         "hosted-windows-consumers-pass",
-        "required-os-matrix-source-bound"
+        "required-os-matrix-source-bound",
+        "required-os-distribution-integrated"
       ]
     },
     {
@@ -56,7 +57,8 @@
         "current-local-package",
         "hosted-current-three-os",
         "hosted-windows-consumers-pass",
-        "required-os-matrix-source-bound"
+        "required-os-matrix-source-bound",
+        "required-os-distribution-integrated"
       ]
     },
     {
@@ -68,7 +70,8 @@
         "partial-local-integration",
         "current-local-package",
         "hosted-windows-consumers-pass",
-        "required-os-matrix-source-bound"
+        "required-os-matrix-source-bound",
+        "required-os-distribution-integrated"
       ]
     }
   ],
@@ -243,6 +246,15 @@
       "command": "Inspect passing Linux/macOS run38457602484 and Windows run38460364837; compare exact runtime/unit/fixture/consumer/package/build source paths and Unix command behavior",
       "result": "passed",
       "summary": "Required Windows/Linux/macOS and x64/arm64 represented by actual managed/trim/NativeAOT/tool execution; each10754 units pass. Runtime/unit/fixture/consumer/package inputs unchanged; only Windows config/workflow selection and actual Git/SourceLink identity differ. Each OS clean package pairs reproducible. No dedicated timing or sustained fuzz credit.",
+      "artifact": "docs/reports/M9-distribution/hosted-windows-final/matrix.json"
+    },
+    {
+      "id": "required-os-distribution-integrated",
+      "kind": "integration",
+      "revision": "f065b4f5b9c63cd955fc86c8eda0b5213617d5de",
+      "command": "Integrate actual hosted matrix; compare all runtime/unit/fixture/consumer/packaging/workflow/build inputs to Windows passing b2e2457c; source-bind Linux/macOS a19b7ea8; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Required OS/RID distribution matrix integrated and source-equivalent to actual passing reports: each 10754 units pass, Linux/macOS21 commands and Windows23 commands pass managed/trim/NativeAOT/tool. All criteria passed; no performance/fuzz/publication credit.208 task records validate.",
       "artifact": "docs/reports/M9-distribution/hosted-windows-final/matrix.json"
     }
   ],
