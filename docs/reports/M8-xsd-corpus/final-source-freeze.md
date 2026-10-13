@@ -78,16 +78,22 @@ three exact introspection overrides are unchanged. No implicit waiver is added.
 children,186 full campaign children, and three separate supplemental children.
 Root fills only actual accepted checkout/output/receipt/manifest/hash values and
 uses exclusive ignored artifact folders and bounded outer ownership. Failed or
-skipped preparation never supplies a freeze; unchanged tested binary/source/API
-membership is checked before/after every child. Exit0 remains harness completion,
-not conformance. Old product journals cannot be combined with fresh BCL as a run.
+skipped preparation never supplies a freeze. Preparation and separate supplements
+check complete declared membership and hashes before post-build children and at
+terminal cleanup; the first successful build establishes the tested binary
+snapshot. The full campaign checks its frozen manifest and listed identities
+before the whole campaign and in final cleanup. It does not repeat those checks
+between execute_cases children or promise immediate stopping on mutation. Exit0
+remains harness completion, not conformance. Old product journals cannot be
+combined with fresh BCL as a run.
 
 `supplements.py` is a separate900-second plan (root900/910, child300+10): fresh
 profile restore+build, profile binding/resource controls, then actual separately
 labelled two XML groups/four rows and only addB163.v late supplement. Automatic
 restore does not assume profile assets from the runner build. It freezes the
 actual fresh profile binaries and full source/runtime/API/input identities before
-controls, rechecks membership/hashes before/after each child, publishes lifecycle
+controls, rechecks membership/hashes between children and at terminal cleanup,
+publishes lifecycle
 and terminal ownership receipts before output assessment, and checks all five
 exact complete result rows with null originalPassed/zero original+gate credit.
 Run this separate build after the full campaign so it cannot mutate a previously
