@@ -25,6 +25,23 @@ PROJECTS=[('tests','tests/Xemele.Tests/Xemele.Tests.csproj','Xemele.Tests.dll'),
 NEW_TYPES=['ReferenceKind','SymbolSpace','AvailabilityState','OwnerKind','DependencyUse','ComponentIdentity','DependencyEdge','AvailabilityEntry','ComponentAvailability','AvailabilityBuilder','CompilationEnvelope']
 
 
+def verified_added_projection():
+    proof=b.REPORT/'verified-runtime-api.json';golden=b.REPORT/'verified-added.golden.txt'
+    assert b.digest(proof)=='5016c3b603fc99470bfdb2f53cbd500b972a4ce8c68d5469372f62b3fd46b187','Verified API provenance bytes changed'
+    provenance=json.loads(proof.read_text())
+    assert provenance['tested_integration']=='82ded28c85df6accccee4c798c5b49ff850aa797'
+    assert provenance['released_check_sha256']=='c516fdbae022bf65148a2c420b0412fcd4f1418adacde540bbc48eb0dee95105'
+    expected_sha='33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d'
+    assert provenance['canonical_added_api_sha256']==expected_sha and b.digest(golden)==expected_sha
+    expected=b.rows(golden)
+    assert len(expected)==93 and expected==provenance['canonical_added_projection'],'Verified93 canonical projection changed'
+    return expected
+
+
+def require_verified_added_projection(actual):
+    assert actual==verified_added_projection(),'Verified93 added API membership/signature/default/access drift'
+
+
 def test_summary(path):
     tests=list(ET.parse(path).getroot().iter('test'))
     coverage=selection.validate(tests, json.loads((b.HERE/('test-selection-'+json.loads(b.SOURCE.read_text())['phase']+'.json')).read_text()))
@@ -71,9 +88,8 @@ def main():
         assert len(added_rows)==93,'Exact93 additive row count changed'
         assert observed_joins==expected_joins,'Added join deletion/signature/nullability drift'
         for name in NEW_TYPES:assert 'T:Xemele.Validation.'+name in added_rows
-        # Compare the same executable projection to the first emitted canonical
-        # bytes. The source-approved13 joins additionally have authored goldens.
-        api('added','compare',added)
+        require_verified_added_projection(added_rows)
+        api('added','compare',b.REPORT/'verified-added.golden.txt')
         for label,dll in [('normal','Consumer.dll'),('xml-only','XmlOnly.dll')]:
             runner.run([str(b.DOTNET),'--fx-version','10.0.11',str(roots[label]/'bin'/dll)],90)
         probe=roots['probe']/'bin/Xemele.Benchmarks.dll'

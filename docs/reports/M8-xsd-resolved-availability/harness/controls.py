@@ -17,6 +17,7 @@ import recovery
 import diagnostics
 import terminal
 import selection
+import check as checks
 import xml.etree.ElementTree as ET
 from family import nested,supervision
 from birth import identity,assert_same_or_absent
@@ -354,7 +355,24 @@ class Controls(unittest.TestCase):
         self.assertIn('OperationTests.CallerRegexEngineSchemaExceptionsRetainTheirProvenance',wrong_message)
         self.assertEqual(json.dumps(expectation,sort_keys=True),before)
         self.assertEqual(selection.EXPECTED.read_bytes(),expected_bytes)
+        self.exercise_verified_added_projection()
         self.exercise_failure_diagnostics()
+    def exercise_verified_added_projection(self):
+        expected=checks.verified_added_projection();checks.require_verified_added_projection(expected)
+        member='M:Xemele.Validation.AvailabilityBuilder.Unavailable(Xemele.Validation.ComponentIdentity,Xemele.Validation.DependencyUse)'
+        declaration=expected[member]['declaration']
+        # All mutations preserve every ID, total93, the11 types and13 joins;
+        # each changes one of the remaining80 declarations, the prior blind spot.
+        for old,new in [('System.Boolean','System.Int32'),
+                        ('use = Xemele.Validation.DependencyUse.TypeAssessment','use = Xemele.Validation.DependencyUse.SubstitutionSelection'),
+                        ('access=Internal','access=Public')]:
+            self.assertIn(old,declaration)
+            mutated=json.loads(json.dumps(expected));mutated[member]['declaration']=declaration.replace(old,new,1)
+            self.assertEqual(len(mutated),93);self.assertEqual(set(mutated),set(expected))
+            self.assertNotEqual(mutated[member]['declaration'],declaration)
+            with self.assertRaisesRegex(AssertionError,'Verified93 added API membership/signature/default/access drift'):
+                checks.require_verified_added_projection(mutated)
+        self.assertEqual(expected,checks.verified_added_projection())
     def exercise_failure_diagnostics(self):
         expected_type='Xemele.Tests.M8XsdMissingComponents.Fixture';expected_method='RejectedSchema'
         for variant in ['normal','missing-discovery','malformed','size-limit','row-limit','text-limit','unverified']:

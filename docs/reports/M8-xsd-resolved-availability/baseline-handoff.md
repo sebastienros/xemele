@@ -51,10 +51,16 @@ Measure:120/90/30 seconds with prebuilt binaries and an exclusive consumed marke
 Discard40/10/30; recovery40. Registered whole-family absence precedes raw deletion.
 No raw archives or leases. Root must accept actual baseline before runtime edits.
 
-Public1430/55 fragments, frozen615/257 and exact93 additive rows are expectations.
-All current actual binary/API identities and measurements are UNRUN. Authored13
-join rows are compared exactly; the emitted availability projection has exact93
-count and separately verified named types. Normal and true XML-only consumers
+Public1430/55 fragments and frozen615/257 remain frozen expectations. Current
+packet binary/API emission and measurements are UNRUN. All93 added declarations
+are compared exactly against canonical projection SHA33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d
+from actual root checkpoint82ded28c85df6accccee4c798c5b49ff850aa797,
+released check SHA c516fdbae022bf65148a2c420b0412fcd4f1418adacde540bbc48eb0dee95105.
+The exact historical provenance copy has SHA5016c3b603fc99470bfdb2f53cbd500b972a4ce8c68d5469372f62b3fd46b187.
+The existing control14 additionally authors same-count signature/default/access
+mutation refusals within the remaining80 declarations; it remains UNRUN and the
+control count stays15. Authored13 joins and named-type checks are retained.
+Normal and true XML-only consumers
 are source copies of the verified predecessor. Original preserved fixture
 whitespace is excluded from authored whitespace checks, never rewritten.
 
