@@ -1,9 +1,9 @@
 {
   "objective": "Execute M8 only through integrated verified M8-gate, terminal cleanup and sole-writer transfer back to main.",
-  "coordinator_chat_id": "01a1350e-adc0-7b21-9368-3f67534dec0c",
+  "coordinator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
-  "previous_coordinator_chat_id": "01a12c6c-b333-71d3-877f-0d186618e21d",
-  "coordinator_write_status": "Single completion chat sole main/state and existing gate checkout writer after explicit main ACTIVATE; former M8 coordinator relinquished at a9314ae3751310a06efb2cbb4d9922ee6b3e821c. Main returns to read-only.",
+  "previous_coordinator_chat_id": "01a1350e-adc0-7b21-9368-3f67534dec0c",
+  "coordinator_write_status": "M8 complete. Completion chat relinquishes all writes/new execution at terminal ACTIVATE MAIN; main sole writer thereafter.",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
@@ -12,8 +12,7 @@
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Completion chat performs finished gate worktree cleanup and terminal sole-writer handoff to main.",
-    "Main alone resumes orchestration and creates M9 after terminal ACTIVATE MAIN."
+    "Main resumes orchestration from verified M8 checkpoint and alone starts M9."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -37,18 +36,16 @@
   "successor_creation_owner": "Main orchestrator 01a12849-d2be-7292-8cd9-27c1c14b5a3d only",
   "handoff_destination_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "milestone_handoff": {
-    "from_milestone": "main orchestration",
-    "to_milestone": "M8",
-    "from_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
-    "thread_id": "01a12c6c-b333-71d3-877f-0d186618e21d",
+    "from_milestone": "M8",
+    "to_milestone": "main orchestration",
+    "from_chat_id": "01a1350e-adc0-7b21-9368-3f67534dec0c",
+    "thread_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
     "host_id": "local",
-    "status": "Explicit ACTIVATE received and accepted",
-    "verified_gate_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
-    "acknowledged_M7_transfer_revision": "4983f23bba47cbba7bbd05752768fbfc0dabe78b",
-    "main_ack_revision": "5ac591851c9c1fa5f4bf16d037b2fc8e5357bf44",
+    "status": "Integrated verified M8 complete; terminal ACTIVATE MAIN follows final cleanup commit",
+    "verified_gate_revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1",
     "setup_ready": true,
-    "activation_sent": true,
-    "transfer_revision": "2ac5a78d92e1ce0cafca317d3b193a475e8ab8bb"
+    "activation_sent": false,
+    "cleanup_record": "docs/orchestration/cleanup-M8-gate.json"
   },
   "benchmark_policy": "Allocation-only: no isolation, PARK, ACK or exclusivity workflow per direct human instruction. Keep preparation identities, correctness, controls, actual counters and bounded cleanup. Genuine throughput/timing requirements unchanged; foreign communication/synchronization prohibited.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
@@ -1713,11 +1710,11 @@
   },
   "current_host_actors": {
     "xemele": [
-      "01a1350e-adc0-7b21-9368-3f67534dec0c"
+      "01a12849-d2be-7292-8cd9-27c1c14b5a3d"
     ],
     "reviewers": [],
     "lease": null,
-    "roster_note": "Single completion chat; all gate processes terminal. Old coordinator and gate worker relinquished. No other-project coordination or allocation exclusivity."
+    "roster_note": "M8 terminal:0gate jobs; finished gate checkout removed; old coordinator/worker chats archived; completion writer relinquishes to main. No other-project coordination."
   },
   "suspended_assignments": [],
   "pending_measurement_proposal": null,
@@ -1797,7 +1794,8 @@
     ],
     "result": "complete; integrated verified M8-gate",
     "verified": 52,
-    "integration_revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1"
+    "integration_revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1",
+    "cleanup": "finished merged gate worktree removed; raw outputs deleted; unpublished checkpoint and durable summaries preserved"
   },
   "m8_checkpoint": {
     "task": "M8-gate",
@@ -1814,6 +1812,7 @@
     "active_lease": null,
     "report": "docs/reports/M8-gate/summary.json",
     "integration_report": "docs/reports/M8-gate/integration.json",
-    "cleanup_record": "docs/orchestration/cleanup-M8-gate.json"
+    "cleanup_record": "docs/orchestration/cleanup-M8-gate.json",
+    "verified_metadata_revision": "76b9efd851fd6db44e004e7c5b6f77a978f13e7f"
   }
 }
