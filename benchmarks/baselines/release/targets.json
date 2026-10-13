@@ -1,0 +1,78 @@
+{
+  "protocol": "docs/performance.md",
+  "targets": [
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "libxml2",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "xmloxide",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "BCL XmlDocument",
+      "threshold": 1.0,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "forward-read-sax",
+      "reference": "BCL XmlReader",
+      "threshold": 1.0,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "dom-utf8-serialize",
+      "reference": "libxml2",
+      "threshold": 0.9,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "dom-utf8-serialize",
+      "reference": "xmloxide",
+      "threshold": 0.9,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "compiled-xpath",
+      "reference": "libxml2",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "compiled-xpath",
+      "reference": "xmloxide",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "retained-dom",
+      "reference": "BCL XmlDocument",
+      "maximumRatio": 0.75,
+      "status": "unassessed-required-representative-corpus"
+    },
+    {
+      "workload": "streaming-live-1gib",
+      "maximumBytes": 8388608,
+      "status": "historical-results-preserved; closure-requalification-required"
+    },
+    {
+      "workload": "concrete-traversal",
+      "managedBytesPerOperation": 0,
+      "status": "inherited-source-equivalent-M8-tests; no-new-measurement"
+    }
+  ],
+  "primaryFixtureFloor": 0.5,
+  "investigateRegressionPercent": 5,
+  "blockConfirmedRegressionPercent": 10,
+  "benchmarkAttributes": [
+    "MemoryDiagnoser",
+    "ShortRunJob"
+  ],
+  "dedicatedTimingRequired": true,
+  "allocationIsolationRequired": false
+}

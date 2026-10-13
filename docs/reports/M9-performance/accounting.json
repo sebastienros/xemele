@@ -1,0 +1,145 @@
+{
+  "task": "M9-performance",
+  "revision": "159240549b95e3b548aeae41829b1da9e77c9b34",
+  "result": "partial-evidence-accounting",
+  "releaseTargetsPassed": false,
+  "targets": [
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "libxml2",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "xmloxide",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "BCL XmlDocument",
+      "threshold": 1.0,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "forward-read-sax",
+      "reference": "BCL XmlReader",
+      "threshold": 1.0,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "dom-utf8-serialize",
+      "reference": "libxml2",
+      "threshold": 0.9,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "dom-utf8-serialize",
+      "reference": "xmloxide",
+      "threshold": 0.9,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "compiled-xpath",
+      "reference": "libxml2",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "compiled-xpath",
+      "reference": "xmloxide",
+      "threshold": 0.8,
+      "status": "unassessed-required-controlled-run"
+    },
+    {
+      "workload": "retained-dom",
+      "reference": "BCL XmlDocument",
+      "maximumRatio": 0.75,
+      "status": "unassessed-required-representative-corpus"
+    },
+    {
+      "workload": "streaming-live-1gib",
+      "maximumBytes": 8388608,
+      "status": "historical-results-preserved; closure-requalification-required"
+    },
+    {
+      "workload": "concrete-traversal",
+      "managedBytesPerOperation": 0,
+      "status": "inherited-source-equivalent-M8-tests; no-new-measurement"
+    }
+  ],
+  "sourceEquivalentM8Runtime": true,
+  "inheritedM8AllocationSummary": {
+    "pairs": 12,
+    "source": "docs/reports/M8-gate/summary.json",
+    "scope": "Existing source-equivalent M8 counters and allocation tests only; not new release comparisons."
+  },
+  "olderStreamingClosure": {
+    "checkedFiles": 98,
+    "changedSinceRequalifiedRevision": [
+      "src/Xemele/Parsing/Core/XmlParserCore.cs",
+      "src/Xemele/Parsing/Dom/DomSink.cs",
+      "src/Xemele/Parsing/Dom/Factories.cs",
+      "src/Xemele/Parsing/Dom/Recovery.cs",
+      "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs",
+      "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs",
+      "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+      "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs",
+      "src/Xemele/Parsing/Dtd/Model/Declarations.cs",
+      "src/Xemele/Resolution/Core/Resources.cs",
+      "src/Xemele/Tree/Document.cs",
+      "src/Xemele/Parsing/Dom/ByteDomAdapter.cs"
+    ],
+    "sourceRevision": "f3e60c5e6227ee8efda010283d4b16191a74810b",
+    "releaseReuseCredit": 0
+  },
+  "inputs": [
+    {
+      "path": "docs/reports/M8-gate/summary.json",
+      "sha256": "5b67133ec7a01cadb2fbda49e1a6ae8fe88e22fba60e6b3c7800b8992ee59cf8"
+    },
+    {
+      "path": "docs/reports/M3-corpus/streaming-closure-proof.json",
+      "sha256": "ea91be47312bcd59e92c94ffdc1a85efbbc2fbf81d061dd69cd1248988ccd17e"
+    },
+    {
+      "path": "docs/reports/M3-corpus/memory-sax.json",
+      "sha256": "b9f8a42f4b76ba698c19d7cd679056944620e7d4d5922462012391c0ec0e8848"
+    },
+    {
+      "path": "docs/reports/M3-corpus/memory-pull.json",
+      "sha256": "ed06fa69e84dbb615c83e07e7d35b0f469ae3e76130fa1b8a4025959649804a3"
+    },
+    {
+      "path": "docs/reports/M3-corpus/memory-push.json",
+      "sha256": "5302cb158d64f502f76662eaa1217e5a4b50e44dfc20e616ab0661b81ce8fc00"
+    },
+    {
+      "path": "docs/reports/M3-corpus/memory-sax-async.json",
+      "sha256": "3c7f9b535549783675d6b20c04116ca579c24d5780c182e1f17422a7d5f3943f"
+    },
+    {
+      "path": "docs/reports/M3-corpus/memory-pull-async.json",
+      "sha256": "5be38c39385e8c1be87c634aa84c0278a9b285bffe9a343adf797d7740c4644a"
+    },
+    {
+      "path": "docs/reports/M4-evaluate/performance.md",
+      "sha256": "c169b86a67d20b62ff40e9866c250ed0369e6e7862b917a162c2d706e96d2feb"
+    },
+    {
+      "path": "docs/reports/M3-push/performance.md",
+      "sha256": "54bd46d1d7d420efc81ef41a713e672e7abd7b93557733e62db50b0bcb9831b6"
+    },
+    {
+      "path": "docs/reports/M1-dom/bdn/Xemele.DomMeasurements.DomBenchmarks-report-github.md",
+      "sha256": "db7255597fd79982bb797e9046cada9ca0611853907b4acdc68ea35d87773952"
+    }
+  ],
+  "limits": [
+    "No dedicated stable machine supplied; GitHub standard shared runners do not satisfy frozen release timing protocol.",
+    "Historical provisional microbenchmarks lack equivalent per-reference frozen representative suite outcomes and cannot establish geometric targets/floor/regression confidence.",
+    "Retained managed bytes, cumulative allocations and RSS remain separate; missing RSS is not zero.",
+    "No release comparative ratio or regression pass is fabricated."
+  ]
+}
