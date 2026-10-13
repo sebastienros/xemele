@@ -107,7 +107,7 @@ internal static class SchemaCommands
         try { return new GuardedFileInput(File.OpenRead(path), true); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { throw new InvocationException(ex.Message); }
     }
-    private static void Diagnostics(SchemaInvocation? invocation, Uri? inputUri, bool complete, bool valid, IReadOnlyList<XmlDiagnostic> diagnostics)
+    internal static void Diagnostics(SchemaInvocation? invocation, Uri? inputUri, bool complete, bool valid, IReadOnlyList<XmlDiagnostic> diagnostics)
     {
         if (invocation?.Get("--diagnostics") == "json")
         {

@@ -13,6 +13,12 @@ internal static class Probe
     { assertions++; if (!condition) throw new InvalidOperationException(message); }
     internal static void Throws<T>(Action action) where T : Exception
     { try { action(); } catch (T) { assertions++; return; } throw new InvalidOperationException("Expected " + typeof(T).Name); }
+    internal static void QuotaJson((int Code, string Out, string Error) actual, string code)
+    {
+        using var json = JsonDocument.Parse(actual.Error); var envelope = json.RootElement;
+        Check(actual.Code == 1 && !envelope.GetProperty("isComplete").GetBoolean() && !envelope.GetProperty("isValid").GetBoolean(), "CLI incomplete invalid quota");
+        Check(envelope.GetProperty("diagnostics").EnumerateArray().Any(d => d.GetProperty("code").GetString() == code && d.GetProperty("severity").GetString() == "Fatal"), "CLI quota code/severity parity " + code);
+    }
     internal static int Main()
     {
         try
@@ -78,9 +84,9 @@ internal static class Probe
                     [..args, "--diagnostics", "xml"], [..args, "--schema-base-uri", "relative"], [..args, "--compile-max-operations", "0"],
                     [..args, "--validation-max-operations", "unlimited"], [..args, "--compile-max-components", "2147483648"], [..args, "--input", Path.Combine(directory, "missing")] })
                     Check(Invoke(command, bad).Code == 2, language + " invocation rejection");
-                Check(Invoke(command, [..args, "--compile-max-operations", "1"]).Code == 1, language + " compile quota");
-                Check(Invoke(command, [..args, "--compile-max-components", "1"]).Code == 1, language + " component quota");
-                Check(Invoke(command, [..args, "--validation-max-operations", "1"]).Code == 1, language + " run quota");
+                QuotaJson(Invoke(command, [..args, "--compile-max-operations", "1", "--diagnostics", "json"]), "SCHEMA.Limit");
+                QuotaJson(Invoke(command, [..args, "--compile-max-components", "1", "--diagnostics", "json"]), "SCHEMA.Limit");
+                QuotaJson(Invoke(command, [..args, "--validation-max-operations", "1", "--diagnostics", "json"]), "VALIDATION.Limit");
                 using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
                 Check(Invoke(command, args, token: cancelled.Token).Code == 3, language + " cancelled");
                 using var caller = new MemoryStream("<root>7</root>"u8.ToArray());
@@ -90,6 +96,7 @@ internal static class Probe
                 File.WriteAllText(schema, "<not-a-schema/>"); Check(Invoke(command, args).Code == 1, language + " invalid schema");
                 File.WriteAllText(schema, "<root>"); Check(Invoke(command, args).Code == 1, language + " malformed schema");
             }
+            LocationCase(directory, input);
             string sch = Path.Combine(directory, "phase.sch"); string report = Path.Combine(directory, "report.xml");
             File.WriteAllText(sch, PublicCases.PhaseSchema);
             string[] phaseArgs = ["--schema", sch, "--svrl", report];
@@ -111,6 +118,42 @@ internal static class Probe
                 Check(help.ToString().Contains("  " + command + "  ", StringComparison.Ordinal), "registry preserves " + command);
         }
         finally { Directory.Delete(directory, true); }
+    }
+    private static void LocationCase(string directory, string input)
+    {
+        // Compiler Read rejects an unrecognized attribute at that attribute's authored origin.
+        // The UTF-8 byte prefix is independent of diagnostics; é and 根 precede the diagnostic.
+        const string prefix = "<!--é根-->\n<element xmlns='http://relaxng.org/ns/structure/1.0' name='root'>\n  <empty ";
+        string schema = Path.Combine(directory, "location.rng");
+        File.WriteAllText(schema, prefix + "bogus='é'/>\n</element>", new UTF8Encoding(false));
+        var expectedSource = new Uri("https://authored.example/é/location.rng");
+        long expectedBytes = Encoding.UTF8.GetByteCount(prefix);
+        string[] args = ["--schema", schema, "--input", input, "--schema-base-uri", expectedSource.AbsoluteUri];
+        var actual = Invoke("validate-rng", [..args, "--diagnostics", "json"]);
+        using var json = JsonDocument.Parse(actual.Error); var diagnostics = json.RootElement.GetProperty("diagnostics");
+        Check(actual.Code == 1 && diagnostics.GetArrayLength() == 1, "one authored diagnostic");
+        var diagnostic = diagnostics[0]; var at = diagnostic.GetProperty("location");
+        Check(diagnostic.GetProperty("code").GetString() == "RNG.SchemaRestriction" && diagnostic.GetProperty("severity").GetString() == "Error", "authored restriction classification");
+        Check(at.GetProperty("sourceUri").GetString() == expectedSource.AbsoluteUri && at.GetProperty("lineNumber").GetInt32() == 3 && at.GetProperty("linePosition").GetInt32() == 10 && at.GetProperty("byteOffset").GetInt64() == expectedBytes, "exact authored JSON coordinates");
+        Check(json.RootElement.GetProperty("inputUri").GetString() == new Uri(input).AbsoluteUri, "schema location distinct from input URI");
+        string expected = $"Error RNG.SchemaRestriction: Unexpected schema attribute. [source={expectedSource.AbsoluteUri}, line=3, column=10, byte={expectedBytes}]" + Environment.NewLine;
+        Check(Invoke("validate-rng", args).Error == expected, "exact authored text coordinates");
+        // Mutation invalidates authored provenance. Exercise the same diagnostic writer with a real public DOM refusal.
+        var document = XmlDocument.Parse(PublicCases.Schema("rng")); document.RootElement.SetAttribute("bogus", "x");
+        SchemaCompileException? unknown = null;
+        try { RelaxNgSchema.Compile(document); } catch (SchemaCompileException error) { unknown = error; }
+        Check(unknown is not null && unknown.Diagnostics.Count == 1 && unknown.Diagnostics[0].Location == default, "unknown/null public DOM origin");
+        string Emit(string format)
+        {
+            using var output = new StringWriter(); var previous = Console.Error;
+            try { Console.SetError(output); SchemaCommands.Diagnostics(SchemaInvocation.Parse("validate-rng", ["--schema", "unused", "--diagnostics", format]), null, false, false, unknown!.Diagnostics); }
+            finally { Console.SetError(previous); }
+            return output.ToString();
+        }
+        using var unknownJson = JsonDocument.Parse(Emit("json"));
+        var unknownAt = unknownJson.RootElement.GetProperty("diagnostics")[0].GetProperty("location");
+        Check(unknownAt.GetProperty("sourceUri").ValueKind == JsonValueKind.Null && unknownAt.GetProperty("byteOffset").ValueKind == JsonValueKind.Null && unknownAt.GetProperty("lineNumber").GetInt32() == 0 && unknownAt.GetProperty("linePosition").GetInt32() == 0, "unknown JSON coordinates preserved exactly");
+        Check(Emit("text").Contains("[source=<unknown>, line=0, column=0, byte=<unknown>]", StringComparison.Ordinal), "unknown text coordinates preserved exactly");
     }
     private sealed class BrokenInput : MemoryStream
     { public override int Read(Span<byte> buffer) => throw new IOException("caller failure"); }

@@ -27,22 +27,33 @@ Each command gets at most240 seconds work and10 seconds terminal cleanup; the
 phase total work is1500 seconds plus10 seconds command cleanup and10 seconds
 phase reserve. Suggested root outer work/hard deadlines:1530/1540 seconds.
 
-Checks run the two actual owned binaries (120 seconds each), the small real CLI
+Checks run the two actual owned binaries (120 seconds each), six phase guard success/failure controls (60 seconds), the small real CLI
 controls (120 seconds), the existing full public API comparison (60 seconds),
-task validation and diff-check (30 seconds each). Total phase work is480 seconds
+task validation and diff-check (30 seconds each). Total phase work is540 seconds
 plus10 seconds command cleanup and10 seconds phase reserve. Suggested root outer
-work/hard deadlines:510/520 seconds. The real CLI controls internally cap their
+work/hard deadlines:570/580 seconds. The real CLI controls internally cap their
 whole body at105 seconds, children at15 seconds with3 seconds reaping; children
 inherit the outer owned process group. They include prior XML/HTML cases and a
 closed-stdout SVRL failure. No default test suite or allocation probe executes.
 
-The runner imports the accepted `M8-xsd-corpus/supervision.py` functions unchanged,
-sets this checkout and task artifact directory, and verifies each direct child
-reaped, whole owned process group absent, and log closed. Raw logs are read for
-actual outcomes and deleted after terminal cleanup; no raw archive is retained.
-Preparation freezes source/runtime/environment and actual binary hashes in
-`prepared.json`; checks reject any input/binary drift. `results.json` retains only
-concise command/outcome/boundary/cleanup evidence. The worker makes no isolation,
+The runner imports the accepted `M8-xsd-corpus/supervision.py` functions unchanged
+and owns a copy of its `nested_ownership.py` changing only `OUT` to this task's
+artifact root; both original/copy hashes are pinned. Every new session registers
+and receives ACK in every ancestor registry before executing; the effective
+environment preserves `XEMELE_CORPUS_OWNED_REGISTRIES`. Ancestor registries must
+be under `artifacts/M8-cli`. The CLI controls' descendants inherit their registered
+group. TERM/INT unwinds through the accepted interruption/cleanup pattern.
+`PYTHONDONTWRITEBYTECODE=1` and the interpreter's internal bytecode setting are set
+before local imports. Command/phase terminal, binding-failure and deadline receipts
+are durable even on failed attempts. Raw logs are inspected and deleted only after
+all groups are absent, no intents are pending, children are reaped and logs closed.
+Preparation freezes complete output directories (including dependencies, deps and
+runtimeconfigs) in `prepared.json`; checks reject drift before and after the phase.
+Source, entire SDK/runtime trees and effective environment are checked at both ends
+of each phase. Dynamic ancestor registry paths are pinned separately per phase;
+stable environment fields must also match preparation. `results.json` and concise
+receipts retain command/outcome/boundary/cleanup evidence. No raw archive is retained.
+The worker makes no isolation,
 host-idle, throughput, timing, or allocation claim. Root alone launches counters.
 
 The true XML-only project compiles selected XML source trees plus all schema

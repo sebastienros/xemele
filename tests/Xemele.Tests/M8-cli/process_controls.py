@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Small real CLI controls; children inherit the accepted outer supervisor's owned group."""
+import sys
+sys.dont_write_bytecode = True
 import json
 import os
 from pathlib import Path
@@ -49,7 +51,11 @@ with tempfile.TemporaryDirectory(prefix='xemele-m8-cli-controls-') as directory:
         diagnostics = json.loads(err)
         assert diagnostics['isComplete'] and not diagnostics['isValid'] and diagnostics['diagnostics']
         run(args, b'<root>', code=1, exact=b'')
-        run(args+['--compile-max-operations','1'], b'<root>7</root>', code=1, exact=b'')
+        for option, expected_code in [('--compile-max-operations', 'SCHEMA.Limit'), ('--validation-max-operations', 'VALIDATION.Limit')]:
+            _, error = run(args+[option,'1','--diagnostics','json'], b'<root>7</root>', code=1, exact=b'')
+            envelope = json.loads(error)
+            assert not envelope['isComplete'] and not envelope['isValid']
+            assert any(d['code'] == expected_code and d['severity'] == 'Fatal' for d in envelope['diagnostics']), envelope
     path = folder/'schematron.xml'; report = folder/'report.xml'; report.write_text('preserve')
     args = ['validate-schematron', '--schema', str(path)]
     run(args+['--svrl',str(report)], b'<root>0</root>', code=1, exact=b''); assert report.read_text() == 'preserve'
@@ -58,9 +64,11 @@ with tempfile.TemporaryDirectory(prefix='xemele-m8-cli-controls-') as directory:
     run(args+['--phase','missing'], b'<root>7</root>', code=2, exact=b'')
     # Closed stdout may fail after some bytes; the documented exit is unexpected failure3.
     reader, writer = os.pipe(); os.close(reader)
+    remaining = END-time.monotonic()
+    if remaining <= 0: os.close(writer); raise TimeoutError('CLI controls total deadline before closed stdout')
     child = subprocess.Popen(PREFIX+args+['--svrl','-'], stdin=subprocess.PIPE, stdout=writer, stderr=subprocess.PIPE)
     os.close(writer)
-    try: _, error = child.communicate(b'<root>7</root>', timeout=15)
+    try: _, error = child.communicate(b'<root>7</root>', timeout=min(15, remaining))
     finally:
         if child.poll() is None: child.kill()
         child.wait(timeout=3)

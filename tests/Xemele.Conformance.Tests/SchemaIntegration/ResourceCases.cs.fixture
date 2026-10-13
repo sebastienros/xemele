@@ -40,7 +40,7 @@ internal static class ResourceCases
             Check(requests[1].Uri == new Uri(redirected, "last.xml") && requests[1].Referrer == redirected, language + " final redirected base");
             Check(requests.All(r => r.Kind == XmlResourceKind.Schema), language + " resource kind");
             Check(streams.All(s => s.Disposals == 1), language + " exactly-once resource disposal");
-            Throws<SchemaCompileException>(() => PublicCases.Compile(language, Main(language, "child.xml"), new() { BaseUri = source }));
+            PublicCases.CompileRefusal(() => PublicCases.Compile(language, Main(language, "child.xml"), new() { BaseUri = source }), "SCHEMA.ResourceDenied");
             int bytes = Encoding.UTF8.GetByteCount(Middle(language)) + Encoding.UTF8.GetByteCount(Last(language));
             foreach ((int count, int cap, bool succeeds) in new[] { (2, bytes, true), (1, bytes, false), (2, bytes - 1, false) })
             {
@@ -48,7 +48,7 @@ internal static class ResourceCases
                 var options = new SchemaCompileOptions { BaseUri = source, Limits = new() { ExternalResources = count, ExternalBytes = cap }, Resolver = new Resolver((r, _) =>
                 { var s = new CountStream(++calls == 1 ? Middle(language) : Last(language)); owned.Add(s); return new(s, r.Uri); }) };
                 if (succeeds) PublicCases.Result(PublicCases.Compile(language, Main(language, "child.xml"), options)("<root>7</root>", null), true, language + " exact aggregate resources");
-                else Throws<SchemaCompileException>(() => PublicCases.Compile(language, Main(language, "child.xml"), options));
+                else PublicCases.CompileRefusal(() => PublicCases.Compile(language, Main(language, "child.xml"), options));
                 Check(owned.All(s => s.Disposals == 1), language + " quota disposes granted resources");
             }
             var malformed = new CountStream("<bad>");
@@ -58,6 +58,23 @@ internal static class ResourceCases
             Throws<OperationCanceledException>(() => PublicCases.Compile(language, Main(language, "child.xml"), new()
             { BaseUri = source, CancellationToken = cancellation.Token, Resolver = new Resolver((r, _) => { cancellation.Cancel(); return new(cancelled, r.Uri); }) }));
             Check(cancelled.Disposals == 1, language + " cancellation after grant disposes");
+            bool NestedWork(long work)
+            {
+                int calls = 0; var owned = new List<CountStream>();
+                var options = new SchemaCompileOptions { BaseUri = source, MaxOperations = work, Resolver = new Resolver((r, _) =>
+                { var s = new CountStream(++calls == 1 ? Middle(language) : Last(language)); owned.Add(s); return new(s, r.Uri); }) };
+                try
+                {
+                    PublicCases.Result(PublicCases.Compile(language, Main(language, "child.xml"), options)("<root>7</root>", null), true, language + " nested work success");
+                    Check(calls == 2, language + " both nested inputs counted"); return true;
+                }
+                catch (SchemaCompileException error)
+                { Check(error.Diagnostics.Any(d => d.Code == "SCHEMA.Limit" && d.Severity == XmlDiagnosticSeverity.Fatal), language + " nested work quota code"); return false; }
+                finally { Check(owned.All(s => s.Disposals == 1), language + " nested work stream disposal"); }
+            }
+            long exact = PublicCases.Minimum(NestedWork, 10_000_000);
+            Check(NestedWork(exact) && !NestedWork(exact - 1), language + " aggregate nested work exact/short");
+            Console.WriteLine($"BOUNDARY {language} nestedCompileWork={exact}");
             LocalCases(language);
         }
     }
@@ -73,7 +90,10 @@ internal static class ResourceCases
             string[] args = ["--schema", schema]; string command = "validate-" + language;
             Check(Invoke(command, args).Code == 1, language + " explicit schema gives no nested grant");
             Check(Invoke(command, [..args, "--allow-root", allowed]).Code == 0, language + " local grant");
-            Check(Invoke(command, [..args, "--allow-root", allowed, "--compile-max-resources", "1"]).Code == 1, language + " CLI aggregate count");
+            QuotaJson(Invoke(command, [..args, "--allow-root", allowed, "--compile-max-resources", "1", "--diagnostics", "json"]), "SCHEMA.Limit");
+            int bytes = Encoding.UTF8.GetByteCount(Middle(language)) + Encoding.UTF8.GetByteCount(Last(language));
+            Check(Invoke(command, [..args, "--allow-root", allowed, "--compile-max-resource-bytes", bytes.ToString(System.Globalization.CultureInfo.InvariantCulture)]).Code == 0, language + " CLI exact resource bytes");
+            QuotaJson(Invoke(command, [..args, "--allow-root", allowed, "--compile-max-resource-bytes", (bytes - 1).ToString(System.Globalization.CultureInfo.InvariantCulture), "--diagnostics", "json"]), "SCHEMA.Limit");
             string catalog = Path.Combine(directory, "catalog.xml");
             File.WriteAllText(catalog, $"<catalog xmlns='urn:oasis:names:tc:entity:xmlns:xml:catalog'><uri name='urn:child' uri='{new Uri(child).AbsoluteUri}'/></catalog>");
             File.WriteAllText(schema, Main(language, "urn:child"));

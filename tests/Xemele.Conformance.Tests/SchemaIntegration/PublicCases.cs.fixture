@@ -30,6 +30,14 @@ internal static class PublicCases
         => (input, options) => schema.Validate(input, new() { Validation = options ?? new() }).Validation;
     internal static void Result(ValidationResult result, bool valid, string context)
     { Check(result.IsComplete && result.IsValid == valid, context); }
+    internal static void Limit(ValidationResult result, string context)
+    { Check(!result.IsComplete && !result.IsValid && result.Diagnostics.Any(d => d.Code == "VALIDATION.Limit" && d.Severity == XmlDiagnosticSeverity.Fatal), context); }
+    internal static SchemaCompileException CompileRefusal(Action action, string code = "SCHEMA.Limit")
+    {
+        try { action(); } catch (SchemaCompileException error)
+        { Check(error.Diagnostics.Any(d => d.Code == code && d.Severity == XmlDiagnosticSeverity.Fatal), "expected fatal " + code); return error; }
+        throw new InvalidOperationException("Expected fatal " + code);
+    }
     internal static void Run()
     {
         foreach (string language in Languages)
@@ -46,20 +54,20 @@ internal static class PublicCases
             // Find an actual boundary from monotone public success/refusal, then assert exact and one-short.
             long compileWork = Minimum(n => CanCompile(language, new() { MaxOperations = n }), 10_000_000);
             Check(CanCompile(language, new() { MaxOperations = compileWork }), language + " exact compile work");
-            Check(!CanCompile(language, new() { MaxOperations = compileWork - 1 }), language + " short compile work");
+            CompileRefusal(() => Compile(language, options: new() { MaxOperations = compileWork - 1 }));
             long components = Minimum(n => CanCompile(language, new() { MaxComponents = (int)n }), 100_000);
             Check(CanCompile(language, new() { MaxComponents = (int)components }), language + " exact components");
-            Check(!CanCompile(language, new() { MaxComponents = (int)components - 1 }), language + " short components");
+            CompileRefusal(() => Compile(language, options: new() { MaxComponents = (int)components - 1 }));
             long work = Minimum(n => validate("<root>7</root>", new() { MaxOperations = n }).IsComplete, 10_000_000);
             Result(validate("<root>7</root>", new() { MaxOperations = work }), true, language + " exact validation work");
-            Check(!validate("<root>7</root>", new() { MaxOperations = work - 1 }).IsComplete, language + " short validation work");
+            Limit(validate("<root>7</root>", new() { MaxOperations = work - 1 }), language + " short validation work");
             StreamAndDom(language);
             Console.WriteLine($"BOUNDARY {language} compileWork={compileWork} components={components} validationWork={work}");
         }
     }
     private static bool CanCompile(string language, SchemaCompileOptions options)
-    { try { Compile(language, options: options); return true; } catch (SchemaCompileException) { return false; } }
-    private static long Minimum(Func<long, bool> succeeds, long upper)
+    { try { Compile(language, options: options); return true; } catch (SchemaCompileException error) { Check(error.Diagnostics.Any(d => d.Code == "SCHEMA.Limit" && d.Severity == XmlDiagnosticSeverity.Fatal), "boundary refusal must be quota"); return false; } }
+    internal static long Minimum(Func<long, bool> succeeds, long upper)
     {
         Check(succeeds(upper), "finite upper boundary succeeds");
         long lower = 0;
