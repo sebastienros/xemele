@@ -88,7 +88,7 @@ def inspect_command(argv,text,raw):
   if path in argv:
    value=json.loads(text);assert value==baseline[key],(key,value);return value
  if any(arg.endswith('/XmlToolkit.dll') for arg in argv):
-  assert text.encode()==(ROOT/'tests/corpora/xinclude/expected.txt').read_bytes()+b'\n';return {'independentXmlToolkitOutput':True}
+  assert text.encode()==(ROOT/'tests/corpora/xinclude/expected.txt').read_bytes()+b'\nFramework=.NET 10.0.11; Architecture=Arm64\n';return {'independentXmlToolkitOutput':True,'framework':'.NET 10.0.11','architecture':'Arm64'}
  if '-result-xml' in argv:
   return inspect_suite(Path(argv[argv.index('-result-xml')+1]),baseline)
  if 'docs/reports/M8-gate/semantic.py' in argv:
