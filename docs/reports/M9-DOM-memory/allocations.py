@@ -22,7 +22,7 @@ for relative in ['docs/reports/M9-DOM-memory/BdnWorker','benchmarks/Xemele.Bench
 spec = importlib.util.spec_from_file_location('supervision',ROOT/'docs/reports/M8-xsd-corpus/supervision.py')
 supervisor = importlib.util.module_from_spec(spec); spec.loader.exec_module(supervisor)
 supervisor.ARTIFACTS = out
-env = dict(os.environ, DOTNET_ROOT=str(host.parent), DOTNET_ROLL_FORWARD='Disable',
+env = dict(os.environ, PATH=str(host.parent)+os.pathsep+os.environ.get('PATH',''), DOTNET_ROOT=str(host.parent), DOTNET_ROLL_FORWARD='Disable',
            DOTNET_TieredCompilation='0',DOTNET_TieredPGO='0',DOTNET_ReadyToRun='0',
            DOTNET_gcServer='0',DOTNET_GCConcurrent='0',NuGetAudit='false',PYTHONDONTWRITEBYTECODE='1')
 report = dict(baselineRevision=BASE,candidateRevision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
