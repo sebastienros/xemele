@@ -4,10 +4,10 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "blocked",
+  "status": "in_progress",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-distribution-ready",
-  "base_revision": "9b33a6073e41c26b19cb383dfa91179191ba1f82",
+  "branch": "codex/m9-distribution-hosted-repair",
+  "base_revision": "5e102ede3e3375d83ae1bd33c7942dc0e1c1eb78",
   "integration_revision": "afc3d0414e1a315e127252a51824b7bb9d28041e",
   "depends_on": [
     "M9-contracts",
@@ -101,19 +101,15 @@
       "artifact": "docs/reports/M9-distribution/hosted-preflight.json"
     }
   ],
-  "blockers": [
-    "Bounded hosted OS jobs ready; earlier explicit no-remote-push scope requires human authorization to push codex/m9-os-validation and run privateActionsjobs."
-  ],
+  "blockers": [],
   "handoff": {
     "summary": "Deterministic local runtime/tool release candidates with notices/docs/SourceLink and actual managed/trim/NativeAOT consumption; full required matrix blocked.",
     "checks": [
       "Local package/symbol deterministic cleanrebuilds; sourceLinkembedded; package-only freshcacheconsumers managed/trim/native all pass; nativeMachOarm64; CLI install/help pass; planning/diff checked."
     ],
     "remaining": [
-      "Await concrete remote validation branch authorization; then inspect actual3OS unit/package/trim/AOT results and fix demonstrated failures."
+      "Provision hash-pinned XML corpus for hosted units; retain detailed failures and child diagnostics; prepare locally checked retry without launching extra jobs."
     ],
-    "requests": [
-      "Approve private codex/m9-os-validation branch push and3standardActionsjobs capped20mineach (60runner-minmax); private allowance/billing applies. No remote main/tag/packagepublication."
-    ]
+    "requests": []
   }
 }
