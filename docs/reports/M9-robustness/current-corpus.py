@@ -6,7 +6,7 @@ functions are reused unchanged; its historical runtime/HOLD manifest is retained
 """
 import sys
 sys.dont_write_bytecode=True
-import collections,hashlib,importlib.util,json,os,subprocess,time
+import argparse,collections,hashlib,importlib.util,json,os,subprocess,time
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
@@ -14,7 +14,9 @@ def module(name,path):
     spec=importlib.util.spec_from_file_location(name,path);value=importlib.util.module_from_spec(spec);spec.loader.exec_module(value);return value
 released=module('released_xsd',ROOT/'docs/reports/M8-xsd-corpus/run.py')
 approved=module('approved_xsd',ROOT/'docs/reports/M8-xsd-corpus/approved_dispositions.py')
-out=ROOT/'artifacts/M8-xsd-corpus/m9-current-xsd';out.mkdir(parents=True,exist_ok=False)
+parser=argparse.ArgumentParser();parser.add_argument('--resume',action='store_true');args=parser.parse_args()
+prior=json.loads((HERE/'current-xsd-attempt2.json').read_bytes()) if args.resume else None
+out=ROOT/('artifacts/M8-xsd-corpus/m9-current-xsd-resumed' if args.resume else 'artifacts/M8-xsd-corpus/m9-current-xsd');out.mkdir(parents=True,exist_ok=False)
 host=Path(released.D);corpus=ROOT/'tests/corpora/xsd'
 revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
 assert not subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True).strip(),'Reviewed source must be committed'
@@ -70,10 +72,20 @@ def run(argv,cap):
     print(text[-1000:],flush=True)
     assert released.supervision.workload_succeeded(receipt) and receipt['nestedOwnership']['allOwnedGroupsAbsent']
 try:
-    # Released preparation controls, with only a necessary fresh offline restore.
+    # Preserve clean source-equivalent preparation; renew only the historical fixture controls.
+    if prior:
+        assert not subprocess.check_output(['git','diff',prior['revision'],'HEAD','--','src','tests/corpora/xsd','tests/Xemele.Conformance.Tests/Xsd','tests/Xemele.Differential.Tests/Xsd','docs/reports/M8-xsd-corpus','docs/api','Directory.Build.props','Directory.Packages.props','global.json'],cwd=ROOT)
+        assert len(prior['commands'])==8 and all(released.supervision.workload_succeeded(r['receipt']) for r in prior['commands'][:-1])
+        report['retainedPreparationFrom']='docs/reports/M9-robustness/current-xsd-attempt2.json'
+        report['retainedPreparationCommands']=prior['commands'][:-1]
     project='tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj'
-    run([host,'restore',project,'--source','/private/tmp','--disable-build-servers','-p:RuntimeFrameworkVersion=10.0.11','-p:NuGetAudit=false'],180)
-    for command in released.preparation_commands():run(command,300)
+    if not prior:run([host,'restore',project,'--source','/private/tmp','--disable-build-servers','-p:RuntimeFrameworkVersion=10.0.11','-p:NuGetAudit=false'],180)
+    preparation=released.preparation_commands()
+    for index,command in enumerate(preparation):
+        if prior and index<6:continue
+        if command[-1].endswith('/test_supervisor.py'):
+            command=[sys.executable,'-B','docs/reports/M9-robustness/historical-controls.py']
+        run(command,300)
     for folder in [released.DLL.parent,ROOT/'src/Xemele/bin/Release/net10.0']:
         for path in folder.rglob('*'):
             if path.is_file():identities[str(path.relative_to(ROOT))]=sha(path)

@@ -1,0 +1,296 @@
+{
+  "result": "failed",
+  "revision": "e343f12f2a3672d199a4232a25b388638782d0df",
+  "upstreamRevision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj",
+        "--source",
+        "/private/tmp",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 82783,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-000",
+          "groups": [
+            82783
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "357b06edca6787ef3b803f3690f7212e5a533ad593efde062131e1618da7cd75",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-current-corpus/src/Xemele/Xemele.csproj (in 142 ms).\n  Restored /private/tmp/xemele-m9-current-corpus/tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj (in 143 ms).\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 82786,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-001",
+          "groups": [
+            82786
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "aef50c92b9c00051b110d9ca3b81ee89d9dd76f67d93e29b72f0bc69f5736e2e",
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-current-corpus/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Corpus.Runner -> /private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:07.50\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll",
+        "--controls"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 82833,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-002",
+          "groups": [
+            82833
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "6877a142087956af0774cf08aa992d7d3ed801dc5c45b3231a9a2bdfbb4c83eb",
+      "outputTail": " hint on supplied namespace first-use element remains assessable without fetch\nPASS actual product first-use supplied namespace remains complete valid without hint fetch\nPASS actual BCL first-use supplied namespace remains assessed without hint fetch\nPASS malformed hinted schema preserves authored input and staging failure without namespace inference\nPASS accepted product schema probe leaves instance unassessed\nPASS accepted BCL schema probe leaves instance unassessed\nSTART 0\nPASS product bounded journal control child completed\nPASS product exact two-instance control observations\nPASS product failed second staging retains its own requests without first-instance leakage\nSTART 0\nPASS product malformed hint control child completed\nPASS product actual unchanged hinted schema rejection is not an invalid-instance pass\nSTART 0\nPASS bcl bounded journal control child completed\nPASS bcl exact two-instance control observations\nPASS bcl failed second staging retains its own requests without first-instance leakage\nSTART 0\nPASS bcl malformed hint control child completed\nPASS bcl actual unchanged hinted schema rejection is not an invalid-instance pass\nPASS Second Edition excluded block \\p{IsHighSurrogates} rejects semantically\nPASS Second Edition excluded block \\P{IsHighSurrogates} rejects semantically\nPASS Second Edition excluded block \\p{IsHighPrivateUseSurrogates} rejects semantically\nPASS Second Edition excluded block \\P{IsHighPrivateUseSurrogates} rejects semantically\nPASS Second Edition excluded block \\p{IsLowSurrogates} rejects semantically\nPASS Second Edition excluded block \\P{IsLowSurrogates} rejects semantically\nPASS legal neighboring block \\p{IsHangulSyllables} remains valid\nPASS legal neighboring block \\P{IsHangulSyllables} remains valid\nPASS legal neighboring block \\p{IsPrivateUse} remains valid\nPASS legal neighboring block \\P{IsPrivateUse} remains valid\nPASS enumerated NOTATION union remains valid\nPASS enumerated NOTATION union rejects other lexical value completely\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll",
+        "--hint-profile-controls",
+        "/private/tmp/xemele-m9-current-corpus/tests/corpora/xsd/upstream"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 82839,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-003",
+          "groups": [
+            82839
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "9aef630ee03bb858922f3ef92319e9df30210cab8bdb141d0e37ea3601478d0b",
+      "outputTail": "PASS exact original/first-schema hash guard msMeta/Additional_w3c.xml#g159/i0:addB156.i\nPASS exact original/first-schema hash guard msMeta/Additional_w3c.xml#g161/i0:addB158.i\nPASS exact original/first-schema hash guard msMeta/Additional_w3c.xml#g162/i0:addB159.i\nPASS exact original/first-schema hash guard msMeta/Additional_w3c.xml#g164/i0:addB161.i\nPASS exact original/first-schema hash guard msMeta/Additional_w3c.xml#g165/i0:addB162.i\nPASS exact original/first-schema hash guard msMeta/Additional_w3c.xml#g167/i0:addB164.i\nPASS exact original/first-schema hash guard msMeta/Additional_w3c.xml#g169/i0:addB166.i\nPASS unlisted hint ID remains adapter-unassessed\nPASS guard preserves original INVALID oracle\nPASS missing first-schema prerequisite cannot enable assessment\nPASS wrong authored namespace cannot enable assessment\nPASS later schema cannot replace first schema\nPASS first-schema input order is bound\nPASS guard binds identical temporary copies\nPASS changed original instance hash cannot enable assessment\nPASS changed first-schema hash cannot enable assessment\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll",
+        "--optional-profile-controls",
+        "/private/tmp/xemele-m9-current-corpus/tests/corpora/xsd/upstream"
+      ],
+      "receipt": {
+        "command": 4,
+        "pid": 82842,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-004",
+          "groups": [
+            82842
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "98082ee16d5b19a748ee61c3029ff3021c0fa1d158f77d0f9b97d28e27c8a199",
+      "outputTail": "ment[1]/{}child\",\"BaseUri\":\"https://w3c-xsd.test/source/late.xml\"}],\"limitations\":[\"Namespace  was used at element 0 before hint at element[1]/{}child; explicit precompilation cannot reproduce ordered discovery.\"]}],\"hintOrderingProfile\":false,\"passed\":false}\nPASS FINAL production infrastructure row; no valid/invalid/unavailable/limitation credit control wrapped caller True\n{\"id\":\"controls/infrastructure/probe-instance.xml\",\"engine\":\"bcl\",\"classification\":\"applicable\",\"kind\":\"instance\",\"expected\":\"invalid\",\"actual\":\"harness-exception\",\"detail\":\"Hint namespace preparation failed: Invalid namespace declaration. Line 1, position 66.; unchanged original schema probe: harness-exception: System.Xml.Schema.XmlSchemaException: control wrapped caller True; instance assessment not executed\",\"codes\":[],\"resources\":[{\"kind\":\"authored-instance-hint\",\"namespaceUri\":\"\",\"location\":\"malformed.xsd\",\"uri\":\"https://w3c-xsd.test/source/malformed.xsd\",\"element\":\"element[0]/{}r\",\"baseUri\":\"https://w3c-xsd.test/source/probe-instance.xml\",\"policy\":\"first hint for namespace; explicit precompilation\"},{\"kind\":\"explicit-instance-schema-inputs\",\"inputs\":[{\"Location\":\"https://w3c-xsd.test/source/malformed.xsd\",\"Namespace\":\"\",\"Hint\":true,\"Element\":\"element[0]/{}r\",\"BaseUri\":\"https://w3c-xsd.test/source/probe-instance.xml\"}],\"limitations\":[]},{\"kind\":\"hint-schema-preparation-error\",\"input\":{\"Location\":\"https://w3c-xsd.test/source/malformed.xsd\",\"Namespace\":\"\",\"Hint\":true,\"Element\":\"element[0]/{}r\",\"BaseUri\":\"https://w3c-xsd.test/source/probe-instance.xml\"},\"detail\":\"Invalid namespace declaration. Line 1, position 66.\",\"policy\":\"probe unchanged original schema through selected engine; instance remains unassessed\"}],\"hintOrderingProfile\":false,\"passed\":false}\nPASS FINAL production infrastructure row; no valid/invalid/unavailable/limitation credit control wrapped caller True\nBCL instance native wrapping observed: False; caller-wrapped XML/schema errors FINAL harness assertions required independently\n"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tests/corpora/xsd/import.py",
+        "--check"
+      ],
+      "receipt": {
+        "command": 5,
+        "pid": 82847,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-005",
+          "groups": [
+            82847
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "351e423263b2ddbc6b1ee6b69202d6191e0d1d8b270d597e6b5b4e65cfad1bc0",
+      "outputTail": "{\"groups\": 15433, \"instance.applicable\": 25079, \"instance.excluded\": 1278, \"instance.expected.indeterminate\": 4, \"instance.expected.invalid\": 11025, \"instance.expected.valid\": 14050, \"instanceTests\": 26357, \"multiDocumentSchemas\": 93, \"schema.applicable\": 14405, \"schema.excluded\": 973, \"schema.expected.indeterminate\": 12, \"schema.expected.invalid\": 3349, \"schema.expected.valid\": 11044, \"schemaTests\": 15378, \"sets\": 93}\nPASS reproducible metadata, 42270 original file hashes, 41843 ordered document references; missing original references=5 (all excluded), applicable missing=0\n"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tests/corpora/xsd/test_import.py"
+      ],
+      "receipt": {
+        "command": 6,
+        "pid": 82908,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-006",
+          "groups": [
+            82908
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371",
+      "outputTail": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "docs/reports/M8-xsd-corpus/test_supervisor.py"
+      ],
+      "receipt": {
+        "command": 7,
+        "pid": 82914,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-current-corpus/artifacts/M8-xsd-corpus/m9-current-xsd/nested-007",
+          "groups": [
+            82914,
+            82915,
+            82922,
+            82925,
+            82928,
+            82932,
+            82933,
+            82938,
+            82941,
+            82949,
+            82952,
+            82954,
+            82958,
+            82960,
+            82964
+          ],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "0a25ef5702cddb7da3087660e52928c5f21124f52d6d9e5054a8302a46043f86",
+      "outputTail": ".............product durable completed {'observationPassed': 1}\n......product normal completed {'observationPassed': 1}\n.........product normal completed {'observationPassed': 1}\n.product disagreement completed {'observationNonpassed': 1}\nbcl reference completed {'observationPassed': 1}\n..product case/unicode16-supplemental completed {'observationPassed': 1}\nproduct conditional completed {'observationPassed': 1}\n.......F\n======================================================================\nFAIL: test_verified_runtime_source_and_api_evidence_membership (__main__.Supervisor.test_verified_runtime_source_and_api_evidence_membership)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/tmp/xemele-m9-current-corpus/docs/reports/M8-xsd-corpus/test_supervisor.py\", line 416, in test_verified_runtime_source_and_api_evidence_membership\n    observed = m.verified_runtime_inputs()\n  File \"/private/tmp/xemele-m9-current-corpus/docs/reports/M8-xsd-corpus/run.py\", line 258, in verified_runtime_inputs\n    assert digest(ROOT / name) == checksum, 'verified runtime/source/API baseline changed: ' + name\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: verified runtime/source/API baseline changed: src/Xemele/Tree/Document.cs\n\n----------------------------------------------------------------------\nRan 39 tests in 4.005s\n\nFAILED (failures=1)\n"
+    }
+  ],
+  "reviewedRuntimeChanges": {
+    "src/Xemele/Tree/Document.cs": {
+      "originalSha256": "7df85d8795f88a097128b3155ada77ef27baac953d97053593a6164fb24e0b25",
+      "currentSha256": "44f99bab6457a796c64aac9fddae607964f27d34550b4307d744525fd7117907",
+      "verifiedOwner": "M9-dom-memory",
+      "integrationRevision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69"
+    },
+    "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs": {
+      "originalSha256": "d468ff27b9d3b30696fd3e45a195b51a1e02e0fec9919e2ba98c788800fa67c1",
+      "currentSha256": "ec3e975900354547ea6cc3b94edce3a1a72e91aa1bb5839185ab041bd9bac6e8",
+      "verifiedOwner": "M9-dom-memory",
+      "integrationRevision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69"
+    },
+    "src/Xemele/XPath/Evaluation/Evaluator.cs": {
+      "originalSha256": "82889d4deae35708f1c4f30fcf9db97eee62249aaeb2cf985e1dd2404829f6b0",
+      "currentSha256": "0c99ff0114589f3db1a1e6a45d53d2064af2e49a69060e726d01c4a9a2795f2d",
+      "verifiedOwner": "M9-xpath-order",
+      "integrationRevision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac"
+    },
+    "src/Xemele/XPath/Navigation/XPathNavigator.cs": {
+      "originalSha256": "ea48aac307e25172801101ecf68779b661061c12e434947503ee9596e25ed25b",
+      "currentSha256": "38aa6b0d19b640cbc9b4362bcd22201165edefe98af87c9ce786a19dc4498954",
+      "verifiedOwner": "M9-xpath-order",
+      "integrationRevision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac"
+    }
+  },
+  "sourceManifestSha256": "fa8b7f66951ac038da6c1101e42c68234ea78e6663bfbcc964fdd55081f95a96",
+  "fuzzExecuted": false,
+  "originalPassCredit": 0,
+  "gateCredit": 0,
+  "identityChanges": [],
+  "totalDeadlineExceeded": false
+}
