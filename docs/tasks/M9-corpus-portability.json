@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "M9-corpus-portability",
+  "milestone": "M9",
+  "title": "Portable pinned-corpus roots for two cumulative unit checks",
+  "kind": "repair",
+  "status": "in_progress",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-corpus-portability",
+  "base_revision": "4aade285427f3976f5d7591538c3458894ed71a3",
+  "integration_revision": null,
+  "depends_on": [
+    "M9-contracts",
+    "M2-conformance",
+    "M2-undeclared-content"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M2-conformance/OriginalStandaloneTests.cs",
+    "tests/Xemele.Tests/Xml/UndeclaredReferences/ContentTests.cs",
+    "docs/reports/M9-corpus-portability/"
+  ],
+  "api_or_output": "Two original-byte checks honor the existing XEMELE_CORPUS_RESOURCES setting without changing source bytes, hashes or assertions.",
+  "acceptance": [
+    {
+      "id": "M9-corpus-portability-A1",
+      "description": "Both formerly fixed local corpus paths honor the existing corpus-root environment setting; original byte/hash/model assertions pass from an isolated root.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Demonstrated hosted missing-file failures expose two remaining fixed local paths; repair is limited to selecting the existing corpus-root environment setting.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
