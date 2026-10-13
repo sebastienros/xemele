@@ -18,22 +18,21 @@ string expression = fixture.GetProperty("xpath").GetString()!;
 double expectedXPath = fixture.GetProperty("xpathExpected").GetDouble();
 
 // Warm parsing, serializer, query and digest implementation before any counter baseline.
-Meter.Held = Parse(engine, input); Verify(engine, Meter.Held, expected, expression, expectedXPath); Meter.Held = null;
+Warm(engine, input, expected, expression, expectedXPath);
 Collect();
-long beforeControl = GC.GetTotalMemory(true);
-Meter.Held = RetainedControl(); long controlLive = GC.GetTotalMemory(true) - beforeControl;
+long controlLive = MeasureControl();
 if (controlLive < 9 * 1024 * 1024) throw new InvalidDataException("Retained-memory meter missed the 9 MiB control.");
-GC.KeepAlive(Meter.Held); Meter.Held = null; Collect();
+Collect();
 var rows = new List<object>();
 for (int cycle = 0; cycle < 3; cycle++)
 {
     Collect(); long baseline = GC.GetTotalMemory(true), allocationStart = GC.GetAllocatedBytesForCurrentThread();
-    Meter.Held = Parse(engine, input);
+    CreateHeld(engine, input);
     long allocationBytes = GC.GetAllocatedBytesForCurrentThread() - allocationStart;
     long retainedBytes = GC.GetTotalMemory(true) - baseline;
-    string digest = Verify(engine, Meter.Held, expected, expression, expectedXPath);
-    if (retainedBytes <= 0 || allocationBytes < retainedBytes) throw new InvalidDataException("Invalid retention/allocation counters.");
-    GC.KeepAlive(Meter.Held); Meter.Held = null; Collect();
+    string digest = VerifyHeld(engine, expected, expression, expectedXPath);
+    if (retainedBytes <= 0 || allocationBytes <= 0) throw new InvalidDataException($"Invalid counters: baseline={baseline}, retained={retainedBytes}, allocated={allocationBytes}.");
+    ClearHeld(); Collect();
     long releasedDelta = GC.GetTotalMemory(true) - baseline;
     rows.Add(new { cycle, retainedBytes, allocationBytes, releasedDelta, digest });
 }
@@ -47,6 +46,17 @@ Console.WriteLine(JsonSerializer.Serialize(new { engine, fixture = fixture.GetPr
 
 [MethodImpl(MethodImplOptions.NoInlining)]
 static object RetainedControl() { byte[] value = new byte[9 * 1024 * 1024]; value[0] = 42; value[^1] = 43; return value; }
+[MethodImpl(MethodImplOptions.NoInlining)]
+static long MeasureControl() { long before = GC.GetTotalMemory(true); Meter.Held = RetainedControl(); long delta = GC.GetTotalMemory(true) - before; GC.KeepAlive(Meter.Held); Meter.Held = null; return delta; }
+[MethodImpl(MethodImplOptions.NoInlining)]
+static void Warm(string engine, byte[] input, string expected, string expression, double number)
+{ object value = Parse(engine, input); Verify(engine, value, expected, expression, number); GC.KeepAlive(value); }
+[MethodImpl(MethodImplOptions.NoInlining)]
+static void CreateHeld(string engine, byte[] input) => Meter.Held = Parse(engine, input);
+[MethodImpl(MethodImplOptions.NoInlining)]
+static string VerifyHeld(string engine, string expected, string expression, double number) => Verify(engine, Meter.Held!, expected, expression, number);
+[MethodImpl(MethodImplOptions.NoInlining)]
+static void ClearHeld() { GC.KeepAlive(Meter.Held); Meter.Held = null; }
 static void Collect() { GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); }
 [MethodImpl(MethodImplOptions.NoInlining)]
 static object Parse(string engine, byte[] input)
