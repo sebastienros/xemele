@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-distribution",
   "base_revision": "5a0798757417dfc508847706d118d242a0ef4695",
@@ -31,28 +31,69 @@
       "id": "M9-distribution-A1",
       "description": "Build reproducible package with notices/docs/Source Link and net10.0 consumption/trimming/AOT matrix.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "local-package",
+        "missing-platform-matrix"
+      ]
     },
     {
       "id": "M9-distribution-A2",
       "description": "Install package into isolated consumers on required OS/architectures; no publication is performed.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "local-package",
+        "missing-platform-matrix"
+      ]
     },
     {
       "id": "M9-distribution-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "local-package"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
-  "blockers": [],
+  "implementation": [
+    "tools/Packaging/Release.targets",
+    "tools/Packaging/verify.py",
+    ".github/workflows/release.yml",
+    "tests/PackageSmoke/Release/Consumer.csproj",
+    "tools/Packaging/THIRD-PARTY-NOTICES.md"
+  ],
+  "evidence": [
+    {
+      "id": "local-package",
+      "kind": "check",
+      "revision": "0b8daebc8f342101d4301381639f08e944aa150d",
+      "command": "python3 tools/Packaging/verify.py --rid osx-arm64 --dotnet pinned10.0.400-host --cache /Users/sebastienros/.nuget/packages; source-equivalent --reuse-builds continuation; offline symbols/Mach-O checks",
+      "result": "passed",
+      "summary": "Two clean canonical unsigned runtime/tool packages and symbols byte-identical; embedded exact Source Link; actual fresh managed/trim/native consumers and dotnet-tool installation/help pass onosx-arm64/.NET10.0.11. Missing platform execution gets no credit; failed preparation/reporting attempts retained.",
+      "artifact": "docs/reports/M9-distribution/local-checks.json"
+    },
+    {
+      "id": "missing-platform-matrix",
+      "kind": "check",
+      "revision": "0b8daebc8f342101d4301381639f08e944aa150d",
+      "command": "Not executed: required Windows/Linux and x64 install/trim/AOT checks; no runners or prior reports per human reply.",
+      "result": "skipped",
+      "summary": "Mandatory release evidence unavailable, not passing or waived. Task remains blocked; only localosx-arm64 credit.",
+      "artifact": "docs/reports/M9-distribution/README.md"
+    }
+  ],
+  "blockers": [
+    "Windows/Linux and x64 actual package/trim/NativeAOT execution unavailable; human answered no runners/reports."
+  ],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Deterministic local runtime/tool release candidates with notices/docs/SourceLink and actual managed/trim/NativeAOT consumption; full required matrix blocked.",
+    "checks": [
+      "Local package/symbol deterministic cleanrebuilds; sourceLinkembedded; package-only freshcacheconsumers managed/trim/native all pass; nativeMachOarm64; CLI install/help pass; planning/diff checked."
+    ],
+    "remaining": [
+      "Execute required Windows/Linux/x64 matrix before A1/A2 or task verification."
+    ],
+    "requests": [
+      "External release runners needed; do not mark unavailable matrix as passing."
+    ]
   }
 }
