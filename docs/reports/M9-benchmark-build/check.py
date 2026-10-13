@@ -23,7 +23,7 @@ def run(argv,cap):
     return text
 try:
     parent='benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj'
-    for project in [parent,*[f'benchmarks/Xemele.Benchmarks/{name}/Probe.csproj' for name in ['M8-sch-compile','M8-sch-report','M8-sch-rule-scope','M8-sch-validate']]]:
+    for project in [parent,*[f'benchmarks/Xemele.Benchmarks/{name}/Probe.csproj' for name in ['M8-sch-compile','M8-sch-report','M8-sch-rule-scope','M8-sch-validate']], 'benchmarks/Xemele.Benchmarks/M8-rng-validate/Rng.Probe.csproj']:
         run([host,'restore',project,'--source','/private/tmp',*flags],120)
         run([host,'build',project,'-c','Release','--no-restore',*flags],150)
     # List again after nested builds: generated child obj files must stay excluded.

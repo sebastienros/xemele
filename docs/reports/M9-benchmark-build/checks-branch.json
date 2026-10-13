@@ -1,0 +1,60 @@
+{
+  "revision": "5104e20cd0de8ac5990876c594a95ac9ff5c327d",
+  "result": "failed",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+        "--source",
+        "/private/tmp",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 71182,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "141c905d8815c6b234bac6f42c259238a70340f67e19c63989b0b309706ef4a6",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-benchmark-build/src/Xemele/Xemele.csproj (in 31 ms).\n  Restored /private/tmp/xemele-m9-benchmark-build/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 172 ms).\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 71187,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "2353f5b919b1206771ea243818ddd3096c1bff0931aa57abb93a2b9530603c50",
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-benchmark-build/src/Xemele/bin/Release/net10.0/Xemele.dll\n/private/tmp/xemele-m9-benchmark-build/benchmarks/Xemele.Benchmarks/M8-rng-validate/Probe.cs(42,24): error CS7022: The entry point of the program is global code; ignoring 'Probe.Main(string[])' entry point. [/private/tmp/xemele-m9-benchmark-build/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n\nBuild FAILED.\n\n/private/tmp/xemele-m9-benchmark-build/benchmarks/Xemele.Benchmarks/M8-rng-validate/Probe.cs(42,24): error CS7022: The entry point of the program is global code; ignoring 'Probe.Main(string[])' entry point. [/private/tmp/xemele-m9-benchmark-build/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj]\n    0 Warning(s)\n    1 Error(s)\n\nTime Elapsed 00:00:02.93\n"
+    }
+  ],
+  "measurementsExecuted": false
+}
