@@ -28,19 +28,27 @@ issuing the next certificate. Worker cannot issue a certificate.
 
 | Phase | Commands | Inner work / hard seconds | Root outer work / hard seconds |
 | --- | ---: | ---: | ---: |
-| preparation | 51 | 12500 / 12680 | 12700 / 12720 |
-| correctness checks | 18 | 3500 / 3680 | 3700 / 3720 |
-| root-only cumulative counters | 4 | 1800 / 1980 | 2000 / 2020 |
+| preparation | 51 | 12500 / 12680 | 12860 / 12880 |
+| correctness checks | 18 | 3500 / 3680 | 3860 / 3880 |
+| root-only cumulative counters | 4 | 1800 / 1980 | 2160 / 2180 |
+
+Accepted root parent source SHA256:
+`1af448c7a5ebda57d0091f15cde4877531a9caa647c8e45fcb25a6c4af377602`.
+The documented outer bounds match that parent.
+
+`recipeSha256` hashes the contained packet `recipe` object using UTF-8 bytes of
+Python `json.dumps(recipe, sort_keys=True, separators=(',', ':'), ensure_ascii=True)`
+with no trailing newline; it includes argv, command counts and every bound.
 
 The root outer total does not reset the inner clock. Inner work is also clipped
 to inherited hard-deadline minus the full phase reserve; a shorter ancestor
-window never consumes the terminal reserve or resets a clock. Preparation starts with10 counter-free synthetic receipt/inspection/publication
+window never consumes the terminal reserve or resets a clock. Preparation starts with11 counter-free synthetic receipt/inspection/publication
 guards and registered tiny-child cleanup controls before provisioning/builds.
 After package freeze, three actual archive controls prove valid acceptance,
 mutation refusal and missing-record refusal without mutating canonical inputs.
 
 Per-child work bounds appear
-in the recipe (30–600 seconds). Each child has at most10 seconds cleanup, split
+in the recipe (30–1400 seconds). Each child has at most10 seconds cleanup, split
 by the accepted helper into at most4 direct and6 nested cleanup seconds. Child
 hard deadlines are clipped to the immutable phase hard deadline minus its terminal reserve less20 seconds;
 the phase reserves180 seconds for remaining binding, terminal sweeps, raw
@@ -86,8 +94,8 @@ before executable checks. NativeAOT/trim toolchain readiness alone is not a pass
 
 The external package is unpublished local `0.8.0-integration`, net10.0 only,
 with DLL equality to actual source/API product DLL. The actual nupkg archive
-is rehashed against its frozen preparation record before/after every check. New gate phase guards include13 controls: the10
-preparation receipt/cleanup guards plus valid prepared-archive acceptance, actual
+is rehashed against its frozen preparation record before/after every check. New gate phase guards include14 controls: the11
+preparation receipt/cleanup/publication/late-terminal-output guards plus valid prepared-archive acceptance, actual
 post-freeze archive-mutation refusal and missing-record refusal.
  A fresh absent private consumer
 cache, explicit local feed and no ProjectReference are enforced. Managed,
@@ -173,8 +181,9 @@ Reference limitations never exclude product expectations.
 Phase outcomes become durable BEFORE raw inspection/deletion. Failed semantics
 cannot become success merely because wrapper cleanup succeeds. Raw refusal
 retains output for finite root inspection; nothing is archived. Final success
-requires raw deletion plus final fsync/publication before immutable hard deadline.
-Interrupted or overtime publication gets one durable failed reconciliation; actual
+requires raw deletion, final fsync/publication, terminal printing and a post-print
+hard-deadline check inside the same one-attempt failed-state reconciliation block.
+Interrupted or overtime publication/terminal output gets one durable failed reconciliation; actual
 outer completion still governs certification. Active binary/package inputs remain
 only until final root inspection/checkpoint custody. Root handles cleanup of all
 prepared outputs, retention of the necessary unpublished package/manifest under

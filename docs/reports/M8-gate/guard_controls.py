@@ -71,6 +71,8 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
     original_publish = subject.publish_phase
     publication_calls = 0
     late_publication = False
+    late_terminal_output = False
+    original_terminal_output = subject.terminal_output
     original_clock = time.monotonic
     def publish(target, payload, identifier):
         nonlocal publication_calls, late_publication
@@ -79,13 +81,17 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
         if publication_calls == 1:
             if name == 'late-final-publication': late_publication = True
             if name == 'interrupted-after-replace': raise KeyboardInterrupt('guard interruption after final replace/fsync')
-    def publication_clock(): return original_clock()+1000000 if late_publication else original_clock()
+    def terminal_output(value):
+        nonlocal late_terminal_output
+        original_terminal_output(value)
+        if name == 'late-terminal-output': late_terminal_output = True
+    def publication_clock(): return original_clock()+1000000 if late_publication or late_terminal_output else original_clock()
     try:
         with contextlib.ExitStack() as controls, mock.patch.object(subject, 'PHASES', {'prepare':{'work':5,'reserve':15},'check':{'work':5,'reserve':15}}), mock.patch.object(subject, 'STATE', directory), mock.patch.object(subject, 'input_identities', identity), mock.patch.object(subject, 'artifact_snapshot', lambda: {}), mock.patch.object(subject, 'source_identity', lambda: inputs['source']), mock.patch.object(subject, 'authority_identity', lambda: inputs['authority']), mock.patch.object(subject, 'binaries', binary_identity), \
-             mock.patch.object(subject, 'commands', lambda _: workload), mock.patch.object(subject, 'module', module), mock.patch.object(subject, 'publish_phase', publish), mock.patch.object(sys, 'argv', ['checks.py', phase]+([str(certificate)] if phase == 'check' else [])), \
+             mock.patch.object(subject, 'commands', lambda _: workload), mock.patch.object(subject, 'module', module), mock.patch.object(subject, 'publish_phase', publish), mock.patch.object(subject, 'terminal_output', terminal_output), mock.patch.object(sys, 'argv', ['checks.py', phase]+([str(certificate)] if phase == 'check' else [])), \
              mock.patch.object(Path, 'read_text', read), contextlib.redirect_stdout(capture):
             if name == 'expired-total': controls.enter_context(mock.patch.object(subject.time, 'monotonic', expired_clock))
-            if name == 'late-final-publication': controls.enter_context(mock.patch.object(subject.time, 'monotonic', publication_clock))
+            if name in ['late-final-publication','late-terminal-output']: controls.enter_context(mock.patch.object(subject.time, 'monotonic', publication_clock))
             try: subject.main()
             except SystemExit as outcome: assert outcome.code == (0 if expected else 1), (name, outcome.code, capture.getvalue())
         terminal = json.loads((directory/('prepared.json' if phase == 'prepare' else 'check.json')).read_text())
@@ -93,10 +99,11 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
         assert terminal['allOwnedGroupsAbsent'] and terminal['allDirectChildrenReaped'], (name, terminal)
         assert list(directory.glob('*-final.receipt.json')), 'durable final receipt required'
         if change is not None or phase == 'check': assert terminal['bindingFailure'], (name, terminal)
-        if name in ['late-final-publication', 'interrupted-after-replace']:
+        if name in ['late-final-publication', 'interrupted-after-replace', 'late-terminal-output']:
             assert terminal['publicationFailure'] and publication_calls == 2 and not terminal['passed'] and terminal['rawDeleted'], terminal
             assert list(directory.glob('*-publication-failure.receipt.json')), 'durable publication failure'
-            if name == 'late-final-publication': assert terminal['deadlineExceeded'], terminal
+            if name in ['late-final-publication','late-terminal-output']: assert terminal['deadlineExceeded'], terminal
+            if name == 'late-terminal-output': assert 'final terminal output' in terminal['publicationFailure'], terminal
         if fail_inspection:
             assert not terminal['rawDeleted'] and not terminal['logsInspected'] and terminal['bindingFailure'], terminal
             retained = ROOT/'artifacts/M8-gate'/Path(terminal['terminalCleanup'][0]['registry']).parent.name
@@ -126,6 +133,7 @@ if sys.argv[1:] == ['--synthetic']:
     exercise('expired-total')
     exercise('late-final-publication')
     exercise('interrupted-after-replace')
+    exercise('late-terminal-output')
 if sys.argv[1:] == ['--archive']:
     # Actual prepared package bytes: valid identity succeeds; mutation after freeze must refuse.
     import identities as archive_subject

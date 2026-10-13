@@ -84,6 +84,9 @@ def publish_phase(target, payload, identifier):
     finally:
         temporary.unlink(missing_ok=True)
 
+def terminal_output(value):
+    print(json.dumps(value), flush=True)
+
 def main():
     if len(sys.argv) < 2 or sys.argv[1] not in ['recipe', 'prepare', 'check', 'counter', 'identity']: raise SystemExit('recipe|prepare|check|counter ROOT_CERTIFICATE')
     phase = sys.argv[1]
@@ -236,6 +239,10 @@ def main():
                 publish_phase(target, payload, identifier)
                 # Check only after replacement and directory fsync have returned.
                 if time.monotonic() >= hard: raise TimeoutError('Phase hard deadline exceeded during final publication')
+                terminal_output({'phase': phase, 'passed': payload['passed'], 'bindingFailure': payload['bindingFailure'], 'primaryFailure': payload['primaryFailure'],
+                                 'allOwnedGroupsAbsent': payload['allOwnedGroupsAbsent'], 'rawDeleted': payload['rawDeleted'],
+                                 'deadlineExceeded': payload['deadlineExceeded'], 'receipt': str(receipt)})
+                if time.monotonic() >= hard: raise TimeoutError('Phase hard deadline exceeded during final terminal output')
             except BaseException as error:
                 payload['passed'] = False
                 payload['publicationFailure'] = type(error).__name__+': '+str(error)
@@ -247,9 +254,6 @@ def main():
                     publish_phase(target, payload, identifier+'-reconcile')
                 except BaseException as reconciliation:
                     payload['reconciliationFailure'] = type(reconciliation).__name__+': '+str(reconciliation)
-    print(json.dumps({'phase': phase, 'passed': payload['passed'], 'bindingFailure': payload['bindingFailure'], 'primaryFailure': payload['primaryFailure'],
-                      'allOwnedGroupsAbsent': payload['allOwnedGroupsAbsent'], 'rawDeleted': payload['rawDeleted'],
-                      'deadlineExceeded': payload['deadlineExceeded'], 'receipt': str(receipt)}), flush=True)
     raise SystemExit(0 if payload['passed'] else 1)
 
 if __name__ == '__main__': main()
