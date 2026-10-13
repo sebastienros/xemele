@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Reproducible performance acceptance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-dom-reference",
   "base_revision": "c3c9f6228c26025330f6644786a83f9222b6f7a1",
@@ -27,10 +27,11 @@
     {
       "id": "M9-performance-A1",
       "description": "Run frozen throughput/allocation/live-memory benchmarks on controlled hardware against each reference.",
-      "status": "pending",
+      "status": "failed",
       "evidence": [
         "required-controlled-run",
-        "current-streaming-memory"
+        "current-streaming-memory",
+        "retained-dom-target"
       ]
     },
     {
@@ -56,7 +57,9 @@
     "docs/reports/M9-performance/accounting.json",
     "docs/reports/M9-performance/README.md",
     "docs/reports/M9-performance/MemoryRunner/MemoryRunner.csproj: links unchanged generated memory oracle against current release runtime",
-    "docs/reports/M9-performance/memory.py and current-memory.json: finite five-mode1GiB checks plus retained9MiB control"
+    "docs/reports/M9-performance/memory.py and current-memory.json: finite five-mode1GiB checks plus retained9MiB control",
+    "benchmarks/baselines/release/fixtures.json, fixtures/ and operations.json: ten frozen original primary workloads and semantic oracle",
+    "docs/reports/M9-performance/ManagedWorker/, NativeWorker/ and RustWorker/: actual equivalent owned-DOM/reference-operation preparation"
   ],
   "evidence": [
     {
@@ -103,20 +106,40 @@
       "result": "passed",
       "summary": "Integrated measured source closure exactly matches all five passing1GiB checks and9MiBcontrol. No repeated workload or unrun controlled throughput/retainedDOM credit.",
       "artifact": "docs/reports/M9-performance/current-memory.json"
+    },
+    {
+      "id": "retained-dom-target",
+      "kind": "check",
+      "revision": "bc20523859dafe7ba41e27205ca443aa941b847d",
+      "command": "Committed paired retained-DOM probe, source-equivalent continuation after control-only correction; all10fixtures and60cycles, no exclusions",
+      "result": "failed",
+      "summary": "Actual retained ratio 0.935969 exceeds0.75 on frozen corpus; all raw metrics and original failed probe attempts retained. Real storage repair required; no timing deficit fabricated.",
+      "artifact": "docs/reports/M9-performance/dom-retention.json"
+    },
+    {
+      "id": "reference-operation-qualification",
+      "kind": "check",
+      "revision": "70dea135410a8bf63e690f0615ab3a45395c8ab4",
+      "command": "Pinned native/Rust builds and original20case qualification with affected-case continuations only",
+      "result": "passed",
+      "summary": "Actual DOM/model/serialization/compiled-XPath outputs qualified for all10fixtures against both references; failed quota/API-mapping attempts preserved. No throughput claim.",
+      "artifact": "docs/reports/M9-performance/reference-qualification.json"
     }
   ],
-  "blockers": [],
+  "blockers": [
+    "Observed retained-DOM ratio0.935969 exceeds required0.75; route focused storage repair. Managed XPath count query hits100million work limit due quadratic normalization/uniqueness; route focused ordering repair. Dedicated timing and hosted retry authorization still unavailable."
+  ],
   "handoff": {
-    "summary": "Current five-mode1GiB managed-live-memory requirement passes with a rejecting retained-memory control; other required comparisons remain pending.",
+    "summary": "Frozen representative corpus and direct reference workers prepared; actual retained-DOM target failure and large-query work-limit failure now demonstrated.",
     "checks": [
-      "Nine finite build/control/workload commands pass cleanly; max sampled wholemanagedheap291304bytes; positivecontrol9627776bytes; actualRSS retained separately.",
-      "Earlier source-applicable allocations retained; no uncontrolled throughput/regression credit."
+      "Ten fixture pairs /60 retained cycles; aggregate0.935969 versus0.75, failed.",
+      "20native/Rust fixture-operation qualifications pass with original failures retained."
     ],
     "remaining": [
-      "Complete representative fixture freeze, equivalent reference workers and current retained-DOM comparisons locally; dedicated timing remains an external requirement."
+      "Focused owned DOM storage and XPath ordering repairs; then affected retention/query evidence and controlled timing."
     ],
     "requests": [
-      "Stable dedicated timing hardware or applicable exact controlled reports remain needed; no mandatory release threshold waived."
+      "Create minimal demonstrated runtime repair ownership for Tree/Document.cs + SchemaSourceLocations, and XPath navigation/evaluation ordering; preserve APIs/source diagnostics/finite budgets and frozen corpus."
     ]
   }
 }
