@@ -1,0 +1,98 @@
+{
+  "baselineRevision": "68c7523bf4451152a52e16c522c4a7738c5fe6dc",
+  "candidateRevision": "96607239948456c12aac0b56bcf6eb29cec33b0c",
+  "result": "passed",
+  "controlledTimingCredit": false,
+  "commands": [
+    {
+      "label": "candidate",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-dom-memory-repair/docs/reports/M9-DOM-memory/BdnWorker/BdnWorker.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 56521,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce"
+    },
+    {
+      "label": "candidate",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-dom-memory-repair/docs/reports/M9-DOM-memory/BdnWorker/BdnWorker.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 56526,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "c36cff28731e51a49804872639b146ab109661e72a4e69321a37b1256135ba1b"
+    },
+    {
+      "label": "candidate",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-dom-memory-repair/docs/reports/M9-DOM-memory/BdnWorker/bin/Release/net10.0/BdnWorker.dll",
+        "--filter",
+        "*DomStorageBenchmarks*",
+        "--artifacts",
+        "/private/tmp/xemele-m9-dom-memory-repair/artifacts/M9-dom-memory/allocations-retry/candidate-bdn",
+        "--exporters",
+        "json"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 56557,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "c5af885adfd8ed291b402915fc6295a1f9b7685d8710639975a80bf0eccefab7"
+    }
+  ],
+  "summaries": {
+    "baseline": "```\n\nBenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]\nApple M4 Pro, 1 CPU, 14 logical and 14 physical cores\n.NET SDK 10.0.400\n  [Host]   : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a\n  ShortRun : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a\n\nJob=ShortRun  IterationCount=3  LaunchCount=1  \nWarmupCount=3  \n\n```\n| Method        | Shape        | Mean         | Error       | StdDev     | Gen0     | Gen1     | Gen2     | Allocated  |\n|-------------- |------------- |-------------:|------------:|-----------:|---------:|---------:|---------:|-----------:|\n| **ParseOwnedDom** | **distinct**     | **2,871.442 \u03bcs** | **567.6930 \u03bcs** | **31.1172 \u03bcs** | **261.7188** | **261.7188** | **261.7188** |  **1770.4 KB** |\n| **ParseOwnedDom** | **multilingual** | **3,115.645 \u03bcs** | **112.4558 \u03bcs** |  **6.1641 \u03bcs** | **261.7188** | **261.7188** | **261.7188** | **1493.61 KB** |\n| **ParseOwnedDom** | **repeated**     | **2,477.498 \u03bcs** |  **26.1509 \u03bcs** |  **1.4334 \u03bcs** | **261.7188** | **261.7188** | **261.7188** | **1477.98 KB** |\n| **ParseOwnedDom** | **small**        |     **5.291 \u03bcs** |   **0.4752 \u03bcs** |  **0.0260 \u03bcs** |   **6.6223** |   **0.9460** |        **-** |    **54.2 KB** |\n",
+    "candidate": "```\n\nBenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]\nApple M4 Pro, 1 CPU, 14 logical and 14 physical cores\n.NET SDK 10.0.400\n  [Host]   : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a\n  ShortRun : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a\n\nJob=ShortRun  IterationCount=3  LaunchCount=1  \nWarmupCount=3  \n\n```\n| Method        | Shape        | Mean         | Error       | StdDev     | Gen0     | Gen1    | Gen2    | Allocated  |\n|-------------- |------------- |-------------:|------------:|-----------:|---------:|--------:|--------:|-----------:|\n| **ParseOwnedDom** | **distinct**     | **3,077.234 \u03bcs** | **773.0530 \u03bcs** | **42.3736 \u03bcs** | **179.6875** | **89.8438** | **89.8438** | **1688.87 KB** |\n| **ParseOwnedDom** | **multilingual** | **3,185.249 \u03bcs** | **682.2942 \u03bcs** | **37.3988 \u03bcs** | **179.6875** | **89.8438** | **89.8438** | **1217.11 KB** |\n| **ParseOwnedDom** | **repeated**     | **2,529.279 \u03bcs** | **453.1899 \u03bcs** | **24.8409 \u03bcs** | **179.6875** | **89.8438** | **89.8438** | **1201.49 KB** |\n| **ParseOwnedDom** | **small**        |     **5.658 \u03bcs** |   **0.9623 \u03bcs** |  **0.0527 \u03bcs** |   **6.6605** |  **1.1063** |       **-** |   **54.62 KB** |\n"
+  },
+  "baselineArchiveSha256": "3e3af81c29cfda028c6e5b99204261449e353a0140c922da34cedbbef5e4c2de",
+  "benchmarkSha256": "0d34817726718b37c742b72250b3cedd63e4fc1631cc237aeb21d1b472216a2d",
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0",
+    "DOTNET_gcServer": "0",
+    "DOTNET_GCConcurrent": "0"
+  },
+  "reusedBaselineAttempt": "docs/reports/M9-DOM-memory/allocations-attempt1.json"
+}
