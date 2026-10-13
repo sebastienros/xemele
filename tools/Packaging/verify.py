@@ -21,6 +21,25 @@ VERSION = '0.9.0-rc.1'
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
+def canonicalize(path):
+    # Unsigned local archives only. Normalize ZIP container metadata, never payload bytes.
+    with zipfile.ZipFile(path) as archive:
+        assert '.signature.p7s' not in archive.namelist()
+        entries = {item.filename: archive.read(item) for item in archive.infolist()}
+        assert len(entries) == len(archive.infolist())
+    temporary = path.with_suffix(path.suffix + '.canonical')
+    with zipfile.ZipFile(temporary, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for name, payload in sorted(entries.items()):
+            item = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            item.create_system = 3
+            item.external_attr = 0o100644 << 16
+            item.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(item, payload)
+    with zipfile.ZipFile(temporary) as archive:
+        assert entries == {name: archive.read(name) for name in archive.namelist()}
+    temporary.replace(path)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--rid', required=True)
@@ -98,6 +117,8 @@ def main():
             run([host, 'clean', tool, '-c', 'Release', '--disable-build-servers', *props])
             run([host, 'pack', project, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', *props, '-o', destination])
             run([host, 'pack', tool, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', *props, '-o', destination])
+            for archive in sorted(destination.glob('*.nupkg')) + sorted(destination.glob('*.snupkg')):
+                canonicalize(archive)
             archives.append(destination)
         names = sorted(p.name for p in archives[0].glob('*.nupkg'))
         assert names == [f'Xemele.{VERSION}.nupkg', f'Xemele.Tool.{VERSION}.nupkg'], names
