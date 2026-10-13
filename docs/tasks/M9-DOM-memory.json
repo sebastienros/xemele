@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "M9-DOM-memory",
+  "milestone": "M9",
+  "title": "Repair demonstrated retained-DOM storage target failure",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-dom-memory-repair",
+  "base_revision": "68c7523bf4451152a52e16c522c4a7738c5fe6dc",
+  "integration_revision": null,
+  "depends_on": [
+    "M9-contracts",
+    "M1-tree",
+    "M8-source-locations"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs",
+    "tests/Xemele.Tests/M9-DOM-memory/",
+    "benchmarks/Xemele.Benchmarks/M9-DOM-memory/",
+    "docs/reports/M9-DOM-memory/"
+  ],
+  "api_or_output": "Compact document-owned name/storage and source-location representation, retaining existing APIs and diagnostic provenance.",
+  "acceptance": [
+    {
+      "id": "M9-DOM-memory-A1",
+      "description": "Repair the observed0.935969 retained-DOM ratio to the unchanged0.75 maximum on the exact frozen representative corpus; preserve all original failed measurements and fixtures.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-DOM-memory-A2",
+      "description": "Preserve node/member identity, mutation/copy behavior, quotas, exact source locations and complete earlier tests/API; provide actual relevant allocation/retention evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Required after actual full-corpus retained-memory failure; narrow internal storage ownership only, no target waiver or timing claim.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
