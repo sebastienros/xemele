@@ -164,8 +164,12 @@ def inspect_allocation_delta(before):
   roots.add(str(run_root.relative_to(ROOT)))
   rows.append({'probe':run_root.parent.parent.name,'mode':request['Mode'],'measurements':measurements,'requestReportExact':True,'runtimeProductBindingMatches':True,'childXmlPassed':True,'requestSha256':file_sha(path),'reportSha256':file_sha(Path(request['ReportPath']))})
  assert len(rows)==12 and len(roots)==6,'Exact six inherited real+positive child pairs required'
- assert all(any(ROOT/root in (ROOT/name).parents for root in roots) for name in delta),'Unexpected generated artifact delta refused'
- return {'pairs':12,'rows':rows,'rawRoots':sorted(roots),'rawFileCount':len(delta),'rawMembershipSha256':digest({name:now[name] for name in sorted(delta)}),'rawIdentities':{name:now[name] for name in sorted(delta)}}
+ allocation_delta={name for name in delta if any(ROOT/root in (ROOT/name).parents for root in roots)}
+ # Full cumulative suites also emit their established corpus reports; these are not allocation probes.
+ suite_outputs=delta-allocation_delta
+ known={'artifacts/M3-corpus/corpus.json','artifacts/M7-builder/corpus-failures.inventory.json','artifacts/M7-builder/corpus-failures.json'}
+ assert all(name in known or (name.startswith('artifacts/M1-corpus/case-results/') and name.endswith('.json')) for name in suite_outputs),'Unexpected generated artifact delta refused'
+ return {'pairs':12,'rows':rows,'rawRoots':sorted(roots),'rawFileCount':len(allocation_delta),'rawMembershipSha256':digest({name:now[name] for name in sorted(allocation_delta)}),'rawIdentities':{name:now[name] for name in sorted(allocation_delta)},'suiteOutputFiles':len(suite_outputs),'suiteOutputSha256':digest({name:now[name] for name in sorted(suite_outputs)})}
 
 def delete_allocation_delta(before,summary):
  import shutil
