@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>../../../artifacts/M8-cli/probe-$(SchemaXmlOnly)-obj/</BaseIntermediateOutputPath>
+    <BaseOutputPath>../../../artifacts/M8-cli/probe-$(SchemaXmlOnly)-bin/</BaseOutputPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AssemblyName>SchemaCliChecks</AssemblyName></PropertyGroup>
+  <PropertyGroup Condition="'$(SchemaXmlOnly)' == 'true'"><DefineConstants>$(DefineConstants);SCHEMA_XML_ONLY</DefineConstants></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Probe.cs.fixture" />
+    <Compile Include="../../Xemele.Conformance.Tests/SchemaIntegration/*.cs.fixture" />
+    <Compile Include="../../Xemele.Fuzz/Validation/*.cs.fixture" />
+    <Compile Include="../../../src/Xemele.Tool/CommandRegistry.cs" />
+    <Compile Include="../../../src/Xemele.Tool/Commands/Xml/**/*.cs" />
+    <Compile Include="../../../src/Xemele.Tool/Commands/Validation/**/*.cs" />
+    <Compile Include="../../../src/Xemele.Tool/Commands/Html/**/*.cs" Condition="'$(SchemaXmlOnly)' != 'true'" />
+    <ProjectReference Include="../../../src/Xemele/Xemele.csproj" Condition="'$(SchemaXmlOnly)' != 'true'" />
+    <ProjectReference Include="../../../docs/reports/M8-cli/XmlOnly/XmlOnly.csproj" Condition="'$(SchemaXmlOnly)' == 'true'" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

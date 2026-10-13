@@ -1,0 +1,30 @@
+using static SchemaCliChecks.Probe;
+
+namespace SchemaCliChecks;
+
+// Bounded generated outcomes independent of validator output; no external oracle/process.
+internal static class SchemaFuzz
+{
+    internal static void Run()
+    {
+        var random = new Random(81677);
+        foreach (string language in PublicCases.Languages)
+        {
+            var validate = PublicCases.Compile(language);
+            for (int i = 0; i < 96; i++)
+            {
+                int value = random.Next(-1000, 1001);
+                string xml = (i % 4) switch
+                {
+                    0 => $"<root>{value}</root>",
+                    1 => $"<root>{value}.5</root>",
+                    2 => "<wrong/>",
+                    _ => "<root>"
+                };
+                var result = validate(xml, new() { MaxOperations = 100_000 });
+                Check(result.IsComplete == (i % 4 != 3), language + " seeded completeness " + i);
+                Check(result.IsValid == (i % 4 == 0 && value > 0), language + " seeded validity " + i);
+            }
+        }
+    }
+}

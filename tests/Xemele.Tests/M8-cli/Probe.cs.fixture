@@ -1,0 +1,161 @@
+using System.Text;
+using System.Text.Json;
+using Xemele;
+using Xemele.Tool;
+using Xemele.Validation;
+
+namespace SchemaCliChecks;
+
+internal static class Probe
+{
+    internal static int assertions;
+    internal static void Check(bool condition, string message)
+    { assertions++; if (!condition) throw new InvalidOperationException(message); }
+    internal static void Throws<T>(Action action) where T : Exception
+    { try { action(); } catch (T) { assertions++; return; } throw new InvalidOperationException("Expected " + typeof(T).Name); }
+    internal static void QuotaJson((int Code, string Out, string Error) actual, string code)
+    {
+        using var json = JsonDocument.Parse(actual.Error); var envelope = json.RootElement;
+        Check(actual.Code == 1 && !envelope.GetProperty("isComplete").GetBoolean() && !envelope.GetProperty("isValid").GetBoolean(), "CLI incomplete invalid quota");
+        Check(envelope.GetProperty("diagnostics").EnumerateArray().Any(d => d.GetProperty("code").GetString() == code && d.GetProperty("severity").GetString() == "Fatal"), "CLI quota code/severity parity " + code);
+    }
+    internal static int Main()
+    {
+        try
+        {
+#if SCHEMA_XML_ONLY
+            Check(!typeof(XmlDocument).Assembly.GetTypes().Any(type => type.Namespace is { } ns && (ns.StartsWith("Xemele.Html", StringComparison.Ordinal) || ns.StartsWith("Xemele.Css", StringComparison.Ordinal))), "XML-only library has no HTML/CSS types");
+#endif
+            PublicCases.Run();
+            CliCases();
+            ResourceCases.Run();
+            SchemaFuzz.Run();
+            Console.WriteLine($"PASS schema CLI/library/resource/fuzz: {assertions} assertions; fuzz seed=81677 cases=288");
+            return 0;
+        }
+        catch (Exception error) { Console.Error.WriteLine(error); return 1; }
+    }
+    internal static (int Code, string Out, string Error) Invoke(string command, string[] options, string xml = "<root>7</root>", CancellationToken token = default, Stream? input = null)
+    {
+        var oldOut = Console.Out; var oldError = Console.Error;
+        using var output = new StringWriter(); using var error = new StringWriter();
+        using var instance = new MemoryStream(Encoding.UTF8.GetBytes(xml));
+        try
+        {
+            Console.SetOut(output); Console.SetError(error);
+            return (SchemaCommands.Run(command, options, token, input ?? instance), output.ToString(), error.ToString());
+        }
+        finally { Console.SetOut(oldOut); Console.SetError(oldError); }
+    }
+    private static void CliCases()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "xemele-m8-cli-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            string input = Path.Combine(directory, "input.xml"); File.WriteAllText(input, "<root>7</root>");
+            foreach (string language in PublicCases.Languages)
+            {
+                string command = "validate-" + language;
+                string schema = Path.Combine(directory, language + ".xml"); File.WriteAllText(schema, PublicCases.Schema(language));
+                string[] args = ["--schema", schema];
+                Check(Invoke(command, ["--help"]).Code == 0, language + " help");
+                Check(Invoke(command, args).Code == 0, language + " stdin valid");
+                Check(Invoke(command, [..args, "--input", input]).Code == 0, language + " file valid");
+                Check(Invoke(command, args, "<root>bad</root>").Code == 1, language + " invalid value");
+                Check(Invoke(command, args, "<wrong/>").Code == 1, language + " invalid root");
+                var malformed = Invoke(command, [..args, "--input", input, "--diagnostics", "json"], input: new MemoryStream());
+                Check(malformed.Code == 0, "explicit file takes priority over injected stdin");
+                var invalid = Invoke(command, [..args, "--diagnostics", "json"], "<root>");
+                using (var json = JsonDocument.Parse(invalid.Error))
+                {
+                    Check(invalid.Code == 1 && !json.RootElement.GetProperty("isComplete").GetBoolean(), language + " malformed incomplete");
+                    Check(json.RootElement.GetProperty("inputUri").ValueKind == JsonValueKind.Null, "stdin URI stays nullable");
+                    var location = json.RootElement.GetProperty("diagnostics")[0].GetProperty("location");
+                    Check(location.GetProperty("sourceUri").ValueKind == JsonValueKind.Null, "source URI not fabricated");
+                    Check(location.TryGetProperty("byteOffset", out _) && location.TryGetProperty("linePosition", out _), "full location");
+                }
+                File.WriteAllText(input, "<root>bad</root>");
+                var named = Invoke(command, [..args, "--input", input, "--diagnostics", "json"]);
+                using (var json = JsonDocument.Parse(named.Error))
+                    Check(json.RootElement.GetProperty("inputUri").GetString() == new Uri(input).AbsoluteUri, "named input envelope");
+                File.WriteAllText(input, "<root>7</root>");
+                foreach (string[] bad in new string[][] { [], ["--schema"], [..args, "--unknown", "x"], [..args, "--schema", schema],
+                    [..args, "--diagnostics", "xml"], [..args, "--schema-base-uri", "relative"], [..args, "--compile-max-operations", "0"],
+                    [..args, "--validation-max-operations", "unlimited"], [..args, "--compile-max-components", "2147483648"], [..args, "--input", Path.Combine(directory, "missing")] })
+                    Check(Invoke(command, bad).Code == 2, language + " invocation rejection");
+                QuotaJson(Invoke(command, [..args, "--compile-max-operations", "1", "--diagnostics", "json"]), "SCHEMA.Limit");
+                QuotaJson(Invoke(command, [..args, "--compile-max-components", "1", "--diagnostics", "json"]), "SCHEMA.Limit");
+                QuotaJson(Invoke(command, [..args, "--validation-max-operations", "1", "--diagnostics", "json"]), "VALIDATION.Limit");
+                using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
+                Check(Invoke(command, args, token: cancelled.Token).Code == 3, language + " cancelled");
+                using var caller = new MemoryStream("<root>7</root>"u8.ToArray());
+                Check(Invoke(command, args, input: caller).Code == 0 && caller.CanRead, language + " caller stdin ownership");
+                using var failure = new BrokenInput();
+                Check(Invoke(command, args, input: failure).Code == 3 && failure.CanRead, language + " unexpected caller I/O");
+                File.WriteAllText(schema, "<not-a-schema/>"); Check(Invoke(command, args).Code == 1, language + " invalid schema");
+                File.WriteAllText(schema, "<root>"); Check(Invoke(command, args).Code == 1, language + " malformed schema");
+            }
+            LocationCase(directory, input);
+            string sch = Path.Combine(directory, "phase.sch"); string report = Path.Combine(directory, "report.xml");
+            File.WriteAllText(sch, PublicCases.PhaseSchema);
+            string[] phaseArgs = ["--schema", sch, "--svrl", report];
+            File.WriteAllText(report, "sentinel");
+            Check(Invoke("validate-schematron", [..phaseArgs, "--phase", "missing"]).Code == 2 && File.ReadAllText(report) == "sentinel", "unknown phase preserves target");
+            Check(Invoke("validate-schematron", phaseArgs, "<root>bad</root>").Code == 1 && File.ReadAllText(report) == "sentinel", "invalid report preserves target");
+            Check(Invoke("validate-schematron", phaseArgs, "<root>").Code == 1 && File.ReadAllText(report) == "sentinel", "incomplete report preserves target");
+            Check(Invoke("validate-schematron", [..phaseArgs, "--validation-max-operations", "1"]).Code == 1 && File.ReadAllText(report) == "sentinel", "quota report preserves target");
+            using (var cancel = new CancellationTokenSource()) { cancel.Cancel(); Check(Invoke("validate-schematron", phaseArgs, token: cancel.Token).Code == 3 && File.ReadAllText(report) == "sentinel", "cancel preserves target"); }
+            Check(Invoke("validate-schematron", [..phaseArgs, "--phase", "warn"]).Code == 0, "warning-only exit");
+            Check(File.ReadAllText(report).Contains("successful-report", StringComparison.Ordinal), "warning SVRL serialized");
+            var fileFailure = Invoke("validate-schematron", ["--schema", sch, "--svrl", Path.Combine(directory, "absent/out")]);
+            Check(fileFailure.Code == 2, $"report file failure: exit={fileFailure.Code}; {fileFailure.Error.Trim()}");
+            Check(!Directory.EnumerateFiles(directory, ".xemele-*.tmp").Any(), "staged files cleaned");
+            // The owned harness compiles actual existing commands; focused subprocess preservation is separate.
+            using var help = new StringWriter(); var old = Console.Out;
+            try { Console.SetOut(help); Check(new CommandRegistry().Run(["--help"]) == 0, "registry help"); }
+            finally { Console.SetOut(old); }
+            foreach (string command in new[] { "parse", "format", "xpath", "validate-dtd", "canonicalize", "catalog", "xinclude", "validate-rng", "validate-xsd", "validate-schematron" })
+                Check(help.ToString().Contains("  " + command + "  ", StringComparison.Ordinal), "registry preserves " + command);
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+    private static void LocationCase(string directory, string input)
+    {
+        // Compiler Read rejects an unrecognized attribute at that attribute's authored origin.
+        // The UTF-8 byte prefix is independent of diagnostics; é and 根 precede the diagnostic.
+        const string prefix = "<!--é根-->\n<element xmlns='http://relaxng.org/ns/structure/1.0' name='root'>\n  <empty ";
+        string schema = Path.Combine(directory, "location.rng");
+        File.WriteAllText(schema, prefix + "bogus='é'/>\n</element>", new UTF8Encoding(false));
+        var expectedSource = new Uri("https://authored.example/é/location.rng");
+        long expectedBytes = Encoding.UTF8.GetByteCount(prefix);
+        string[] args = ["--schema", schema, "--input", input, "--schema-base-uri", expectedSource.AbsoluteUri];
+        var actual = Invoke("validate-rng", [..args, "--diagnostics", "json"]);
+        using var json = JsonDocument.Parse(actual.Error); var diagnostics = json.RootElement.GetProperty("diagnostics");
+        Check(actual.Code == 1 && diagnostics.GetArrayLength() == 1, "one authored diagnostic");
+        var diagnostic = diagnostics[0]; var at = diagnostic.GetProperty("location");
+        Check(diagnostic.GetProperty("code").GetString() == "RNG.SchemaRestriction" && diagnostic.GetProperty("severity").GetString() == "Error", "authored restriction classification");
+        Check(at.GetProperty("sourceUri").GetString() == expectedSource.AbsoluteUri && at.GetProperty("lineNumber").GetInt32() == 3 && at.GetProperty("linePosition").GetInt32() == 10 && at.GetProperty("byteOffset").GetInt64() == expectedBytes, "exact authored JSON coordinates");
+        Check(json.RootElement.GetProperty("inputUri").GetString() == new Uri(input).AbsoluteUri, "schema location distinct from input URI");
+        string expected = $"Error RNG.SchemaRestriction: Unexpected schema attribute. [source={expectedSource.AbsoluteUri}, line=3, column=10, byte={expectedBytes}]" + Environment.NewLine;
+        Check(Invoke("validate-rng", args).Error == expected, "exact authored text coordinates");
+        // Mutation invalidates authored provenance. Exercise the same diagnostic writer with a real public DOM refusal.
+        var document = XmlDocument.Parse(PublicCases.Schema("rng")); document.RootElement.SetAttribute("bogus", "x");
+        SchemaCompileException? unknown = null;
+        try { RelaxNgSchema.Compile(document); } catch (SchemaCompileException error) { unknown = error; }
+        Check(unknown is not null && unknown.Diagnostics.Count == 1 && unknown.Diagnostics[0].Location == default, "unknown/null public DOM origin");
+        string Emit(string format)
+        {
+            using var output = new StringWriter(); var previous = Console.Error;
+            try { Console.SetError(output); SchemaCommands.Diagnostics(SchemaInvocation.Parse("validate-rng", ["--schema", "unused", "--diagnostics", format]), null, false, false, unknown!.Diagnostics); }
+            finally { Console.SetError(previous); }
+            return output.ToString();
+        }
+        using var unknownJson = JsonDocument.Parse(Emit("json"));
+        var unknownAt = unknownJson.RootElement.GetProperty("diagnostics")[0].GetProperty("location");
+        Check(unknownAt.GetProperty("sourceUri").ValueKind == JsonValueKind.Null && unknownAt.GetProperty("byteOffset").ValueKind == JsonValueKind.Null && unknownAt.GetProperty("lineNumber").GetInt32() == 0 && unknownAt.GetProperty("linePosition").GetInt32() == 0, "unknown JSON coordinates preserved exactly");
+        Check(Emit("text").Contains("[source=<unknown>, line=0, column=0, byte=<unknown>]", StringComparison.Ordinal), "unknown text coordinates preserved exactly");
+    }
+    private sealed class BrokenInput : MemoryStream
+    { public override int Read(Span<byte> buffer) => throw new IOException("caller failure"); }
+}
