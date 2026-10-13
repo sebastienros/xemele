@@ -53,7 +53,7 @@ public sealed class OriginalTests
         var options = Ordinary() with { BaseUri = new Uri(path), Resolver = new LocalResolver() };
         var context = new SchemaCompileContext(options); var builder = new AvailabilityBuilder(context.Operation);
         var components = new XmlSchemaCompiler().CompileAvailable(source, context, builder); builder.Join(components); var availability = builder.Seal();
-        var declaration = Assert.Single(components.Elements.Where(e => e.Name == new SchemaName(ns, element)));
+        var declaration = Assert.Single(components.Elements, e => e.Name == new SchemaName(ns, element));
         Assert.Equal(new SchemaName(typeNs, type), declaration.Type);
         Assert.DoesNotContain(components.Types, t => t.Name == new SchemaName(typeNs, type));
         Assert.DoesNotContain(components.SimpleTypes, t => t.Name == new SchemaName(typeNs, type));
