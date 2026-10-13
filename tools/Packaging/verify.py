@@ -45,6 +45,7 @@ def main():
     p.add_argument('--rid', required=True)
     p.add_argument('--dotnet', default=shutil.which('dotnet'))
     p.add_argument('--cache', type=Path)
+    p.add_argument('--unit-tests', action='store_true', help='Run cumulative unit correctness before package smoke on the hosted OS')
     p.add_argument('--reuse-builds', action='store_true', help='Resume output checks only after source/config-equivalent completed clean packs')
     args = p.parse_args()
     host = Path(args.dotnet).resolve()
@@ -132,6 +133,19 @@ def main():
             sdk = run([host, '--version']).strip()
             assert sdk == '10.0.400', sdk
             report['sdk'] = sdk
+            if args.unit_tests:
+                assert not args.cache, 'Hosted cumulative unit path uses the normal configured online package source.'
+                unit = ROOT / 'tests/Xemele.Tests/Xemele.Tests.csproj'
+                run([host, 'restore', unit, *sources, '--disable-build-servers', '-p:RuntimeFrameworkVersion=10.0.11'], 300)
+                run([host, 'build', unit, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false', '-p:RuntimeFrameworkVersion=10.0.11'], 300)
+                environment.update(DOTNET_TieredCompilation='0', DOTNET_TieredPGO='0', DOTNET_ReadyToRun='0', DOTNET_gcServer='0', DOTNET_GCConcurrent='0')
+                result_xml = WORK / 'unit.xml'
+                run([host, '--fx-version', '10.0.11', ROOT / 'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll', '-parallelMode', 'none', '-culture', 'invariant', '-noColor', '-result-xml', result_xml], 500)
+                assemblies = ET.parse(result_xml).getroot().findall('assembly')
+                counts = {name: sum(int(a.get(name, '0')) for a in assemblies) for name in ['total', 'passed', 'failed', 'errors', 'skipped', 'not-run']}
+                report['unitCorrectness'] = counts
+                assert counts['total'] == counts['passed'] == 10741 and all(counts[name] == 0 for name in ['failed', 'errors', 'skipped', 'not-run']), counts
+                result_xml.unlink()
             for candidate in [project, tool]:
                 run([host, 'restore', candidate, *sources, '--disable-build-servers', *props])
             for index in range(2):
@@ -197,7 +211,14 @@ def main():
             wrapper.chmod(0o755)
             linker_props = [f'-p:PinnedLinkerHost={linker}']
         else:
-            linker_props = []
+            wrapper_project = ROOT / 'tools/Packaging/LinkerHost/LinkerHost.csproj'
+            run([host, 'restore', wrapper_project, *consumer_sources, '--disable-build-servers', '-p:RuntimeFrameworkVersion=10.0.11'])
+            run([host, 'build', wrapper_project, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false'])
+            wrapper_directory = wrapper_project.parent / 'bin/Release/net10.0'
+            expected_linker = list(private_cache.glob('microsoft.net.illink.tasks/10.0.11/tools/**/illink.dll'))
+            assert len(expected_linker) == 1
+            environment.update(XEMELE_PINNED_DOTNET=str(host), XEMELE_PINNED_LINKER_DLL=str(expected_linker[0].resolve()))
+            linker_props = [f'-p:PinnedLinkerHost={wrapper_directory}', '-p:PinnedLinkerHostName=LinkerHost.exe']
         if not report.get('consumers', {}).get('managed'):
             run([host, 'build', cp, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false'])
             managed = run([host, '--fx-version', '10.0.11', consumer / 'bin/Release/net10.0/Consumer.dll'], 60)

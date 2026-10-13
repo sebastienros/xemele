@@ -8,6 +8,6 @@
   </PropertyGroup>
   <ItemGroup><PackageReference Include="Xemele" Version="0.9.0-rc.1" /></ItemGroup>
   <Target Name="PinnedLocalLinkerHost" BeforeTargets="_RunILLink" Condition="'$(PinnedLinkerHost)' != '' and '$(RunILLink)' != 'false'">
-    <PropertyGroup><_DotNetHostDirectory>$(PinnedLinkerHost)</_DotNetHostDirectory><_DotNetHostFileName>dotnet</_DotNetHostFileName></PropertyGroup>
+    <PropertyGroup><_DotNetHostDirectory>$(PinnedLinkerHost)</_DotNetHostDirectory><_DotNetHostFileName Condition="'$(PinnedLinkerHostName)' == ''">dotnet</_DotNetHostFileName><_DotNetHostFileName Condition="'$(PinnedLinkerHostName)' != ''">$(PinnedLinkerHostName)</_DotNetHostFileName></PropertyGroup>
   </Target>
 </Project>
