@@ -8,7 +8,7 @@
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-distribution-hosted-repair",
   "base_revision": "5e102ede3e3375d83ae1bd33c7942dc0e1c1eb78",
-  "integration_revision": "afc3d0414e1a315e127252a51824b7bb9d28041e",
+  "integration_revision": "09fc780d55e9ad9dfba9d8abd6c397be11d86eba",
   "depends_on": [
     "M9-contracts",
     "M9-build-compatibility",
@@ -118,6 +118,15 @@
       "result": "passed",
       "summary": "Exact pinned upstream download and3386file hashes pass; corruptedarchive refused. LocalmacOSarm64 full10741/10741passed zero failures/errors/skips/not-run, build0warnings/errors. Windows additional failures need actual diagnostics; no hosted retry run yet.",
       "artifact": "docs/reports/M9-distribution/hosted-repair-preflight.json"
+    },
+    {
+      "id": "hosted-repair-integrated",
+      "kind": "integration",
+      "revision": "09fc780d55e9ad9dfba9d8abd6c397be11d86eba",
+      "command": "Compare full runtime/test/packaging/workflow/config inputs to passing preflight revision; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated owned repair source matches locally passing full10741unit/pinned3386file evidence. Actual first hosted failures retained; full OS package acceptance remains pending.",
+      "artifact": null
     }
   ],
   "blockers": [
