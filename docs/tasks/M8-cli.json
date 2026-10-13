@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Schema CLI and cross-validator integration",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / authorized isolated schema CLI worker",
   "branch": "codex/m8-cli",
   "base_revision": "c203781f9c9935b2fefbdd78e932abdf00d8b949",
@@ -41,29 +41,80 @@
     {
       "id": "M8-cli-A1",
       "description": "Add schema CLI commands and shared resolver/resource/fuzz regressions without HTML dependencies.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-preparation",
+        "branch-checks",
+        "integrated-source-review"
+      ]
     },
     {
       "id": "M8-cli-A2",
       "description": "Public CLI/library cases and all three validator budget/concurrency tests pass.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-preparation",
+        "branch-checks",
+        "integrated-source-review"
+      ]
     },
     {
       "id": "M8-cli-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-preparation",
+        "branch-checks",
+        "integrated-source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele.Tool/Commands/Validation/: guarded schema commands and staged SVRL",
+    "tests/Xemele.Tests/M8-cli/ and tests/Xemele.Conformance.Tests/SchemaIntegration/: normal/true XML-only public/resource/budget/concurrency/CLI controls",
+    "tests/Xemele.Fuzz/Validation/: three independent schema profiles, 288 seed 81677 cases",
+    "docs/reports/M8-cli/ and samples/M8-cli/: finite recipe and concise actual handoff"
+  ],
+  "evidence": [
+    {
+      "id": "branch-preparation",
+      "kind": "check",
+      "revision": "ae20a73ce8f263f67dcc8978d2cef627307b07b8",
+      "command": "Root finite preparation parent: eight offline restore/build commands",
+      "result": "passed",
+      "summary": "Tool, normal probe, true XML-only probe and API helper built with zero warnings/errors; exact source/runtime/environment and six output directory guards; all families terminal.",
+      "artifact": "docs/orchestration/M8-cli-preparation-attempt-4.json"
+    },
+    {
+      "id": "branch-checks",
+      "kind": "check",
+      "revision": "ae20a73ce8f263f67dcc8978d2cef627307b07b8",
+      "command": "Root certificate-bound finite seven-command check parent",
+      "result": "passed",
+      "summary": "Normal 1156/XML-only 1157 assertions; 288 fuzz cases in each composition, seed 81677; 10 guard controls; 38 real CLI controls; full public API, 201 task validation and diff-check. Original three failures preserved; pinned EPIPE suppression has zero delivery credit.",
+      "artifact": "docs/orchestration/M8-cli-check-attempt-3.json"
+    },
+    {
+      "id": "integrated-source-review",
+      "kind": "review",
+      "revision": "9a623f0417ec1a446ee913fffedd3c5c3716a3a8",
+      "command": "Root compared six owned subtrees, tested source digest and accepted primary wrapper deltas",
+      "result": "passed",
+      "summary": "Exact worker code/fixture/sample/report equivalence; final worker delta only concise handoff; runtime/public API unchanged. Primary executable checks remain unrun.",
+      "artifact": "docs/orchestration/M8-cli-integration-source-release.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Serialized claim. Isolated worker setup then reviewed brief; root retains sole primary/main/state writes and actual allocation-counter launches.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented branch and integrated source; actual primary preparation/checks pending before verified.",
+    "checks": [
+      "All seven branch commands passed at ae20a73c; original preparation/check failures preserved."
+    ],
+    "remaining": [
+      "Primary preparation and certificate-bound checks",
+      "Terminal transient cleanup and worker archive",
+      "M8-gate"
+    ],
     "requests": []
   }
 }
