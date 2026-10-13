@@ -1,0 +1,48 @@
+{
+  "task": "M8-xsd-resolved-availability",
+  "workerHead": "619a903362439fd5984c9d8f0ef423dca6281e2a",
+  "sourceManifestSha256": "ea3a262dfab4c6186da46259133e760c53de86a487136bccd9a0315a418a7ae5",
+  "harnessManifestSha256": "f4618eeaa0088e0a700af13184c69a2d381d05c655cad43426b8e329b5fb5415",
+  "rootIntake": {
+    "result": "passed",
+    "ownedAdditions": 44,
+    "ownedSourcePins": 42,
+    "reviewInputPins": 886,
+    "pythonAstFiles": 15,
+    "toolchainFiles": 4206,
+    "offlinePackageFiles": 552,
+    "runtimeAndTaskUnchanged": true,
+    "cleanWorkerTree": true,
+    "executableImports": 0
+  },
+  "reviews": [
+    {
+      "reviewer": "/root/review_m8_model",
+      "result": "SOURCE PASS",
+      "scope": "Six allocation routes; 254 consumed results; 96 existing builder references and 96 compiled schemas in retained slots plus eight retained public schemas; positive and disabled controls; snapshot, late missing registration, cancellation and quota semantics."
+    },
+    {
+      "reviewer": "/root/review_m8_xpath",
+      "result": "SOURCE PASS",
+      "scope": "Attributed lifecycle core, owned family registration and recovery, frozen identities, bounded phases, shared check/preparation deadline, six-route verifier and absence-before-deletion rules."
+    },
+    {
+      "reviewer": "/root/review_m8_contract",
+      "result": "correction required",
+      "finding": "A3: check.py checks row counts, type identities and the 13 authored joins, but does not independently compare the other 80 declarations against the already verified canonical 93-row projection.",
+      "requiredCorrection": "Compare every emitted row against the retained verified canonical projection and add a same-count declaration mutation negative control. Preserve provenance and the separate authored-13 check. Remaining scoped fixture, selection and contract checks passed."
+    }
+  ],
+  "canonicalProjection": {
+    "source": "/Users/sebastienros/.codex/worktrees/a996/xemele/docs/reports/M8-xsd-corpus/verified-runtime-api.json",
+    "sourceSha256": "5016c3b603fc99470bfdb2f53cbd500b972a4ce8c68d5469372f62b3fd46b187",
+    "projectionSha256": "33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d",
+    "rows": 93,
+    "testedIntegration": "82ded28c85df6accccee4c798c5b49ff850aa797",
+    "releasedCheckSha256": "c516fdbae022bf65148a2c420b0412fcd4f1418adacde540bbc48eb0dee95105"
+  },
+  "release": "SOURCE correction only. All executable phases and runtime edits remain held until an immutable corrected packet passes delta review.",
+  "actualControlsBuildsChecksPreparationMeasurements": "UNRUN",
+  "originalPassCredit": 0,
+  "gatePassCredit": 0
+}
