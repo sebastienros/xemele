@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "M9-benchmark-build",
+  "milestone": "M9",
+  "title": "Repair aggregate benchmark source-glob collision",
+  "kind": "infrastructure",
+  "status": "in_progress",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-benchmark-build",
+  "base_revision": "f6dcea774e9ba637bbc8f59ad8955f72b4848057",
+  "integration_revision": null,
+  "depends_on": [
+    "M9-contracts",
+    "M9-build-compatibility",
+    "M9-xpath-order"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md",
+    "docs/tasks/README.md"
+  ],
+  "owns": [
+    "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+    "docs/reports/M9-benchmark-build/"
+  ],
+  "api_or_output": "Buildable aggregate benchmark project without compiling standalone probe entry points or nested generated outputs.",
+  "acceptance": [
+    {
+      "id": "M9-benchmark-build-A1",
+      "description": "Build and list actual aggregate benchmarks including current DOM/XPath cases; exclude independently owned standalone entry points/generated outputs without modifying any earlier source or project.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-benchmark-build-A2",
+      "description": "Verify the four proven standalone Schematron entry projects remain independently buildable and task coordination validates.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Required by actual CS8802 failures discovered during XPath allocation preparation; original failed build evidence retained in the prior repair.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
