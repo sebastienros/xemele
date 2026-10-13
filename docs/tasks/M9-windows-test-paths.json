@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Native separator paths for Windows fixture and allocation child guards",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-windows-test-paths",
   "base_revision": "782f86da3773e63ad992a6b14f438be8c815f761",
-  "integration_revision": null,
+  "integration_revision": "64a1392135c0b937122e69175bd7f558bc8f11d7",
   "depends_on": [
     "M8-gate",
     "M9-contracts"
@@ -34,7 +34,8 @@
       "description": "Five test harnesses construct native-separator paths; all existing strict descendant, canonical path, capability, fingerprint and original oracle assertions remain unchanged.",
       "status": "passed",
       "evidence": [
-        "focused-native-path-checks"
+        "focused-native-path-checks",
+        "integrated-source-equivalence"
       ]
     },
     {
@@ -42,7 +43,8 @@
       "description": "Focused schema original/hash and four real/positive allocation child checks pass on integrated local source; document actual Windows42 failure and that Windows rerun remains unexecuted.",
       "status": "passed",
       "evidence": [
-        "focused-native-path-checks"
+        "focused-native-path-checks",
+        "integrated-source-equivalence"
       ]
     }
   ],
@@ -71,6 +73,15 @@
       "result": "failed",
       "summary": "Restore exceeded bound; direct child reaped/log closed but sandbox denied absence inspection. Subsequent read-only inspection proves exact owned group7829absent. No passing restore/test credit for this attempt.",
       "artifact": "docs/reports/M9-windows-test-paths/attempt1.json"
+    },
+    {
+      "id": "integrated-source-equivalence",
+      "kind": "integration",
+      "revision": "64a1392135c0b937122e69175bd7f558bc8f11d7",
+      "command": "Compare all runtime/unit/fixture/build inputs to720e3bad5 focused passing revision; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated source closure equals actual43/43focused passing checks. Only ten native test path constructions differ from hosted source; runtime/fixture bytes and guard assertions preserved. Actual Windows rerun remains outstanding under distribution lane.",
+      "artifact": "docs/reports/M9-windows-test-paths/checks.json"
     }
   ],
   "blockers": [],
