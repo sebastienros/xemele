@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Repair demonstrated retained-DOM storage target failure",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-dom-memory-repair",
   "base_revision": "68c7523bf4451152a52e16c522c4a7738c5fe6dc",
-  "integration_revision": null,
+  "integration_revision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69",
   "depends_on": [
     "M9-contracts",
     "M1-tree",
@@ -35,7 +35,8 @@
       "description": "Repair the observed 0.935969 retained-DOM ratio to the unchanged 0.75 maximum on the exact frozen representative corpus; preserve all original failed measurements and fixtures.",
       "status": "passed",
       "evidence": [
-        "retained-target"
+        "retained-target",
+        "integrated-checks"
       ]
     },
     {
@@ -45,7 +46,8 @@
       "evidence": [
         "cumulative-unit",
         "allocations",
-        "compatibility"
+        "compatibility",
+        "integrated-checks"
       ]
     }
   ],
@@ -92,6 +94,15 @@
       "result": "passed",
       "summary": "920conformance+618differential pass;1430compiled public members/55fragments match;222preview unchanged; two mismatch controls refused. Generic API discovery rejection retained.",
       "artifact": "docs/reports/M9-DOM-memory/compatibility-completed.json"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "b7d2ba799ccd8f6f2d2dd027a1fdbe749a02bf69",
+      "command": "python3 docs/reports/M9-DOM-memory/check.py --phase integration; exact measured/runtime/test/fixture/API closure comparison",
+      "result": "passed",
+      "summary": "Integrated10749/10749 units pass; every measured runtime/test/corpus/API closure equals passing retained/BDN/920conformance/618differential/API evidence. No redundant timing or source-changed reuse.",
+      "artifact": "docs/reports/M9-DOM-memory/integration.json"
     }
   ],
   "blockers": [],
@@ -102,7 +113,7 @@
       "Frozen ten-fixture memory0.687098; same9MiB controls; four-shape allocation comparisons complete"
     ],
     "remaining": [
-      "Integration verification; controlled timing remains the performance lane requirement."
+      "Controlled timing remains pending in M9-performance; separate XPath and current robustness reassessment follow."
     ],
     "requests": [
       "M9-performance should import the verified repair evidence and keep dedicated timing pending.",
