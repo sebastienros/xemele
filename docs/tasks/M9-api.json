@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Public API and migration review",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-api",
   "base_revision": "cc9bcfdb48bd89e2452c2e565a5bc44fe38d15f5",
-  "integration_revision": null,
+  "integration_revision": "d27a66278cc22485d67b729922df0d9889ee9521",
   "depends_on": [
     "M9-contracts"
   ],
@@ -32,7 +32,8 @@
       "status": "passed",
       "evidence": [
         "compiled-api-migration",
-        "api-behavior-review"
+        "api-behavior-review",
+        "integrated-api"
       ]
     },
     {
@@ -41,7 +42,8 @@
       "status": "passed",
       "evidence": [
         "compiled-api-migration",
-        "api-behavior-review"
+        "api-behavior-review",
+        "integrated-api"
       ]
     },
     {
@@ -50,7 +52,8 @@
       "status": "passed",
       "evidence": [
         "compiled-api-migration",
-        "api-behavior-review"
+        "api-behavior-review",
+        "integrated-api"
       ]
     }
   ],
@@ -78,6 +81,15 @@
       "result": "passed",
       "summary": "Nullability/exception/ownership/default/recovery/cancellation behavior documented; no runtime repair requests; normalizer limitations explicit.",
       "artifact": "docs/api-review/README.md"
+    },
+    {
+      "id": "integrated-api",
+      "kind": "integration",
+      "revision": "d27a66278cc22485d67b729922df0d9889ee9521",
+      "command": "Merge reviewed branch; byte-compare all runtime/API/migration/check/build inputs to passing branch; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "302inputs match passing branch; tested ancestry integrated. Reporting-only changes do not require replay.",
+      "artifact": null
     }
   ],
   "blockers": [],
