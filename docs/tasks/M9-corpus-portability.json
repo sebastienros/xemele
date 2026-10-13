@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Portable pinned-corpus roots for two cumulative unit checks",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-corpus-portability",
   "base_revision": "4aade285427f3976f5d7591538c3458894ed71a3",
-  "integration_revision": null,
+  "integration_revision": "3324509c9b981e8080dab3e59d8bdce051e70172",
   "depends_on": [
     "M9-contracts",
     "M2-conformance",
@@ -32,7 +32,8 @@
       "description": "Both formerly fixed local corpus paths honor the existing corpus-root environment setting; original byte/hash/model assertions pass from an isolated root.",
       "status": "passed",
       "evidence": [
-        "isolated-original-bytes"
+        "isolated-original-bytes",
+        "integrated-source-equivalence"
       ]
     }
   ],
@@ -49,6 +50,15 @@
       "result": "passed",
       "summary": "Build zero warnings/errors; 2/2 original-byte/model tests passed, zero failures/skips; exact original hashes and every-split assertions unchanged; bounded processes reaped.",
       "artifact": "docs/reports/M9-corpus-portability/checks.json"
+    },
+    {
+      "id": "integrated-source-equivalence",
+      "kind": "integration",
+      "revision": "3324509c9b981e8080dab3e59d8bdce051e70172",
+      "command": "git diff tested revision..HEAD -- src tests Directory.Build.props Directory.Packages.props global.json; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated complete source/test/build inputs match actual 2/2 passing focused checks; metadata-only changes require no repeated workload.",
+      "artifact": null
     }
   ],
   "blockers": [],
