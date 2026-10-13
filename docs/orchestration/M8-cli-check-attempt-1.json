@@ -1,0 +1,47 @@
+{
+  "task": "M8-cli",
+  "phase": "check",
+  "result": "failed",
+  "workerRevision": "0099205c7b20c2ccc865a87d341d861db4f842a3",
+  "source": {
+    "files": 331,
+    "sha256": "4f9383a2451812b8dda46c90eac1337760be211531366fc366c47b068338c1be"
+  },
+  "outerSession": 83286,
+  "actualOuterExit": 1,
+  "resultsSha256": "9499af786db1e3eea5f3b3eff65dfed9f4a98b88381c04e24d7e3d494ddc25ff",
+  "originalFailure": {
+    "command": 0,
+    "argv": [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "artifacts/M8-cli/probe-false-bin/Release/net10.0/SchemaCliChecks.dll"
+    ],
+    "exit": 1,
+    "reason": "failed",
+    "diagnostics": [
+      "System.InvalidOperationException: report file failure"
+    ]
+  },
+  "commandsRun": 1,
+  "commandsUnrun": 6,
+  "observedBoundaries": [
+    "BOUNDARY rng compileWork=2129 components=474 validationWork=83",
+    "BOUNDARY xsd compileWork=27466 components=3765 validationWork=157",
+    "BOUNDARY schematron compileWork=1315 components=50 validationWork=904"
+  ],
+  "guards": {
+    "rawDeleted": true,
+    "deadlineExceeded": false,
+    "logsInspected": true,
+    "allOwnedGroupsAbsent": true,
+    "allDirectChildrenReaped": true
+  },
+  "inputsMatched": true,
+  "groups": [
+    93918,
+    93924
+  ],
+  "followUp": "Narrow owned Publish cleanup repair: absent target parent must preserve invocation/file exit 2; never weaken target atomicity or authored expectation. No runtime validator change or standards disposition."
+}
