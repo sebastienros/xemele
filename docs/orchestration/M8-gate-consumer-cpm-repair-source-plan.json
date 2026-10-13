@@ -1,0 +1,17 @@
+{
+  "task": "M8-gate",
+  "kind": "source-only repair plan",
+  "reviewedSourceRevision": "f843e7653c2504131745abdc63544c14eb702de2",
+  "observation": "Attempt3 inspected command43 external consumer restore exited1/NU1008 after43 commands completed normally. Actual outer session27760 remains running at plan creation; no terminal completion or cleanup is claimed.",
+  "cause": "The generated package consumer below the checkout inherits Directory.Packages.props with ManagePackageVersionsCentrally=true, while its explicit PackageReference uses Version=0.8.0-integration.",
+  "proposedOwnedRepair": "Set ManagePackageVersionsCentrally=false explicitly in docs/reports/M8-gate/Consumer.csproj.template so the package consumer owns its exact package version. Refresh source/script/packet identities and source handoff after final failed phase inspection and terminal cleanup.",
+  "preserved": [
+    "Exact package ID/version and product DLL equality",
+    "Initially absent private consumer package cache and explicit offline feed",
+    "No ProjectReference, managed/trimmed/NativeAOT outputs and existing consumer behavior",
+    "Fixed reviewed command counts and deadlines",
+    "All original failed preparation attempts and unrun command counts"
+  ],
+  "execution": "Source change withheld until actual outer terminal completion. No fresh preparation, check or counter execution authorized by this plan.",
+  "credit": "No gate criterion pass credit. New16 preparation controls and canonical feed/package checks have inspected exit0 receipts; complete attempt disposition awaits actual launcher exit."
+}
