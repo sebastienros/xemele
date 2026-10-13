@@ -1,3 +1,5 @@
+Current [ordinary XMLcore branch coverage](core-coverage-review.md) passes91.9753%without exclusions; it supplies no sustained campaign credit.
+
 # Robustness evidence status
 
 Current [ordinary corpus reassessment](current-summary.md) preserves the original scope/dispositions after verified M9runtime repairs. Fuzz planning/execution remains explicitly deferred; mandatory duration/coverage/crash-positive gates remain pending.
