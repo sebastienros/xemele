@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "M9-xpath-order",
+  "milestone": "M9",
+  "title": "Repair demonstrated quadratic XPath navigation and ordering",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-xpath-order",
+  "base_revision": "c1e68554fe4f76aa0675845ecca4a9f784639176",
+  "integration_revision": null,
+  "depends_on": [
+    "M9-contracts",
+    "M4-navigation",
+    "M4-evaluate",
+    "M9-dom-memory"
+  ],
+  "goals": [
+    "G06",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/xpath.md",
+    "docs/decisions/M4/xpath-profile.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/Navigation/XPathNavigator.cs",
+    "src/Xemele/XPath/Evaluation/Evaluator.cs",
+    "tests/Xemele.Tests/M9-xpath-order/",
+    "benchmarks/Xemele.Benchmarks/M9-xpath-order/",
+    "docs/reports/M9-xpath-order/"
+  ],
+  "api_or_output": "Metered bounded navigation/ordering on existing immutable XPath snapshots, preserving all public semantics and quotas.",
+  "acceptance": [
+    {
+      "id": "M9-xpath-order-A1",
+      "description": "Remove the demonstrated quadratic ordering/navigation work and qualify all ten unchanged frozen managed XML/model/serialization/XPath operations within their predeclared finite limits.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-xpath-order-A2",
+      "description": "Preserve exact order/deduplication, reverse-axis proximity, foreign/default identity rejection, cancellation and work/node-set bounds; verify earlier tests/API and actual allocation evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Required by frozen entity-medium query exhausting100million operations; existing full-entry child-axis scans also demonstrate quadratic // traversal.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
