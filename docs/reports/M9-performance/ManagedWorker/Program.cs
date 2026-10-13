@@ -8,7 +8,7 @@ using Xemele.XPath;
 using Candidate = Xemele.XmlDocument;
 using Bcl = System.Xml.XmlDocument;
 
-if (args.Length != 4 || args[0] is not ("xemele" or "bcl")) throw new ArgumentException("xemele|bcl fixture manifest output");
+if (args.Length is not (4 or 5) || args[0] is not ("xemele" or "bcl") || args.Length == 5 && args[4] != "qualify") throw new ArgumentException("xemele|bcl fixture manifest output [qualify]");
 string engine = args[0]; byte[] input = File.ReadAllBytes(args[1]);
 using var manifest = JsonDocument.Parse(File.ReadAllBytes(args[2]));
 var fixture = manifest.RootElement.GetProperty("fixtures").EnumerateArray().Single(r => Path.GetFileName(r.GetProperty("path").GetString()) == Path.GetFileName(args[1]));
@@ -17,7 +17,14 @@ string expected = fixture.GetProperty("semantic").GetProperty("sha256").GetStrin
 string expression = fixture.GetProperty("xpath").GetString()!;
 double expectedXPath = fixture.GetProperty("xpathExpected").GetDouble();
 
-// Warm parsing, serializer, query and digest implementation before any counter baseline.
+if (args.Length == 5)
+{
+    object value = Parse(engine, input);
+    string digest = Verify(engine, value, expected, expression, expectedXPath, true);
+    File.WriteAllText(args[3], JsonSerializer.Serialize(new { engine, qualification = true, digest, expectedXPath }));
+    GC.KeepAlive(value); return;
+}
+// DOM retention warms only parsing and its consumed common-model digest.
 Warm(engine, input, expected, expression, expectedXPath);
 Collect();
 long controlLive = MeasureControl();
@@ -39,7 +46,7 @@ for (int cycle = 0; cycle < 3; cycle++)
 var output = new { engine, fixture = fixture.GetProperty("id").GetString(), inputBytes = input.Length,
     runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(),
     os = RuntimeInformation.OSDescription, productionSha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(typeof(Candidate).Assembly.Location))),
-    workerSha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(typeof(Meter).Assembly.Location))),
+    workerSha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(typeof(Meter).Assembly.Location))), qualificationExecuted = false,
     controlLive, rows, expectedXPath, expectedSemanticSha256 = expected, controlledTimingCredit = false };
 File.WriteAllText(args[3], JsonSerializer.Serialize(output, new JsonSerializerOptions { WriteIndented = true }));
 Console.WriteLine(JsonSerializer.Serialize(new { engine, fixture = fixture.GetProperty("id").GetString(), controlLive, rows }));
@@ -68,8 +75,11 @@ static object Parse(string engine, byte[] input)
     { DtdProcessing = DtdProcessing.Parse, XmlResolver = null, IgnoreWhitespace = false, MaxCharactersInDocument = 16777216, MaxCharactersFromEntities = 16777216 });
     document.Load(reader); return document;
 }
-static string Verify(string engine, object value, string expected, string expression, double expectedXPath)
+static string Verify(string engine, object value, string expected, string expression, double expectedXPath, bool qualify = false)
 {
+    string immediate = engine == "xemele" ? Semantic.Candidate((Candidate)value) : Semantic.Bcl(((Bcl)value).DocumentElement!);
+    if (immediate != expected) throw new InvalidDataException($"{engine} semantic digest differs: {immediate} != {expected}");
+    if (!qualify) return immediate;
     string digest;
     if (engine == "xemele")
     {
