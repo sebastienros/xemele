@@ -13,15 +13,12 @@ jobs:
     timeout-minutes: 20
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 1
       matrix:
         include:
-          - os: ubuntu-latest
-            rid: linux-x64
+          # Linux/macOS passed; only Windows consumption remains.
           - os: windows-latest
             rid: win-x64
-          - os: macos-latest
-            rid: osx-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Preserve hash-pinned fixture bytes during checkout

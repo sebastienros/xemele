@@ -1,0 +1,9 @@
+# Hosted native test path repair outcome
+
+[Run 38457602484](https://github.com/sebastienros/xemele/actions/runs/38457602484), attempt 1, used `a19b7ea866fca5472460365f717875308516f42b`. The approved push triggered one three-job matrix, with 20 minutes per job. All jobs completed within the cap. The budget is consumed; no additional run is authorized by that approval.
+
+All three OS jobs passed all 10,754 unit tests, with zero failures/errors/skips/not-run. This confirms the Windows native test path construction repair in actual execution. All three provisioned the same 3,386 pinned W3C corpus files. Linux and macOS completed all 21 package/managed/trim/NativeAOT/tool commands. Their canonical runtime and tool packages also match across these two OS jobs.
+
+Windows completed deterministic clean runtime/tool package pairs, notices/docs and exact-revision embedded Source Link, then failed its fresh isolated consumer restore (command12 of13). The recorded argv passes the correct HTTPS URL, but NuGet reported `NU1301` for a local `consumer/https:/api.nuget.org/v3/index.json` path. This matches the independently reported [local-first source CLI bug](https://github.com/NuGet/Home/issues/14624); the SDK targets and exact failure were inspected. Windows managed/trim/NativeAOT/tool consumption remains unexecuted. Windows package hashes differ from Linux/macOS; byte-identical clean rebuild evidence is within each OS, with no claim of cross-OS package equality for Windows.
+
+Concise per-OS summaries retain command identities, receipts, output hashes, package hashes, complete failure tail and source metadata. Remote Source Link fetch was not tested. Preserve passing Linux/macOS evidence while preparing a Windows-only configuration repair and capped validation; any fresh run needs explicit human approval. Fuzzing and dedicated timing dispositions remain unchanged.

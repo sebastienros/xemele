@@ -1,0 +1,189 @@
+{
+  "revision": "44a401abb1bf6b332e3e04ea3e41d312a3b3440d",
+  "result": "passed",
+  "windowsExecuted": false,
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "nuget",
+        "list",
+        "source",
+        "--configfile",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer.NuGet.Config"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 15853,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "b8fddc53ce78f64a93cf2059984ffcf1d0f427184b4acaa44f433d1d60822e02",
+      "outputTail": "Registered Sources:\n  1.  xemele-local [Enabled]\n      /private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/feed with space & ampersand\n  2.  nuget.org [Enabled]\n      https://api.nuget.org/v3/index.json\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer/Consumer.csproj",
+        "--packages",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer-cache",
+        "--configfile",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer.NuGet.Config",
+        "--disable-build-servers",
+        "-r",
+        "osx-arm64",
+        "-p:PublishAot=true",
+        "-p:PublishTrimmed=true",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 15857,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7e2c5a9c83273bfac886cf512fcabb8b1bbf1f18d2404c958c1c5237057a15ae",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer/Consumer.csproj (in 2.69 sec).\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 15860,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "dbbee8ac4a9f037cd39d3df9f906231f8ec1234a2c6412fe8932f5b56e1e0cdb",
+      "outputTail": "  Consumer -> /private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer/bin/Release/net10.0/Consumer.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.82\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer/bin/Release/net10.0/Consumer.dll"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 15863,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "e11ccba81e8288271b531ab407075941ff61c5e81aa8474d52751b57551547ed",
+      "outputTail": "PASS XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL release usage\n.NET 10.0.11;Arm64\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "tool",
+        "install",
+        "Xemele.Tool",
+        "--version",
+        "0.9.0-rc.1",
+        "--tool-path",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/installed-tool",
+        "--configfile",
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/consumer.NuGet.Config",
+        "--disable-parallel"
+      ],
+      "receipt": {
+        "command": 4,
+        "pid": 15865,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "04c2b1c4fab5604443926244d491061215cdf2ed418da66bfe9af7c1db8aa3a5",
+      "outputTail": "Skipping NuGet package signature verification.\nYou can invoke the tool using the following command: xemele\nTool 'xemele.tool' (version '0.9.0-rc.1') was successfully installed.\n"
+    },
+    {
+      "argv": [
+        "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/installed-tool/xemele",
+        "--help"
+      ],
+      "receipt": {
+        "command": 5,
+        "pid": 15868,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "4548de9199602331500ec31062da18fb4472e5682892470670a1015036d00efc",
+      "outputTail": "Xemele XML/HTML toolkit\nUsage: xemele <command> [options]\n  --help  Show help\n  canonicalize  Canonicalize XML\n  catalog  Resolve a catalog identifier\n  format  Format XML\n  html-fragment  Parse an HTML5 fragment in a real context\n  html-legacy  Parse with legacy HTML recovery\n  html-select  Select HTML elements using CSS\n  html5  Parse with the HTML5 algorithm\n  parse  Parse XML and emit compact XML\n  validate-dtd  Validate XML against a DTD\n  validate-rng  Validate XML against a RELAX NG XML schema\n  validate-schematron  Validate XML using ISO 2016 Schematron\n  validate-xsd  Validate XML against an XML Schema 1.0 schema\n  xinclude  Expand XInclude\n  xpath  Evaluate XPath 1.0\n"
+    }
+  ],
+  "configTests": [
+    {
+      "profile": "hybrid local + HTTPS",
+      "xmlSha256": "43f2aa6d84d99b9eb9faea1eacf8363a8ab4c03ba9a02b914eb7644b3e0fdb9f",
+      "parsedSources": [
+        {
+          "key": "xemele-local",
+          "value": "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/feed with space & ampersand"
+        },
+        {
+          "key": "nuget.org",
+          "value": "https://api.nuget.org/v3/index.json",
+          "protocolVersion": "3"
+        }
+      ]
+    },
+    {
+      "profile": "offline local only",
+      "xmlSha256": "d8b1b4e61a53114dc0a815fc008f4cdcaf697b7a2aa5127191c237b6949dbb0b"
+    }
+  ],
+  "packageInputs": [
+    {
+      "name": "Xemele.0.9.0-rc.1.nupkg",
+      "sha256": "92bdf44bed36c279be2608ccda4c95475ba17a0beac0e5e5511673a05d156056"
+    },
+    {
+      "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+      "sha256": "2a7cb54ada0f0b3f1528506148b37cd13e10caed5944ad58605f489ed5ee55a9"
+    }
+  ],
+  "actualRestoreSources": {
+    "/private/tmp/xemele-m9-hosted-native-path-outcome/artifacts/M9-distribution/windows-config-preflight/feed with space & ampersand": {},
+    "https://api.nuget.org/v3/index.json": {}
+  },
+  "workflow": {
+    "jobCount": 1,
+    "rid": "win-x64",
+    "capMinutes": 20
+  },
+  "limits": "Actual NuGet config/restore/managed/tool checks on macOSarm64, not a Windows execution claim. Windows trim/AOT pending fresh runner approval."
+}

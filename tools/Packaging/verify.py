@@ -44,6 +44,18 @@ def canonicalize(path):
     temporary.replace(path)
 
 
+def write_consumer_config(path, feed, include_nuget_org):
+    # Avoid Windows local-first --source normalization; retain the HTTPS URI in config.
+    configuration = ET.Element('configuration')
+    sources = ET.SubElement(configuration, 'packageSources')
+    ET.SubElement(sources, 'clear')
+    ET.SubElement(sources, 'add', key='xemele-local', value=str(feed))
+    if include_nuget_org:
+        ET.SubElement(sources, 'add', key='nuget.org', value='https://api.nuget.org/v3/index.json', protocolVersion='3')
+    ET.ElementTree(configuration).write(path, encoding='utf-8', xml_declaration=True)
+    return ['--configfile', str(path)]
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--rid', required=True)
@@ -209,13 +221,16 @@ def main():
         # Copy consumer out of source tree and restore from a fresh package cache; no ProjectReference.
         consumer = WORK / 'consumer'
         consumer_sources = ['--source', str(feed)] if args.cache else ['--source', str(feed), '--source', 'https://api.nuget.org/v3/index.json']
+        if os.name == 'nt':
+            consumer_config = WORK / 'consumer.NuGet.Config'
+            consumer_sources = write_consumer_config(consumer_config, feed, not args.cache)
+            report['consumerSourceConfiguration'] = dict(path=str(consumer_config.relative_to(ROOT)), sha256=sha(consumer_config))
         cp = consumer / 'Consumer.csproj'
         if not report.get('consumers', {}).get('managed'):
             shutil.copytree(ROOT / 'tests/PackageSmoke/Release', consumer, ignore=shutil.ignore_patterns('bin', 'obj'))
             cp = consumer / 'Consumer.csproj'
             private_cache = WORK / 'consumer-cache'
             assert not private_cache.exists()
-            consumer_sources = ['--source', str(feed)] if args.cache else ['--source', str(feed), '--source', 'https://api.nuget.org/v3/index.json']
             run([host, 'restore', cp, '--packages', private_cache, *consumer_sources, '--disable-build-servers', '-r', args.rid, '-p:PublishAot=true', '-p:PublishTrimmed=true', '-p:RuntimeFrameworkVersion=10.0.11'])
         else:
             assert cp.read_bytes() == (ROOT / 'tests/PackageSmoke/Release/Consumer.csproj').read_bytes()

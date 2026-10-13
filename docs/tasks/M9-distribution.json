@@ -6,9 +6,9 @@
   "kind": "verification",
   "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-hosted-validation-outcome",
-  "base_revision": "6f5d31b1f5f57d7dfe76cec15f53150ab6aa57b9",
-  "integration_revision": "782f86da3773e63ad992a6b14f438be8c815f761",
+  "branch": "codex/m9-hosted-native-path-outcome",
+  "base_revision": "25f3ff525ee873df29755bd6c6a6b1ebcb2861a3",
+  "integration_revision": "f0f5ea4acbaec6325cd93cb2aca4d2869d76c370",
   "depends_on": [
     "M9-contracts",
     "M9-build-compatibility",
@@ -73,7 +73,8 @@
     "tests/PackageSmoke/Release/Consumer.csproj",
     "tools/Packaging/THIRD-PARTY-NOTICES.md",
     "docs/reports/M9-distribution/current-local-checks.json,current-extra-checks.json: current repaired-runtime18-command local package/trim/AOT/tool/symbol evidence",
-    "tools/Packaging/verify.py: EXPECTED_UNIT_TESTS10754 matches actual verified M9unit population for the pending hosted candidate"
+    "tools/Packaging/verify.py: EXPECTED_UNIT_TESTS10754 matches actual verified M9unit population for the pending hosted candidate",
+    "tools/Packaging/verify.py: explicitWindowsconsumerNuGetconfig bypasses local-firstCLI bug; .github/workflows/release.yml: oneWindowsx64 capped20min job"
   ],
   "evidence": [
     {
@@ -192,23 +193,51 @@
       "result": "passed",
       "summary": "Actual Linux/macOS pass and Windows42fail evidence integrated; no runtime changes, no full-matrix pass.207 task records validate; consumedbudget retained.",
       "artifact": "docs/reports/M9-distribution/hosted-current/outcome.json"
+    },
+    {
+      "id": "hosted-native-path-three-os",
+      "kind": "check",
+      "revision": "a19b7ea866fca5472460365f717875308516f42b",
+      "command": "Human-approved single push a19b7ea8; GitHub run38457602484 attempt1; API jobs and all3 artifact summaries inspected",
+      "result": "failed",
+      "summary": "All3OS10754unitspass. Linux/macOS21commands pass allpackage/consumer modes, packagehashes match eachother. Windows13commands: deterministic packagepairs/metadata/embeddedSourceLink passed, isolatedconsumerrestore failedNU1301local-firstHTTPSmangling; zero consumerexecution credit. Exactly3cappedjobs completed, budgetconsumed, noextras/fuzz/publication.",
+      "artifact": "docs/reports/M9-distribution/hosted-native-path/outcome.json"
+    },
+    {
+      "id": "windows-consumer-source-config-local",
+      "kind": "check",
+      "revision": "44a401abb1bf6b332e3e04ea3e41d312a3b3440d",
+      "command": "PinnedSDK10.0.400/.NET10.0.11; generated explicit config; bounded actual source listing/freshAOT-trimrestore/managedbuild+usage/toolinstall+help; inspect actual assets sources and offline profile",
+      "result": "passed",
+      "summary": "6localcommands pass withcleanreceipts; emptyprivatecache and localfeedwithspace/ampersand plus exactHTTPS URL work. Runtime/consumer source equals retainedpackage checkpoint; offlineonlylocal profile inspected. Windowsexecution unrun. Workflow prepared for1Windowsx64job timeout20min; no newrun/push.",
+      "artifact": "docs/reports/M9-distribution/windows-source-config/checks.json"
+    },
+    {
+      "id": "windows-source-config-integrated",
+      "kind": "integration",
+      "revision": "f0f5ea4acbaec6325cd93cb2aca4d2869d76c370",
+      "command": "Merge hosted outcomes/config fix; compare complete runtime/unit/consumer/packaging/workflow/build source to actual local six-command44a401abb checks; tasks.py validate; diffcheck",
+      "result": "passed",
+      "summary": "Source-equivalent explicitWindowsNuGetconfig +1job20min workflow integrated. Actual allOS10754unitpass andLinux/mac consumerpass retained. Windowsconsumer execution remains outstanding; no fullmatrix pass or further run budget inferred.208tasksvalidate.",
+      "artifact": "docs/reports/M9-distribution/windows-source-config/checks.json"
     }
   ],
   "blockers": [
-    "Windowsx64 current42 test path failures have an integrated local43/43focused passing repair; actual Windows cumulative/package/trim/AOT/tool execution after repair is still unrun. Prior three-job budget consumed; fresh explicit runner authorization required."
+    "All3OS10754units pass and Linux/macOS full package/consumer checks pass. Windows canonical package/SourceLink checks pass, but isolatedconsumerrestore failedNU1301; explicitNuGetconfig fix locally verified6commands, actualWindowsmanaged/trim/AOT/tool remainunrun. Prior3jobbudget consumed; fresh1Windows20min approval required."
   ],
   "handoff": {
-    "summary": "Authorized current repaired three-OS matrix completed: Linuxx64/macOSarm64 unit and package/managed/trim/AOT/tool passed; Windows42 path-guard failures before packaging. Required full matrix remains blocked.",
+    "summary": "Nativepath hostedrun all3OSunits pass; Linux/macOS complete package/consumer pass. Windows packagepairs pass but consumerrestore hits local-firstNuGetbug; explicitWindowsconfig repaired andlocally checked.",
     "checks": [
-      "Exactlyone push-triggered three-job run38454912150 at929585dd; observed14.27jobmin,20mincapperjob",
-      "Linux/macOS10754unitspass;21commands each clean process receipts and fresh package consumer modes",
-      "All3OS3386pinnedcorpusfilesexact;Windows10712pass42failedwithfullfailureidentitiesandchilddiagnostics retained"
+      "All3OS10754/10754unitspass on a19b7ea8, confirmingWindows pathrepair; Linux/macOS21commands allconsumer modes pass",
+      "Windows13commands stoppedat freshconsumerrestoreNU1301, after canonicalpackagepairs/notices/docs/embeddedSourceLink checks",
+      "6fresh localexplicitconfig/restore/managed/tool checks pass with clean receipts; actual asset sources preserve localandHTTPS feeds"
     ],
     "remaining": [
-      "Fresh explicit runner budget and actual Windows validation after integrated test-only path repair; no matrix pass without execution."
+      "Actual passingWindowsmanaged/trim/NativeAOT/tool run after explicitconfigrepair",
+      "Fresh directhuman budget for1Windowsx64job capped20minutes; no extra matrix inferred"
     ],
     "requests": [
-      "Preserve passing Linux/macOS source-applicable evidence and exact failed Windows identities; no new runner execution inferred."
+      "Preserve validLinux/macOS results; nextworkflow hasonly1Windowsjob; fuzzdeferred, dedicatedtiming notcredited."
     ]
   }
 }
