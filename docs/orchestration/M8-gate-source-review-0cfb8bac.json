@@ -1,0 +1,29 @@
+{
+  "task": "M8-gate",
+  "kind": "source review",
+  "result": "corrections required",
+  "reviewedRevision": "0cfb8bac727f5f5378388d44eaeaf072bba05214",
+  "reviewer": "/root/review_m8_xpath",
+  "sourcePacketSha256": "6ff55b9634e4b26153cbf7b0604d58362a3141e12628258f3380082508aea787",
+  "findings": [
+    {
+      "path": "docs/reports/M8-gate/checks.py",
+      "finding": "Final terminal printing occurs outside publication deadline reconciliation; late printing may leave durable passed=true and exit0. Move print and post-print deadline check into guarded reconciliation and add a focused synthetic control."
+    },
+    {
+      "path": "docs/reports/M8-gate/README.md and source-packet.json",
+      "finding": "Outer work/hard bounds must match accepted parent: prepare12860/12880,check3860/3880,counter2160/2180. Define recipe encoding and correct contained recipe digest to its actual canonical bytes."
+    }
+  ],
+  "verifiedSourceOnly": {
+    "sourcePins": 3076,
+    "scriptPins": 17,
+    "authorityPins": 23,
+    "commandCounts": {
+      "prepare": 51,
+      "check": 18,
+      "counter": 4
+    }
+  },
+  "execution": "Read-only source review only; zero gate builds, controls, suites or allocation counters. No gate criterion credit. Source-only worker repair requested; no executable release."
+}
