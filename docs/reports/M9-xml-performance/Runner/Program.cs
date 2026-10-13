@@ -1,0 +1,79 @@
+using Xemele.XmlPerformance;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
+using System.Xml;
+using System.Text;
+using System.Diagnostics;
+using System.Text.Json;
+using Xemele.Streaming;
+using Candidate=Xemele.XmlDocument;
+using Bcl=System.Xml.XmlDocument;
+if(args[0]=="scans") { BenchmarkRunner.Run<AttributeScans>(args:args.Skip(1).ToArray()); return; }
+if(args[0]=="bdn") { BenchmarkRunner.Run<DomComparison>(args:args.Skip(1).ToArray()); return; }
+if(args[0]=="check") {
+ foreach(var f in new[]{"feed-small","svg-small","deep-medium","entity-medium","xhtml-medium","build-medium","soap-large","configuration-large","business-large","text-large"}) {
+  var w=new Workload(f);int expected=(int)w.Run("bs");
+  foreach(var m in new[]{"xs","xsc","bsc"})if((int)w.Run(m)!=expected)throw new Exception(f+" "+m+" count mismatch");
+  Console.WriteLine("PASS "+f+" element/text counts="+expected);
+ }return;
+}
+if(args[0]=="quick") {
+ var all=new List<object>();
+ foreach(var fixture in new[]{"feed-small","svg-small","deep-medium","entity-medium","xhtml-medium","build-medium","soap-large","configuration-large","business-large","text-large"}) {
+  var w=new Workload(fixture);var methods=new[]{"xb","bb"};
+  foreach(var m in methods) for(int i=0;i<5;i++)GC.KeepAlive(w.Run(m));
+  var rows=new Dictionary<string,List<object>>();foreach(var m in methods)rows[m]=new();
+  for(int round=0;round<7;round++)foreach(var m in round%2==0?methods:methods.Reverse()){
+   GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long a=GC.GetAllocatedBytesForCurrentThread();var sw=Stopwatch.StartNew();int count=0;
+   do{GC.KeepAlive(w.Run(m));count++;}while(sw.Elapsed.TotalMilliseconds<200);
+   sw.Stop();rows[m].Add(new{round,count,us=sw.Elapsed.TotalMicroseconds/count,bytes=(double)(GC.GetAllocatedBytesForCurrentThread()-a)/count});
+  }
+  all.Add(new{fixture,inputBytes=w.Bytes.Length,rows});Console.WriteLine(fixture);
+ }
+ File.WriteAllText(args[1],JsonSerializer.Serialize(all,new JsonSerializerOptions{WriteIndented=true}));return;
+}
+if(args[0]=="profile") { var w=new Workload(args[1]);var stop=Stopwatch.StartNew();int n=0;while(stop.Elapsed.TotalSeconds<20){GC.KeepAlive(w.Run(args[2]));n++;}Console.WriteLine(n);return; }
+if(args[0]=="probe") {
+ var all=new List<object>();
+ foreach(var fixture in new[]{"feed-small","svg-small","soap-large","text-large"}) {
+  var w=new Workload(fixture);var methods=new[]{"xb","bb","xc","bc","xs","bs","xsc","bsc"};
+  foreach(var method in methods) for(int i=0;i<10;i++) GC.KeepAlive(w.Run(method));
+  var rows=new Dictionary<string,List<object>>();foreach(var m in methods)rows[m]=new();
+  for(int round=0;round<7;round++)foreach(var method in round%2==0?methods:methods.Reverse()){
+   GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();
+   long a=GC.GetAllocatedBytesForCurrentThread();var sw=Stopwatch.StartNew();int count=0;
+   do{GC.KeepAlive(w.Run(method));count++;}while(sw.Elapsed.TotalMilliseconds<200);
+   sw.Stop();long allocation=GC.GetAllocatedBytesForCurrentThread()-a;
+   rows[method].Add(new{round,count,us=sw.Elapsed.TotalMicroseconds/count,bytes=(double)allocation/count});
+  }
+  all.Add(new{fixture,inputBytes=w.Bytes.Length,rows});Console.WriteLine(fixture);
+ }
+ File.WriteAllText(args[1],JsonSerializer.Serialize(all,new JsonSerializerOptions{WriteIndented=true}));return;
+}
+[MemoryDiagnoser,ShortRunJob]
+public class DomComparison {
+ [Params("feed-small","svg-small","deep-medium","entity-medium","xhtml-medium","build-medium","soap-large","configuration-large","business-large","text-large")]
+ public string Fixture{get;set;}="feed-small";
+ private Workload workload=null!;
+ [GlobalSetup]public void Setup(){workload=new(Fixture);GC.KeepAlive(workload.Run("xb"));GC.KeepAlive(workload.Run("bb"));}
+ [Benchmark]public object XemeleUtf8()=>workload.Run("xb");
+ [Benchmark(Baseline=true)]public object BclUtf8()=>workload.Run("bb");
+}
+public sealed class Workload {
+ public byte[] Bytes; public string Characters;
+ private readonly Xemele.XmlParseOptions options=new(){DtdProcessing=Xemele.XmlDtdProcessing.Parse};
+ private readonly XmlReaderSettings settings=new(){DtdProcessing=DtdProcessing.Parse,XmlResolver=null,IgnoreWhitespace=false,MaxCharactersInDocument=16777216,MaxCharactersFromEntities=16777216};
+ private readonly CountHandler handler=new();
+ public Workload(string fixture){Bytes=File.ReadAllBytes(Path.Combine(Environment.GetEnvironmentVariable("XEMELE_PERF_ROOT")!,"benchmarks/baselines/release/fixtures/")+fixture+".xml");Characters=Encoding.UTF8.GetString(Bytes);}
+ public object Run(string method) {
+  if(method=="xb")return Candidate.Parse(Bytes.AsSpan(),options);
+  if(method=="xc")return Candidate.Parse(Characters,options);
+  if(method is "xs" or "xsc") {handler.Elements=handler.TextLength=0;if(method=="xs")XmlSaxParser.Parse(Bytes.AsSpan(),handler,options);else XmlSaxParser.Parse(Characters,handler,options);return handler.Elements+handler.TextLength;}
+  using var source=method is "bc" or "bsc"?null:new MemoryStream(Bytes,false);
+  using var chars=source is null?new StringReader(Characters):null;
+  using var reader=source is null?System.Xml.XmlReader.Create(chars!,settings):System.Xml.XmlReader.Create(source,settings);
+  if(method is "bs" or "bsc"){int count=0;while(reader.Read()){if(reader.NodeType==XmlNodeType.Element)count++;else if(reader.NodeType is XmlNodeType.Text or XmlNodeType.CDATA or XmlNodeType.Whitespace or XmlNodeType.SignificantWhitespace)count+=reader.Value.Length;}return count;}
+  var doc=new Bcl{PreserveWhitespace=true,XmlResolver=null};doc.Load(reader);return doc;
+ }
+ private sealed class CountHandler:XmlSaxHandler {public int Elements,TextLength;public override void StartElement(XmlStartElement element)=>Elements++;public override void Text(ReadOnlySpan<char> text)=>TextLength+=text.Length;}
+}

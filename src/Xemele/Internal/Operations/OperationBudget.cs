@@ -14,7 +14,7 @@ internal enum Quota
 }
 internal sealed class OperationBudget
 {
-    private readonly long?[] limits;
+    private readonly long[] maximums;
     private readonly long[] counts = new long[11];
     private readonly CancellationToken cancellation;
     private int workUntilCheck = 4096;
@@ -26,9 +26,14 @@ internal sealed class OperationBudget
         options.Limits.Validate();
         Options = options with { Limits = options.Limits with { } };
         var l = Options.Limits;
-        limits = [l.DocumentCharacters, l.Depth, l.AttributesPerElement, l.TokenCharacters,
-            l.InternedNames, l.EntityDepth, l.ExpandedCharacters, l.ExternalBytes,
-            l.ExternalResources, l.InclusionDepth, l.EvaluationWork];
+        // Options are an immutable operation snapshot. Compute nullable and
+        // representational ceilings once rather than on every scalar/lookup.
+        maximums = [l.DocumentCharacters ?? long.MaxValue, l.Depth ?? int.MaxValue,
+            l.AttributesPerElement ?? int.MaxValue, l.TokenCharacters ?? int.MaxValue,
+            l.InternedNames ?? int.MaxValue, l.EntityDepth ?? int.MaxValue,
+            l.ExpandedCharacters ?? long.MaxValue, l.ExternalBytes ?? long.MaxValue,
+            l.ExternalResources ?? int.MaxValue, l.InclusionDepth ?? int.MaxValue,
+            l.EvaluationWork ?? long.MaxValue];
         this.cancellation = cancellation;
         CheckCancellation();
     }
@@ -46,13 +51,16 @@ internal sealed class OperationBudget
         workUntilCheck -= units;
     }
     internal long Count(Quota quota) => counts[Index(quota)];
+    internal long Remaining(Quota quota)
+    {
+        int i = Index(quota);
+        return maximums[i] - counts[i];
+    }
     internal bool TryCharge(Quota quota, long amount)
     {
         if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
         int i = Index(quota);
-        long capacity = quota is Quota.DocumentCharacters or Quota.ExpandedCharacters or
-            Quota.ExternalBytes or Quota.EvaluationWork ? long.MaxValue : int.MaxValue;
-        long maximum = Math.Min(limits[i] ?? capacity, capacity);
+        long maximum = maximums[i];
         // Subtraction rejects representational overflow without overflowing or
         // mutating counters; exactly maximum succeeds, even under null quotas.
         if (amount > maximum - counts[i]) return false;

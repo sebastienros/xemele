@@ -1,3 +1,4 @@
+using System.Buffers;
 using Xemele.Parsing.Input;
 using Xemele.Parsing.Syntax;
 using Xemele.Internal.Operations;
@@ -13,12 +14,12 @@ internal sealed partial class ByteDomAdapter : IDisposable
     private readonly DomSink sink;
     private readonly CancellationToken cancellation;
     private readonly Uri? sourceUri;
-    private readonly char[] characters = new char[4096];
-    private readonly long[] mappings = new long[4096];
+    private readonly char[] characters;
+    private readonly long[] mappings;
     private readonly char[] prefix = new char[6];
     private readonly long[] prefixMappings = new long[6];
     private int prefixLength;
-    private bool prefixDecided, completed;
+    private bool prefixDecided, completed, disposed;
     private long byteLength;
     internal XmlDocument Document => sink.Document;
     internal XmlDiagnostic? Diagnostic { get; private set; }
@@ -28,13 +29,24 @@ internal sealed partial class ByteDomAdapter : IDisposable
     {
         options = operationBudget?.Options ?? options;
         decoder = new(options, sourceUri);
-        core = new(options, sourceUri, operationBudget: operationBudget);
+        core = new(options, sourceUri, operationBudget: operationBudget, trustedByteMappings: true);
         sink = new(options, decoder, cancellation);
         this.cancellation = cancellation;
         this.sourceUri = sourceUri;
+        // Scratch belongs to this operation, never to the returned DOM. Cold
+        // rents and the shared pool's retained capacity are measured separately.
+        characters = ArrayPool<char>.Shared.Rent(4096);
+        try { mappings = ArrayPool<long>.Shared.Rent(4096); }
+        catch
+        {
+            ArrayPool<char>.Shared.Return(characters);
+            try { core.Dispose(); } finally { decoder.Dispose(); }
+            throw;
+        }
     }
     internal void Append(ReadOnlySpan<byte> input)
     {
+        if (byteLength == 0) sink.PrepareInput(input);
         while (!input.IsEmpty && Diagnostic is null)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -107,5 +119,19 @@ internal sealed partial class ByteDomAdapter : IDisposable
         var final = core.Append([], [], true, sink, cancellation);
         Diagnostic = sink.Diagnostic ?? final.Diagnostic;
     }
-    public void Dispose() { core.Dispose(); decoder.Dispose(); }
+    public void Dispose()
+    {
+        if (disposed) return;
+        disposed = true;
+        try { core.Dispose(); }
+        finally
+        {
+            try { decoder.Dispose(); }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(characters);
+                ArrayPool<long>.Shared.Return(mappings);
+            }
+        }
+    }
 }
