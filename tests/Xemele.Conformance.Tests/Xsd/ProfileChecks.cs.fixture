@@ -1,0 +1,118 @@
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+using ProductSchema = Xemele.Validation.XmlSchema;
+namespace XsdCorpus;
+internal static class ProfileChecks
+{
+    private static readonly List<object> Rows = [];
+    private const string XmlUrl = "https://www.w3.org/2001/xml.xsd";
+    private static void Require(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); Console.WriteLine("PASS " + label); }
+    private static string Hash(string path) { using var stream=File.OpenRead(path);return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant(); }
+    private sealed class Allowlist(string original, string mode = "allow") : XmlResourceResolver
+    {
+        internal readonly List<object> Requests = [];
+        internal readonly HashSet<string> Allowed = new(StringComparer.Ordinal) { Runner.UriFor(original).AbsoluteUri, XmlUrl };
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested(); bool allowed=request.Kind==XmlResourceKind.Schema&&Allowed.Contains(request.Uri.AbsoluteUri);
+            Requests.Add(new { uri=request.Uri.AbsoluteUri,referrer=request.Referrer?.AbsoluteUri,kind=request.Kind.ToString(),policy=!allowed?"outside exact allowlist":request.Uri.AbsoluteUri==XmlUrl?mode:"original" });
+            if (!allowed || request.Uri.AbsoluteUri==XmlUrl&&mode=="deny") return null;
+            string path=Runner.PathFor(request.Uri);
+            if (request.Uri.AbsoluteUri==XmlUrl&&mode=="missing") path=Path.Combine(Path.GetTempPath(),"xsd-profile-absent-"+Guid.NewGuid().ToString("N"),"xml.xsd");
+            return new(File.OpenRead(path),request.Uri);
+        }
+    }
+    private static ProductSchema Compile(string[] documents, XmlResourceResolver resolver, CancellationToken token, out Uri wrapper)
+    {
+        var prepared=Runner.Input(documents);wrapper=prepared.Source;using var stream=prepared.Input;
+        var schema=ProductSchema.Compile(stream,new() { BaseUri=prepared.Source,Resolver=resolver,Limits=Runner.Limits,MaxOperations=100_000_000,MaxComponents=1_000_000,CancellationToken=token });
+        Require(stream.CanRead,"composition retains caller schema stream");return schema;
+    }
+    private static void XmlControl(string original, string mode)
+    {
+        var resolver=new Allowlist(original,mode);using var deadline=new CancellationTokenSource(TimeSpan.FromSeconds(30));Observation? failure=null;
+        try { Compile([original,XmlUrl],resolver,deadline.Token,out _); }
+        catch(Exception e) { failure=Runner.Failure(e,new(),deadline.Token); }
+        Console.WriteLine("RESOURCE CONTROL "+mode+": "+failure?.Outcome+" "+failure?.Detail);
+        Require(failure?.Outcome==(mode=="deny"?"incomplete-refusal":"harness-resource-error")&&!Runner.Oracle("invalid",failure.Outcome,"schema")!.Value,"XML supplied-resource "+mode+" keeps distinct nonsemantic outcome");
+        Require(resolver.Requests.Count==2,"XML "+mode+" stays within two explicit resource requests");
+        Rows.Add(new { kind="resource-control",mode,actual=failure!.Outcome,codes=failure.Codes,requests=resolver.Requests,invalidSchemaPass=false });
+    }
+    private static void NeighborControls()
+    {
+        foreach(var witness in new[] {("head",false,true),("middle",false,false),("head",true,false)})
+        {
+            string schema="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='leaf' substitutionGroup='middle'/><xs:element name='middle' substitutionGroup='near' block='substitution'/><xs:element name='near' substitutionGroup='head'/><xs:element name='head'"+(witness.Item2?" block='substitution'":"")+"/><xs:element name='root'><xs:complexType><xs:sequence><xs:element ref='"+witness.Item1+"'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+            var result=ProductSchema.Compile(schema).Validate("<root><leaf/></root>");
+            Require(result.IsComplete&&result.IsValid==witness.Item3,"selected substitution head "+witness.Item1+" block="+witness.Item2+" expected="+witness.Item3);
+            Rows.Add(new { kind="independent-substitution-neighbor",head=witness.Item1,headBlocks=witness.Item2,complete=result.IsComplete,valid=result.IsValid });
+        }
+        const string nameChars="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:simpleType><xs:restriction base='xs:string'><xs:pattern value='\\c'/></xs:restriction></xs:simpleType></xs:element></xs:schema>";
+        var compiled=ProductSchema.Compile(nameChars);
+        foreach(var witness in new[] {("0345",true),("0346",false),("0360",true)})
+        {
+            var result=compiled.Validate("<r>&#x"+witness.Item1+";</r>");
+            Require(result.IsComplete&&result.IsValid==witness.Item2,"Second Edition NameChar U+"+witness.Item1+" expected="+witness.Item2);
+            Rows.Add(new { kind="independent-namechar-neighbor",scalar="U+"+witness.Item1,complete=result.IsComplete,valid=result.IsValid });
+        }
+    }
+    private static void SuppliedXml(string original, string instance, string id, string instanceId, bool originalRows)
+    {
+        using var deadline=new CancellationTokenSource(TimeSpan.FromSeconds(30));var resolver=new Allowlist(original);
+        if (originalRows)
+        {
+            Observation? failure=null;
+            try { Compile([original],resolver,deadline.Token,out _); }
+            catch(Exception e) { failure=Runner.Failure(e,new(),deadline.Token); }
+            Require(failure?.Outcome=="schema-invalid","unchanged standalone original XML import lacks supplied schema");
+            Rows.Add(new { id,kind="original-schema",expected="valid",actual=failure!.Outcome,originalPassed=false });
+            // The standalone dependent instance was not assessed; no fabricated result row.
+        }
+        var suppliedResolver=new Allowlist(original);var schema=Compile([original,XmlUrl],suppliedResolver,deadline.Token,out var wrapper);
+        Require(suppliedResolver.Requests.Count==2,"explicit supplied XML schema uses exact two-resource allowlist");
+        Rows.Add(new { id=id+"/xml-explicit-supplemental",kind="supplemental-schema",expected="valid",actual="schema-valid",originalPassed=(bool?)null,profilePassed=true,wrapperBaseUri=wrapper.AbsoluteUri,orderedInputs=new[] {new { uri=Runner.UriFor(original).AbsoluteUri,sha256=Hash(Runner.PathFor(Runner.UriFor(original))) },new { uri=XmlUrl,sha256=Hash(Runner.PathFor(new Uri(XmlUrl))) }},requests=suppliedResolver.Requests });
+        using var stream=File.OpenRead(Runner.PathFor(Runner.UriFor(instance)));var result=schema.Validate(stream,new() { Limits=Runner.Limits,MaxOperations=100_000_000,CancellationToken=deadline.Token });
+        Require(result.IsComplete&&result.IsValid&&stream.CanRead,"explicit supplied XML schema gives complete valid unchanged instance");
+        Rows.Add(new { id=instanceId+"/xml-explicit-supplemental",kind="supplemental-instance",expected="valid",actual="instance-valid",originalPassed=(bool?)null,profilePassed=true,instanceOriginalUri=Runner.UriFor(instance).AbsoluteUri,transport="public stream validation; original URI is provenance",complete=result.IsComplete,sha256=Hash(Runner.PathFor(Runner.UriFor(instance))),schemaInputs=new[] {Runner.UriFor(original).AbsoluteUri,XmlUrl} });
+    }
+    private static void SyntheticXmlControls(string corpus)
+    {
+        string saved=Runner.Root,temporary=Path.Combine(Path.GetTempPath(),"xsd-profile-controls-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(Path.Combine(temporary,"upstream"));Directory.CreateDirectory(Path.Combine(temporary,"resources"));
+        try
+        {
+            File.Copy(Path.Combine(corpus,"resources/xml.xsd"),Path.Combine(temporary,"resources/xml.xsd"));File.Copy(Path.Combine(corpus,"external-resources.json"),Path.Combine(temporary,"external-resources.json"));
+            File.WriteAllText(Path.Combine(temporary,"upstream/control.xsd"),"<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:import namespace='http://www.w3.org/XML/1998/namespace'/><xs:element name='r'><xs:complexType><xs:attribute ref='xml:base' use='required'/></xs:complexType></xs:element></xs:schema>");
+            File.WriteAllText(Path.Combine(temporary,"upstream/control.xml"),"<r xml:base='relative'/>");Runner.Root=Path.Combine(temporary,"upstream");
+            SuppliedXml("control.xsd","control.xml","synthetic/schema","synthetic/instance",false);XmlControl("control.xsd","deny");XmlControl("control.xsd","missing");
+            var resolver=new Allowlist("control.xsd");Require(resolver.Resolve(new(new Uri("https://unlisted.test/ambient.xsd"),null,XmlResourceKind.Schema),default) is null,"unlisted schema URI denied without network");
+        }
+        finally { Runner.Root=saved;Directory.Delete(temporary,true); }
+    }
+    public static int Main(string[] args)
+    {
+        string corpus=Path.Combine(args[0],"tests/corpora/xsd");Runner.Root=Path.Combine(corpus,"upstream");Rows.Clear();
+        if (args[1] == "supplements") return SupplementalProfiles.Run(args[2]);
+        if (args[1] == "supplement-controls") return SupplementalProfiles.Controls(args[2]);
+        using var xmlProfile=JsonDocument.Parse(File.ReadAllText(Path.Combine(corpus,"xml-namespace-profile.json")));var captured=xmlProfile.RootElement.GetProperty("resource");
+        Require(Hash(Runner.PathFor(new Uri(XmlUrl)))==captured.GetProperty("sha256").GetString()&&new FileInfo(Runner.PathFor(new Uri(XmlUrl))).Length==captured.GetProperty("bytes").GetInt64(),"exact already-pinned XML resource bytes/hash");
+        NeighborControls();
+        if(args[1]=="controls") SyntheticXmlControls(corpus);
+        else if(args[1]=="originals")
+        {
+            using var substitution=JsonDocument.Parse(File.ReadAllText(Path.Combine(corpus,"substitution-oracle-adjudication.json")));var original=substitution.RootElement.GetProperty("case");string path=original.GetProperty("path").GetString()!;
+            Require(Hash(Runner.PathFor(Runner.UriFor(path)))==original.GetProperty("sha256").GetString(),"original substitution schema hash");using(var deadline=new CancellationTokenSource(TimeSpan.FromSeconds(30))) Compile([path],new Allowlist(path),deadline.Token,out _);
+            Rows.Add(new { id=original.GetProperty("id").GetString(),expected="invalid",actual="schema-valid",originalPassed=false,profilePassed=true });
+            using var profile=JsonDocument.Parse(File.ReadAllText(Path.Combine(corpus,"xml-namespace-profile.json")));var resource=profile.RootElement.GetProperty("resource");Require(Hash(Runner.PathFor(new Uri(XmlUrl)))==resource.GetProperty("sha256").GetString(),"already captured official XML resource hash");
+            foreach(var group in profile.RootElement.GetProperty("cases").EnumerateArray())
+            {
+                var documents=group.GetProperty("documents");foreach(var file in documents.EnumerateObject()) Require(Hash(Runner.PathFor(Runner.UriFor(file.Name)))==file.Value.GetString(),"unchanged original "+file.Name);
+                string schema=documents.EnumerateObject().Single(f=>f.Name.EndsWith(".xsd",StringComparison.Ordinal)).Name,instance=documents.EnumerateObject().Single(f=>f.Name.EndsWith(".xml",StringComparison.Ordinal)).Name;
+                SuppliedXml(schema,instance,group.GetProperty("group").GetString()+"/s:"+group.GetProperty("schema").GetString(),group.GetProperty("group").GetString()+"/i0:"+group.GetProperty("instance").GetString(),true);XmlControl(schema,"deny");XmlControl(schema,"missing");
+            }
+        }
+        else throw new ArgumentException("Expected controls or originals");
+        File.WriteAllText(args[2],JsonSerializer.Serialize(Rows,new JsonSerializerOptions { WriteIndented=true }));return 0;
+    }
+}

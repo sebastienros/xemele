@@ -1,0 +1,350 @@
+using System.Net;
+using System.Text.Json;
+using System.Xml;
+using System.Xml.Schema;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+namespace XsdCorpus;
+internal static class BclEngine
+{
+    internal sealed class Resolver : XmlResolver
+    {
+        internal readonly List<object> Requests = [];
+        internal Exception? InfrastructureFailure;
+        internal Func<Uri, object>? ControlAcquisition;
+        internal void Failed(Exception error) => InfrastructureFailure ??= error;
+        public override ICredentials? Credentials { set { } }
+        public override object GetEntity(Uri uri, string? role, Type? type)
+        {
+            bool unavailable;
+            try { unavailable = Runner.AuthoredUnavailable(uri); }
+            catch (Exception e) { Failed(e); throw; }
+            Requests.Add(new { resolution = unavailable ? "authored-unavailable" : "pinned-input", uri = uri.AbsoluteUri, role });
+            // Authored absence keeps its existing reference policy; acquisition failures do not.
+            if (unavailable && ControlAcquisition is null) throw new FileNotFoundException("Authored unavailable resource: " + uri);
+            try
+            {
+                object entity = ControlAcquisition is { } acquire ? acquire(uri) : File.OpenRead(Runner.PathFor(uri));
+                return entity is Stream stream ? new ReadInput(stream, Failed, closeSource: true) : entity;
+            }
+            catch (Exception e) { Failed(e); throw; }
+        }
+    }
+    // Internal fault injection only; ordinary runner calls use the original acquisition paths.
+    internal sealed class ControlInputs
+    {
+        internal Func<Resolver>? InstanceResolver;
+        internal Func<Uri, Stream>? ProbePrincipal;
+        internal Func<Runner.InstancePlan, (Stream Input, Uri Source)>? PreparedPrincipal;
+        internal Func<Uri, Stream>? InstancePrincipal;
+        internal Action<string, XmlSeverityType>? Diagnostic;
+        internal Action<string, Exception>? Caught;
+    }
+    private static Stream Acquire(Resolver resolver, Func<Stream> acquire)
+    { try { return acquire(); } catch (Exception e) { resolver.Failed(e); throw; } }
+    private static void CheckInfrastructure(Resolver resolver)
+    { if (resolver.InfrastructureFailure is { } error) throw error; }
+    private static Observation Infrastructure(Exception error, object[] resources) => new("harness-exception", error.GetType().FullName + ": " + error.Message, [], resources);
+    internal const string ReferenceScopeSha = "c5d23c50623b27486399fd46cabadc6d8ef525888a1368884147892ef1a9097c";
+    internal const string ReferencePurpose = "schema-compilation";
+    private static readonly Lazy<JsonElement> ReferenceFacts = new(() =>
+    {
+        string scopePath = Path.Combine(Path.GetDirectoryName(Runner.Root)!, "bcl-reference-exception-scope.json");
+        if (Hash(scopePath) != ReferenceScopeSha) throw new IOException("Changed BCL reference exception scope");
+        using var scope = JsonDocument.Parse(File.ReadAllText(scopePath)); return scope.RootElement.Clone();
+    });
+    internal static string Hash(string path) { using var input = File.OpenRead(path); return Convert.ToHexString(SHA256.HashData(input)).ToLowerInvariant(); }
+    internal static bool Same(JsonElement left, JsonElement right) => JsonSerializer.Serialize(left) == JsonSerializer.Serialize(right);
+    internal static bool ReferenceRuntime(JsonElement facts, string runtime, string module, string checksum) =>
+        runtime == facts.GetProperty("runtime").GetString() && module == facts.GetProperty("bcl_module").GetString() && checksum == facts.GetProperty("bcl_module_sha256").GetString();
+    internal static JsonElement? BindReferenceInput(JsonElement row, Stream input, Uri source, string purpose)
+    {
+        string folder = Path.GetDirectoryName(Runner.Root)!;
+        var facts = ReferenceFacts.Value;
+        var matches = facts.GetProperty("cases").EnumerateArray().Where(c => c.GetProperty("row").GetProperty("id").GetString() == row.GetProperty("id").GetString()).ToArray();
+        if (matches.Length == 0) return null;
+        if (matches.Length != 1) throw new IOException("Duplicate BCL reference binding");
+        var original = matches[0]; var authored = original.GetProperty("row");
+        if (purpose != ReferencePurpose || !Same(row, authored) || row.GetProperty("kind").GetString() != "schema" || row.GetProperty("classification").GetString() != "applicable" || row.GetProperty("expected").GetString() != "invalid" ||
+            Runner.Documents(row).Length != 1 || source.AbsoluteUri != original.GetProperty("source_uri").GetString() ||
+            Hash(Path.Combine(folder, "inventory.json")) != facts.GetProperty("inventory_sha256").GetString() || Hash(Path.Combine(folder, "resources.json")) != facts.GetProperty("catalog_sha256").GetString() ||
+            Hash(Runner.PathFor(Runner.UriFor(original.GetProperty("metadata").GetString()!))) != original.GetProperty("metadata_sha256").GetString() ||
+            !ReferenceRuntime(facts, Environment.Version.ToString(), Path.GetFileName(typeof(XmlSchemaSet).Module.FullyQualifiedName), Hash(typeof(XmlSchemaSet).Module.FullyQualifiedName))) throw new IOException("Changed BCL reference input/runtime/purpose binding");
+        if (!input.CanSeek || input.Position != 0) throw new IOException("BCL bound principal must be the acquired seekable original stream");
+        string checksum = Convert.ToHexString(SHA256.HashData(input)).ToLowerInvariant(); input.Position = 0;
+        if (checksum != original.GetProperty("document_sha256").GetString()) throw new IOException("Changed BCL reference principal SHA");
+        return original.Clone();
+    }
+    // Only these literal API calls may originate a reference-engine exception. Acquisition,
+    // XmlReader construction, adapters and caller code remain outside these boundaries.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static ArgumentException? AddBoundary(XmlSchemaSet schemas, XmlReader reader)
+    { try { schemas.Add(null, reader); return null; } catch (ArgumentException e) { return e; } }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static ArgumentException? CompileBoundary(XmlSchemaSet schemas)
+    { try { schemas.Compile(); return null; } catch (ArgumentException e) { return e; } }
+    internal sealed record Frame(string Type, string Method, string Module, string Mvid, int Token, string[] Parameters);
+    internal static Frame[] Frames(Exception error) => new StackTrace(error, false).GetFrames().Select(f => f.GetMethod()).Where(m => m is not null).Select(m =>
+        new Frame(m!.DeclaringType?.FullName ?? "", m.Name, m.Module.Name, m.Module.ModuleVersionId.ToString(), m.MetadataToken, m.GetParameters().Select(p => p.ParameterType.FullName ?? "").ToArray())).ToArray();
+    internal static bool ReferenceOrigin(ArgumentException error, string operation)
+    {
+        if (error.GetType() != typeof(ArgumentException) || error.ParamName != "name" || error.InnerException is not null || operation is not ("Add" or "Compile")) return false;
+        var frames = new StackTrace(error, false).GetFrames().Select(f => f.GetMethod()).ToArray();
+        var bcl = typeof(XmlSchemaSet).Module; int index = 0;
+        while (index < frames.Length && frames[index] is { } guard && guard.Module == typeof(ArgumentException).Module && guard.DeclaringType == typeof(ArgumentException) && guard.Name is "ThrowIfNullOrEmpty" or "ThrowNullOrEmptyException") index++;
+        int first = index;
+        while (index < frames.Length && frames[index] is { } verify && verify.Module == bcl && verify.DeclaringType == typeof(XmlConvert) && verify.Name == "VerifyNCName") index++;
+        if (index == first || index >= frames.Length || frames[index] is not { } validate || validate.Module != bcl || validate.DeclaringType?.FullName != "System.Xml.Schema.Preprocessor" || validate.Name != "ValidateIdAttribute") return false;
+        bool api = false;
+        while (index < frames.Length && frames[index] is { } method && method.Module == bcl)
+        { api |= method.DeclaringType == typeof(XmlSchemaSet) && method.Name == operation && method.GetParameters().Select(p => p.ParameterType).SequenceEqual(operation == "Add" ? new[] { typeof(string), typeof(XmlReader) } : Type.EmptyTypes); index++; }
+        return api && index < frames.Length && frames[index] is { } boundary && boundary.Module == typeof(BclEngine).Module && boundary.DeclaringType == typeof(BclEngine) && boundary.Name == operation + "Boundary";
+    }
+    internal static Observation ApiFailure(ArgumentException error, string operation, JsonElement? binding, Resolver resolver)
+    {
+        if (binding is not { } original || resolver.InfrastructureFailure is not null || resolver.Requests.Count != 0 || !ReferenceOrigin(error, operation))
+            return new("harness-exception", error.GetType().Name + ": " + error.Message, [], resolver.Requests.ToArray());
+        string detail = JsonSerializer.Serialize(new { attribution = "pinned-bcl-empty-id-preprocessor", purpose = ReferencePurpose, operation,
+            exceptionType = error.GetType().FullName, parameter = error.ParamName, runtime = Environment.Version.ToString(), scopeSha256 = ReferenceScopeSha,
+            moduleSha256 = Hash(typeof(XmlSchemaSet).Module.FullyQualifiedName), moduleMvid = typeof(XmlSchemaSet).Module.ModuleVersionId.ToString(),
+            documentSha256 = original.GetProperty("document_sha256").GetString(), sourceUri = original.GetProperty("source_uri").GetString(), frames = Frames(error) });
+        return new("reference-engine-exception", detail, [], []);
+    }
+    // SOURCE controls until the coordinator runs the existing bounded preparation.
+    // These must observe the pinned runtime's real stack; synthetic frames cannot pass.
+    internal static void ReferenceControls()
+    {
+        void Require(bool value, string label) { if (!value) throw new InvalidOperationException("BCL reference control: " + label); Console.WriteLine("PASS BCL reference " + label); }
+        void RejectBinding(JsonElement row, Stream input, Uri source, string purpose, string label)
+        { bool rejected = false; try { rejected = BindReferenceInput(row, input, source, purpose) is null; } catch (IOException) { rejected = true; } Require(rejected, label); }
+        var facts = ReferenceFacts.Value;
+        Require(facts.GetProperty("cases").GetArrayLength() == 21, "exact original scope count");
+        string module = Path.GetFileName(typeof(XmlSchemaSet).Module.FullyQualifiedName), moduleHash = Hash(typeof(XmlSchemaSet).Module.FullyQualifiedName);
+        Require(ReferenceRuntime(facts, Environment.Version.ToString(), module, moduleHash), "actual pinned runtime/module hash");
+        Require(!ReferenceRuntime(facts, "changed", module, moduleHash) && !ReferenceRuntime(facts, Environment.Version.ToString(), "changed", moduleHash) && !ReferenceRuntime(facts, Environment.Version.ToString(), module, "changed"), "changed runtime/module/hash rejected");
+        JsonElement? boundOriginal = null;
+        foreach (var original in facts.GetProperty("cases").EnumerateArray())
+        {
+            var row = original.GetProperty("row"); var source = Runner.UriFor(Runner.Documents(row).Single());
+            using var input = File.OpenRead(Runner.PathFor(source));
+            var binding = BindReferenceInput(row, input, source, ReferencePurpose); var resolver = new Resolver();
+            boundOriginal ??= binding;
+            var schemas = new XmlSchemaSet { XmlResolver = resolver }; int diagnostics = 0; schemas.ValidationEventHandler += (_, _) => diagnostics++;
+            using var principal = new ReadInput(input);
+            using var reader = XmlReader.Create(principal, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, CloseInput = false, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
+            var error = AddBoundary(schemas, reader); string operation = "Add";
+            if (error is null) { error = CompileBoundary(schemas); operation = "Compile"; }
+            Require(error is not null && diagnostics == 0 && resolver.Requests.Count == 0 && resolver.InfrastructureFailure is null && principal.Failure is null, "real unchanged empty-id witness " + row.GetProperty("id").GetString());
+            var actual = ApiFailure(error!, operation, binding, resolver);
+            Console.WriteLine(actual.Detail);
+            Require(actual.Outcome == "reference-engine-exception" && Runner.Oracle("invalid", actual.Outcome, "schema") == false && input.CanRead, "actual pinned stack nonassessment; original remains false");
+            Require(ApiFailure(error!, operation, null, resolver).Outcome == "harness-exception", "unknown ID/binding cannot be attributed");
+            Require(ApiFailure(error!, "Caller", binding, resolver).Outcome == "harness-exception", "wrong operation cannot be attributed");
+            var failedResolver = new Resolver { InfrastructureFailure = new IOException("control acquisition") };
+            Require(ApiFailure(error!, operation, binding, failedResolver).Outcome == "harness-exception", "infrastructure cause cannot be attributed");
+            var callbacks = new Resolver(); callbacks.Requests.Add(new { uri = source.AbsoluteUri });
+            Require(ApiFailure(error!, operation, binding, callbacks).Outcome == "harness-exception", "callback cannot be attributed");
+            using var changed = new MemoryStream([.. File.ReadAllBytes(Runner.PathFor(source)), (byte)' ']);
+            RejectBinding(row, changed, source, ReferencePurpose, "changed acquired-stream SHA rejected");
+            foreach (string field in new[] { "id", "expected", "currentStatus", "documents", "classification" })
+            {
+                var node = System.Text.Json.Nodes.JsonNode.Parse(row.GetRawText())!;
+                node[field] = field is "currentStatus" or "documents" ? System.Text.Json.Nodes.JsonNode.Parse("[]") : System.Text.Json.Nodes.JsonValue.Create("changed");
+                using var mutated = JsonDocument.Parse(node.ToJsonString()); input.Position = 0;
+                RejectBinding(mutated.RootElement, input, source, ReferencePurpose, "changed exact metadata " + field);
+            }
+            input.Position = 0; RejectBinding(row, input, source, "instance-validation", "wrong purpose rejected");
+            input.Position = 0; RejectBinding(row, input, Runner.UriFor("other.xsd"), ReferencePurpose, "changed principal URI rejected");
+        }
+        // XmlConvert is also callable by the adapter. Its BCL frame alone is insufficient.
+        ArgumentException? caller = null;
+        try { CallerEmptyName(); } catch (ArgumentException e) { caller = e; }
+        Require(caller is not null && !ReferenceOrigin(caller, "Add"), "actual XmlConvert caller origin rejected");
+        Require(!ReferenceOrigin(new ArgumentException("unknown", "name"), "Add"), "unknown origin rejected");
+        foreach (bool io in new[] { false, true })
+        {
+            Exception? thrown = null;
+            using var stream = new ThrowingInput(io); using var principal = new ReadInput(stream);
+            try { using var reader = XmlReader.Create(principal); var failure = AddBoundary(new XmlSchemaSet(), reader); thrown = failure; }
+            catch (Exception e) { thrown = e; }
+            Require(thrown is not null && stream.ReadCalls > 0 && ReferenceEquals(principal.Failure, stream.Error) && (thrown is not ArgumentException argument || !ReferenceOrigin(argument, "Add")), "actual throwing stream origin rejected " + io);
+            if (thrown is ArgumentException apiArgument)
+            {
+                Require(boundOriginal is not null, "known original binding available for stream-origin negative");
+                var rejected = ApiFailure(apiArgument, "Add", boundOriginal, new Resolver());
+                Require(rejected.Outcome == "harness-exception" && Runner.Oracle("invalid", rejected.Outcome, "schema") == false, "FINAL API boundary rejects actual caller-stream origin despite known21 binding " + io);
+            }
+            var finalStream = Infrastructure(principal.Failure!, []);
+            Require(finalStream.Outcome == "harness-exception" && Runner.Oracle("invalid", finalStream.Outcome, "schema") == false, "FINAL production sticky stream observation; original false " + io);
+            var resolver = new Resolver { ControlAcquisition = _ => throw (io ? (Exception)new IOException("control resolver") : new ArgumentException("control resolver", "name")) };
+            var schemas = new XmlSchemaSet { XmlResolver = resolver }; schemas.ValidationEventHandler += (_, _) => { };
+            using var include = XmlReader.Create(new StringReader("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:include schemaLocation='" + Runner.Origin + "control.xsd'/></xs:schema>"));
+            try { var failure = AddBoundary(schemas, include); if (failure is null) CompileBoundary(schemas); } catch (Exception) { }
+            Require(resolver.InfrastructureFailure is not null && resolver.Requests.Count > 0, "actual throwing resolver tracked despite BCL wrapping/warnings " + io);
+            var readingResolver = new Resolver { ControlAcquisition = _ => new ThrowingInput(io) };
+            var readingSchemas = new XmlSchemaSet { XmlResolver = readingResolver }; readingSchemas.ValidationEventHandler += (_, _) => { };
+            using var readingInclude = XmlReader.Create(new StringReader("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:include schemaLocation='" + Runner.Origin + "control.xsd'/></xs:schema>"));
+            try { var failure = AddBoundary(readingSchemas, readingInclude); if (failure is null) CompileBoundary(readingSchemas); } catch (Exception) { }
+            Require(readingResolver.InfrastructureFailure is not null && readingResolver.Requests.Count > 0, "actual resolver returned-stream failure tracked " + io);
+        }
+        var savedPaths = Runner.OriginalPaths;
+        try
+        {
+            Runner.AuthoredUnavailable(Runner.UriFor("control-declared-missing.xsd"));
+            Runner.OriginalPaths = new(Runner.OriginalPaths!, StringComparer.Ordinal) { "control-declared-missing.xsd" };
+            var missing = new Resolver(); bool stopped = false;
+            try { missing.GetEntity(Runner.UriFor("control-declared-missing.xsd"), null, typeof(Stream)); } catch (FileNotFoundException) { stopped = true; }
+            Require(stopped && missing.InfrastructureFailure is FileNotFoundException, "actual declared missing acquisition stays infrastructure");
+        }
+        finally { Runner.OriginalPaths = savedPaths; }
+        string savedRoot = Runner.Root;
+        string temporary = Path.GetFullPath(Path.Combine(savedRoot, "../../../../artifacts/M8-xsd-corpus/bcl-reference-binding-" + Guid.NewGuid().ToString("N")));
+        var first = facts.GetProperty("cases")[0]; var firstRow = first.GetProperty("row");
+        using var principalCopy = new MemoryStream(File.ReadAllBytes(Runner.PathFor(Runner.UriFor(Runner.Documents(firstRow).Single()))));
+        string originalFolder = Path.GetDirectoryName(savedRoot)!;
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(temporary, "upstream"));
+            foreach (string file in new[] { "inventory.json", "resources.json", "external-resources.json" }) File.Copy(Path.Combine(originalFolder, file), Path.Combine(temporary, file));
+            string metadata = first.GetProperty("metadata").GetString()!, metadataCopy = Path.Combine(temporary, "upstream", metadata);
+            Directory.CreateDirectory(Path.GetDirectoryName(metadataCopy)!); File.Copy(Path.Combine(savedRoot, metadata), metadataCopy);
+            Runner.Root = Path.Combine(temporary, "upstream"); Runner.OriginalPaths = null;
+            File.WriteAllText(Path.Combine(temporary, "resources.json"), "[]");
+            RejectBinding(firstRow, principalCopy, Runner.UriFor(Runner.Documents(firstRow).Single()), ReferencePurpose, "changed catalog SHA rejected");
+            File.Copy(Path.Combine(originalFolder, "resources.json"), Path.Combine(temporary, "resources.json"), true);
+            File.AppendAllText(metadataCopy, " ");
+            RejectBinding(firstRow, principalCopy, Runner.UriFor(Runner.Documents(firstRow).Single()), ReferencePurpose, "changed authored metadata SHA rejected");
+        }
+        finally { Runner.Root = savedRoot; Runner.OriginalPaths = savedPaths; if (Directory.Exists(temporary)) Directory.Delete(temporary, true); }
+        Require(ExceptionOutcome(new IOException("catalog/missing/control"), true) == "harness-exception", "I/O catalog missing never semantic INVALID");
+    }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CallerEmptyName() => XmlConvert.VerifyNCName("");
+    private sealed class ThrowingInput(bool io) : MemoryStream
+    {
+        internal readonly Exception Error = io ? new IOException("control stream") : new ArgumentException("control stream", "name");
+        internal int ReadCalls;
+        // XmlReader sizes seekable buffers from Length; an empty seekable stream
+        // can avoid the intended read fault. Force the actual streaming path.
+        public override bool CanSeek => false;
+        public override int Read(byte[] buffer, int offset, int count) { if (count == 0) return 0; ReadCalls++; throw Error; }
+        public override int Read(Span<byte> buffer) { if (buffer.IsEmpty) return 0; ReadCalls++; throw Error; }
+    }
+    // Preserve a swallowed/wrapped read failure as infrastructure; never give it INVALID credit.
+    internal sealed class ReadInput(Stream source, Action<Exception>? onFailure = null, bool closeSource = false) : Stream
+    {
+        internal Exception? Failure;
+        public override bool CanRead => source.CanRead;
+        public override bool CanSeek => source.CanSeek;
+        public override bool CanWrite => false;
+        public override long Length => source.Length;
+        public override long Position { get => source.Position; set => source.Position = value; }
+        public override int Read(byte[] buffer, int offset, int count) { try { return source.Read(buffer, offset, count); } catch (Exception e) { Failure ??= e; onFailure?.Invoke(e); throw; } }
+        public override int Read(Span<byte> buffer) { try { return source.Read(buffer); } catch (Exception e) { Failure ??= e; onFailure?.Invoke(e); throw; } }
+        public override long Seek(long offset, SeekOrigin origin) => source.Seek(offset, origin);
+        public override void Flush() { }
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        protected override void Dispose(bool disposing) { if (disposing && closeSource) source.Dispose(); base.Dispose(disposing); }
+    }
+    internal static string ExceptionOutcome(Exception e, bool schema)
+    {
+        if (e is XmlException && (e.Message.Contains("MaxCharacters", StringComparison.Ordinal) || e.Message.Contains("DTD is prohibited", StringComparison.Ordinal) || e.Message.Contains("Version number '1.1' is invalid", StringComparison.Ordinal))) return "reference-policy-refusal";
+        return e is XmlSchemaException ? (schema ? "schema-invalid" : "instance-invalid") : e is XmlException ? (schema ? "schema-invalid" : "instance-syntax-error") : "harness-exception";
+    }
+    internal static bool ReadAssessment(XmlReader reader)
+    {
+        bool assessed = false;
+        while (reader.Read())
+            if (reader.Depth == 0 && reader.NodeType is XmlNodeType.Element or XmlNodeType.EndElement)
+                assessed |= reader.SchemaInfo?.SchemaElement is not null || reader.SchemaInfo?.SchemaType is not null;
+        return assessed;
+    }
+    internal static Observation ProbeHintSchema(Runner.HintSchemaPreparationException failure, Resolver resolver, ControlInputs? controls = null)
+    {
+        var errors = new List<string>(); var warnings = new List<string>(); Observation probe;
+        try
+        {
+            CheckInfrastructure(resolver);
+            var source = Runner.UriFor(failure.Input.Location); using var stream = Acquire(resolver, () => controls?.ProbePrincipal is { } acquire ? acquire(source) : File.OpenRead(Runner.PathFor(source)));
+            using var principal = new ReadInput(stream, resolver.Failed);
+            var schemas = new XmlSchemaSet { XmlResolver = resolver };
+            schemas.ValidationEventHandler += (_, e) => { controls?.Diagnostic?.Invoke("probe", e.Severity); if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
+            using var reader = XmlReader.Create(principal, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, CloseInput = false, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
+            schemas.Add(null, reader); CheckInfrastructure(resolver);
+            schemas.Compile(); CheckInfrastructure(resolver);
+            probe = new(errors.Count > 0 ? "schema-invalid" : "schema-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], resolver.Requests.ToArray());
+        }
+        catch (Exception e) { controls?.Caught?.Invoke("probe", e); probe = resolver.InfrastructureFailure is { } infrastructure ? Infrastructure(infrastructure, resolver.Requests.ToArray()) : new(ExceptionOutcome(e, schema: true), e.GetType().Name + ": " + e.Message, [], resolver.Requests.ToArray()); }
+        return probe with { Outcome = probe.Outcome == "schema-invalid" ? "schema-unavailable" : probe.Outcome == "schema-valid" ? "instance-hint-preparation-limitation" : probe.Outcome,
+            Detail = "Hint namespace preparation failed: " + failure.Message + "; unchanged original schema probe: " + probe.Outcome + ": " + probe.Detail + "; instance assessment not executed" };
+    }
+    internal static void Run(JsonElement group, StreamWriter output, ControlInputs? controls = null)
+    {
+        var row = group.GetProperty("schema"); var resolver = new Resolver(); var schemas = new XmlSchemaSet { XmlResolver = resolver };
+        var errors = new List<string>(); var warnings = new List<string>(); schemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
+        Observation compile; ReadInput? principal = null;
+        try
+        {
+            var input = Runner.Input(row.ValueKind == JsonValueKind.Null ? [] : Runner.Documents(row)); using var stream = input.Input;
+            var binding = row.ValueKind == JsonValueKind.Null ? null : BindReferenceInput(row, stream, input.Source, ReferencePurpose);
+            principal = new ReadInput(stream);
+            using var reader = XmlReader.Create(principal, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, CloseInput = false, MaxCharactersInDocument = 67_108_864 }, input.Source.AbsoluteUri);
+            var failure = AddBoundary(schemas, reader); string operation = "Add";
+            if (failure is null && resolver.InfrastructureFailure is null && principal.Failure is null) { failure = CompileBoundary(schemas); operation = "Compile"; }
+            compile = (resolver.InfrastructureFailure ?? principal.Failure) is { } infrastructure ? new("harness-exception", infrastructure.GetType().Name + ": " + infrastructure.Message, [], resolver.Requests.ToArray()) :
+                failure is not null ? ApiFailure(failure, operation, errors.Count == 0 && warnings.Count == 0 ? binding : null, resolver) :
+                new(errors.Count > 0 ? "schema-invalid" : "schema-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], resolver.Requests.ToArray());
+        }
+        catch (Exception e) { compile = new(resolver.InfrastructureFailure is not null || principal?.Failure is not null ? "harness-exception" : ExceptionOutcome(e, schema: true), e.GetType().Name + ": " + e.Message, [], resolver.Requests.ToArray()); }
+        if (row.ValueKind != JsonValueKind.Null) Runner.Emit(row, compile, "bcl", output);
+        foreach (var instance in Runner.Instances(group))
+        {
+            if (instance.GetProperty("classification").GetString() != "applicable") { Runner.Emit(instance, new("excluded", instance.GetProperty("reason").GetString()!, [], []), "bcl", output); continue; }
+            Observation actual;
+            if (compile.Outcome != "schema-valid") actual = compile.Outcome.StartsWith("harness-", StringComparison.Ordinal) ? compile : new("schema-unavailable", compile.Detail, [], compile.Resources);
+            else
+            {
+                var instanceErrors = new List<string>(); var instanceWarnings = new List<string>();
+                var instanceResolver = controls?.InstanceResolver is { } createResolver ? createResolver() : new Resolver(); var preparation = new List<object>();
+                try
+                {
+                    CheckInfrastructure(instanceResolver);
+                    string path = Runner.PathFor(Runner.UriFor(Runner.Documents(instance).Single()));
+                    var originals = row.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Runner.Documents(row);
+                    var plan = Runner.InstanceInputs(instance, originals, preparation); var validationSchemas = schemas;
+                    if (plan.Augmented)
+                    {
+                        validationSchemas = new XmlSchemaSet { XmlResolver = instanceResolver };
+                        validationSchemas.ValidationEventHandler += (_, e) => { controls?.Diagnostic?.Invoke("augmented", e.Severity); if (e.Severity == XmlSeverityType.Error) instanceErrors.Add(e.Message); else instanceWarnings.Add(e.Message); };
+                        (Stream Input, Uri Source) prepared;
+                        try { prepared = controls?.PreparedPrincipal is { } acquire ? acquire(plan) : Runner.InstanceInput(plan); }
+                        catch (Exception e) { instanceResolver.Failed(e); throw; }
+                        using var preparedStream = prepared.Input; using var preparedPrincipal = new ReadInput(preparedStream, instanceResolver.Failed);
+                        using var preparedReader = XmlReader.Create(preparedPrincipal, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = instanceResolver, CloseInput = false, MaxCharactersInDocument = 67_108_864 }, prepared.Source.AbsoluteUri);
+                        validationSchemas.Add(null, preparedReader); CheckInfrastructure(instanceResolver);
+                        validationSchemas.Compile(); CheckInfrastructure(instanceResolver);
+                        if (instanceErrors.Count > 0)
+                        {
+                            Runner.Emit(instance, new("schema-unavailable", string.Join("; ", instanceErrors.Concat(instanceWarnings.Select(w => "warning: " + w))), [], [.. preparation, .. instanceResolver.Requests]), "bcl", output); continue;
+                        }
+                    }
+                    var settings = new XmlReaderSettings { Schemas = validationSchemas, ValidationType = ValidationType.Schema, DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = 67_108_864 };
+                    settings.ValidationFlags = XmlSchemaValidationFlags.ProcessIdentityConstraints | XmlSchemaValidationFlags.AllowXmlAttributes | XmlSchemaValidationFlags.ReportValidationWarnings;
+                    settings.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) instanceErrors.Add(e.Message); else instanceWarnings.Add(e.Message); };
+                    var instanceSource = Runner.UriFor(Runner.Documents(instance).Single());
+                    using var stream = Acquire(instanceResolver, () => controls?.InstancePrincipal is { } acquire ? acquire(instanceSource) : File.OpenRead(path));
+                    using var instancePrincipal = new ReadInput(stream, instanceResolver.Failed);
+                    using var reader = XmlReader.Create(instancePrincipal, settings, instanceSource.AbsoluteUri);
+                    bool assessed = ReadAssessment(reader);
+                    CheckInfrastructure(instanceResolver);
+                    actual = new(instanceErrors.Count > 0 ? "instance-invalid" : !assessed ? "instance-unassessed" : "instance-valid", string.Join("; ", instanceErrors.Concat(instanceWarnings.Select(w => "warning: " + w))), [], [.. preparation, .. instanceResolver.Requests]);
+                    if (plan.Limitations.Length > 0) actual = actual with { Outcome = "instance-hint-ordering-limitation", Detail = string.Join("; ", plan.Limitations) + "; supplemental engine result: " + actual.Outcome + ": " + actual.Detail };
+                }
+                catch (Exception e) { controls?.Caught?.Invoke("instance", e); actual = instanceResolver.InfrastructureFailure is { } infrastructure ? Infrastructure(infrastructure, instanceResolver.Requests.ToArray()) : e is Runner.HintSchemaPreparationException hintFailure ? ProbeHintSchema(hintFailure, instanceResolver, controls) : new(e is Runner.HintNamespaceException ? "instance-hint-namespace-mismatch" : e is XmlSchemaException and not XmlSchemaValidationException ? "schema-unavailable" : ExceptionOutcome(e, schema: false), e.GetType().Name + ": " + e.Message, [], instanceResolver.Requests.ToArray()); actual = actual with { Resources = [.. preparation, .. actual.Resources] }; }
+            }
+            Runner.Emit(instance, actual, "bcl", output);
+        }
+    }
+}

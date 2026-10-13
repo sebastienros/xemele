@@ -1,0 +1,443 @@
+using System.Xml;
+using System.Xml.Schema;
+namespace XsdCorpus;
+internal static class Controls
+{
+    internal static int HintProfile(string upstream)
+    {
+        string saved = Runner.Root; Runner.Root = upstream;
+        using var profile = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!, "verified-hint-ordering-profile.json")));
+        var originals = profile.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+        var pairs = new List<(System.Text.Json.JsonElement Row, Runner.InstancePlan Plan)>();
+        System.Text.Json.JsonElement Case(string id, string path, string expected = "invalid")
+        {
+            using var document = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(new { id, documents = new[] { path }, expected })); return document.RootElement.Clone();
+        }
+        string temporary = Path.Combine(Path.GetTempPath(), "xsd-hint-profile-guards-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            foreach (var original in originals)
+            {
+                var row = Case(original.GetProperty("id").GetString()!, original.GetProperty("documents").EnumerateObject().Single().Name);
+                var plan = Runner.InstanceInputs(row, [], new()); pairs.Add((row, plan));
+                Require(Runner.VerifiedHintOrdering(row, plan), "exact original/first-schema hash guard " + row.GetProperty("id").GetString());
+            }
+            var first = pairs[0]; string id = first.Row.GetProperty("id").GetString()!, path = Runner.Documents(first.Row).Single();
+            Require(!Runner.VerifiedHintOrdering(Case("outside-approved-profile", path), first.Plan), "unlisted hint ID remains adapter-unassessed");
+            Require(!Runner.VerifiedHintOrdering(Case(id, path, "valid"), first.Plan), "guard preserves original INVALID oracle");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan with { Inputs = [] }), "missing first-schema prerequisite cannot enable assessment");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan with { Inputs = [first.Plan.Inputs[0] with { Namespace = "wrong" }] }), "wrong authored namespace cannot enable assessment");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan with { Inputs = [first.Plan.Inputs[0] with { Location = Runner.Origin + "msData/additional/test93490_2.xsd" }] }), "later schema cannot replace first schema");
+            Require(!Runner.VerifiedHintOrdering(pairs[1].Row, pairs[1].Plan with { Inputs = pairs[1].Plan.Inputs.Reverse().ToArray() }), "first-schema input order is bound");
+            string tempUpstream = Path.Combine(temporary, "upstream"); Directory.CreateDirectory(Path.Combine(tempUpstream, "msData/additional"));
+            File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!, "verified-hint-ordering-profile.json"), Path.Combine(temporary, "verified-hint-ordering-profile.json"));
+            File.WriteAllText(Path.Combine(temporary, "external-resources.json"), "[]");
+            string instance = Path.Combine(tempUpstream, path), schema = Path.Combine(tempUpstream, "msData/additional/test93490_1.xsd");
+            File.Copy(Path.Combine(upstream, path), instance); File.Copy(Path.Combine(upstream, "msData/additional/test93490_1.xsd"), schema); Runner.Root = tempUpstream;
+            Require(Runner.VerifiedHintOrdering(first.Row, first.Plan), "guard binds identical temporary copies");
+            File.AppendAllText(instance, " "); Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan), "changed original instance hash cannot enable assessment");
+            File.Copy(Path.Combine(upstream, path), instance, true); File.AppendAllText(schema, " ");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan), "changed first-schema hash cannot enable assessment");
+            return 0;
+        }
+        finally { Runner.Root = saved; if (Directory.Exists(temporary)) Directory.Delete(temporary, true); }
+    }
+    internal static int OptionalProfile(string upstream)
+    {
+        string saved = Runner.Root; var savedPaths = Runner.OriginalPaths;
+        Runner.Root = Path.GetFullPath(upstream); Runner.OriginalPaths = null;
+        using var facts = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!, "verified-optional-inputs.json")));
+        using var inventory = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!, "inventory.json")));
+        var rows = inventory.RootElement.GetProperty("groups").EnumerateArray().SelectMany(g =>
+            (g.GetProperty("schema").ValueKind == System.Text.Json.JsonValueKind.Null ? Array.Empty<System.Text.Json.JsonElement>() : new[] { g.GetProperty("schema") }).Concat(Runner.Instances(g))).ToDictionary(r => r.GetProperty("id").GetString()!);
+        string Hash(string path) => Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(upstream, path)))).ToLowerInvariant();
+        bool ThrowsIo(Action action) { try { action(); return false; } catch (IOException) { return true; } }
+        try
+        {
+            foreach (var original in facts.RootElement.GetProperty("cases").EnumerateArray())
+            {
+                var row = rows[original.GetProperty("id").GetString()!];
+                Require(row.GetProperty("expected").GetString() == original.GetProperty("original_expected").GetString() &&
+                    System.Text.Json.JsonSerializer.Serialize(row.GetProperty("currentStatus")) == System.Text.Json.JsonSerializer.Serialize(original.GetProperty("original_status")), "optional original oracle/status retained " + row.GetProperty("id").GetString());
+                foreach (var pin in original.GetProperty("documents").EnumerateObject())
+                    Require(Hash(pin.Name) == pin.Value.GetString(), "optional unchanged original SHA " + pin.Name);
+            }
+            foreach (var neighbor in facts.RootElement.GetProperty("available_neighbors").EnumerateObject())
+                Require(Hash(neighbor.Name) == neighbor.Value.GetString(), "optional available neighbor SHA " + neighbor.Name);
+            var originals = facts.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+            foreach (var missing in facts.RootElement.GetProperty("missing_requests").EnumerateArray())
+            {
+                string principalPath = missing.GetProperty("principal").GetString()!, systemId = missing.GetProperty("system_id").GetString()!;
+                var principal = Runner.UriFor(principalPath); var request = new Xemele.XmlResourceRequest(new Uri(principal, systemId), principal, Xemele.XmlResourceKind.Schema) { SystemId = systemId };
+                Require(Runner.AuthoredUnavailable(request.Uri) && Runner.VerifiedOptionalMissing(request), "exact catalog absence URI/referrer/systemId binding " + principalPath);
+                var originalSchema = originals.Single(c => c.GetProperty("kind").GetString() == "schema" && c.GetProperty("documents").TryGetProperty(principalPath, out _));
+                string group = originalSchema.GetProperty("id").GetString()!.Split("/s:", StringSplitOptions.None)[0];
+                var originalInstance = originals.Single(c => c.GetProperty("kind").GetString() == "instance" && c.GetProperty("id").GetString()!.StartsWith(group + "/i", StringComparison.Ordinal));
+                string instancePath = originalInstance.GetProperty("documents").EnumerateObject().Single().Name;
+                var resolver = new Runner.Resolver();
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                using var source = File.OpenRead(Runner.PathFor(principal));
+                var schema = Xemele.Validation.XmlSchema.Compile(source, new() { BaseUri = principal, Resolver = resolver, Limits = Runner.Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
+                Require(source.CanRead, "optional compile preserves caller stream " + principalPath);
+                using var instance = File.OpenRead(Runner.PathFor(Runner.UriFor(instancePath)));
+                var result = schema.Validate(instance, new() { Limits = Runner.Limits, MaxOperations = 100_000_000, CancellationToken = timeout.Token });
+                Require(result.IsComplete && result.IsValid && instance.CanRead, "optional actual complete VALID; caller instance retained " + instancePath);
+                using var journal = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(resolver.Requests));
+                Require(journal.RootElement.GetArrayLength() == missing.GetProperty("callback_count").GetInt32() &&
+                    journal.RootElement.EnumerateArray().All(r => r.GetProperty("kind").GetString() == "Schema" && r.GetProperty("referrer").GetString() == principal.AbsoluteUri), "optional exact callback count/kind/referrer; no instance acquisition " + principalPath);
+                var absent = journal.RootElement.EnumerateArray().Where(r => r.GetProperty("resolution").GetString() == "explicit-unavailable").ToArray();
+                Require(absent.Length == (principalPath.Contains("anyURI_", StringComparison.Ordinal) ? 3 : 1) && absent.All(r => r.GetProperty("uri").GetString() == request.Uri.AbsoluteUri && r.GetProperty("systemId").GetString() == systemId), "optional missing callback identities retained " + principalPath);
+                string expected = originalInstance.GetProperty("original_expected").GetString()!;
+                Require(Runner.Oracle(expected, "instance-valid", "instance") == (expected == "valid"), "optional original expected outcome preserved " + instancePath);
+                if (expected == "invalid")
+                    Require(facts.RootElement.GetProperty("derived_a004").GetProperty("source").GetString() == "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4126" &&
+                        Runner.Oracle("invalid", "instance-valid", "instance") == false, "a004 original INVALID mismatch versus separate W3C4126 derived VALID");
+                Require(Hash(principalPath) == missing.GetProperty("principal_sha256").GetString() && Hash(instancePath) == originalInstance.GetProperty("documents").GetProperty(instancePath).GetString(), "optional original bytes unchanged after compile/validate " + principalPath);
+                Require(new Runner.Resolver().Resolve(request, default) is null && new LegacyMissing().ResolveResult(request, default).Status == Xemele.XmlResourceResolutionStatus.Denied, "legacy null remains denial " + principalPath);
+                foreach (var changed in new[] { request with { Referrer = Runner.UriFor("other.xsd") }, request with { SystemId = systemId + "-other" }, request with { Uri = Runner.UriFor("other-absent.xsd") } })
+                    Require(new Runner.Resolver().ResolveResult(changed, default).Status == Xemele.XmlResourceResolutionStatus.Denied, "changed callback binding denied " + principalPath);
+                Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(request with { Kind = Xemele.XmlResourceKind.ExternalEntity }, default)), "non-schema purpose rejected " + principalPath);
+                using var cancelled = new CancellationTokenSource(); cancelled.Cancel(); var cancellationResolver = new Runner.Resolver(); bool stopped = false;
+                try { cancellationResolver.ResolveResult(request, cancelled.Token); } catch (OperationCanceledException) { stopped = true; }
+                Require(stopped && cancellationResolver.Requests.Count == 0, "cancel before resolver acquisition " + principalPath);
+            }
+            string temporary = Path.GetFullPath(Path.Combine(upstream, "../../../../artifacts/M8-xsd-corpus/optional-binding-" + Guid.NewGuid().ToString("N")));
+            string tempUpstream = Path.Combine(temporary, "upstream");
+            var firstMissing = facts.RootElement.GetProperty("missing_requests")[0];
+            string originalPath = firstMissing.GetProperty("principal").GetString()!, authoredMissing = firstMissing.GetProperty("system_id").GetString()!;
+            string copied = Path.Combine(tempUpstream, originalPath); Directory.CreateDirectory(Path.GetDirectoryName(copied)!);
+            try
+            {
+                File.Copy(Path.Combine(upstream, originalPath), copied);
+                foreach (string file in new[] { "resources.json", "external-resources.json" }) File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!, file), Path.Combine(temporary, file));
+                Runner.Root = tempUpstream; Runner.OriginalPaths = null;
+                var principal = Runner.UriFor(originalPath);
+                var callback = new Xemele.XmlResourceRequest(new Uri(principal, authoredMissing), principal, Xemele.XmlResourceKind.Schema) { SystemId = authoredMissing };
+                Require(new Runner.Resolver().ResolveResult(callback, default).Status == Xemele.XmlResourceResolutionStatus.Unavailable, "identical principal/catalog copies preserve exact optional absence");
+                File.AppendAllText(copied, " ");
+                Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(callback, default)), "changed principal SHA is harness error, never Unavailable");
+                File.Copy(Path.Combine(upstream, originalPath), copied, true);
+                string absent = Path.Combine(Path.GetDirectoryName(copied)!, authoredMissing); File.WriteAllText(absent, "<schema/>");
+                Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(callback, default)), "uncatalogued existing dependency is harness error, never Unavailable");
+            }
+            finally { Runner.Root = Path.GetFullPath(upstream); Runner.OriginalPaths = null; Directory.Delete(temporary, true); }
+            // Initialize the original catalog before making an isolated declared-but-missing control entry.
+            Runner.AuthoredUnavailable(Runner.UriFor("declared-but-missing.xsd"));
+            var declaredMissing = new Xemele.XmlResourceRequest(Runner.UriFor("declared-but-missing.xsd"), Runner.UriFor("principal.xsd"), Xemele.XmlResourceKind.Schema) { SystemId = "declared-but-missing.xsd" };
+            Runner.OriginalPaths = new(Runner.OriginalPaths!, StringComparer.Ordinal) { "declared-but-missing.xsd" };
+            Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(declaredMissing, default)), "declared missing file remains harness error, never Unavailable");
+            Runner.OriginalPaths = null;
+            CandidateOptionalBindings(upstream);
+            BclEngine.ReferenceControls();
+            InfrastructureFinalObservations();
+            return 0;
+        }
+        finally { Runner.Root = saved; Runner.OriginalPaths = savedPaths; }
+    }
+    // Root activates inside the existing optional preparation command; worker execution is held.
+    private static void CandidateOptionalBindings(string upstream)
+    {
+        string savedRoot=Runner.Root; var savedPaths=Runner.OriginalPaths;
+        Runner.Root=Path.GetFullPath(upstream); Runner.OriginalPaths=null;
+        using var facts=System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!,"optional-adapter-obligations.json")));
+        var cases=facts.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+        bool ThrowsIo(Action action) { try { action(); return false; } catch(IOException) { return true; } }
+        System.Text.Json.JsonElement Changed(System.Text.Json.JsonElement row, string field, System.Text.Json.Nodes.JsonNode? value)
+        {
+            var node=System.Text.Json.Nodes.JsonNode.Parse(row.GetRawText())!.AsObject(); node[field]=value;
+            using var changed=System.Text.Json.JsonDocument.Parse(node.ToJsonString()); return changed.RootElement.Clone();
+        }
+        try
+        {
+            Require(cases.Length==13&&cases.Count(c=>c.GetProperty("mapping_active").GetBoolean())==12,"exact thirteen obligations/twelve active optional cases");
+            foreach(var candidate in cases)
+            {
+                var row=candidate.GetProperty("schema_row"); bool active=candidate.GetProperty("mapping_active").GetBoolean();
+                foreach(var binding in candidate.GetProperty("candidate_absence_bindings").EnumerateArray())
+                {
+                    var request=new Xemele.XmlResourceRequest(new Uri(binding.GetProperty("resolvedUri").GetString()!),new Uri(binding.GetProperty("referrer").GetString()!),Xemele.XmlResourceKind.Schema) { SystemId=binding.GetProperty("systemId").GetString() };
+                    Require(Runner.VerifiedCandidateMissing(request,row)==active,"exact optional context callback active="+active+" "+candidate.GetProperty("id").GetString());
+                    Require(new Runner.Resolver(row).ResolveResult(request,default).Status==(active?Xemele.XmlResourceResolutionStatus.Unavailable:Xemele.XmlResourceResolutionStatus.Denied),"exact optional resolution status");
+                    Require(new Runner.Resolver().ResolveResult(request,default).Status==Xemele.XmlResourceResolutionStatus.Denied,"new callback without schema context remains denied");
+                    Require(new Runner.Resolver(row).Resolve(request,default) is null,"new optional legacy null remains denial");
+                    foreach(var changed in new[] { request with { SystemId=request.SystemId+"-neighbor" },request with { Referrer=Runner.UriFor("other-referrer.xsd") },request with { Uri=Runner.UriFor("other-absent.xsd") } })
+                        Require(!Runner.VerifiedCandidateMissing(changed,row)&&new Runner.Resolver(row).ResolveResult(changed,default).Status==Xemele.XmlResourceResolutionStatus.Denied,"changed optional request tuple denied");
+                    Require(ThrowsIo(()=>new Runner.Resolver(row).ResolveResult(request with { Kind=Xemele.XmlResourceKind.ExternalEntity },default)),"new optional nonschema purpose fails closed");
+                    foreach(string field in new[] {"kind","classification","expected","reason"})
+                        Require(ThrowsIo(()=>new Runner.Resolver(Changed(row,field,System.Text.Json.Nodes.JsonValue.Create("changed"))).ResolveResult(request,default)),"known optional context mutation fails closed: "+field);
+                    foreach(string field in new[] {"documents","originalExpected","currentStatus","priorStatus","scopes"})
+                        Require(ThrowsIo(()=>new Runner.Resolver(Changed(row,field,new System.Text.Json.Nodes.JsonArray(System.Text.Json.Nodes.JsonValue.Create("changed")))).ResolveResult(request,default)),"known optional ordered/status context mutation fails closed: "+field);
+                    var neighbor=Changed(row,"id",System.Text.Json.Nodes.JsonValue.Create(candidate.GetProperty("id").GetString()+"-neighbor"));
+                    Require(!Runner.VerifiedCandidateMissing(request,neighbor),"unlisted optional ID grants no mapping");
+                    using var cancelled=new CancellationTokenSource();cancelled.Cancel();var resolver=new Runner.Resolver(row);bool stopped=false;
+                    try {resolver.ResolveResult(request,cancelled.Token);} catch(OperationCanceledException) {stopped=true;}
+                    Require(stopped&&resolver.Requests.Count==0,"new optional cancellation precedes acquisition");
+                    if(request.SystemId is "Schz012_b.xsd" or "Schz012_C.xsd")
+                        Require(!Runner.OrdinalExists(Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]))&&Runner.AuthoredUnavailable(request.Uri),"case-specific authored dependency absent in ordinal catalog/directory; similar filename never opened");
+                }
+            }
+            var first=cases[0];var firstBinding=first.GetProperty("candidate_absence_bindings")[0];var firstRow=first.GetProperty("schema_row");
+            string temporary=Path.GetFullPath(Path.Combine(upstream,"../../../../artifacts/M8-xsd-corpus/candidate-guards-"+Guid.NewGuid().ToString("N"))),tempRoot=Path.Combine(temporary,"upstream"); Directory.CreateDirectory(tempRoot);
+            void Copy(string relative)
+            {
+                string target=Path.Combine(tempRoot,relative);Directory.CreateDirectory(Path.GetDirectoryName(target)!);File.Copy(Path.Combine(upstream,relative),target,true);
+            }
+            try
+            {
+                foreach(string file in new[] {"resources.json","inventory.json","external-resources.json","optional-adapter-obligations.json"}) File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!,file),Path.Combine(temporary,file));
+                Copy(first.GetProperty("metadata").GetString()!);foreach(var d in first.GetProperty("documents").EnumerateObject())Copy(d.Name);
+                var request=new Xemele.XmlResourceRequest(new Uri(firstBinding.GetProperty("resolvedUri").GetString()!),new Uri(firstBinding.GetProperty("referrer").GetString()!),Xemele.XmlResourceKind.Schema) { SystemId=firstBinding.GetProperty("systemId").GetString() };
+                Runner.Root=tempRoot;Runner.OriginalPaths=null;
+                Require(Runner.VerifiedCandidateMissing(request,firstRow),"identical candidate source copies bind");
+                string principal=Path.Combine(tempRoot,firstBinding.GetProperty("principal").GetString()!);File.AppendAllText(principal," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate principal SHA fails closed");Copy(firstBinding.GetProperty("principal").GetString()!);
+                string metadata=Path.Combine(tempRoot,first.GetProperty("metadata").GetString()!);File.AppendAllText(metadata," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate metadata SHA fails closed");Copy(first.GetProperty("metadata").GetString()!);
+                string absent=Path.Combine(tempRoot,Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]));File.WriteAllText(absent,"<schema/>");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"uncatalogued exact candidate file fails closed");File.Delete(absent);
+                string catalog=Path.Combine(temporary,"resources.json");File.AppendAllText(catalog," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate catalog SHA fails closed");File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!,"resources.json"),catalog,true);
+                string manifest=Path.Combine(temporary,"optional-adapter-obligations.json");File.AppendAllText(manifest," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate obligation SHA fails closed");
+            }
+            finally {Runner.Root=Path.GetFullPath(upstream);Runner.OriginalPaths=null;Directory.Delete(temporary,true);}
+        }
+        finally {Runner.Root=savedRoot;Runner.OriginalPaths=savedPaths;}
+    }
+    private sealed class LegacyMissing : Xemele.XmlResourceResolver
+    {
+        public override Xemele.XmlResolvedResource? Resolve(Xemele.XmlResourceRequest request, CancellationToken cancellationToken) => null;
+    }
+    // SOURCE-only until root activation: assertions inspect the final production rows,
+    // not just populated failure trackers. All fixtures live in a unique ignored folder.
+    private static void InfrastructureFinalObservations()
+    {
+        string savedRoot = Runner.Root; var savedPaths = Runner.OriginalPaths;
+        string temporary = Path.GetFullPath(Path.Combine(savedRoot, "../../../../artifacts/M8-xsd-corpus/bcl-infrastructure-controls-" + Guid.NewGuid().ToString("N")));
+        string upstream = Path.Combine(temporary, "upstream"); Directory.CreateDirectory(upstream);
+        const string schema = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:any minOccurs='0' maxOccurs='unbounded' processContents='lax'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+        var files = new Dictionary<string, string>
+        {
+            ["hint.xsd"] = schema,
+            ["late.xml"] = "<r xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><child xsi:noNamespaceSchemaLocation='hint.xsd'/></r>",
+            ["probe.xsd"] = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:include schemaLocation='child.xsd'/></xs:schema>",
+            ["child.xsd"] = schema,
+            ["empty-id.xsd"] = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' id=''/>",
+            ["malformed.xsd"] = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:bad=''/>",
+            ["probe-instance.xml"] = "<r xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='malformed.xsd'/>",
+        };
+        foreach (var file in files) File.WriteAllText(Path.Combine(upstream, file.Key), file.Value);
+        File.WriteAllText(Path.Combine(temporary, "external-resources.json"), "[]");
+        Runner.Root = upstream; Runner.OriginalPaths = files.Keys.ToHashSet(StringComparer.Ordinal);
+        System.Text.Json.JsonElement Observe(BclEngine.ControlInputs? inputs = null, string document = "late.xml")
+        {
+            var row = new { id = "controls/infrastructure/" + document, kind = "instance", classification = "applicable", expected = "invalid", documents = new[] { document } };
+            using var group = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(new { schema = (object?)null, instances = new[] { row }, supplementalInstances = Array.Empty<object>() }));
+            using var journal = new MemoryStream(); using var output = new StreamWriter(journal, new System.Text.UTF8Encoding(false), 1024, leaveOpen: true);
+            BclEngine.Run(group.RootElement, output, inputs); output.Flush();
+            string text = System.Text.Encoding.UTF8.GetString(journal.ToArray()); Console.WriteLine(text.Trim());
+            using var observed = System.Text.Json.JsonDocument.Parse(text); return observed.RootElement.Clone();
+        }
+        Runner.HintSchemaPreparationException Hint(string name) => new(new(name, "", true, "control", Runner.UriFor(name).AbsoluteUri), new XmlException("control staging failure"));
+        void FinalRow(System.Text.Json.JsonElement row, string tag)
+        {
+            Require(row.GetProperty("actual").GetString() == "harness-exception" && row.GetProperty("passed").ValueKind == System.Text.Json.JsonValueKind.False && row.GetProperty("detail").GetString()!.Contains(tag, StringComparison.Ordinal), "FINAL production infrastructure row; no valid/invalid/unavailable/limitation credit " + tag);
+        }
+        void FinalProbe(Observation observation, string tag)
+        {
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(observation));
+            Require(observation.Outcome == "harness-exception" && Runner.Oracle("invalid", observation.Outcome, "instance") == false && observation.Detail.Contains(tag, StringComparison.Ordinal), "FINAL production hint probe infrastructure; no semantic/preparation credit " + tag);
+        }
+        bool augmentedWarningOrWrapping = false, probeWarningOrWrapping = false, instanceWrapping = false;
+        try
+        {
+            Require(Observe().GetProperty("actual").GetString() == "instance-hint-ordering-limitation", "healthy production path reaches authored late-hint limitation");
+            Require(BclEngine.ProbeHintSchema(Hint("probe.xsd"), new()).Outcome == "instance-hint-preparation-limitation", "healthy production hint probe reaches preparation limitation");
+            Require(BclEngine.ProbeHintSchema(Hint("empty-id.xsd"), new()).Outcome == "harness-exception", "hint probe empty-id exception never uses standalone21 allowance");
+            foreach (bool io in new[] { false, true })
+            {
+                foreach (string mode in new[] { "resolver-acquisition", "resolver-returned-read", "prepared-acquisition", "prepared-caller-read" })
+                {
+                    string tag = "control augmented " + mode + " " + io;
+                    Exception fault = io ? new IOException(tag) : new ArgumentException(tag, "name");
+                    bool invoked = false;
+                    var inputs = new BclEngine.ControlInputs
+                    {
+                        Diagnostic = (_, severity) => augmentedWarningOrWrapping |= severity == XmlSeverityType.Warning,
+                        Caught = (_, error) => { augmentedWarningOrWrapping |= !ReferenceEquals(error, fault) && error is XmlException or XmlSchemaException; Console.WriteLine("augmented caught " + error.GetType().FullName); },
+                    };
+                    if (mode.StartsWith("resolver-", StringComparison.Ordinal)) inputs.InstanceResolver = () => new() { ControlAcquisition = _ => { invoked = true; return mode == "resolver-acquisition" ? throw fault : new FaultRead(fault); } };
+                    else inputs.PreparedPrincipal = _ => { invoked = true; return mode == "prepared-acquisition" ? throw fault : (new FaultRead(fault), Runner.UriFor("__instance_wrapper__.xsd")); };
+                    FinalRow(Observe(inputs), tag); Require(invoked, "production augmented fault seam exercised " + mode);
+                }
+                foreach (string mode in new[] { "resolver-acquisition", "resolver-returned-read", "probe-acquisition", "probe-caller-read" })
+                {
+                    string tag = "control probe " + mode + " " + io;
+                    Exception fault = io ? new IOException(tag) : new ArgumentException(tag, "name");
+                    bool invoked = false; var resolver = new BclEngine.Resolver();
+                    var inputs = new BclEngine.ControlInputs
+                    {
+                        Diagnostic = (_, severity) => probeWarningOrWrapping |= severity == XmlSeverityType.Warning,
+                        Caught = (_, error) => { probeWarningOrWrapping |= !ReferenceEquals(error, fault) && error is XmlException or XmlSchemaException; Console.WriteLine("probe caught " + error.GetType().FullName); },
+                    };
+                    if (mode.StartsWith("resolver-", StringComparison.Ordinal)) resolver.ControlAcquisition = _ => { invoked = true; return mode == "resolver-acquisition" ? throw fault : new FaultRead(fault); };
+                    else inputs.ProbePrincipal = _ => { invoked = true; return mode == "probe-acquisition" ? throw fault : new FaultRead(fault); };
+                    FinalProbe(BclEngine.ProbeHintSchema(Hint("probe.xsd"), resolver, inputs), tag); Require(invoked, "production probe fault seam exercised " + mode);
+                }
+                foreach (string mode in new[] { "instance-acquisition", "instance-caller-read" })
+                {
+                    string tag = "control instance " + mode + " " + io;
+                    Exception fault = io ? new IOException(tag) : new ArgumentException(tag, "name"); bool invoked = false;
+                    var inputs = new BclEngine.ControlInputs
+                    {
+                        InstancePrincipal = _ => { invoked = true; return mode == "instance-acquisition" ? throw fault : new FaultRead(fault); },
+                        Caught = (_, error) => { instanceWrapping |= !ReferenceEquals(error, fault) && error is XmlException or XmlSchemaException; Console.WriteLine("instance caught " + error.GetType().FullName); },
+                    };
+                    FinalRow(Observe(inputs), tag); Require(invoked, "production instance fault seam exercised " + mode);
+                }
+            }
+            Require(augmentedWarningOrWrapping && probeWarningOrWrapping, "actual BCL warning/wrapping paths exercised and FINAL observations remain harness failures");
+            // A caller may itself throw a wrapped XML/schema error. Sticky precedence still wins.
+            foreach (bool schemaError in new[] { false, true })
+            {
+                string tag = "control wrapped caller " + schemaError;
+                Exception fault = schemaError ? new XmlSchemaException(tag, new IOException(tag)) : new XmlException(tag, new IOException(tag));
+                var inputs = new BclEngine.ControlInputs { InstancePrincipal = _ => new FaultRead(fault) };
+                FinalRow(Observe(inputs), tag);
+                FinalProbe(BclEngine.ProbeHintSchema(Hint("probe.xsd"), new(), new() { ProbePrincipal = _ => new FaultRead(fault) }), tag);
+                FinalRow(Observe(new() { PreparedPrincipal = _ => (new FaultRead(fault), Runner.UriFor("__instance_wrapper__.xsd")) }), tag);
+                FinalRow(Observe(new() { ProbePrincipal = _ => new FaultRead(fault) }, "probe-instance.xml"), tag);
+            }
+            Console.WriteLine("BCL instance native wrapping observed: " + instanceWrapping + "; caller-wrapped XML/schema errors FINAL harness assertions required independently");
+        }
+        finally { Runner.Root = savedRoot; Runner.OriginalPaths = savedPaths; Directory.Delete(temporary, true); }
+    }
+    private sealed class FaultRead(Exception failure) : MemoryStream
+    {
+        public override bool CanSeek => false;
+        public override int Read(byte[] buffer, int offset, int count) { if (count == 0) return 0; throw failure; }
+        public override int Read(Span<byte> buffer) { if (buffer.IsEmpty) return 0; throw failure; }
+    }
+    private static void Require(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); Console.WriteLine("PASS " + label); }
+    private static string XmlFailure(string input, long maximum)
+    {
+        try { using var r=XmlReader.Create(new StringReader(input),new XmlReaderSettings { MaxCharactersInDocument=maximum });while(r.Read()) {} return "none"; }
+        catch(Exception e) { return BclEngine.ExceptionOutcome(e,schema:true); }
+    }
+    private static bool Assess(string instance, string schema)
+    {
+        var set=new XmlSchemaSet();using(var r=XmlReader.Create(new StringReader(schema))) set.Add(null,r);set.Compile();
+        var settings=new XmlReaderSettings { Schemas=set,ValidationType=ValidationType.Schema, ValidationFlags=XmlSchemaValidationFlags.ReportValidationWarnings };
+        settings.ValidationEventHandler+=(_,e)=>{ if(e.Severity==XmlSeverityType.Error) throw e.Exception; };
+        using var reader=XmlReader.Create(new StringReader(instance),settings);return BclEngine.ReadAssessment(reader);
+    }
+    private static System.Text.Json.JsonElement Row(string id, string document)
+    {
+        using var row=System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(new { id, documents=new[] {document}, classification="applicable", expected="valid", kind="instance" }));return row.RootElement.Clone();
+    }
+    private static void HintControls()
+    {
+        string root=Path.Combine(Path.GetTempPath(),"xsd-hint-controls-"+Guid.NewGuid().ToString("N"));string upstream=Path.Combine(root,"upstream");Directory.CreateDirectory(Path.Combine(upstream,"base/child"));
+        File.WriteAllText(Path.Combine(root,"external-resources.json"),"[]");Runner.Root=upstream;
+        const string first="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:first'><xs:element name='r'/></xs:schema>";
+        string second="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:n='urn:second' targetNamespace='urn:second'><xs:include schemaLocation='missing-second-child.xsd'/><xs:element name='r' type='n:MissingType'/></xs:schema>";
+        var files=new Dictionary<string,string> { ["first.xsd"]=first,["second.xsd"]=second,["first.xml"]="<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:first first.xsd'/>",["second.xml"]="<r xmlns='urn:second' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:second second.xsd'/>",["mismatch.xml"]="<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:wrong first.xsd'/>",["nested.xml"]="<r xml:base='base/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><s xml:base='child/' xmlns='urn:second' xsi:schemaLocation='urn:second deep.xsd'/></r>",["base/child/deep.xsd"]="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:second'><xs:element name='s'/></xs:schema>",["late.xml"]="<r xmlns:q='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:type='q:T'><r xmlns='urn:first' xsi:schemaLocation='urn:first first.xsd'/></r>" };
+        foreach(var file in files)File.WriteAllText(Path.Combine(upstream,file.Key),file.Value);
+        const string malformed="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:bad=''><xs:element name='r'/></xs:schema>";
+        File.WriteAllText(Path.Combine(upstream,"malformed.xsd"),malformed);
+        File.WriteAllText(Path.Combine(upstream,"malformed.xml"),"<r xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='malformed.xsd'/>");
+        Runner.OriginalPaths=files.Keys.Append("missing-second-child.xsd").ToHashSet(StringComparer.Ordinal);
+        Runner.OriginalPaths.UnionWith(["malformed.xsd","malformed.xml"]);
+        try
+        {
+            const string compatible="<?xml version='1.1'?><xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:compatible'><xs:element name='r'/></xs:schema>";
+            File.WriteAllText(Path.Combine(upstream,"compatible.xsd"),compatible);
+            string compatibleHash=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(compatible))).ToLowerInvariant();
+            File.WriteAllText(Path.Combine(root,"metadata-namespaces.json"),System.Text.Json.JsonSerializer.Serialize(new Dictionary<string,object> { ["compatible.xsd"]=new { @namespace="urn:compatible",sha256=compatibleHash } }));
+            Require(Runner.TargetNamespace(new Uri(Runner.Origin+"compatible.xsd"))=="urn:compatible"&&File.ReadAllText(Path.Combine(upstream,"compatible.xsd"))==compatible,"independent namespace fact preserves original compatible1.1 schema bytes");
+            var compatibleResult=Xemele.Validation.XmlSchema.Compile(compatible).Validate("<r xmlns='urn:compatible'/>");Require(compatibleResult.IsComplete&&compatibleResult.IsValid,"public engine consumes unchanged compatible1.1 declaration");
+            var valid=Xemele.Validation.XmlSchema.Compile(first).Validate(files["mismatch.xml"]);Require(valid.IsComplete&&valid.IsValid,"namespace mismatch fixture is otherwise valid against explicit original schema");
+            var journal=new List<object>();bool mismatch=false;try { Runner.InstanceInputs(Row("mismatch","mismatch.xml"),[],journal); } catch(Runner.HintNamespaceException) { mismatch=true; }
+            Require(mismatch&&System.Text.Json.JsonSerializer.Serialize(journal).Contains("urn:wrong",StringComparison.Ordinal),"authored namespace mismatch refuses staging and retains original pair");
+            var descendant=Runner.InstanceInputs(Row("nested","nested.xml"),[],new());Require(descendant.Augmented&&descendant.Inputs.Single().Location==Runner.Origin+"base/child/deep.xsd"&&descendant.Inputs.Single().Element.Contains("element[1]",StringComparison.Ordinal),"descendant hint retains inherited xml:base and element provenance");
+            var late=Runner.InstanceInputs(Row("late","late.xml"),[],new());Require(late.Limitations.Length==1,"namespace use before descendant hint remains explicit ordering limitation");
+            File.WriteAllText(Path.Combine(upstream,"supplied-late.xml"),"<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><child xsi:schemaLocation='urn:first ignored-absent.xsd'/></r>");
+            var suppliedJournal=new List<object>();var suppliedLate=Runner.InstanceInputs(Row("supplied-late","supplied-late.xml"),["first.xsd"],suppliedJournal);
+            Require(suppliedLate.Limitations.Length==1&&!suppliedLate.Augmented&&suppliedLate.Inputs.Length==1&&!suppliedLate.Inputs.Any(i=>i.Location.Contains("ignored-absent",StringComparison.Ordinal))&&System.Text.Json.JsonSerializer.Serialize(suppliedJournal).Contains("namespace already supplied; hint retained without fetch",StringComparison.Ordinal),"late hint for supplied namespace remains limitation without ignored fetch");
+            File.WriteAllText(Path.Combine(upstream,"supplied-first.xml"),"<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:first ignored-absent.xsd'/>");
+            var suppliedFirst=Runner.InstanceInputs(Row("supplied-first","supplied-first.xml"),["first.xsd"],new());
+            Require(suppliedFirst.Limitations.Length==0&&!suppliedFirst.Augmented,"hint on supplied namespace first-use element remains assessable without fetch");
+            var firstUseResult=Xemele.Validation.XmlSchema.Compile(first).Validate(File.ReadAllText(Path.Combine(upstream,"supplied-first.xml")));
+            Require(firstUseResult.IsComplete&&firstUseResult.IsValid,"actual product first-use supplied namespace remains complete valid without hint fetch");
+            Require(Assess(File.ReadAllText(Path.Combine(upstream,"supplied-first.xml")),first),"actual BCL first-use supplied namespace remains assessed without hint fetch");
+            Runner.HintSchemaPreparationException? malformedFailure=null;var malformedJournal=new List<object>();
+            try { Runner.InstanceInputs(Row("malformed","malformed.xml"),[],malformedJournal); } catch(Runner.HintSchemaPreparationException e) { malformedFailure=e; }
+            Require(malformedFailure?.Input.Namespace==""&&malformedFailure.Input.Location==Runner.Origin+"malformed.xsd"&&System.Text.Json.JsonSerializer.Serialize(malformedJournal).Contains("hint-schema-preparation-error",StringComparison.Ordinal),"malformed hinted schema preserves authored input and staging failure without namespace inference");
+            var acceptedProbe=new Runner.HintSchemaPreparationException(new("first.xsd","urn:first",true,"control",Runner.Origin+"first.xml"),new XmlException("synthetic preparation failure"));
+            Require(Runner.ProbeHintSchema(acceptedProbe,new(),default).Outcome=="instance-hint-preparation-limitation","accepted product schema probe leaves instance unassessed");
+            Require(BclEngine.ProbeHintSchema(acceptedProbe,new()).Outcome=="instance-hint-preparation-limitation","accepted BCL schema probe leaves instance unassessed");
+            var group=new { id="controls",metadata="controls",schema=(object?)null,instances=new[] {Row("first","first.xml"),Row("second","second.xml")},supplementalInstances=Array.Empty<object>() };
+            string inventory=Path.Combine(root,"inventory.json");File.WriteAllText(inventory,System.Text.Json.JsonSerializer.Serialize(new { groups=new[] {group} }));
+            foreach(string engine in new[] {"product","bcl"})
+            {
+                string output=Path.Combine(root,engine+".jsonl");Require(Runner.Main([upstream,inventory,"controls",engine,output])==0,engine+" bounded journal control child completed");
+                var rows=File.ReadAllLines(output);Require(rows.Length==2,engine+" exact two-instance control observations");
+                using var one=System.Text.Json.JsonDocument.Parse(rows[0]);using var two=System.Text.Json.JsonDocument.Parse(rows[1]);
+                string resources=two.RootElement.GetProperty("resources").ToString();
+                Require(one.RootElement.GetProperty("actual").GetString()=="instance-valid"&&two.RootElement.GetProperty("passed").ValueKind==System.Text.Json.JsonValueKind.False&&resources.Contains("second.xsd",StringComparison.Ordinal)&&resources.Contains("missing-second-child.xsd",StringComparison.Ordinal)&&!resources.Contains("first.xsd",StringComparison.Ordinal),engine+" failed second staging retains its own requests without first-instance leakage");
+                var malformedGroup=new { id="malformed",metadata="malformed",schema=(object?)null,instances=new[] {Row("malformed","malformed.xml")},supplementalInstances=Array.Empty<object>() };
+                string malformedInventory=Path.Combine(root,"malformed-inventory.json");File.WriteAllText(malformedInventory,System.Text.Json.JsonSerializer.Serialize(new { groups=new[] {malformedGroup} }));
+                string malformedOutput=Path.Combine(root,engine+"-malformed.jsonl");Require(Runner.Main([upstream,malformedInventory,"malformed",engine,malformedOutput])==0,engine+" malformed hint control child completed");
+                var malformedRows=File.ReadAllLines(malformedOutput);using var rejected=System.Text.Json.JsonDocument.Parse(malformedRows.Single());
+                Require(rejected.RootElement.GetProperty("actual").GetString()=="schema-unavailable"&&rejected.RootElement.GetProperty("passed").ValueKind==System.Text.Json.JsonValueKind.False&&rejected.RootElement.GetProperty("detail").GetString()!.Contains("unchanged original schema probe: schema-invalid",StringComparison.Ordinal)&&File.ReadAllText(Path.Combine(upstream,"malformed.xsd"))==malformed,engine+" actual unchanged hinted schema rejection is not an invalid-instance pass");
+            }
+        }
+        finally {Directory.Delete(root,true);Runner.OriginalPaths=null;}
+    }
+    private static void ExplicitProfileControls()
+    {
+        static string Pattern(string value) => "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:simpleType><xs:restriction base='xs:string'><xs:pattern value='"+value+"'/></xs:restriction></xs:simpleType></xs:element></xs:schema>";
+        foreach(string block in new[] {"IsHighSurrogates","IsHighPrivateUseSurrogates","IsLowSurrogates"})
+            foreach(string polarity in new[] {"p","P"})
+            {
+                Observation? failure=null;
+                try { Xemele.Validation.XmlSchema.Compile(Pattern("\\"+polarity+"{"+block+"}")); }
+                catch(Exception e) { failure=Runner.Failure(e,new(),default); }
+                Require(failure?.Outcome=="schema-invalid"&&failure.Codes.Contains("REGEX.Syntax",StringComparer.Ordinal),"Second Edition excluded block \\"+polarity+"{"+block+"} rejects semantically");
+            }
+        foreach(var witness in new[] {("\\p{IsHangulSyllables}","&#xD7A3;"),("\\P{IsHangulSyllables}","&#xE000;"),("\\p{IsPrivateUse}","&#xE000;"),("\\P{IsPrivateUse}","&#xD7A3;")})
+        {
+            var result=Xemele.Validation.XmlSchema.Compile(Pattern(witness.Item1)).Validate("<r>"+witness.Item2+"</r>");
+            Require(result.IsComplete&&result.IsValid,"legal neighboring block "+witness.Item1+" remains valid");
+        }
+        const string notation="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:notation name='n' public='urn:n'/><xs:simpleType name='N'><xs:restriction base='xs:NOTATION'><xs:enumeration value='n'/></xs:restriction></xs:simpleType><xs:simpleType name='U'><xs:union memberTypes='N xs:integer'/></xs:simpleType><xs:element name='r' type='U'/></xs:schema>";
+        var schema=Xemele.Validation.XmlSchema.Compile(notation);var valid=schema.Validate("<r>n</r>");
+        Require(valid.IsComplete&&valid.IsValid,"enumerated NOTATION union remains valid");
+        var invalid=schema.Validate("<r>undeclared</r>");Require(invalid.IsComplete&&!invalid.IsValid,"enumerated NOTATION union rejects other lexical value completely");
+    }
+    internal static int Run()
+    {
+        const string schema="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:any processContents='lax' minOccurs='0'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+        Require(XmlFailure(schema,2)=="reference-policy-refusal","valid schema tiny document quota is nonsemantic refusal");
+        Require(XmlFailure("<schema><",1000)=="schema-invalid","malformed schema syntax is independently invalid");
+        Require(Assess("<r/>",schema),"known valid root is assessed");
+        Require(!Assess("<unknown xmlns='urn:unknown'/>",schema),"unknown root remains unassessed");
+        Require(Assess("<r><unknown/></r>",schema),"lax unknown child preserves assessed valid root");
+        string root=Path.Combine(Path.GetTempPath(),"xsd-corpus-controls-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(Path.Combine(root,"upstream"));
+        Runner.Root=Path.Combine(root,"upstream");Runner.OriginalPaths=new(StringComparer.Ordinal) { "missing.xsd" };File.WriteAllText(Path.Combine(root,"external-resources.json"),"[]");
+        try
+        {
+            var resolver=new Runner.Resolver();
+            Require(resolver.Resolve(new(new Uri("http://foo/foo"),null,Xemele.XmlResourceKind.Schema),default) is null,"authored external nonresolution uses nullable refusal");
+            Require(resolver.Resolve(new(new Uri(Runner.Origin+"not-authored.xsd"),null,Xemele.XmlResourceKind.Schema),default) is null,"authored absent local resource uses nullable refusal");
+            bool missing=false;try { resolver.Resolve(new(new Uri(Runner.Origin+"missing.xsd"),null,Xemele.XmlResourceKind.Schema),default); } catch(FileNotFoundException) { missing=true; }
+            Require(missing,"missing declared imported input remains harness error");
+        }
+        finally { Directory.Delete(root,recursive:true);Runner.OriginalPaths=null; }
+        Require(Runner.Oracle("invalid","incomplete-refusal","schema")==false && Runner.Oracle("invalid","timeout","instance")==false && Runner.Oracle("invalid","harness-exception","schema")==false,"refusal timeout and harness exception cannot satisfy invalid oracle");
+        Require(Runner.Oracle("indeterminate","instance-valid","instance") is null && Runner.Oracle("indeterminate","incomplete-refusal","instance")==false,"indeterminate semantic observations and refusal stay separate");
+        HintControls();
+        ExplicitProfileControls();
+        return 0;
+    }
+}

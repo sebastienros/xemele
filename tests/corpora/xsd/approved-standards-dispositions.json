@@ -1,0 +1,423 @@
+{
+  "status": "HUMAN APPROVED exact documented standards exceptions; original results retained, never passes",
+  "upstream_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "observed_baseline": "80cd6bac0e740947cc3809fef4300068d8b4e51b",
+  "proposal": "Retain current pinned Second Edition interpretations and allow only these14original failures plus9dependent unassessed instances as explicitly documented gate exceptions. Never count them as passing, rewrite original expectations, or extend this decision to concrete defects or other cases.",
+  "authority_needed": "M8-gate-A2 currently permits only the exact human-approved time_maxInclusive007_119 exception; extending the gate requires a human decision.",
+  "families": [
+    {
+      "name": "Wildcard group cardinality",
+      "schema_count": 5,
+      "reason": "The published per-child range check conflicts with aggregate restriction expectations; W3C R240 identifies the exact1.0 problem without an adopted correction.",
+      "sources": [
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=2232"
+      ]
+    },
+    {
+      "name": "Attribute wildcard extension",
+      "schema_count": 6,
+      "reason": "Union mapping produces Not(absent), while extension invokes intensional subset requiring the same excluded namespace. Current rejection follows that published test despite ordinary set containment.",
+      "sources": [
+        "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#cos-ns-subset"
+      ]
+    },
+    {
+      "name": "anySimpleType union member",
+      "schema_count": 1,
+      "reason": "Structures and Datatypes readings conflict over membership; W3C2574 remains unresolved for1.0.",
+      "sources": [
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=2574"
+      ]
+    },
+    {
+      "name": "Empty URI authority",
+      "schema_count": 1,
+      "reason": "Pinned RFC2396 optional-server grammar accepts //, whereas TSTF4048 changed the oracle to invalid; W3C27257 records the exact binding dispute.",
+      "sources": [
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4048",
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=27257"
+      ]
+    },
+    {
+      "name": "Restricted-union xsi:type",
+      "instance_count": 1,
+      "reason": "Literal1.0 union-member derivation permits the member xsi:type despite union facets. W3C4065/5784 retains this exact test as disputed-spec;1.1 changed the rule.",
+      "sources": [
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4065",
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=5784"
+      ]
+    }
+  ],
+  "schema_cases": [
+    {
+      "id": "msMeta/DataTypes_w3c.xml#g1356/s:anyURI_b006_1356",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4048",
+          "status": "stable",
+          "date": "2008-11-01"
+        }
+      ],
+      "documents": {
+        "msData/datatypes/Facets/anyURI/anyURI_b006.xsd": "2e59a2b131652b72b6d83ec70be78595276d36e644033d1d41a19eb718712108"
+      },
+      "current_product_outcome": "schema-valid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g248/s:particlesHa070",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesHa070.xsd": "9863c8a2a7ecd3895113ab219041e5056476ea1a928bafccc8aac60716b5ea73"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g250/s:particlesHa080",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesHa080.xsd": "8c9e298d1ef42b9c7daba23e9c3f11bf3a93e32b804fa52d054ba0b176d93cd2"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g254/s:particlesHa084",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesHa084.xsd": "4ba323f36c97b2cc59d12139cc314780cb516b05b9d7f8df8c801329b7ee605b"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g705/s:particlesR013",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesR013.xsd": "fba2337df737b4b9212d85471bb3d2323b3c2a1f675ff7ac6fde58c0a0754f46"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g748/s:particlesQ013",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesQ013.xsd": "1621b3d5b1826424225ca3940f45d9ba47e0ab521b36a98be8585299cb009122"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/SimpleType_w3c.xml#g121/s:stE053",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/simpleType/stE053.xsd": "a6a08198ad43ede42fa8f2e0a48d98273fded20308895a829f0d25f8a566e536"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g309/s:wildZ013a",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873.xsd": "30126d76a297ef26677aad8cdd4d831a5df6fecfb4e036ca7995d8c130bb8881"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g310/s:wildZ013b",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873.xsd": "30126d76a297ef26677aad8cdd4d831a5df6fecfb4e036ca7995d8c130bb8881"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g311/s:wildZ013c",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873.xsd": "30126d76a297ef26677aad8cdd4d831a5df6fecfb4e036ca7995d8c130bb8881"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g312/s:wildZ013d",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873.xsd": "30126d76a297ef26677aad8cdd4d831a5df6fecfb4e036ca7995d8c130bb8881"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g313/s:wildZ013e",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873.xsd": "30126d76a297ef26677aad8cdd4d831a5df6fecfb4e036ca7995d8c130bb8881"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g314/s:wildZ013f",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873.xsd": "30126d76a297ef26677aad8cdd4d831a5df6fecfb4e036ca7995d8c130bb8881"
+      },
+      "current_product_outcome": "schema-invalid",
+      "original_passed": false
+    }
+  ],
+  "instance_cases": [
+    {
+      "id": "msMeta/SimpleType_w3c.xml#g337/i0:stZ073b.i",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4065",
+          "status": "disputed-spec",
+          "date": "2010-04-05"
+        }
+      ],
+      "documents": {
+        "msData/simpleType/stZ073.xml": "e0eaccb62769e43be7465cea1c37a678efd8fc5293bfe9b003806aaeb27e8dd7"
+      },
+      "schema_documents": {
+        "msData/simpleType/stZ073b.xsd": "c20c1ae6d6dd83bcad940b6fd17e107abd1723228469e7a009d24753abdbcbcd"
+      },
+      "current_product_outcome": "instance-valid",
+      "original_passed": false
+    }
+  ],
+  "dependent_unassessed_instances": [
+    {
+      "id": "msMeta/Particles_w3c.xml#g705/i0:particlesR013.v",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesR013.xml": "5a13f7df2cd15370a181fc799de86e448a5ab6b3352217040d60205618391f13"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g748/i0:particlesQ013.v",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesQ013.xml": "61f71605220352cb9896208b61a063ef0b753a08ffbc4f0e522021644c56a3df"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/SimpleType_w3c.xml#g121/i0:stE053.i",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/simpleType/stE053.xml": "06e041298b1171edf4447ee1b00eb3019d70c3a49f702761ade7300d89628a9d"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g309/i0:wildZ013a.i",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873a.xml": "be5fe02f1c690f6a3c3832327651d9ad6e468834457f89439d961fc246aa7a74"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g310/i0:wildZ013b.v",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873b.xml": "5659f43ebdc20b7f2b2eee95f838eea5b21d084cd595b877528741cb10752c15"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g311/i0:wildZ013c.v",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873c.xml": "a1808cd0873a1bf50c0e96b83c2d47b74b4428fb4ec128d893579f646bbc0ea0"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g312/i0:wildZ013d.i",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873d.xml": "786b64d419bf03ce238fe5de21c45c6ad851d6986b34922b305b05e1a10b942f"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g313/i0:wildZ013e.i",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873e.xml": "419c6a2849401670b6b2763e0694bb193c56b57dbd4e2174a24dfa4f8f568d60"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    },
+    {
+      "id": "msMeta/Wildcards_w3c.xml#g314/i0:wildZ013f.i",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/wildcards/test328873f.xml": "f67050948bf9a91429e14c1b72165593a06851db2c23abb567d7ba4dd8216e1a"
+      },
+      "current_product_outcome": "schema-unavailable",
+      "instance_assessed": false,
+      "original_passed": false
+    }
+  ],
+  "human_approval": {
+    "source": "Direct human response in root conversation",
+    "question_id": "call_dcdabbc481104ee2b07f5e4a5f8ba308",
+    "date": "2026-10-12",
+    "scope": "Exact prepared cases only; no original result changes or pass credit",
+    "answer": "Allow these exact documented exceptions"
+  }
+}
