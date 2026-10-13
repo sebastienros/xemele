@@ -102,7 +102,7 @@ internal static class PiAllocationChild
         Require(request.Version == 1 && request.Mode == mode && request.Token == token && Guid.TryParseExact(token, "N", out _), "Mismatched child capability.");
         Require(request.ParentPid != Environment.ProcessId && request.ParentPid > 0, "Invalid child parent identity.");
         using (var parent = Process.GetProcessById(request.ParentPid)) Require(!parent.HasExited, "Child parent is no longer running.");
-        string artifactRoot = Path.Combine(Repository(), "artifacts/M2-pi-allocation-probe/child-runs") + Path.DirectorySeparatorChar;
+        string artifactRoot = Path.Combine(Repository(), "artifacts", "M2-pi-allocation-probe", "child-runs") + Path.DirectorySeparatorChar;
         Require(Path.GetFullPath(request.Directory).StartsWith(artifactRoot, StringComparison.Ordinal), "Child request outside owned artifacts.");
         Require(Canonical(path!) == Canonical(Path.Combine(request.Directory, mode + ".request.json"))
             && request.ReportPath == Path.Combine(request.Directory, mode + ".report.json")
@@ -129,7 +129,7 @@ internal static class PiAllocationChild
         Provenance expected = Fingerprint(executable);
         Require(expected.RuntimeVersion.StartsWith("10.", StringComparison.Ordinal), "PI allocation scope is net10.0 only.");
         string token = Guid.NewGuid().ToString("N");
-        string directory = Path.Combine(Repository(), "artifacts/M2-pi-allocation-probe/child-runs", Environment.ProcessId + "-" + token);
+        string directory = Path.Combine(Repository(), "artifacts", "M2-pi-allocation-probe", "child-runs", Environment.ProcessId + "-" + token);
         System.IO.Directory.CreateDirectory(directory);
         Report real = Run("real"), positive = Run("positive"); // Real always first; no child retries.
         return (real, positive, directory);
