@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Full conformance and sustained robustness campaign",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-robustness",
   "base_revision": "800f47998e4bc44dd95eb517bb9abe777550cad1",
-  "integration_revision": "22da3c171c1c8db872548f795917c5dc33313ee3",
+  "integration_revision": "7325a31787b587be1f8f5fcc84f1d5db427b0dbb",
   "depends_on": [
     "M9-contracts"
   ],
@@ -78,7 +78,9 @@
       "artifact": "docs/reports/M9-robustness/afl-engine-smoke.json"
     }
   ],
-  "blockers": [],
+  "blockers": [
+    "Remaining required fuzz work deferred by direct human instruction; existing source-bound conformance evidence retained."
+  ],
   "handoff": {
     "summary": "Exact non-fuzz conformance closure bound; initial local fuzz evidence retained before direct human deferral.",
     "checks": [
