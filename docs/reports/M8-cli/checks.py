@@ -129,7 +129,7 @@ def main():
     supervision = module('schema_cli_supervision', ROOT/'docs/reports/M8-xsd-corpus/supervision.py')
     nested = module('schema_cli_nested', HERE/'nested_ownership.py')
     supervision.ROOT = ROOT
-    payload = {'phase': phase, 'passed': False, 'commands': [], 'bindingFailure': None,
+    payload = {'phase': phase, 'passed': False, 'commands': [], 'bindingFailure': None, 'primaryFailure': None,
                'workDeadline': end, 'hardDeadline': hard, 'started': started, 'rawDeleted': False}
     transient = ROOT/'artifacts/M8-cli'/identifier
     logs_inspected = False
@@ -155,12 +155,18 @@ def main():
                 record = nested.supervise_family_command(supervision, argv, index, ENV, work, min(hard-10, work+10))
                 assert record is not None, 'Missing command terminal receipt'
                 record['argv'] = argv; payload['commands'][-1] = record
+                workload_failed = not supervision.workload_succeeded(record) or not record['nestedOwnership']['allOwnedGroupsAbsent']
+                if workload_failed:
+                    payload['primaryFailure'] = {'command': index, 'argv': argv, 'exit': record['exit'],
+                                                 'reason': record['reason'], 'diagnostics': []}
                 # Bind a terminal receipt before output inspection can fail.
                 nested.durable(HERE/(identifier+f'-command-{index}.receipt.json'), record)
                 output = (transient/f'command-{index}.log').read_text(errors='replace')
-                record['summary'] = [line for line in output.splitlines() if line.startswith(('PASS ', 'BOUNDARY ', 'API baseline', 'Validated ', 'Build succeeded.', '    0 Warning', '    0 Error'))][-12:]
+                record['summary'] = [line for line in output.splitlines() if line.startswith(('PASS ', 'BOUNDARY ', 'API baseline', 'Validated ', 'Build succeeded.', 'Build FAILED.', '    0 Warning', '    0 Error'))][-12:]
+                record['diagnostics'] = list(dict.fromkeys(line[:512] for line in output.splitlines() if ': error ' in line or line.startswith(('error ', 'Unhandled exception.', 'System.'))))[:8]
                 print(json.dumps(record), flush=True)
-                if not supervision.workload_succeeded(record) or not record['nestedOwnership']['allOwnedGroupsAbsent']:
+                if workload_failed:
+                    payload['primaryFailure']['diagnostics'] = record['diagnostics']
                     print('\n'.join(output.splitlines()[-16:]), flush=True)
                     break
             logs_inspected = True
@@ -168,6 +174,8 @@ def main():
                 supervision.workload_succeeded(r) and r['nestedOwnership']['allOwnedGroupsAbsent'] for r in payload['commands']))
         except BaseException as error:
             payload['bindingFailure'] = type(error).__name__+': '+str(error); payload['passed'] = False
+            if payload['primaryFailure'] is None:
+                payload['primaryFailure'] = {'reason': payload['bindingFailure'], 'stage': 'work/binding'}
         finally:
             try:
                 after = input_identities(); payload['afterInputs'] = after
@@ -179,7 +187,10 @@ def main():
                     certificate_after = verify_preparation_certificate(sys.argv[2], HERE/'prepared.json')
                     assert payload.get('preparationCertificate') == certificate_after, 'Preparation certificate or outer receipt changed during checks'
             except BaseException as error:
-                payload['bindingFailure'] = type(error).__name__+': '+str(error); payload['passed'] = False
+                payload['postPhaseBindingFailure'] = type(error).__name__+': '+str(error); payload['passed'] = False
+                if payload['bindingFailure'] is None: payload['bindingFailure'] = payload['postPhaseBindingFailure']
+                if payload['primaryFailure'] is None:
+                    payload['primaryFailure'] = {'reason': payload['postPhaseBindingFailure'], 'stage': 'post-phase binding'}
             # Sweep every local registry, including one whose supervisor raised before returning a record.
             cleanup = []
             try:
@@ -225,7 +236,7 @@ def main():
                     publish_phase(target, payload, identifier+'-reconcile')
                 except BaseException as reconciliation:
                     payload['reconciliationFailure'] = type(reconciliation).__name__+': '+str(reconciliation)
-    print(json.dumps({'phase': phase, 'passed': payload['passed'], 'bindingFailure': payload['bindingFailure'],
+    print(json.dumps({'phase': phase, 'passed': payload['passed'], 'bindingFailure': payload['bindingFailure'], 'primaryFailure': payload['primaryFailure'],
                       'allOwnedGroupsAbsent': payload['allOwnedGroupsAbsent'], 'rawDeleted': payload['rawDeleted'],
                       'deadlineExceeded': payload['deadlineExceeded'], 'receipt': str(receipt)}), flush=True)
     raise SystemExit(0 if payload['passed'] else 1)
