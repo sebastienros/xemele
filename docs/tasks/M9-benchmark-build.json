@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Repair aggregate benchmark source-glob collision",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-benchmark-build",
   "base_revision": "f6dcea774e9ba637bbc8f59ad8955f72b4848057",
-  "integration_revision": null,
+  "integration_revision": "3f3dadd5c177f9193cf7b02a3808f8aa69c0fec9",
   "depends_on": [
     "M9-contracts",
     "M9-build-compatibility",
@@ -33,7 +33,8 @@
       "status": "passed",
       "evidence": [
         "aggregate-and-probes",
-        "resolver-preservation"
+        "resolver-preservation",
+        "integrated-build"
       ]
     },
     {
@@ -42,7 +43,8 @@
       "status": "passed",
       "evidence": [
         "aggregate-and-probes",
-        "resolver-preservation"
+        "resolver-preservation",
+        "integrated-build"
       ]
     }
   ],
@@ -68,6 +70,15 @@
       "result": "passed",
       "summary": "Original standalone resolver sample builds, aggregate rebuilds and lists exactly the same benchmark methods. All runtime and earlier source/project bytes unchanged.",
       "artifact": "docs/reports/M9-benchmark-build/checks-resolver.json"
+    },
+    {
+      "id": "integrated-build",
+      "kind": "integration",
+      "revision": "3f3dadd5c177f9193cf7b02a3808f8aa69c0fec9",
+      "command": "check.py --phase integration --resolver-only; exact prior schema/aggregate source closure comparison",
+      "result": "passed",
+      "summary": "Integrated aggregate and resolver build/list pass;220methods match branch, five schema project source closures unchanged; no repeated benchmarks or runtime checks claimed.",
+      "artifact": "docs/reports/M9-benchmark-build/integration.json"
     }
   ],
   "blockers": [],
@@ -76,9 +87,7 @@
     "checks": [
       "Aggregate220methods list correctly; five schema probes and resolver sample build;206task validation passes"
     ],
-    "remaining": [
-      "Integration verification."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
