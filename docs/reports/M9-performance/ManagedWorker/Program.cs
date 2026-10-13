@@ -55,7 +55,9 @@ Console.WriteLine(JsonSerializer.Serialize(new { engine, fixture = fixture.GetPr
 [MethodImpl(MethodImplOptions.NoInlining)]
 static object RetainedControl() { byte[] value = new byte[9 * 1024 * 1024]; value[0] = 42; value[^1] = 43; return value; }
 [MethodImpl(MethodImplOptions.NoInlining)]
-static long MeasureControl() { long before = GC.GetTotalMemory(true); Meter.Held = RetainedControl(); long delta = GC.GetTotalMemory(true) - before; GC.KeepAlive(Meter.Held); Meter.Held = null; return delta; }
+static long MeasureControl() { CreateControlHeld(); long held = GC.GetTotalMemory(true); ClearHeld(); Collect(); return held - GC.GetTotalMemory(true); }
+[MethodImpl(MethodImplOptions.NoInlining)]
+static void CreateControlHeld() => Meter.Held = RetainedControl();
 [MethodImpl(MethodImplOptions.NoInlining)]
 static void Warm(string engine, byte[] input, string expected, string expression, double number)
 { object value = Parse(engine, input); Verify(engine, value, expected, expression, number); GC.KeepAlive(value); }
