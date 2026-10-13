@@ -1,0 +1,105 @@
+{
+  "run": {
+    "conclusion": "failure",
+    "head_sha": "eea84f5838f43452df16b0d00384f628c0aab186",
+    "html_url": "https://github.com/sebastienros/xemele/actions/runs/38404776386",
+    "id": 38404776386,
+    "run_attempt": 2,
+    "status": "completed",
+    "updated_at": "2026-10-13T18:37:14Z"
+  },
+  "jobs": [
+    {
+      "completed_at": "2026-10-13T18:36:41Z",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Cumulative unit correctness and actual package/trim/NativeAOT consumption"
+      ],
+      "id": 115470645635,
+      "name": "distribution (ubuntu-latest, linux-x64)",
+      "started_at": "2026-10-13T18:34:12Z"
+    },
+    {
+      "completed_at": "2026-10-13T18:37:14Z",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Cumulative unit correctness and actual package/trim/NativeAOT consumption"
+      ],
+      "id": 115470646092,
+      "name": "distribution (windows-latest, win-x64)",
+      "started_at": "2026-10-13T18:34:12Z"
+    },
+    {
+      "completed_at": "2026-10-13T18:36:32Z",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Cumulative unit correctness and actual package/trim/NativeAOT consumption"
+      ],
+      "id": 115470646130,
+      "name": "distribution (macos-latest, osx-arm64)",
+      "started_at": "2026-10-13T18:34:18Z"
+    }
+  ],
+  "priorAttempt": {
+    "conclusion": "cancelled",
+    "head_sha": "eea84f5838f43452df16b0d00384f628c0aab186",
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-10-13T13:25:34Z"
+  },
+  "priorAttemptJobs": [],
+  "failureLog": {
+    "path": "docs/reports/M9-distribution/hosted-attempt2/failed.log",
+    "sha256": "926133696e2a37944c2325fc569d60b1bf5e5a70bfb833da06415cd5b64e8061",
+    "origin": "Read-only failed log supplied by main coordinator for the direct-human reported rerun; output retains the old harness tail, not full unit XML."
+  },
+  "unitSummaryLines": [
+    "distribution (ubuntu-latest, linux-x64)\tCumulative unit correctness and actual package/trim/NativeAOT consumption\t2026-10-13T18:36:30.1597535Z    Xemele.Tests  Total: 10741, Errors: 0, Failed: 52, Skipped: 0, Not Run: 0, Time: 51.333s",
+    "distribution (windows-latest, win-x64)\tCumulative unit correctness and actual package/trim/NativeAOT consumption\t2026-10-13T18:37:00.5479173Z    Xemele.Tests  Total: 10741, Errors: 0, Failed: 120, Skipped: 0, Not Run: 0, Time: 49.129s",
+    "distribution (macos-latest, osx-arm64)\tCumulative unit correctness and actual package/trim/NativeAOT consumption\t2026-10-13T18:36:23.6369900Z    Xemele.Tests  Total: 10741, Errors: 0, Failed: 52, Skipped: 0, Not Run: 0, Time: 54.915s"
+  ],
+  "failureSamples": [
+    "distribution (ubuntu-latest, linux-x64)\tCumulative unit correctness and actual package/trim/NativeAOT consumption\t2026-10-13T18:36:30.1577113Z       System.IO.DirectoryNotFoundException : Could not find a part of the path '/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/xmlconf/ibm/valid/P32/ibm32v01.dtd'.",
+    "distribution (macos-latest, osx-arm64)\tCumulative unit correctness and actual package/trim/NativeAOT consumption\t2026-10-13T18:36:23.6356550Z       System.IO.DirectoryNotFoundException : Could not find a part of the path '/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/xmlconf/eduni/errata-4e/ibm05v05.xml'.",
+    "distribution (macos-latest, osx-arm64)\tCumulative unit correctness and actual package/trim/NativeAOT consumption\t2026-10-13T18:36:23.6363400Z         /_/tests/Xemele.Tests/M2-dtd-corpus-repair/RepairTests.cs(70,0): at Xemele.Tests.DtdCorpusRepair.RepairTests.Read(JsonElement f)"
+  ],
+  "packageExecution": "not reached; unit command failed",
+  "releaseMatrixCredit": false,
+  "candidate": {
+    "branch": "codex/m9-os-validation",
+    "revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+    "sourceTreeIdenticalTo": "4478ad4fff818bfafa3514feb0914295a81f9507",
+    "sourceClosureIdenticalToReconciliationBase": "b44a2d24feab66ec7f11f56703d48983cc525c2d",
+    "closurePaths": [
+      "src/",
+      "tests/Xemele.Tests/",
+      "tests/PackageSmoke/Release/",
+      "tools/Packaging/",
+      ".github/workflows/release.yml",
+      "Directory.Build.props",
+      "Directory.Build.targets",
+      "Directory.Packages.props",
+      "global.json",
+      "NuGet.Config"
+    ],
+    "oldToCandidateChangedPaths": [
+      ".github/workflows/release.yml",
+      "src/Xemele/Tree/Document.cs",
+      "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs",
+      "src/Xemele/XPath/Evaluation/Evaluator.cs",
+      "src/Xemele/XPath/Navigation/XPathNavigator.cs",
+      "tests/Xemele.Tests/M2-conformance/OriginalStandaloneTests.cs",
+      "tests/Xemele.Tests/M9-DOM-memory/StorageTests.cs",
+      "tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs",
+      "tests/Xemele.Tests/Xml/UndeclaredReferences/ContentTests.cs",
+      "tools/Packaging/hosted_corpus.py",
+      "tools/Packaging/verify.py"
+    ],
+    "expectedUnitTests": 10754,
+    "remoteRevision": "eea84f5838f43452df16b0d00384f628c0aab186",
+    "pushed": false,
+    "newJobsStartedByThisReconciliation": 0,
+    "additionalRetryBudget": "existing question pending"
+  },
+  "fuzz": "deferred; no execution or planning"
+}

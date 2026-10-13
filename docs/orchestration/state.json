@@ -1884,7 +1884,7 @@
     "Managed XPath normalization/uniqueness has demonstrated quadratic work-limit failure; assign its exact module owner after current storage repair."
   ],
   "hosted_platform_request": {
-    "status": "initial attempt failed; current candidate prepared locally; existing additional three-job budget approval pending",
+    "status": "Initial attempt and later human rerun of old revision failed; prepared current candidate local; existing additional job budget question pending",
     "repository": "sebastienros/xemele",
     "visibility": "PRIVATE",
     "local_branch": "codex/m9-os-validation",
@@ -1905,9 +1905,47 @@
         "id": 38404776386,
         "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
         "status": "completed",
-        "reason": "Registration delay caused code-identical empty trigger; cancel queued duplicate to preserve three-job budget.",
-        "conclusion": "cancelled",
-        "jobs": []
+        "reason": "Earlier empty-trigger attempt1 canceled; later human rerun attempt2 executed all3jobs and failed on old source.",
+        "conclusion": "failure",
+        "jobs": [
+          {
+            "id": 115470645635,
+            "name": "distribution (ubuntu-latest, linux-x64)",
+            "conclusion": "failure"
+          },
+          {
+            "id": 115470646092,
+            "name": "distribution (windows-latest, win-x64)",
+            "conclusion": "failure"
+          },
+          {
+            "id": 115470646130,
+            "name": "distribution (macos-latest, osx-arm64)",
+            "conclusion": "failure"
+          }
+        ],
+        "attempts": [
+          {
+            "runAttempt": 1,
+            "status": "completed",
+            "conclusion": "cancelled",
+            "jobs": []
+          },
+          {
+            "runAttempt": 2,
+            "status": "completed",
+            "conclusion": "failure",
+            "jobIds": [
+              115470645635,
+              115470646092,
+              115470646130
+            ],
+            "updatedAt": "2026-10-13T18:37:14Z",
+            "origin": "Later direct-human rerun of the old revision"
+          }
+        ],
+        "run_attempt": 2,
+        "report": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
       }
     ],
     "authorization": "Direct human reply: Approve validation branch and jobs",
@@ -1965,6 +2003,15 @@
       "Explicit additional three-job20minute hosted retry approval",
       "Eligible dedicated x64/arm64 comparative timing machine or required prior evidence",
       "Explicit resumption of deferred sustained fuzz work, followed by actual mandatory campaign/crash-positive evidence"
-    ]
+    ],
+    "knownRunsHistoricalAtAudit": true,
+    "laterRunReconciliation": {
+      "run": 38404776386,
+      "runAttempt": 2,
+      "conclusion": "failure",
+      "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
+      "report": "docs/reports/M9-distribution/hosted-attempt2/outcome.json",
+      "goalStillBlocked": true
+    }
   }
 }

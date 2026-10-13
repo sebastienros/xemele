@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-hosted-rerun-reconciliation",
   "base_revision": "b00be04f7058715388af78efd0f1f1abe3a2fe7c",
@@ -153,17 +153,27 @@
       "result": "passed",
       "summary": "Current localpackage/managed/trim/AOT/tool/symbol source closure unchanged onmain; canonicalcheckpoint retained andunpublished. Only optionalhostedunitguard changed, toverified10754; requiredOS/x64 execution stillpendingbudget.",
       "artifact": "docs/reports/M9-distribution/current-integration.json"
+    },
+    {
+      "id": "hosted-old-revision-attempt2",
+      "kind": "check",
+      "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
+      "command": "Read-only gh api run38404776386 (run_attempt2), jobs, and attempt1; inspect supplied failed log; compare prepared candidate source closure",
+      "result": "failed",
+      "summary": "Human-triggered second attempt executed all three jobs on the old commit: Linux/macOS10741 tests52 failures each; Windows10741 tests120 failures. Missing-corpus failures retained; packaging not reached. Historical attempt1 canceled/jobs=[] remains true. Candidate929585dd is still local and includes later corpus/portability/runtime10754 repairs; no new run/push.",
+      "artifact": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
     }
   ],
   "blockers": [
     "Required Windows/Linux/x64 current-runtime execution stillmissing; initial authorized three-job run failed before packaging. One additional three-job20minute/60runner-minute retry awaits its existing humanbudget question."
   ],
   "handoff": {
-    "summary": "Reconcile the human-triggered second attempt of the old hosted run; report-only work, with current OS package validation still pending.",
+    "summary": "Reconciled old-run history: canceled attempt1 followed by human rerun attempt2, all three jobs failed before packaging. Prepared current candidate remains local; required current OS validation remains blocked.",
     "checks": [
       "18localcommands pass withcleanprocessreceipts;two canonicalruntime/tool packages andsymbol pairs identical",
       "Freshisolatedmanaged/trim/NativeAOT consumers andtoolinstall/help pass;nativeMachO64arm64;embeddedSourceLink exactpackagecommit",
-      "Hostedunitguard alignedto alreadyverified10754currenttests; no hostedjob orpush performed"
+      "Hostedunitguard alignedto alreadyverified10754currenttests; no hostedjob orpush performed",
+      "Read-only API confirms attempt2 failure at oldeea84f58; candidate929585dd source closure equals integrated current runtime/unit/package/workflow inputs; no new jobs or push."
     ],
     "remaining": [
       "Additionalapprovedbudget for three cappedhostedjobs andactual Windows/Linux/x64execution; laneA1/A2remainpending."
