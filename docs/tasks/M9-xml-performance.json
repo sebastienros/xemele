@@ -56,18 +56,23 @@
     {
       "id": "M9-xml-performance-A3",
       "description": "Preserve default parsing, normalization, source mappings/locations, callbacks/pause/chunk boundaries, cancellation, quotas, DTD/entity provenance and recovery; pass focused and relevant cumulative tests plus task validation, with explicit allocation evidence for new borrowed primitives.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "checkpoint-tests",
         "checkpoint-scans",
-        "checkpoint-task-validation"
+        "checkpoint-task-validation",
+        "final-Xemele.Conformance.Tests",
+        "final-Xemele.Differential.Tests",
+        "final-api-surface"
       ]
     },
     {
       "id": "M9-xml-performance-A4",
       "description": "Inspect faster native/Rust implementations and quantify representative feature costs; document techniques to adopt and any proposed pay-for-play/default contract changes without dropping existing features silently.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "feature-review"
+      ]
     }
   ],
   "implementation": [
@@ -81,19 +86,19 @@
     {
       "id": "checkpoint-tests",
       "kind": "check",
-      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
-      "command": "pinned dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:RuntimeFrameworkVersion=10.0.11; pinned dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -parallelMode none -culture invariant -noColor -result-xml artifacts/M9-xml-performance/caps-cache-tests.xml",
+      "revision": "6e534cdc183f864b26c905740a44fba88ef34a23",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:RuntimeFrameworkVersion=10.0.11; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -parallelMode none -culture invariant -noColor -result-xml artifacts/M9-xml-performance/single-name-tests.xml",
       "result": "passed",
       "summary": "10778 tests passed, 0 errors/failed/skipped/not-run. Warm borrowed text and repeated-tag dispatch each observe 0 B.",
-      "artifact": "artifacts/M9-xml-performance/caps-cache-tests.log"
+      "artifact": "artifacts/M9-xml-performance/single-name-tests.log"
     },
     {
       "id": "checkpoint-memory",
       "kind": "check",
-      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "revision": "6e534cdc183f864b26c905740a44fba88ef34a23",
       "command": "python3 docs/reports/M9-xml-performance/memory.py",
       "result": "passed",
-      "summary": "All ten managed semantic digests, 32 KiB/9 MiB compacted heap controls and all native payload/release controls passed. Independent root layouts agree with the held/released heap meter; summed managed retained ratio 0.902x BCL. Native payload excludes allocator metadata/RSS.",
+      "summary": "All ten managed semantic digests in three held/released cycles, 32 KiB/9 MiB compacted heap controls, independent root layouts and native payload/release controls passed. Summed managed heap ratio 0.90151x BCL uses graphEstimate (heldHeap minus releasedHeap), not the forensic GetTotalMemory retainedBytes field. Native payload excludes allocator metadata/RSS.",
       "artifact": "artifacts/M9-xml-performance/memory-current/report.json"
     },
     {
@@ -117,11 +122,11 @@
     {
       "id": "checkpoint-parity",
       "kind": "check",
-      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
-      "command": "pinned dotnet --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll quick artifacts/M9-xml-performance/caps-cache-quick.json",
+      "revision": "6e534cdc183f864b26c905740a44fba88ef34a23",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_TieredCompilation=0 DOTNET_TieredPGO=0 DOTNET_ReadyToRun=0 XEMELE_PERF_ROOT='/Users/sebastienros/.codex/worktrees/xml-performance/xemele' '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll bdn --iterationTime 250 --artifacts artifacts/M9-xml-performance/final-bdn",
       "result": "failed",
-      "summary": "Seven alternating local screenings: geomean time 2.33x and allocation 0.88x BCL, max allocation 1.22x. Allocation target meets local thresholds; latency still fails. All ten retained in comparison. Text-large time ratio 1.14x. No controlled release credit.",
-      "artifact": "artifacts/M9-xml-performance/caps-cache-quick.json"
+      "summary": "20 full ShortRun cases completed. Geomean time 2.22x and allocation 0.88x BCL; maximum time 3.68x, allocation 1.22x. Allocation target passes locally; latency fails. All ten fixtures retained. Local shared ARM64 host is not controlled release evidence.",
+      "artifact": "artifacts/M9-xml-performance/final-bdn/results/DomComparison-report-github.md"
     },
     {
       "id": "checkpoint-task-validation",
@@ -131,24 +136,64 @@
       "result": "passed",
       "summary": "Validated 207 tasks.",
       "artifact": "docs/reports/M9-xml-performance/progress.md"
+    },
+    {
+      "id": "final-Xemele.Conformance.Tests",
+      "kind": "check",
+      "revision": "6e534cdc183f864b26c905740a44fba88ef34a23",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:RuntimeFrameworkVersion=10.0.11; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -parallelMode none -culture invariant -noColor -result-xml artifacts/M9-xml-performance/final-Xemele.Conformance.Tests-tests.xml",
+      "result": "passed",
+      "summary": "920 tests passed; zero errors, failures, skips or not-run cases.",
+      "artifact": "artifacts/M9-xml-performance/final-Xemele.Conformance.Tests-tests.log"
+    },
+    {
+      "id": "final-Xemele.Differential.Tests",
+      "kind": "check",
+      "revision": "6e534cdc183f864b26c905740a44fba88ef34a23",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:RuntimeFrameworkVersion=10.0.11; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -parallelMode none -culture invariant -noColor -result-xml artifacts/M9-xml-performance/final-Xemele.Differential.Tests-tests.xml",
+      "result": "passed",
+      "summary": "618 tests passed; zero errors, failures, skips or not-run cases.",
+      "artifact": "artifacts/M9-xml-performance/final-Xemele.Differential.Tests-tests.log"
+    },
+    {
+      "id": "final-api-surface",
+      "kind": "check",
+      "revision": "6e534cdc183f864b26c905740a44fba88ef34a23",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit src/Xemele/bin/Release/net10.0/Xemele.dll artifacts/M9-xml-performance/api-final.txt",
+      "result": "passed",
+      "summary": "1430 extracted public members are byte-identical to api-before.txt; SHA-256 afd84a4e070ffffa0b2e31db5c089cd57ed87dfb6900dfc9556ac00514d566d9. Standard baseline pipeline separately fails on pre-existing empty M8-datatypes.txt; no pipeline pass claimed.",
+      "artifact": "artifacts/M9-xml-performance/api-final.txt"
+    },
+    {
+      "id": "feature-review",
+      "kind": "review",
+      "revision": "6e534cdc183f864b26c905740a44fba88ef34a23",
+      "command": null,
+      "result": "passed",
+      "summary": "Read user-referenced parser study and pinned BCL/libxml2/xmloxide source; applied conditional cached scans, direct reference matching, owned-name boundary and batching. Artifact-only coordinate experiment measures 5-12% structural time and 9-14% allocation costs; no feature disabled in default implementation. Conditional NodeMembers experiment rejected after 0 B prepared-capacity regressions.",
+      "artifact": "docs/reports/M9-xml-performance/feature-costs.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Tested isolated checkpoint; default allocations and retained memory improve substantially, latency parity remains unmet. Incorporates user-referenced parser study and pinned BCL/native source techniques without dropping semantics.",
+    "summary": "Compatible measured improvements saved on isolated branch. Latest full BDN: geomean latency 2.22x and allocation 0.88x BCL; summed retained memory 0.90151x. Latency acceptance fails, so task remains in_progress and is not integrated or verified.",
     "checks": [
-      "10778 cumulative unit cases passed.",
-      "24 scan ShortRun cases completed with 0 B warmed allocations.",
-      "All ten managed digests and 20 native qualifications passed; heap/native positive controls passed.",
+      "10778 unit, 920 conformance and 618 differential tests passed at latest runtime source.",
+      "20 final DOM and 24 scan ShortRun cases completed; warmed borrowed dispatch stays 0 B.",
+      "All ten managed digests and 20 native qualifications passed; heap/native positive controls and release checks passed.",
+      "All five 1 GiB streaming modes passed corrected live-heap oracle; negative control detected 9 MiB retained buffer. Streaming source is unchanged by final DOM-only edits.",
+      "1430 compiled API members identical; standard API baseline failed on pre-existing empty M8-datatypes.txt.",
       "Task validation passed."
     ],
     "remaining": [
-      "Continue measured latency improvements; current geomean 2.33x BCL fails target.",
-      "Run broader conformance/differential/API/1 GiB streaming checks and final full DOM BDN before integration.",
-      "Quantify optional feature costs and assess storage fields used only by some node kinds."
+      "BCL latency target still fails; structural namespace/attribute/DTD and private DOM bookkeeping need further measured work.",
+      "Do not mark implemented/verified or unlock dependents until the latency criterion passes.",
+      "Controlled release/cross-platform performance evidence has not been run."
     ],
     "requests": [
-      "Public source-location/provenance switches require an owning contract follow-up; none added."
+      "Public source-location/provenance switches require an owning contract follow-up; none added.",
+      "API baseline owner must repair pre-existing empty docs/api/M8-datatypes.txt before standard comparison can run.",
+      "A conditional member arena follow-up must preserve warmed prepared-capacity 0 B allocation contracts; allocating per-node payload classes failed those contracts."
     ]
   }
 }
