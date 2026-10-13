@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD 1.0 conformance",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / authorized isolated XSD corpus worker",
   "branch": "codex/m8-xsd-corpus",
   "base_revision": "d63a37316b4a6f8c780df10c6a6911509775a92c",
-  "integration_revision": null,
+  "integration_revision": "8626e609a4e45a8e90d8eb57d3ef191a3fdfdec0",
   "depends_on": [
     "M8-xsd-facade",
     "M8-schema-resource-outcomes",
@@ -39,7 +39,10 @@
       "description": "Import W3C XSD suite metadata and all applicable 1.0 schema/instance cases plus regressions.",
       "status": "passed",
       "evidence": [
-        "fresh-preparation"
+        "fresh-preparation",
+        "integration-source-equivalence",
+        "integration-controls",
+        "integration-boundary"
       ]
     },
     {
@@ -48,7 +51,10 @@
       "status": "passed",
       "evidence": [
         "fresh-full-campaign",
-        "fresh-separate-supplements"
+        "fresh-separate-supplements",
+        "integration-source-equivalence",
+        "integration-controls",
+        "integration-boundary"
       ]
     },
     {
@@ -57,7 +63,10 @@
       "status": "passed",
       "evidence": [
         "fresh-preparation",
-        "branch-source-review"
+        "branch-source-review",
+        "integration-source-equivalence",
+        "integration-controls",
+        "integration-boundary"
       ]
     }
   ],
@@ -103,17 +112,44 @@
       "result": "passed",
       "summary": "Current verified availability runtime/API evidence bound;public1430/55/full93canonical/frozen615/257/nullable3 unchanged;exact155authoritytuples;finite supervision and whole-campaign boundary timing. Final9deb38d1 changes only concise handoff;original/historical failures stay unchanged.",
       "artifact": "docs/orchestration/M8-xsd-corpus-repair-source-release.json"
+    },
+    {
+      "id": "integration-source-equivalence",
+      "kind": "review",
+      "revision": "74be5895e0c0789c73bf5901c8ba66bc321721a1",
+      "command": "Root and three existing reviewers compared integrated corpus/runtime/build/API source with actual tested db2e6e2ca and final worker9deb38d1",
+      "result": "passed",
+      "summary": "All four owned corpus subtrees exactly match final worker; only handoff added relative to actual branch test checkpoint.40pins/runtime238/public1430/55/full93canonical/frozen615/257/nullable3 unchanged. Branch full186 and separate supplement outcomes reused with explicit branch attribution; no claim of fresh primary full run.",
+      "artifact": "docs/orchestration/M8-xsd-corpus-integration-source-release.json"
+    },
+    {
+      "id": "integration-controls",
+      "kind": "integration",
+      "revision": "932561a4d49f0df10ec8e71a87caf8544c65db68",
+      "command": "Root reviewed /private/tmp/xemele-m8-corpus-integrated-parent.py: local offline restore followed by ten primary preparation controls",
+      "result": "passed",
+      "summary": "Build0warnings/errors;native45/hint16/optional715;import6/supervision39/disposition25/approval12;42270original hashes/41843ordered references/0applicable missing;metadata8/fixtures10/absence4;42883identities matched. All families terminated; consumed210files deleted separately.",
+      "artifact": "docs/orchestration/M8-xsd-corpus-integration-controls.json"
+    },
+    {
+      "id": "integration-boundary",
+      "kind": "integration",
+      "revision": "8626e609a4e45a8e90d8eb57d3ef191a3fdfdec0",
+      "command": "Root finite native xunit run: Xemele.Conformance.Tests.dll -class Xemele.Conformance.Tests.Xsd.BoundaryTests -failSkips -failWarns",
+      "result": "passed",
+      "summary": "Three methods/five cases passed;0errors/failures/skips/notrun.62built input hashes before/after;40sourcepins. Earlier invocation remains failed before all cases. Three owned groups absent;87consumed files deleted separately.",
+      "artifact": "docs/orchestration/M8-xsd-corpus-boundary-native-result.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Branch implementation complete at9deb38d1; actual root phases ran at byte-identical db2e6e2ca source. All original expectations retained;155approved144false11null zero-credit dispositions;annotZ002unwaived repaired freshpass. Separate five profiles passed with no original/gate credit. All consumed phase raw outputs terminally removed; no archive.",
+    "summary": "Integrated and verified corpus. Actual branch db2e6e2ca full campaign:39329originalpasses/144false11null;155exact human-approved zero-credit dispositions,zero uncovered;annotZ002unwaived repaired originalpass. Five separately complete profiles carry zero original/gate credit. Fresh primary controls and five boundary cases passed; all consumed root outputs deleted without archives.",
     "checks": [
-      "Fresh root preparation/full186children/separate3supplementchildren passed with exact observed counts and lifecycle records; planning201 and handoff checks passed."
+      "Full186children/83472rows and separate supplements at actual branch db2e6e2ca; source equivalence verified after merge74be5895e0.",
+      "Fresh integrated controls932561a4 and BoundaryTests8626e609:5passed/0failed/skip/notrun; actual terminal cleanup recorded."
     ],
     "remaining": [
-      "Integrate final worker branch; fresh applicable primary checks and exact source equivalence before verified state.",
-      "Terminal worker cleanup and eligible archival/preserved clean checkout; CLI and milestone gate remain subsequent work."
+      "Terminal worker archival/preserved clean checkout; subsequent CLI and milestone gate work."
     ],
     "requests": []
   }
