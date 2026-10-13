@@ -1,0 +1,92 @@
+{
+  "task": "M8-gate",
+  "kind": "source review and prepare-only release",
+  "result": "source accepted; preparation authorized; actual phases UNRUN at release",
+  "reviewedRevision": "a89bd6bddb297e3dc3f86669369d35ba5db4e636",
+  "worker": "01a1336e-b292-7cd1-b9a6-d023ae0ae21d",
+  "branch": "codex/m8-gate",
+  "worktree": "/Users/sebastienros/.codex/worktrees/29a0/xemele",
+  "reviews": [
+    {
+      "reviewer": "/root/review_m8_contract",
+      "revision": "5a9ba9bd41980c154e8adbe73b1645e0a159708d",
+      "result": "SOURCE PASS",
+      "scope": "Public union1430/55, eight frozen lanes615/257 with exact nullable3, full93 canonical rows; independent normal/trim/native local-package consumers. Subsequent changes confined to lifecycle controls, bounds and packet metadata; these scoped API/package sources unchanged."
+    },
+    {
+      "reviewer": "/root/review_m8_model",
+      "revision": "5a9ba9bd41980c154e8adbe73b1645e0a159708d",
+      "result": "SOURCE PASS",
+      "scope": "M7 identity preservation and exact enum witness, all new schema tests and WarmBorrowed included, 23 authority bindings, 155 original dispositions144false11null zero credit, unwaived annotZ002pass and exact CLI/corpus source attribution. Subsequent delta does not change these scoped sources."
+    },
+    {
+      "reviewer": "/root/review_m8_xpath",
+      "revision": "a89bd6bddb297e3dc3f86669369d35ba5db4e636",
+      "result": "SOURCE PASS",
+      "scope": "Final terminal output deadline and one reconciliation, finite ownership/deadlines/certificates, controls and exact canonical recipe. Original findings retained in M8-gate-source-review-0cfb8bac.json."
+    }
+  ],
+  "rootReadOnlyVerification": {
+    "sourcePins": 3076,
+    "scriptPins": 17,
+    "authorityPins": 23,
+    "actualBytesMatch": true,
+    "cleanCheckout": true
+  },
+  "sourceSha256": "d8aa885d474f5763084a497deabef5fe292e061cdf15b6ae111de6dcd77f5985",
+  "checksSha256": "931b045bdc01867a96b03d6a9e83dba7cff80c78e38b2860e43c889890fba414",
+  "sourcePacketSha256": "a6fccf2fb1b3723036f77c58fad48a7c27f5d1d785d9b9d21f250350cbf321f2",
+  "recipeSha256": "2fc2714cbd8a596880f4eeae07a00f6f130b8c206cc2e4619643c5681399f0cb",
+  "acceptedRootParent": {
+    "sha256": "1af448c7a5ebda57d0091f15cde4877531a9caa647c8e45fcb25a6c4af377602",
+    "outerBoundsSeconds": {
+      "prepare": {
+        "work": 12860,
+        "hard": 12880
+      },
+      "check": {
+        "work": 3860,
+        "hard": 3880
+      },
+      "counter": {
+        "work": 2160,
+        "hard": 2180
+      }
+    },
+    "status": "Source accepted by root; gate execution UNRUN"
+  },
+  "rootObserverSha256": "308cae39fd55da99f8f9e6831c7143caadb2d7e20ad60e7fee25e9ef2783c1a0",
+  "recipeCounts": {
+    "prepare": 51,
+    "check": 18,
+    "counter": 4
+  },
+  "actualRootSyntheticControlEvidence": "docs/orchestration/M8-gate-root-controls-attempt-2.json",
+  "release": {
+    "phase": "prepare",
+    "launcher": "Root coordinator only",
+    "exactParentArgv": [
+      "python3",
+      "/private/tmp/xemele-m8-gate-parent.py",
+      "/Users/sebastienros/.codex/worktrees/29a0/xemele",
+      "codex/m8-gate",
+      "a89bd6bddb297e3dc3f86669369d35ba5db4e636",
+      "d8aa885d474f5763084a497deabef5fe292e061cdf15b6ae111de6dcd77f5985",
+      "931b045bdc01867a96b03d6a9e83dba7cff80c78e38b2860e43c889890fba414",
+      "a6fccf2fb1b3723036f77c58fad48a7c27f5d1d785d9b9d21f250350cbf321f2",
+      "prepare",
+      "-",
+      "-"
+    ],
+    "bounds": {
+      "innerWorkSeconds": 12500,
+      "innerHardSeconds": 12680,
+      "outerWorkSeconds": 12860,
+      "outerHardSeconds": 12880
+    },
+    "commandSequence": "Exact 51 commands in reviewed packet recipe; no discovery, retry or new command inside phase.",
+    "nextPhase": "Withheld until actual outer tool exit0 externally observed and root observer exit0 publishes matching certificate.",
+    "counters": "Not released. Root alone may launch after completed checked identity/disabled controls."
+  },
+  "credit": "Source reviews and prepare authorization are not gate checks and give no gate criterion credit. All gate product phases are UNRUN at this release."
+}
