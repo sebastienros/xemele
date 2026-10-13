@@ -24,6 +24,8 @@ jobs:
             rid: osx-arm64
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Preserve hash-pinned fixture bytes during checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:

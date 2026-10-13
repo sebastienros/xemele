@@ -12,6 +12,7 @@ import subprocess
 import time
 import zipfile
 import xml.etree.ElementTree as ET
+from hosted_corpus import prepare as prepare_hosted_corpus
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'artifacts/M9-distribution'
@@ -135,15 +136,29 @@ def main():
             report['sdk'] = sdk
             if args.unit_tests:
                 assert not args.cache, 'Hosted cumulative unit path uses the normal configured online package source.'
+                resources, report['unitCorpus'] = prepare_hosted_corpus(ROOT, WORK)
+                environment['XEMELE_CORPUS_RESOURCES'] = str(resources)
                 unit = ROOT / 'tests/Xemele.Tests/Xemele.Tests.csproj'
                 run([host, 'restore', unit, *sources, '--disable-build-servers', '-p:RuntimeFrameworkVersion=10.0.11'], 300)
                 run([host, 'build', unit, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false', '-p:RuntimeFrameworkVersion=10.0.11'], 300)
                 environment.update(DOTNET_TieredCompilation='0', DOTNET_TieredPGO='0', DOTNET_ReadyToRun='0', DOTNET_gcServer='0', DOTNET_GCConcurrent='0')
                 result_xml = WORK / 'unit.xml'
-                run([host, '--fx-version', '10.0.11', ROOT / 'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll', '-parallelMode', 'none', '-culture', 'invariant', '-noColor', '-result-xml', result_xml], 500)
-                assemblies = ET.parse(result_xml).getroot().findall('assembly')
-                counts = {name: sum(int(a.get(name, '0')) for a in assemblies) for name in ['total', 'passed', 'failed', 'errors', 'skipped', 'not-run']}
-                report['unitCorrectness'] = counts
+                try:
+                    run([host, '--fx-version', '10.0.11', ROOT / 'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll', '-parallelMode', 'none', '-culture', 'invariant', '-noColor', '-result-xml', result_xml], 500)
+                finally:
+                    if result_xml.is_file():
+                        xml = ET.parse(result_xml).getroot()
+                        assemblies = xml.findall('assembly')
+                        counts = {name: sum(int(a.get(name, '0')) for a in assemblies) for name in ['total', 'passed', 'failed', 'errors', 'skipped', 'not-run']}
+                        report['unitCorrectness'] = counts
+                        report['unitFailures'] = [dict(name=t.get('name'), result=t.get('result'),
+                                                      failure=ET.tostring(t.find('failure'), encoding='unicode') if t.find('failure') is not None else '')
+                                                  for t in xml.findall('.//test') if t.get('result') != 'Pass']
+                    report['unitChildDiagnostics'] = []
+                    for path in sorted((ROOT / 'artifacts').glob('M2-*-allocation-probe/child-runs/*/*')):
+                        if path.name.endswith(('.stderr.txt', '.stdout.txt', '.exit.json', '.invocation.json')):
+                            report['unitChildDiagnostics'].append(dict(path=str(path.relative_to(ROOT)), sha256=sha(path),
+                                                                       text=path.read_text(errors='replace')[:16000]))
                 assert counts['total'] == counts['passed'] == 10741 and all(counts[name] == 0 for name in ['failed', 'errors', 'skipped', 'not-run']), counts
                 result_xml.unlink()
             for candidate in [project, tool]:

@@ -1,0 +1,103 @@
+{
+  "task": "M9-distribution",
+  "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+  "result": "failed",
+  "rid": "osx-arm64",
+  "runtime": "10.0.11",
+  "commands": [
+    {
+      "argv": [
+        "/Users/runner/.dotnet/dotnet",
+        "--version"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 1608,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "d0c8e5a09a2e5655cffdca9e350ecbba59a860154f5adadb92398b844f705ed0"
+    },
+    {
+      "argv": [
+        "/Users/runner/.dotnet/dotnet",
+        "restore",
+        "/Users/runner/work/xemele/xemele/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 1610,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "72cc0ec498bc5ad3c01875c5575394320e39ff8e57e3d1da89855bcbcba5035f"
+    },
+    {
+      "argv": [
+        "/Users/runner/.dotnet/dotnet",
+        "build",
+        "/Users/runner/work/xemele/xemele/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 1631,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "cf3cc9dba08f73d6b07ee04a2ca71c005064825b694e7c8b1a5531182e72d96e"
+    },
+    {
+      "argv": [
+        "/Users/runner/.dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/Users/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/Users/runner/work/xemele/xemele/artifacts/M9-distribution/work/unit.xml"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 1852,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7f31153c0d26e218ba6c5b44f1bc906a14fb1f6e6d8660c8dac61cd8ca68ef37",
+      "failureTail": "ndle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)\n           at System.IO.File.ReadAllBytes(String path)\n        /_/tests/Xemele.Tests/M2-dtd-corpus-repair/RepairTests.cs(70,0): at Xemele.Tests.DtdCorpusRepair.RepairTests.Read(JsonElement f)\n        /_/tests/Xemele.Tests/M2-dtd-corpus-repair/RepairTests.cs(33,0): at Xemele.Tests.DtdCorpusRepair.RepairTests.SevenOriginalBytesProfileAndEveryPrimarySplit(JsonElement row)\n           at InvokeStub_RepairTests.SevenOriginalBytesProfileAndEveryPrimarySplit(Object, Span`1)\n           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n    Xemele.Tests.DtdCorpusRepair.RepairTests.SevenOriginalBytesProfileAndEveryPrimarySplit(row: {\\n    \"id\": \"xmlconf/eduni/errata-4e/errata4e.xml#x-ibm-1-0.5-valid-P05-ibm05v05.xml\",\\n    \"accepted\": false,\\n    \"files\": [\\n      {\\n        \"path\": \"xmlconf/eduni/errata-4e/ibm05v05.xml\",\\n        \"bytes\": 6163,\\n        \"sha256\": \"df7efdac92874d0b37749cc45424828a814012a9a9bca9ef7746f986ae0600fa\"\\n      }\\n    ]\\n  }) [FAIL]\n      System.IO.DirectoryNotFoundException : Could not find a part of the path '/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/xmlconf/eduni/errata-4e/ibm05v05.xml'.\n      Stack Trace:\n           at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String path, OpenFlags flags, Int32 mode, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)\n           at System.IO.File.ReadAllBytes(String path)\n        /_/tests/Xemele.Tests/M2-dtd-corpus-repair/RepairTests.cs(70,0): at Xemele.Tests.DtdCorpusRepair.RepairTests.Read(JsonElement f)\n        /_/tests/Xemele.Tests/M2-dtd-corpus-repair/RepairTests.cs(33,0): at Xemele.Tests.DtdCorpusRepair.RepairTests.SevenOriginalBytesProfileAndEveryPrimarySplit(JsonElement row)\n           at InvokeStub_RepairTests.SevenOriginalBytesProfileAndEveryPrimarySplit(Object, Span`1)\n           at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n  Finished:    Xemele.Tests (ID = '0e53095308ffa8d7c907c5dffb651f58c3864867c52edf2dad61482111bf4d4f')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 10741, Errors: 0, Failed: 52, Skipped: 0, Not Run: 0, Time: 51.233s\n"
+    }
+  ],
+  "packages": [],
+  "published": false,
+  "sdk": "10.0.400"
+}
