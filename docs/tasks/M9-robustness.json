@@ -43,13 +43,32 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/ReleaseCampaign/Instrumenter/: pinned SharpFuzz2.3.0 instrumenter confined to disposable candidate artifacts",
+    "tests/ReleaseCampaign/XmlDriver/: bounded XML byte decoder/parser/internalDTD target, no ambient external resolver or catch-all exception filter",
+    "tests/ReleaseCampaign/seeds/xml/: three original authored replay seeds"
+  ],
+  "evidence": [
+    {
+      "id": "fuzz-tool-initial-qualification",
+      "kind": "check",
+      "revision": "03dcbc9f631e3b935834c84badf52bbfafacdbe7",
+      "command": "PinnedSDK builds of Instrumenter/XmlDriver; SharpFuzz Instrument on copied Xemele.dll; three actual single-file instrumented XML target replays",
+      "result": "passed",
+      "summary": "4build/restore commands + actual instrumentation +3replays pass with clean finite process receipts;600types instrumented, productionDLLhash unchanged. No nativeenginecampaign, duration orbranchcoverage credit.",
+      "artifact": "docs/reports/M9-robustness/qualification.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Initial concrete .NET10 fuzz instrumentation and XML seed replay compatibility qualified; sustained campaign remains outstanding.",
+    "checks": [
+      "PinnedSDK/runtime builds and600type instrumentation pass;3actual instrumented seed replays pass; originalproductionDLLunchanged."
+    ],
+    "remaining": [
+      "Qualify and execute real nativecoverageguidedengine plus all major targets and finite campaigns; establish actual branchcoverage90%target with exclusions/review.",
+      "Bind source-applicable full conformance/differential/resource/cancellation evidence and exact corpus counts/dispositions."
+    ],
     "requests": []
   }
 }
