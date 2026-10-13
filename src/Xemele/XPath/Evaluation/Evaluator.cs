@@ -323,6 +323,14 @@ internal sealed class XPathEvaluator(XPathNavigator navigator, XPathDynamicConte
     private sealed class Selection : IReadOnlyList<XPathItem>
     {
         private XPathItem[] items = [];
+        private SortedSet<int>? uniqueIndexes;
+        private IndexComparer? indexComparer;
+        private int lastUniqueIndex = -1;
+        private sealed class IndexComparer(IXPathBudget budget) : IComparer<int>
+        {
+            internal IXPathBudget Budget = budget;
+            public int Compare(int left, int right) { Budget.ChargeOperations(1); return left.CompareTo(right); }
+        }
         public int Count { get; private set; }
         public XPathItem this[int index] => index < Count ? items[index] : throw new ArgumentOutOfRangeException(nameof(index));
         internal Selection() { }
@@ -348,8 +356,25 @@ internal sealed class XPathEvaluator(XPathNavigator navigator, XPathDynamicConte
         }
         internal void AddUnique(XPathItem item, XPathNavigator navigator, IXPathBudget budget)
         {
-            for (int i = 0; i < Count; i++)
-            { budget.ChargeOperations(1); if (navigator.CompareDocumentOrder(item, items[i], budget) == 0) return; }
+            int index = navigator.OrderIndex(item, budget);
+            budget.ChargeOperations(1);
+            // Empty merges and monotone axes need no uniqueness table. A
+            // reverse/overlapping merge switches once to a bounded balanced
+            // integer tree, with every comparison charged and cancellable.
+            if (uniqueIndexes is null && (Count == 0 || lastUniqueIndex >= 0 && index >= lastUniqueIndex))
+            {
+                if (index == lastUniqueIndex) return;
+                Add(item, budget); lastUniqueIndex = index; return;
+            }
+            if (uniqueIndexes is null)
+            {
+                indexComparer = new(budget); uniqueIndexes = new(indexComparer);
+                for (int i = 0; i < Count; i++)
+                { budget.ChargeOperations(1); uniqueIndexes.Add(navigator.OrderIndex(items[i], budget)); }
+            }
+            indexComparer!.Budget = budget;
+            if (uniqueIndexes.Contains(index)) return;
+            budget.CheckNodeSetSize(Count + 1); uniqueIndexes.Add(index);
             Add(item, budget);
         }
         public IEnumerator<XPathItem> GetEnumerator() { for (int i = 0; i < Count; i++) yield return items[i]; }

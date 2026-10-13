@@ -256,6 +256,7 @@ internal sealed class XPathNavigator : IXPathNavigator
     }
     private XPathEvaluationException Error(string code, string message) => new(new(code, XPathDiagnosticCategory.Evaluation, message, span));
     internal XPathItem Rebind(XPathItem item, IXPathBudget budget, bool context = false) => entries[Index(item, budget, context ? "XPATH-CONTEXT" : "XPATH-NODESET")].Item;
+    internal int OrderIndex(XPathItem item, IXPathBudget budget) => Index(item, budget);
     public int CompareDocumentOrder(XPathItem left, XPathItem right, IXPathBudget budget)
     { ArgumentNullException.ThrowIfNull(budget); int a = Index(left, budget), b = Index(right, budget); budget.ChargeOperations(1); return a.CompareTo(b); }
 
@@ -265,6 +266,38 @@ internal sealed class XPathNavigator : IXPathNavigator
         int at = Index(item, budget), parent = entries[at].Parent;
         var result = new List<XPathItem>();
         bool member = entries[at].Item.Kind is XPathItemKind.Attribute or XPathItemKind.Namespace;
+        // These axes need only their captured interval, never the whole input.
+        // End includes member leaves; child traversal skips each child's subtree.
+        if (axis is XPathAxis.Self or XPathAxis.Parent)
+        {
+            int selected = axis == XPathAxis.Self ? at : parent;
+            if (selected >= 0) Append(result, entries[selected].Item, budget);
+            budget.ChargeOperations(0); return result.AsReadOnly();
+        }
+        if (axis is XPathAxis.Child or XPathAxis.Attribute or XPathAxis.Namespace or XPathAxis.Descendant or XPathAxis.DescendantOrSelf)
+        {
+            if (axis == XPathAxis.DescendantOrSelf) Append(result, entries[at].Item, budget);
+            if (!member)
+                for (int i = at + 1; i <= entries[at].End;)
+                {
+                    budget.ChargeOperations(1);
+                    var kind = entries[i].Item.Kind;
+                    bool ordinary = kind is not (XPathItemKind.Attribute or XPathItemKind.Namespace);
+                    if (axis is XPathAxis.Attribute or XPathAxis.Namespace)
+                    {
+                        if (ordinary) break;
+                        if (entries[i].Parent == at && kind == (axis == XPathAxis.Attribute ? XPathItemKind.Attribute : XPathItemKind.Namespace))
+                            Append(result, entries[i].Item, budget);
+                        i++;
+                    }
+                    else
+                    {
+                        if (ordinary) Append(result, entries[i].Item, budget);
+                        i = axis == XPathAxis.Child ? entries[i].End + 1 : i + 1;
+                    }
+                }
+            budget.ChargeOperations(0); return result.AsReadOnly();
+        }
         bool reverse = axis is XPathAxis.Ancestor or XPathAxis.AncestorOrSelf or XPathAxis.Preceding or XPathAxis.PrecedingSibling;
         // Structural intervals include namespace/attribute leaves, which are
         // explicitly excluded from ordinary descendant/following/preceding axes.
@@ -304,19 +337,42 @@ internal sealed class XPathNavigator : IXPathNavigator
     {
         ArgumentNullException.ThrowIfNull(input); ArgumentNullException.ThrowIfNull(budget);
         budget.CheckNodeSetSize(input.Count);
-        var indexes = new List<int>();
+        // Exact-sized owned scratch; sorted input is linear. Reverse/unordered
+        // input uses metered iterative merge sort, avoiding quadratic insertion
+        // and comparison callbacks whose exceptions a framework sort can wrap.
+        var indexes = new int[input.Count]; bool sorted = true;
         for (int k = 0; k < input.Count; k++)
         {
-            budget.ChargeOperations(1); int index = Index(input[k], budget), position = 0;
-            while (position < indexes.Count)
-            { budget.ChargeOperations(1); if (indexes[position] >= index) break; position++; }
-            if (position < indexes.Count && indexes[position] == index) continue;
-            budget.CheckNodeSetSize(indexes.Count + 1); budget.ChargeOperations(1); indexes.Add(index);
-            for (int i = indexes.Count - 1; i > position; i--) { budget.ChargeOperations(1); indexes[i] = indexes[i - 1]; }
-            indexes[position] = index;
+            budget.ChargeOperations(1); indexes[k] = Index(input[k], budget);
+            if (k > 0) { budget.ChargeOperations(1); if (indexes[k - 1] > indexes[k]) sorted = false; }
+        }
+        if (!sorted)
+        {
+            var scratch = new int[indexes.Length];
+            for (long width = 1; width < indexes.Length; width *= 2)
+            {
+                for (long start = 0; start < indexes.Length; start += width * 2)
+                {
+                    int left = (int)start, middle = (int)Math.Min(start + width, indexes.Length);
+                    int right = middle, end = (int)Math.Min(start + width * 2, indexes.Length);
+                    for (int output = left; output < end; output++)
+                    {
+                        budget.ChargeOperations(3);
+                        scratch[output] = left < middle && (right == end || indexes[left] <= indexes[right])
+                            ? indexes[left++] : indexes[right++];
+                    }
+                }
+                (indexes, scratch) = (scratch, indexes);
+            }
         }
         var result = new List<XPathItem>();
-        foreach (int index in indexes) { budget.ChargeOperations(1); Append(result, entries[index].Item, budget); }
+        int last = -1;
+        foreach (int index in indexes)
+        {
+            budget.ChargeOperations(1);
+            if (index == last) continue;
+            Append(result, entries[index].Item, budget); last = index;
+        }
         budget.ChargeOperations(0); return result.AsReadOnly();
     }
     public IReadOnlyList<XPathItem> SelectId(string id, IXPathBudget budget)
