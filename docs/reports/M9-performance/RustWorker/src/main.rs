@@ -30,7 +30,8 @@ fn semantic(doc: &Document, id: NodeId, output: &mut Vec<u8>) -> Result<(), Box<
 }
 fn parse(bytes: &[u8]) -> Result<Document,Box<dyn Error>> {
     let text = xmloxide::encoding::decode_to_utf8(bytes)?;
-    Ok(Document::parse_str(&text)?)
+    let options = xmloxide::parser::ParseOptions { max_entity_expansions: 1000000, ..Default::default() };
+    Ok(xmloxide::parser::parse_str_with_options(&text, &options)?)
 }
 fn main() -> Result<(),Box<dyn Error>> {
     let args: Vec<_> = std::env::args().collect();
