@@ -1,0 +1,22 @@
+#!@PYTHON_SHEBANG@
+"""Gate-owned ILLink host selection only; original tool/arguments and process group retained."""
+import sys
+sys.dont_write_bytecode=True
+import hashlib,os,time
+from pathlib import Path
+DOTNET=Path(@DOTNET_PATH@)
+DOTNET_SHA=@DOTNET_SHA@
+PYTHON=Path(@PYTHON_PATH@)
+PYTHON_SHA=@PYTHON_SHA@
+EXPECTED_DLL=Path(@EXPECTED_DLL@)
+EXPECTED_FILES=@EXPECTED_FILES@
+def sha(path):
+ with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
+assert os.environ.get('DOTNET_ROLL_FORWARD')=='Disable','Exact roll-forward policy required'
+assert time.monotonic()<float(os.environ['XEMELE_GATE_WORK_DEADLINE']),'Inherited work deadline exhausted'
+assert Path(sys.executable).resolve()==PYTHON.resolve() and sha(PYTHON)==PYTHON_SHA,'Pinned Python identity changed'
+assert sha(DOTNET)==DOTNET_SHA,'Pinned dotnet host changed'
+assert len(sys.argv)>1 and Path(sys.argv[1]).resolve()==EXPECTED_DLL.resolve(),'Only exact expected ILLink DLL may use this wrapper'
+for name,expected in EXPECTED_FILES.items():assert sha(Path(name))==expected,'Private linker input drift: '+name
+assert time.monotonic()<float(os.environ['XEMELE_GATE_WORK_DEADLINE']),'Inherited work deadline exhausted before exec'
+os.execv(str(DOTNET),[str(DOTNET),'--fx-version','10.0.11',*sys.argv[1:]])

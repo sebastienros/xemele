@@ -1,13 +1,13 @@
 # M8 gate source packet
 
-Source repair only. Root attempts1/2 remain failed at command11/MSB1009 and
-command40/ambiguous feed filename. Attempt3 remains failed at command43/NU1008:
-the external consumer inherited central package management while supplying its
-exact PackageReference version. Root recorded43 normal commands, one failed and
-seven unrun;16 preparation controls passed only their exact declared scope.
-The consumer template now explicitly disables central package management. No
-successful preparation/certificate/gate credit is claimed. Root alone executed
-those attempts; worker has run no executable gate workload.
+Source repair only. Root attempts1/2/3 remain failed at their original project
+path/feed-layout/CPM errors. Attempt4 remains failed at command46 trim publication:
+ILLink10.0.11 requested10.0.11-servicing.26373.116 while exact installed10.0.11
+and DOTNET_ROLL_FORWARD=Disable prevented its default host launch. Root recorded
+46 normal commands, one failed andfour unrun; CPM-corrected consumer restore and
+managed build passed only their preparation scope. No successful preparation/
+certificate/gate credit is claimed. The new owned linker host wrapper is UNRUN.
+Root alone executed those attempts; worker has run no executable gate workload.
 The task record remains with root. This isolated branch owns only this directory.
 All commands below require root's reviewed release and root process custody.
 
@@ -112,6 +112,26 @@ post-freeze archive-mutation refusal and missing-record refusal.
  The external consumer template explicitly sets ManagePackageVersionsCentrally=false
 so its unchanged PackageReference owns exact0.8.0-integration despite repository
 Directory.Packages.props inheritance. Shared repository configuration is unchanged.
+The consumer's GatePinnedLinkerHost target runs BeforeTargets=_RunILLink and
+selects its owned linker-host/dotnet via _DotNetHostDirectory/_DotNetHostFileName.
+It requires the normal SDK DOTNET_HOST_PATH so installed targets cannot reset
+that selection. The generated wrapper validates exact private ILLink DLL path,
+canonical DLL/deps/runtimeconfig/task hashes and pinned Python/dotnet identities,
+then execs pinned dotnet --fx-version10.0.11 with original linker arguments.
+It retains the registered process group, inherited work deadline and Disable
+roll-forward; original tool/cache/runtimeconfig bytes and warnings remain intact.
+Template/rendered wrapper, executable mode, consumer target and expected tool
+identities are bound during layout, freeze and every check/package identity guard.
+No command, deadline, restore source or output expectation changes.
+
+[ILLink source](https://raw.githubusercontent.com/dotnet/runtime/v10.0.11/src/tools/illink/src/ILLink.Tasks/LinkTask.cs)
+constructs the original DLL invocation;
+[MSBuild ToolTask source](https://raw.githubusercontent.com/dotnet/msbuild/main/src/Utilities/ToolTask.cs)
+selects explicit ToolPath/ToolExe before the default generated tool path. Installed
+10.0.11 targets supply those properties and reset them only without DOTNET_HOST_PATH.
+Local NativeAOT targets set RunILLink=false and directly Exec native tools/ilc;
+no runtimeconfig exists in that tool folder. This is source review only. Trim
+repair and NativeAOT build/run remain UNRUN pending root release.
 A fresh absent private consumer cache, explicit local feed and no ProjectReference
 are enforced.
 The local-feed layout600-second command first preflights the complete canonical

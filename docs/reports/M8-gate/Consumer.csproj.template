@@ -1,4 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><TreatWarningsAsErrors>true</TreatWarningsAsErrors><RuntimeFrameworkVersion>10.0.11</RuntimeFrameworkVersion><EnableNETAnalyzers>true</EnableNETAnalyzers></PropertyGroup>
   <ItemGroup><PackageReference Include="Xemele" Version="0.8.0-integration" /></ItemGroup>
+  <Target Name="GatePinnedLinkerHost" BeforeTargets="_RunILLink" Condition="'$(PublishTrimmed)' == 'true' and '$(RunILLink)' != 'false'">
+    <Error Condition="'$(DOTNET_HOST_PATH)' == ''" Text="Pinned linker host requires SDK DOTNET_HOST_PATH; no default host fallback." />
+    <PropertyGroup>
+      <_DotNetHostDirectory>$(MSBuildProjectDirectory)/linker-host</_DotNetHostDirectory>
+      <_DotNetHostFileName>dotnet</_DotNetHostFileName>
+    </PropertyGroup>
+  </Target>
 </Project>

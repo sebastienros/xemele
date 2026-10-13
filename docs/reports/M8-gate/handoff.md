@@ -1,55 +1,59 @@
-# M8-gate external consumer CPM source repair
+# M8-gate pinned ILLink host source repair
 
-SOURCE ONLY. Fresh preparation/check/counter execution remains withheld.
+SOURCE ONLY. Fresh preparation/check/counter release remains with root.
 
 - Worktree:`/Users/sebastienros/.codex/worktrees/29a0/xemele`; branch`codex/m8-gate`.
-- Source closure:3077 files, SHA256`d2bf5fb083b7b8148a3e068639cf395d61f1978480e419fa644e310821bea9b9`.
+- Source closure:3079 files, SHA256`46bddcd748c85e95ddd98549e4f663594707c8d5e6e4ccbadb982c187868753c`.
 - checks.py SHA256:`931b045bdc01867a96b03d6a9e83dba7cff80c78e38b2860e43c889890fba414` (unchanged).
-- Packet SHA256:`9e9bd2a1cb5fecf094be4d6ac99ed3b619ebcdfe0d4099e9c8b40d9f7f653b8d`.
-- Contained recipe SHA256:`ec10ad06a7b3efd58e7184a1eb1f3cccdbb3d2560660cb1054e8ee47e79b507d` (unchanged).
-- Consumer.csproj.template SHA256:`9e9843b22abc2d9218b510af676a11b7c901f27dca44e879e7e82e293a9033d8`.
-- guard_controls.py SHA256:`15e0be3a0b656b83e62d24e4180e27fa87c03ceca5e8df1070e77e066c090b95` (unchanged).
-- feed_controls.py SHA256:`9a447fb3fc21977a1e064049e6058a48f756ffd309c087587f192f1087965e61` (unchanged).
-- package_inputs.py SHA256:`6633be06e1d36580523caaab64735249fc6a317b84ddaf3124b500acc95d9faa` (unchanged).
+- Packet SHA256:`78dc58760c3f3a2162973d16cf01752a7b85b323bffacd95b1bfc8e68326eb9b`.
+- Recipe SHA256:`ec10ad06a7b3efd58e7184a1eb1f3cccdbb3d2560660cb1054e8ee47e79b507d` (unchanged).
+- Wrapper template SHA256:`f059dceb06a661d5790aac35f7380ad699c073afc467ae8ee6f68d8f15107259`.
+- Expected in-memory rendered wrapper SHA256:`359190cdf414c76b2db158ca8a73851f1522237373f1959a79dc6c001a3e0d25`.
+- Linker input pins SHA256:`903f5ec1f29ad7eb7f0b5273fc0c706567b481a21573517f5bad1add2dccf3d5`.
+- package_inputs.py SHA256:`38c249ac2edc468778f184eee6a992deb0d0d620f1524404da554ae0c51b7622`.
+- identities.py SHA256:`b21a4291f472aea4de96e27de89b13ae12695f84f644923e3ad78826e7cc80ad`.
 
-Only behavior-source edit:consumer template explicitly sets
-ManagePackageVersionsCentrally=false. Its exactXemele0.8.0-integration reference,
-fresh private cache, offline feed, noProjectReference, actual nupkg/productDLL
-equality and all managed/trim/AOT output expectations remain. No shared repository
-Directory.Packages.props edit; no new commands, deadlines or normalization.
-Read-only SDK10.0.400 source confirms Sdk.props->Microsoft.Common.props->
-NuGet.props->Directory.Packages.props before project PropertyGroup; NuGet.targets
-then tests the resulting CPM flag. No SDK evaluation/import was executed.
+Consumer BeforeTargets=_RunILLink selects owned linker-host/dotnet with ToolPath/
+ToolExe properties, requiring SDK DOTNET_HOST_PATH. Layout renders/binds pinned
+Python/dotnet/exact private ILLinkDLL+deps/runtimeconfig/task hashes; wrapper
+execs pinned dotnet --fx-version10.0.11 with unchanged original linker arguments,
+Disable roll-forward, inherited deadline and process group. Original tool/cache/
+runtimeconfig bytes, ToolTask operation and warnings-as-errors stay unchanged.
+Freeze/check binds rendered bytes/mode/consumer target/private tool identities.
+No new commands or deadlines; exact package/fresh-private-cache/offline/noProjectRef/
+DLL-equality/managed-trim-AOT expected outputs preserved. Wrapper itself UNRUN.
 
-Root attempt3 atf843e7653c2504131745abdc63544c14eb702de2/session27760 actually
-exited1 at command43 external consumer restore/NU1008. It inherited CPM=true
-while its explicit PackageReference owned Version. Root recorded43normal,
-1failed,7unrun. Actual16 preparation controls,canonical feed layout,localpack
-and productDLL equality passed only declared prefix scopes. Complete preparation
-failed; no certificate/gate credit. Root freshly verified53groups absent and
-terminally consumed raw, failed metadata and partial external layout while
-preserving canonical caches/build inputs. Durable failed record:
-/Users/sebastienros/github/xemele/docs/orchestration/M8-gate-branch-prepare-attempt-3.json
-SHA`84614466e0ac50840bb1804167be73bdf19ad90cb9ae01e8d2e25042f5a5306c`; cleanup SHA`faa2ae85135e2ba210aef2c555ae5ddaea724733744b73cdbecea86ad43e5f19`.
-Source plan SHA`91151d3cab251b14e2a1119b63c60f3a3678214d662cfc74ae78a69965f470dd` is historical pre-terminal planning;
-actual terminal/cleanup records and root's later source release govern.
-Attempts1/2 remain failed, with their original39/10unrun counts unchanged.
+Primary source review:
+[ILLink LinkTask](https://raw.githubusercontent.com/dotnet/runtime/v10.0.11/src/tools/illink/src/ILLink.Tasks/LinkTask.cs)
+constructs original DLLargs;
+[MSBuild ToolTask](https://raw.githubusercontent.com/dotnet/msbuild/main/src/Utilities/ToolTask.cs)
+uses explicit ToolPath/ToolExe before default generated tool path. Installed
+10.0.11 targets supply properties and only reset them without DOTNET_HOST_PATH.
+NativeAOT local targets RunILLink=false/directExec native tools/ilc; no runtimeconfig
+in that toolfolder. Source review only; NativeAOT build/run/support stillUNRUN.
 
-All preparation/check/identity/counter counts and fixed caps remain:
-51prep14000+180 (layout600),18check6200+180,identity700+40/fivepairs3775
-within3800/3840controller and4000command,4counter1800+180. Root outer
-14780/14800,6980/7000,2580/2600; accepted parent28c344.../observer23be0...600.
-No deadline resets or actual check/counter launch. Canonical catalog actual
-7387+28aliases binds counts/digests; no large/raw catalog archive is retained.
+Root attempt4 at24e694b8e0946085fe5c876ee570e04ecc59a2ac/session47687 actually
+exited1 command46 trimmed publish:MSB6006/dotnetexit150 andNETSDK1144 because
+illink runtimeconfig requested10.0.11-servicing.26373.116 withDisable versus pinned
+installed10.0.11. Record46normal/1failed/4unrun stays failed. CPM-corrected managed
+restore/build andtrim restore passed only declared preparation scope; managed
+consumer output checks did not run. Root freshly verified56groups absent and
+inspected/deleted raw/failed metadata/partialexternal, keeping canonical caches.
+Durable failure record SHA`b59f70d9732e8252f8d663631fb82b109e54723d1d2071fa5bda4f9a0d62c561`; cleanup SHA`688a29c1ea595b71fc7dd4b7272c374a28465c9cfe9d7067fa722c6866adcee8`.
+Earlier attempts1/2/3 and39/10/7unrun counts remain. No certificate/gate credit.
 
 Exact changed paths:
 - docs/reports/M8-gate/Consumer.csproj.template
+- docs/reports/M8-gate/LinkerHost.py.template
 - docs/reports/M8-gate/README.md
 - docs/reports/M8-gate/handoff.md
+- docs/reports/M8-gate/identities.py
+- docs/reports/M8-gate/linker-inputs.json
+- docs/reports/M8-gate/package_inputs.py
 - docs/reports/M8-gate/source-packet.json
 
-Worker source-only reads/hashes/11 ASTs; no builds, controls, tests, probes,
-allocation counters, new actors/chats or taskstate writes. Zero owned jobs/
-PIDs/sessions/cells. Root retains sole primary/main/state/integration and actual
-phase/counter custody. Corrected consumer preparation still requires final root
-source acceptance and fresh execution release. Idle/holding.
+Source-only11 PythonASTs plus in-memory wrapper AST/hash reconciliation;
+no generated layout, wrapper, imports of workload entrypoints, builds, tests,
+controls, probes or counters ran by worker. Task JSON untouched. Zero owned jobs/
+PIDs/sessions/cells. Root sole primary/main/state/integration/launch writer.
+Commit clean thenidle; final root review needed before any fresh executable release.

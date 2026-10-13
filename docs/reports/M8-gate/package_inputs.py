@@ -73,6 +73,51 @@ def verify_catalog_sources(catalog,deadline):
  for row in catalog['aliases']:
   assert archive_identity(Path(row['source']),deadline)=={'bytes':row['bytes'],'sha256':row['sha256']}, 'Alias changed after preflight'
 
+def expected_linker_host_binding():
+ pins_path=HERE/'linker-inputs.json';template_path=HERE/'LinkerHost.py.template'
+ pins=json.loads(pins_path.read_text());private=WORK/pins['privateToolRelative']
+ for role in ['dotnet','python']:
+  assert sha(Path(pins[role]['path']))==pins[role]['sha256'],'Pinned linker host executable drift'
+ assert Path(sys.executable).resolve()==Path(pins['python']['path']).resolve(),'Layout requires pinned Python'
+ canonical=Path(pins['canonicalToolDirectory'])
+ assert all(sha(canonical/name)==value for name,value in pins['files'].items()),'Canonical linker source drift'
+ assert sha(Path(pins['installedTargets']['path']))==pins['installedTargets']['sha256'],'Original linker targets changed'
+ private_files={str(private/name):value for name,value in pins['files'].items()}
+ replacements={'@PYTHON_SHEBANG@':pins['python']['path'],'@DOTNET_PATH@':json.dumps(pins['dotnet']['path']),
+  '@DOTNET_SHA@':json.dumps(pins['dotnet']['sha256']),'@PYTHON_PATH@':json.dumps(pins['python']['path']),
+  '@PYTHON_SHA@':json.dumps(pins['python']['sha256']),'@EXPECTED_DLL@':json.dumps(str(private/'illink.dll')),
+  '@EXPECTED_FILES@':json.dumps(private_files,sort_keys=True)}
+ assert not any(char in pins['python']['path'] for char in [' ', '\n', '\r']),'Exact executable shebang path required'
+ rendered=template_path.read_text()
+ for token,value in replacements.items():rendered=rendered.replace(token,value)
+ assert not any(token in rendered for token in replacements),'Unrendered host binding token'
+ binding={'wrapperPath':str(WORK/'consumer/linker-host/dotnet'),'wrapperSha256':hashlib.sha256(rendered.encode('utf-8')).hexdigest(),
+  'wrapperMode':0o755,'templateSha256':sha(template_path),'inputPinsSha256':sha(pins_path),
+  'consumerTemplateSha256':sha(HERE/'Consumer.csproj.template'),'dotnet':pins['dotnet'],'python':pins['python'],
+  'expectedDllPath':str(private/'illink.dll'),'expectedDllSha256':pins['files']['illink.dll'],
+  'privateToolFiles':private_files,'canonicalToolFiles':{str(canonical/name):value for name,value in pins['files'].items()},
+  'runtime':'10.0.11','rollForward':'Disable','arguments':'Original linker args forwarded unchanged after exact --fx-version10.0.11',
+  'operation':'Original ILLink ToolTask; no new session/children before exec'}
+ return rendered,binding
+
+def create_linker_host():
+ rendered,binding=expected_linker_host_binding();path=Path(binding['wrapperPath'])
+ path.parent.mkdir(exist_ok=False);path.write_text(rendered);path.chmod(binding['wrapperMode'])
+ assert sha(path)==binding['wrapperSha256']
+ return binding
+
+def verify_linker_host(require_private=True):
+ rendered,expected=expected_linker_host_binding()
+ layout=json.loads((WORK/'layout.json').read_text())
+ assert layout['linkerHost']==expected,'Prepared linker binding changed'
+ wrapper=Path(expected['wrapperPath'])
+ assert wrapper.read_bytes()==rendered.encode('utf-8') and sha(wrapper)==expected['wrapperSha256'],'Rendered linker host drift'
+ assert wrapper.stat().st_mode & 0o777==expected['wrapperMode'],'Linker host executable mode drift'
+ assert (WORK/'consumer/Consumer.csproj').read_bytes()==(HERE/'Consumer.csproj.template').read_bytes(),'Consumer host-selection target drift'
+ if require_private:
+  assert all(sha(Path(name))==value for name,value in expected['privateToolFiles'].items()),'Actual private linker input drift'
+ return expected
+
 def dll_equal():
  with zipfile.ZipFile(WORK/'feed'/GENERATED_FILENAME) as z:
   assert z.read('lib/net10.0/Xemele.dll')==(ROOT/'src/Xemele/bin/Release/net10.0/Xemele.dll').read_bytes()
@@ -94,14 +139,16 @@ def main():
                        (ROOT/'tests/Xemele.Conformance.Tests/Integration/ToolkitScenario.cs','ToolkitScenario.cs')]:
    shutil.copyfile(source,WORK/'consumer'/target)
   assert all('ProjectReference' not in p.read_text() for p in (WORK/'consumer').glob('*.csproj'))
+  linker_host=create_linker_host()
   verify_catalog_sources(catalog,deadline)
   remaining(deadline)
   # Complete bindings stay active in memory; retain concise count/digest evidence only.
   summary={key:catalog[key] for key in ['archiveCount','canonicalCount','aliasCount','canonicalCatalogSha256','aliasIdentitySha256','reservedIntegrationIdentity']}
-  (WORK/'layout.json').write_text(json.dumps({'initialCacheAbsent':True,'published':False,'offlineFeed':str(WORK/'feed'),'catalog':summary},indent=2)+'\n')
+  (WORK/'layout.json').write_text(json.dumps({'initialCacheAbsent':True,'published':False,'offlineFeed':str(WORK/'feed'),'catalog':summary,'linkerHost':linker_host},indent=2)+'\n')
  elif phase=='package':dll_equal()
  elif phase=='freeze':
   dll_equal()
+  linker_host=verify_linker_host()
   assert (WORK/'packages/xemele/0.8.0-integration/lib/net10.0/Xemele.dll').read_bytes()==(ROOT/'src/Xemele/bin/Release/net10.0/Xemele.dll').read_bytes()
   for assets in (WORK/'consumer/obj').rglob('project.assets.json'):
    data=json.loads(assets.read_text());assert set(map(lambda p:str(Path(p).resolve()),data['packageFolders']))=={str((WORK/'packages').resolve())}
@@ -113,7 +160,7 @@ def main():
   (WORK/'package-identity.json').write_text(json.dumps({'packageSha256':sha(WORK/'feed'/GENERATED_FILENAME),
    'productSha256':sha(ROOT/'src/Xemele/bin/Release/net10.0/Xemele.dll'),'packageDllEqual':True,'initialConsumerCacheAbsent':True,
    'projectReference':False,'offlineOnly':True,'published':False,'nativeArchitecture':'osx-arm64','consumerSourceSha256':sha(WORK/'consumer/Program.cs'),
-   'offlineCatalog':layout['catalog']},indent=2)+'\n')
+   'offlineCatalog':layout['catalog'],'linkerHost':linker_host},indent=2)+'\n')
  else:raise ValueError(phase)
  print('PASS package preparation '+phase)
 if __name__=='__main__':main()

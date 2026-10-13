@@ -61,6 +61,8 @@ def package_identity():
  package=json.loads((WORK/'package-identity.json').read_text())
  assert sha(WORK/'feed/Xemele.0.8.0-integration.nupkg')==package['packageSha256'], 'Actual nupkg archive mutated after freeze'
  assert sha(ROOT/'src/Xemele/bin/Release/net10.0/Xemele.dll')==package['productSha256'], 'Actual source/API product DLL drift'
+ from package_inputs import verify_linker_host
+ assert verify_linker_host()==package['linkerHost'], 'Frozen linker host/tool identity drift'
  return package
 
 def binaries():
