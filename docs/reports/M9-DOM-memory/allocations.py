@@ -1,24 +1,31 @@
 """Run identical ShortRun memory-diagnosed workloads against frozen and repaired DOMs."""
 import sys
 sys.dont_write_bytecode = True
-import hashlib, importlib.util, json, os, shutil, subprocess, tarfile, time
+import argparse, hashlib, importlib.util, json, os, shutil, subprocess, tarfile, time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 BASE = '68c7523bf4451152a52e16c522c4a7738c5fe6dc'
 host = Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
-out = ROOT / 'artifacts/M9-dom-memory/allocations'
+parser = argparse.ArgumentParser(); parser.add_argument('--resume', action='store_true'); args=parser.parse_args()
+prior = json.loads((HERE/'allocations-attempt1.json').read_bytes()) if args.resume else None
+if prior:
+    assert prior['benchmarkSha256'] == hashlib.sha256((ROOT/'benchmarks/Xemele.Benchmarks/M9-DOM-memory/DomStorageBenchmarks.cs').read_bytes()).hexdigest()
+    assert not subprocess.check_output(['git','diff',prior['candidateRevision'],'--','src/Xemele','benchmarks/Xemele.Benchmarks/M9-DOM-memory'],cwd=ROOT)
+out = ROOT / ('artifacts/M9-dom-memory/allocations-retry' if args.resume else 'artifacts/M9-dom-memory/allocations')
 out.mkdir(parents=True, exist_ok=False)
-baseline = out / 'baseline'; baseline.mkdir()
-archive = out / 'baseline.tar'
-with archive.open('wb') as target:
-    subprocess.run(['git','archive',BASE,'Directory.Build.props','Directory.Packages.props','global.json','src/Xemele'],
-                   cwd=ROOT, stdout=target, check=True, timeout=30)
-with tarfile.open(archive) as source:
-    source.extractall(baseline, filter='data')
-for relative in ['docs/reports/M9-DOM-memory/BdnWorker','benchmarks/Xemele.Benchmarks/M9-DOM-memory']:
-    shutil.copytree(ROOT/relative,baseline/relative,ignore=shutil.ignore_patterns('bin','obj'))
+baseline = (ROOT/'artifacts/M9-dom-memory/allocations/baseline') if args.resume else out/'baseline'
+if not args.resume: baseline.mkdir()
+archive = ROOT/'artifacts/M9-dom-memory/allocations/baseline.tar' if args.resume else out/'baseline.tar'
+if not args.resume:
+    with archive.open('wb') as target:
+        subprocess.run(['git','archive',BASE,'Directory.Build.props','Directory.Packages.props','global.json','src/Xemele'],
+                       cwd=ROOT, stdout=target, check=True, timeout=30)
+    with tarfile.open(archive) as source:
+        source.extractall(baseline, filter='data')
+    for relative in ['docs/reports/M9-DOM-memory/BdnWorker','benchmarks/Xemele.Benchmarks/M9-DOM-memory']:
+        shutil.copytree(ROOT/relative,baseline/relative,ignore=shutil.ignore_patterns('bin','obj'))
 spec = importlib.util.spec_from_file_location('supervision',ROOT/'docs/reports/M8-xsd-corpus/supervision.py')
 supervisor = importlib.util.module_from_spec(spec); spec.loader.exec_module(supervisor)
 supervisor.ARTIFACTS = out
@@ -30,9 +37,14 @@ report = dict(baselineRevision=BASE,candidateRevision=subprocess.check_output(['
               baselineArchiveSha256=hashlib.sha256(archive.read_bytes()).hexdigest(),
               benchmarkSha256=hashlib.sha256((ROOT/'benchmarks/Xemele.Benchmarks/M9-DOM-memory/DomStorageBenchmarks.cs').read_bytes()).hexdigest(),
               environment={k:v for k,v in env.items() if k.startswith('DOTNET_')})
+if prior:
+    report['summaries']['baseline']=prior['summaries']['baseline']
+    report['reusedBaselineAttempt']='docs/reports/M9-DOM-memory/allocations-attempt1.json'
+    old=baseline/'docs/reports/M9-DOM-memory/BdnWorker/BdnWorker.csproj'
+    if old.exists(): old.rename(old.with_name('FrozenBaseline.csproj'))
 deadline = time.monotonic()+1500
 try:
-    for label, root in [('baseline',baseline),('candidate',ROOT)]:
+    for label, root in ([('candidate',ROOT)] if args.resume else [('baseline',baseline),('candidate',ROOT)]):
         supervisor.ROOT=root
         project=root/'docs/reports/M9-DOM-memory/BdnWorker/BdnWorker.csproj'
         results=out/(label+'-bdn')
@@ -55,6 +67,8 @@ try:
         assert text.count('ParseOwnedDom')==4 and 'NA' not in text
         report['summaries'][label]=text
         print(text,flush=True)
+        if label=='baseline':
+            project.rename(project.with_name('FrozenBaseline.csproj'))
     report['result']='passed'
 finally:
     (HERE/'allocations.json').write_text(json.dumps(report,indent=2)+'\n')
