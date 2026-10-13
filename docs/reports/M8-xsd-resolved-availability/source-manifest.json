@@ -1,8 +1,8 @@
 {
   "state": "SOURCE ONLY; no runtime or executable check evidence",
   "baseCommit": "2e77240f376382bf67c741a2930a84015e1fc6cf",
-  "codePacketCommit": "53b9c54a55c44b5453312a58f339a535597b8992",
-  "availabilitySourceSha256": "9f43303f2a934130694c558ad089e9c64b0d6eb9cd2f0bb83b4132cd3291c603",
+  "codePacketCommit": "f71e1ebfa95609b831000b79c3d7e8d885d5258f",
+  "availabilitySourceSha256": "c5ccdab54580f735bf030906951fe2b7ca02ae163036cf98963a53f2888db1e3",
   "taskSha256": "d962a7a9ac7f2dbd23be51fe45b513884d77fc8812058e8f8ce99ed93391c403",
   "ownedSourceSha256": {
     "benchmarks/Xemele.Benchmarks/M8-xsd-resolved-availability/Fixture.cs": "85396a2919f2fa08960f00774f8180a43b5f35d22c6c2b4117fadfafe646a99e",
@@ -29,7 +29,7 @@
     "docs/reports/M8-xsd-resolved-availability/harness/terminal.py": "235ff6a7f7791a11a6cd8233ff7e32087b88bb49b04508f8fab35f1874664d08",
     "docs/reports/M8-xsd-resolved-availability/harness/test-selection-baseline.json": "434f1a15d325cb9f4cb765364429354c28d60346d91240a9ce56c73392611853",
     "docs/reports/M8-xsd-resolved-availability/harness/test-selection-proposed.json": "7c80387ff4433ae835a69628558dd83e9325420fd084ee44eb833475e9f26cf5",
-    "docs/reports/M8-xsd-resolved-availability/harness/test-selection.json": "434f1a15d325cb9f4cb765364429354c28d60346d91240a9ce56c73392611853",
+    "docs/reports/M8-xsd-resolved-availability/harness/test-selection.json": "7c80387ff4433ae835a69628558dd83e9325420fd084ee44eb833475e9f26cf5",
     "samples/M8-xsd-resolved-availability/Consumer.cs.fixture": "061103304e014e8fd518f9d14a6e5fb6f86e5d47ef4776f9d033a64e2a1536df",
     "samples/M8-xsd-resolved-availability/Consumer.csproj": "79e13290cade584f4ac372008779807445c05393c40b9d37b56c52a822fc180a",
     "samples/M8-xsd-resolved-availability/XmlOnly.csproj": "7ae056ca59586435b8d7579a8d4f202b528e55fd189373e2bc7adc5723237c78",
@@ -48,9 +48,12 @@
     "tests/fixtures/M8-xsd-resolved-availability/sunData/combined/xsd015/xsd015.e.xsd": "f6e97de544c9a9af44575eb7e5d756233dbe7a5d960839709f387f43f14f981b",
     "tests/fixtures/M8-xsd-resolved-availability/sunData/combined/xsd016/xsd016.e.xsd": "0fe02a48363a52f3a2a92879774dbad9e5f0a20eb39f92a2be1a26703a70e7ce",
     "docs/reports/M8-xsd-resolved-availability/verified-runtime-api.json": "5016c3b603fc99470bfdb2f53cbd500b972a4ce8c68d5469372f62b3fd46b187",
-    "docs/reports/M8-xsd-resolved-availability/verified-added.golden.txt": "33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d"
+    "docs/reports/M8-xsd-resolved-availability/verified-added.golden.txt": "33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d",
+    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs": "c5ccdab54580f735bf030906951fe2b7ca02ae163036cf98963a53f2888db1e3",
+    "docs/reports/M8-xsd-resolved-availability/baseline-evidence.json": "ecbbb91eb9c35f60a99aba57f814dc990c54a9a7af3fff38bca9486692552fdd",
+    "docs/reports/M8-xsd-resolved-availability/proposal-handoff.md": "8e25253898ac9f6515deef9e8a35a25c070f0ced701ecb9658054042a4b5f853"
   },
-  "scope": "Only owned source-only packet; Availability.cs and task JSON unchanged",
+  "scope": "Minimal invocation-local Availability.cs shortcut plus owned proposed packet; task JSON unchanged; proposed executable phases UNRUN",
   "attribution": {
     "measure.py": {
       "predecessor": "docs/reports/M8-xsd-missing-components/harness/measure.py",
@@ -136,5 +139,12 @@
     "testedIntegration": "82ded28c85df6accccee4c798c5b49ff850aa797",
     "releasedCheckSha256": "c516fdbae022bf65148a2c420b0412fcd4f1418adacde540bbc48eb0dee95105",
     "guard": "All93 emitted rows equal independently verified projection; same-count declaration signature/default/access negative controls authored; current executable phases UNRUN"
+  },
+  "baselineAvailabilitySourceSha256": "9f43303f2a934130694c558ad089e9c64b0d6eb9cd2f0bb83b4132cd3291c603",
+  "baselineAcceptance": {
+    "rootMainCommit": "c3c6a3e28",
+    "packetHead": "d5f8de2f81bfc1162019a21061187888cb476813",
+    "conciseEvidence": "docs/reports/M8-xsd-resolved-availability/baseline-evidence.json",
+    "conciseEvidenceSha256": "ecbbb91eb9c35f60a99aba57f814dc990c54a9a7af3fff38bca9486692552fdd"
   }
 }
