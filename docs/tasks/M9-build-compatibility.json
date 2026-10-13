@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Repair root contract build and bound existing hosted CI",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-build-compatibility",
   "base_revision": "f9867eca5c8e4f368a5abcba0fa3d912b1cc7b88",
-  "integration_revision": null,
+  "integration_revision": "b7f8ecf73b15645d13387f0b717df669f9fc3dfd",
   "depends_on": [
     "M9-contracts",
     "M0-ci"
@@ -33,7 +33,8 @@
       "description": "Repair demonstrated CS8805 root contract-library build failure using existing .cs.fixture convention; standalone M9 usage remains executable with identical behavior.",
       "status": "passed",
       "evidence": [
-        "root-build-and-usage"
+        "root-build-and-usage",
+        "integrated-build-repair"
       ]
     },
     {
@@ -41,7 +42,8 @@
       "description": "Bound existing generic CI jobs to20minutes before requested validation branch push; preserve existing check coverage and no-publication scope.",
       "status": "passed",
       "evidence": [
-        "root-build-and-usage"
+        "root-build-and-usage",
+        "integrated-build-repair"
       ]
     },
     {
@@ -49,7 +51,8 @@
       "description": "Run root Contracts and standalone usage checks at known revision, validate ownership/dependencies and record actual integration evidence.",
       "status": "passed",
       "evidence": [
-        "root-build-and-usage"
+        "root-build-and-usage",
+        "integrated-build-repair"
       ]
     }
   ],
@@ -67,6 +70,15 @@
       "result": "passed",
       "summary": "Both projects compile0warnings/errors; unchanged representative usage passes; originalCS8805retained;20minCIcap and reservedbranch exclusion reviewed; no hosted execution claimed.",
       "artifact": "docs/reports/M9-build-compatibility/checks.json"
+    },
+    {
+      "id": "integrated-build-repair",
+      "kind": "integration",
+      "revision": "b7f8ecf73b15645d13387f0b717df669f9fc3dfd",
+      "command": "Merge tested repair; compare runtime/fixture/build inputs to passing branch; tasks.py validate/diff.",
+      "result": "passed",
+      "summary": "243inputs equal tested branch; historical first-preview/product sources unchanged; root glob repaired; requestedCIcaps integrated. No hosted outcomes fabricated.",
+      "artifact": null
     }
   ],
   "blockers": [],
