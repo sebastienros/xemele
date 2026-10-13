@@ -13,7 +13,7 @@ stable package; platform/performance/sustained release checks remain outstanding
 | Parse errors / global error hooks | XmlParseException.Diagnostics or TryParse's false/null/diagnostics; ParseWithDiagnostics carries explicit completion and well-formedness. No process-global initialization/error callback. |
 | Recovery flags | Strict factories reject Recover=true. Use ParseWithDiagnostics and inspect IsComplete/IsWellFormed before consuming repaired Value. A recovered tree is not standards validity. |
 | SAX callbacks | XmlSaxParser with XmlSaxCallbacks or IXmlSaxHandler. Borrowed spans are valid during the callback; copy text if it must survive. Callbacks are sequential; caller exceptions propagate. |
-| Pull/push and forward output | XmlPullReader, XmlPushParser and XmlStreamingWriter provide explicit lifetime/state and cancellation contracts; use module samples for these modes. Stream-taking APIs do not imply a DOM. |
+| Pull/push and forward output | Xemele.Streaming.XmlReader, XmlPushParser and Xemele.XmlWriter provide explicit lifetime/state and cancellation contracts; use module samples for these modes. Stream-taking APIs do not imply a DOM. |
 | XPath compiled object | XPathExpression.Compile then Evaluate with explicit namespaces/variables. Keep attribute/namespace identities and typed XPathValue conversions. No implicit XPath2 support. |
 | HTML parser | Choose HtmlParser for pinned legacy compatibility or Html5Parser for WHATWG behavior. HtmlSaveOptions selects output mode; CssSelector is independently compiled. |
 | Schema compile/validate | RelaxNgSchema, XmlSchema or SchematronSchema; Compile can throw SchemaCompileException. IsComplete=false is refusal/incomplete work, never a validity conclusion. Schematron exposes findings and SVRL. |
