@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Repair demonstrated quadratic XPath navigation and ordering",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-xpath-order",
   "base_revision": "c1e68554fe4f76aa0675845ecca4a9f784639176",
-  "integration_revision": null,
+  "integration_revision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac",
   "depends_on": [
     "M9-contracts",
     "M4-navigation",
@@ -38,7 +38,8 @@
       "description": "Remove demonstrated quadratic navigation/order work and qualify the original entity-medium release query within100million operations; characterize every original frozen fixture without masking existing input-profile rejections or changing release denominators.",
       "status": "passed",
       "evidence": [
-        "quadratic-regression"
+        "quadratic-regression",
+        "integrated-checks"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "evidence": [
         "unit-tests",
         "allocation-cases",
-        "compatibility"
+        "compatibility",
+        "integrated-checks"
       ]
     }
   ],
@@ -104,6 +106,15 @@
       "result": "passed",
       "summary": "920conformance+618differential pass,0nonpasses. Public1430/55 and222preview signatures unchanged; two mismatch controls refuse.",
       "artifact": "docs/reports/M9-xpath-order/compatibility-branch.json"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "eb53f5f92334efb9f292f5cc56ae5c3a2dde83ac",
+      "command": "check.py --phase integration; exact runtime/test/corpus/worker/API source closure comparison",
+      "result": "passed",
+      "summary": "Integrated10754/10754 units pass; every measured runtime/test/corpus/API closure equals passing component and compatibility checks. Original all-fixture profile failure remainsfailed; no source-changed silent reuse.",
+      "artifact": "docs/reports/M9-xpath-order/integration.json"
     }
   ],
   "blockers": [],
@@ -115,7 +126,7 @@
       "All original release fixtures retained:9qualify, text-large input-profile rejection remainsfailed"
     ],
     "remaining": [
-      "Integrated verification; no dedicated timing/OS/fuzz claims."
+      "Separately owned finite benchmark input-profile correction and aggregate benchmark build fix; dedicated timing remains unverified."
     ],
     "requests": [
       "M9-performance owns the finite benchmark-profile correction and affected text-large requalification; no release denominator change.",
