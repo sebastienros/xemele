@@ -71,10 +71,6 @@ public sealed partial class XmlDocument
         recentNameCursor = (recentNameCursor + 1) & 7;
     }
     internal bool HasNameTriple(string local, string uri, string prefix) => FindNameTriple(local, uri, prefix) is not null;
-    private void PreflightNewNameTriple(string local, string uri, string prefix)
-    {
-        if (!HasNameTriple(local, uri, prefix)) PreflightNames(local, uri, prefix);
-    }
     private string InternOwned(string value)
     {
         if (value.Length == 0) return "";
@@ -170,9 +166,14 @@ public sealed partial class XmlDocument
     private XmlNode Create(XmlNodeKind kind, string local, string uri, string prefix, string value)
     {
         CheckCapacity(Nodes);
-        if (local.Length != 0 || uri.Length != 0 || prefix.Length != 0) PreflightNewNameTriple(local, uri, prefix);
+        NameData? name = null;
+        if (local.Length != 0 || uri.Length != 0 || prefix.Length != 0)
+        {
+            name = FindNameTriple(local, uri, prefix);
+            if (name is null) { PreflightNames(local, uri, prefix); name = GetName(local, uri, prefix); }
+        }
         Capacity(Nodes);
-        var data = new NodeData(kind, GetName(local, uri, prefix), value);
+        var data = new NodeData(kind, name, value);
         int slot = Nodes.Count; Nodes.Add(data); return new(this, slot);
     }
     public XmlNode CreateElement(string localName, string? namespaceUri = null, string? prefix = null)
@@ -327,10 +328,12 @@ public sealed partial class XmlDocument
     {
         var slots = ns ? NamespaceSlots : AttributeSlots;
         EnsureVersions(1); CheckCapacity(slots);
+        NameData? name = FindNameTriple(local, uri, prefix);
         if (ns) PreflightNames(prefix, value);
-        else PreflightNewNameTriple(local, uri, prefix);
+        else if (name is null) PreflightNames(local, uri, prefix);
         Capacity(slots);
-        var member = new MemberData(element, GetName(local, uri, prefix), ns ? InternOwned(value) : value);
+        name ??= GetName(local, uri, prefix);
+        var member = new MemberData(element, name, ns ? InternOwned(value) : value);
         int slot = slots.Count; ref var e = ref Nodes[element];
         int last = ns ? e.LastNamespace : e.LastAttribute;
         member.Previous = last; slots.Add(member); AdvanceVersion();

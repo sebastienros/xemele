@@ -19,6 +19,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     private static readonly SearchValues<char> TextStops = SearchValues.Create("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000a\u000b\u000c\u000d\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f<&]\ufffe\uffff");
     private static readonly SearchValues<char> DoubleQuotedStops = SearchValues.Create("\"&<\t\n\r");
     private static readonly SearchValues<char> SingleQuotedStops = SearchValues.Create("'&<\t\n\r");
+    private static readonly SearchValues<char> AsciiNameUnits = SearchValues.Create("-.:0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz");
     private static readonly SearchValues<char> PrintableTagUnits = SearchValues.Create(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
     private static readonly SearchValues<char> AsciiReference = SearchValues.Create(" !\"#$%&'()*+,-./0123456789:<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
     private static readonly SearchValues<char> AsciiTag = SearchValues.Create(" !#$%&()*+,-./0123456789:;<=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
@@ -332,7 +333,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     }
     private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets)
     {
-        if (entities is not null || RecoveryEnabled || sourceMode == 2 && !trustedByteMappings || input[0] is '?' or '!') return 0;
+        if (RecoveryEnabled || sourceMode == 2 && !trustedByteMappings || input[0] is '?' or '!') return 0;
         if (input[0] != '/' && input[0] is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' or ':')) return 0;
         int capacity = Math.Min(4096, Math.Min(input.Length, position.ColumnCapacity));
         capacity = (int)Math.Min(capacity, Math.Min(budget.Remaining(Quota.DocumentCharacters), budget.Remaining(Quota.TokenCharacters) - 1));
@@ -371,6 +372,25 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         {
             long stride = sourceMode == 2 ? offsets[1] - offsets[0] : 0;
             (tokenLocationRuns ??= new(8)).Add(new(0, length, new(location.SourceUri, location.LineNumber, location.LinePosition + start, location.ByteOffset), stride));
+        }
+        if (!close && entities is not null)
+        {
+            // These are primary-source ASCII scalars, so physical spelling and
+            // coordinates are exact even when DTD interpretation needs them.
+            if (length > physicalStarts.Length) Array.Resize(ref physicalStarts, token.Length);
+            if (length > attributePhysicalLocations.Length)
+            {
+                Array.Resize(ref attributePhysicalLocations, token.Length); Array.Resize(ref attributePhysicalOrigins, token.Length);
+                Array.Resize(ref attributePhysicalIdentities, token.Length);
+            }
+            physicalTag.Append(candidate.Slice(start, length));
+            for (int i = 0; i < length; i++)
+            {
+                var at = new XmlLocation(location.SourceUri, location.LineNumber, location.LinePosition + start + i,
+                    sourceMode == 2 ? offsets[start + i] : null);
+                tokenLocations[i] = attributePhysicalLocations[i] = at;
+                physicalStarts[i] = i; attributePhysicalOrigins[i] = false; attributePhysicalIdentities[i] = null;
+            }
         }
         tokenLength = length; declarationAllowed = false; quote = '\0';
         budget.TryCharge(Quota.DocumentCharacters, end); budget.TryCharge(Quota.TokenCharacters, end + 1);
@@ -1089,6 +1109,22 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     {
         int start = i, colons = 0; bool first = true, ascii = true;
         valid = true;
+        activeCancellation.ThrowIfCancellationRequested();
+        var candidate = token.AsSpan(i, Math.Min(4096, tokenLength - i));
+        int stop = candidate.IndexOfAnyExcept(AsciiNameUnits);
+        int asciiLength = stop < 0 ? candidate.Length : stop;
+        // Only return when this is also the original lexical boundary. Invalid
+        // punctuation or Unicode uses the complete name/scalar fallback below.
+        if (asciiLength != 0 && (i + asciiLength == tokenLength || White(token[i + asciiLength]) || token[i + asciiLength] is '=' or '/' or '?'))
+        {
+            var name = candidate[..asciiLength];
+            bool initial = name[0] is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_';
+            int colon = name.IndexOf(':');
+            valid = initial && (colon < 0 || colon + 1 < name.Length &&
+                name[colon + 1] is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' &&
+                name[(colon + 1)..].IndexOf(':') < 0);
+            i += asciiLength; return asciiLength;
+        }
         while (i < tokenLength && !White(token[i]) && token[i] is not '=' and not '/' and not '?')
         {
             Work(i); char c = token[i++];
