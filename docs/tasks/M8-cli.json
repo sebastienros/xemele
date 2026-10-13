@@ -126,18 +126,26 @@
       "result": "passed",
       "summary": "Normal1156/XML-only1157 assertions; 288 fuzz cases per composition, seed81677; ten guard controls; 38 real CLI controls including prior XML/HTML and observable read-only stdout refusal; complete public API/task201/diff checks. Inputs/binaries/certificate matched, no deadline/lifecycle failure; pinned EPIPE suppression has zero delivery credit.",
       "artifact": "docs/orchestration/M8-cli-primary-checks.json"
+    },
+    {
+      "id": "terminal-cleanup",
+      "kind": "check",
+      "revision": "e8230dfb967aa15cea120f831a35a40e4ce15807",
+      "command": "Root reviewed finite /private/tmp/xemele-m8-cli-terminal-cleanup.py",
+      "result": "passed",
+      "summary": "Actual session86486 exit0: 88 registered groups absent; worker337 files/50057891 bytes and primary124 files/6322118 bytes deleted; source333 identities/clean status before-after and 62 normal cache files per checkout preserved. Primary production/API-helper binaries retained as active gate inputs; no raw archive.",
+      "artifact": "docs/orchestration/M8-cli-terminal-cleanup.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Integrated and verified at 247203d7. All actual primary preparation and seven check commands pass; library public API and earlier validators unchanged. Three original branch failures remain recorded; no EPIPE delivery-success claim.",
+    "summary": "Integrated and verified at 247203d7. All actual primary preparation and seven check commands pass; library public API and earlier validators unchanged. Three original branch failures remain recorded; no EPIPE delivery-success claim. Terminal transient cleanup complete; worker chat archived, clean protected primary worker checkout preserved because artifact inventory is empty.",
     "checks": [
       "Normal1156/XML-only1157 assertions; 288 deterministic fuzz cases each",
       "Ten phase guards; 38 real CLI controls preserving earlier XML/HTML",
       "Full public API, 201 task validation and whitespace passed"
     ],
     "remaining": [
-      "Terminal CLI transient cleanup and worker archive",
       "M8-gate cumulative/API/corpus/package/trim/NativeAOT verification"
     ],
     "requests": []
