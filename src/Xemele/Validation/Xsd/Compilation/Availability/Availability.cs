@@ -106,6 +106,7 @@ internal sealed class AvailabilityBuilder
     private readonly List<AvailabilityEntry> entries;
     private readonly List<DependencyEdge> edges;
     private readonly List<(ComponentIdentity Consumer, DependencyUse Use, ComponentIdentity Operand, DependencyUse OperandUse)> links;
+    private bool hasUnavailableReference;
     internal AvailabilityBuilder(ISchemaOperation operation)
     {
         ArgumentNullException.ThrowIfNull(operation); this.operation = operation;
@@ -121,6 +122,7 @@ internal sealed class AvailabilityBuilder
         int id = entries.Count;
         entries.Add(new(id, owner, kind, space, name, at, resolved ? AvailabilityState.Resolved : AvailabilityState.Unavailable));
         edges.Add(new(owner, id, use));
+        if (!resolved) hasUnavailableReference = true;
     }
     internal void Link(ComponentIdentity consumer, ComponentIdentity operand, DependencyUse use = DependencyUse.TypeAssessment,
         DependencyUse operandUse = DependencyUse.TypeAssessment)
@@ -169,6 +171,13 @@ internal sealed class AvailabilityBuilder
     }
     internal bool Unavailable(ComponentIdentity owner, DependencyUse use = DependencyUse.TypeAssessment)
     {
+        // Links only propagate registered reference IDs. Without an unavailable
+        // entry, no closure path can be unavailable; Seal still publishes it all.
+        if (!hasUnavailableReference)
+        {
+            if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+            return false;
+        }
         foreach (var edge in Closure())
         { Work(default); if (edge.Consumer == owner && edge.Use == use && entries[edge.ReferenceId].State == AvailabilityState.Unavailable) return true; }
         return false;
