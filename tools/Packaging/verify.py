@@ -56,12 +56,20 @@ def main():
                   result='failed', rid=args.rid, runtime='10.0.11', commands=[], packages=[], published=False)
     if args.reuse_builds:
         prior = json.loads((OUT / 'summary.json').read_text())
-        assert prior['result'] == 'failed' and len(prior['commands']) == 9
+        assert prior['result'] == 'failed' and len(prior['commands']) in (9, 14)
         assert all(c['receipt']['exit'] == 0 and c['receipt'].get('ownedGroupAbsent', True) for c in prior['commands'])
         relevant = ['src', 'tests/PackageSmoke/Release', 'tools/Packaging/Release.targets', 'tools/Packaging/README.md', 'tools/Packaging/LICENSE', 'tools/Packaging/THIRD-PARTY-NOTICES.md', 'Directory.Build.props', 'Directory.Packages.props', 'global.json']
         assert not subprocess.check_output(['git', 'diff', '--name-only', prior['revision'], 'HEAD', '--', *relevant], cwd=ROOT, text=True).strip()
         assert not subprocess.check_output(['git', 'status', '--porcelain', '--', *relevant], cwd=ROOT, text=True).strip()
         report = prior
+        report['packages'] = []
+        if len(prior['commands']) == 14:
+            trimmed_log = WORK / 'command-13.log'
+            assert sha(trimmed_log) == prior['commands'][13]['outputSha256']
+            assert 'PASS XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL release usage' in trimmed_log.read_text()
+            report['consumers']['trim'] = True
+            report['trimExecutionReused'] = 'Actual clean exit0 and inspected original stdout; reporting-only indexing error corrected.'
+            trimmed_log.unlink()
         report['verificationRevision'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
         report['buildReuse'] = 'Completed two clean packs preserved: runtime/tool/docs/notices/build/consumer source and config unchanged; only verifier reporting assertion changed.'
     environment = dict(os.environ, DOTNET_ROOT=str(host.parent), DOTNET_ROLL_FORWARD='Disable',
@@ -100,7 +108,7 @@ def main():
         if not valid:
             report['commands'][-1]['failureTail'] = output[-3000:]
             raise RuntimeError(f'Command {index} failed: {output[-2000:]}')
-        print(f'PASS command{index}: {argv[1]}', flush=True)
+        print(f'PASS command{index}: {argv[1] if len(argv) > 1 else Path(argv[0]).name}', flush=True)
         log.unlink()
         return output
 
@@ -168,27 +176,36 @@ def main():
         report['sourceLink'] = dict(embedded=True, mappings=mapping['documents'], remoteFetchVerified=False)
         # Copy consumer out of source tree and restore from a fresh package cache; no ProjectReference.
         consumer = WORK / 'consumer'
-        shutil.copytree(ROOT / 'tests/PackageSmoke/Release', consumer, ignore=shutil.ignore_patterns('bin', 'obj'))
-        cp = consumer / 'Consumer.csproj'
-        private_cache = WORK / 'consumer-cache'
-        assert not private_cache.exists()
         consumer_sources = ['--source', str(feed)] if args.cache else ['--source', str(feed), '--source', 'https://api.nuget.org/v3/index.json']
-        run([host, 'restore', cp, '--packages', private_cache, *consumer_sources, '--disable-build-servers', '-r', args.rid, '-p:PublishAot=true', '-p:PublishTrimmed=true', '-p:RuntimeFrameworkVersion=10.0.11'])
+        cp = consumer / 'Consumer.csproj'
+        if not report.get('consumers', {}).get('managed'):
+            shutil.copytree(ROOT / 'tests/PackageSmoke/Release', consumer, ignore=shutil.ignore_patterns('bin', 'obj'))
+            cp = consumer / 'Consumer.csproj'
+            private_cache = WORK / 'consumer-cache'
+            assert not private_cache.exists()
+            consumer_sources = ['--source', str(feed)] if args.cache else ['--source', str(feed), '--source', 'https://api.nuget.org/v3/index.json']
+            run([host, 'restore', cp, '--packages', private_cache, *consumer_sources, '--disable-build-servers', '-r', args.rid, '-p:PublishAot=true', '-p:PublishTrimmed=true', '-p:RuntimeFrameworkVersion=10.0.11'])
+        else:
+            assert cp.read_bytes() == (ROOT / 'tests/PackageSmoke/Release/Consumer.csproj').read_bytes()
+            assert (consumer / 'Program.cs').read_bytes() == (ROOT / 'tests/PackageSmoke/Release/Program.cs').read_bytes()
         # Reuse the exact linker-host mechanism proved at M8 when the SDK tool runtime has a servicing suffix.
         if os.name != 'nt':
             linker = consumer / 'linker-host'
-            linker.mkdir()
+            linker.mkdir(exist_ok=args.reuse_builds)
             wrapper = linker / 'dotnet'
             wrapper.write_text('#!' + sys.executable + '\nimport os,sys\nos.execv(' + repr(str(host)) + ',[' + repr(str(host)) + ',"--fx-version","10.0.11",*sys.argv[1:]])\n')
             wrapper.chmod(0o755)
             linker_props = [f'-p:PinnedLinkerHost={linker}']
         else:
             linker_props = []
-        run([host, 'build', cp, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false'])
-        managed = run([host, '--fx-version', '10.0.11', consumer / 'bin/Release/net10.0/Consumer.dll'], 60)
-        assert 'PASS XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL release usage' in managed
-        report['consumers'] = dict(managed=True, freshCache=True, packageReferenceOnly=True)
+        if not report.get('consumers', {}).get('managed'):
+            run([host, 'build', cp, '-c', 'Release', '--no-restore', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false'])
+            managed = run([host, '--fx-version', '10.0.11', consumer / 'bin/Release/net10.0/Consumer.dll'], 60)
+            assert 'PASS XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL release usage' in managed
+            report['consumers'] = dict(managed=True, freshCache=True, packageReferenceOnly=True)
         for mode in ['trim', 'aot']:
+            if report['consumers'].get(mode):
+                continue
             destination = WORK / mode
             run([host, 'publish', cp, '-c', 'Release', '-r', args.rid, '--no-restore', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false', '-p:SelfContained=true', '-p:RuntimeFrameworkVersion=10.0.11', '-p:PublishTrimmed=true', f'-p:PublishAot={str(mode == "aot").lower()}', *linker_props, '-o', destination], 900)
             output = run([destination / ('Consumer.exe' if os.name == 'nt' else 'Consumer')], 60)
