@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-current-package",
   "base_revision": "1e4eb2c0062eaffb385db6ee2fe3f5312215c358",
@@ -38,7 +38,8 @@
       "status": "pending",
       "evidence": [
         "local-package",
-        "missing-platform-matrix"
+        "missing-platform-matrix",
+        "current-local-package"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "pending",
       "evidence": [
         "local-package",
-        "missing-platform-matrix"
+        "missing-platform-matrix",
+        "current-local-package"
       ]
     },
     {
@@ -56,7 +58,8 @@
       "status": "passed",
       "evidence": [
         "local-package",
-        "partial-local-integration"
+        "partial-local-integration",
+        "current-local-package"
       ]
     }
   ],
@@ -65,7 +68,9 @@
     "tools/Packaging/verify.py",
     ".github/workflows/release.yml",
     "tests/PackageSmoke/Release/Consumer.csproj",
-    "tools/Packaging/THIRD-PARTY-NOTICES.md"
+    "tools/Packaging/THIRD-PARTY-NOTICES.md",
+    "docs/reports/M9-distribution/current-local-checks.json,current-extra-checks.json: current repaired-runtime18-command local package/trim/AOT/tool/symbol evidence",
+    "tools/Packaging/verify.py: EXPECTED_UNIT_TESTS10754 matches actual verified M9unit population for the pending hosted candidate"
   ],
   "evidence": [
     {
@@ -130,22 +135,32 @@
       "result": "passed",
       "summary": "Integrated owned repair source matches locally passing full10741unit/pinned3386file evidence. Actual first hosted failures retained; full OS package acceptance remains pending.",
       "artifact": null
+    },
+    {
+      "id": "current-local-package",
+      "kind": "check",
+      "revision": "34740332fe6cada9b0e6e9608a9bef6426164c3e",
+      "command": "python3 -B tools/Packaging/verify.py --rid osx-arm64 --dotnet pinnedhost --cache /Users/sebastienros/.nuget/packages; exactsymbolpairs/MachOheader/current10754unitguard check",
+      "result": "passed",
+      "summary": "Current repaired runtime/tool canonical clean package pairs andsymbols identical; embeddedexactSourceLink. Actual freshPackageReference-only managed/trim/NativeAOT/MachO64arm64 andCLIinstall/help pass.18commands exit0/reaped/groupsabsent. No Windows/Linux/x64/remote-source-fetch/publication credit.",
+      "artifact": "docs/reports/M9-distribution/current-local-checks.json"
     }
   ],
   "blockers": [
-    "Initial authorized three OS jobs completed failure. Concrete corpus/diagnostic repair passes local10741units; additional bounded hosted run requires approval beyond the initial three-job scope."
+    "Required Windows/Linux/x64 current-runtime execution stillmissing; initial authorized three-job run failed before packaging. One additional three-job20minute/60runner-minute retry awaits its existing humanbudget question."
   ],
   "handoff": {
-    "summary": "Local packages remain valid; first hosted attempt failed before package checks. Concrete corpus/diagnostic repair prepared and locally verified.",
+    "summary": "Current repaired-runtime local package/trim/NativeAOT/tool validation passed; originalcheckpoints and failed hostedattempt preserved. RequiredOS/x64 evidence remainspending.",
     "checks": [
-      "First hosted3OSattempt failed with retained outcomes; duplicate consumed0jobs.",
-      "Local repair validates bounded pinnedarchive/3386originalfiles, corruptrefusal and10741/10741units; build0warnings/errors."
+      "18localcommands pass withcleanprocessreceipts;two canonicalruntime/tool packages andsymbol pairs identical",
+      "Freshisolatedmanaged/trim/NativeAOT consumers andtoolinstall/help pass;nativeMachO64arm64;embeddedSourceLink exactpackagecommit",
+      "Hostedunitguard alignedto alreadyverified10754currenttests; no hostedjob orpush performed"
     ],
     "remaining": [
-      "Refresh local current-runtime package/managed/trim/AOT/tool checks; required hostedretry stillawaits existing additionalbudget approval."
+      "Additionalapprovedbudget for three cappedhostedjobs andactual Windows/Linux/x64execution; laneA1/A2remainpending."
     ],
     "requests": [
-      "Approve one additional three-job hosted validation attempt capped20minutes/job (60additionalrunner-minmaximum), with the prepared repaired recipe."
+      "Keep existing additional runner-budget question pending; do not infer retry approval from general continuation or coordination-message authorization."
     ]
   }
 }

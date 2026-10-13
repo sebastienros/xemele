@@ -1,0 +1,5 @@
+# Current local distribution checkpoint
+
+The repaired runtime at34740332fe6cada9b0e6e9608a9bef6426164c3e passes all18finite packaging/consumption commands onosx-arm64/.NET10.0.11. Two clean canonical runtime/tool package payloads and both symbol archives are byte-identical; notices/guides/license and exact embedded Source Link are verified. Fresh isolated PackageReference-only consumers execute XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL in managed, trimmed and NativeAOT modes. Native image is Mach-O64arm64. Local isolated tool install/help passes.
+
+The hosted unit-count guard now matches the independently verified current10754unit population, including the eight DOM and five XPath cases. The local package run omits that optional hosted unit phase, so its already passing package artifacts remain valid after the guard-only verifier correction. No remotejob/push/main/tag/package publication was performed. Initial failed hosted jobs and older local checkpoint remain preserved. Required current Windows/Linux/x64 consumption remainspending, and the existing request for one additional capped three-job run still needs its human budget answer.

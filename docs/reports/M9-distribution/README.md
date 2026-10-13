@@ -1,3 +1,7 @@
+# Distribution evidence status
+
+Current [repaired-runtime local checkpoint](current-summary.md) supersedes older local consumption claims for this runtime; earlier reports remain historical. Current Windows/Linux/x64 matrix execution still awaits the existing additional runner-budget approval.
+
 # Local distribution result
 
 Local macOSarm64/.NET10.0.11checks passed. Two clean builds produce byte-identical
