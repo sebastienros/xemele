@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Reproducible performance acceptance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-current-memory",
   "base_revision": "7325a31787b587be1f8f5fcc84f1d5db427b0dbb",
@@ -29,7 +29,8 @@
       "description": "Run frozen throughput/allocation/live-memory benchmarks on controlled hardware against each reference.",
       "status": "pending",
       "evidence": [
-        "required-controlled-run"
+        "required-controlled-run",
+        "current-streaming-memory"
       ]
     },
     {
@@ -37,7 +38,8 @@
       "description": "Record raw results/environment/confidence and target outcomes; route runtime optimization to separate repair tasks.",
       "status": "pending",
       "evidence": [
-        "required-controlled-run"
+        "required-controlled-run",
+        "current-streaming-memory"
       ]
     },
     {
@@ -52,7 +54,9 @@
   "implementation": [
     "benchmarks/baselines/release/targets.json",
     "docs/reports/M9-performance/accounting.json",
-    "docs/reports/M9-performance/README.md"
+    "docs/reports/M9-performance/README.md",
+    "docs/reports/M9-performance/MemoryRunner/MemoryRunner.csproj: links unchanged generated memory oracle against current release runtime",
+    "docs/reports/M9-performance/memory.py and current-memory.json: finite five-mode1GiB checks plus retained9MiB control"
   ],
   "evidence": [
     {
@@ -81,19 +85,31 @@
       "result": "passed",
       "summary": "Source runtime remains unchanged; accounting integrated, task blocked and mandatory measurements never verified.",
       "artifact": null
+    },
+    {
+      "id": "current-streaming-memory",
+      "kind": "check",
+      "revision": "a9cd65d8ab179e434007816530cc75d18b259723",
+      "command": "python3 -B docs/reports/M9-performance/memory.py --dotnet pinned10.0.400host",
+      "result": "passed",
+      "summary": "Five current1GiBmodes pass exact byte/event/text/earlyEOF oracles;65liveheap samples/mode, max291304bytes<8388608 including buffers/runtime. Retained9MiBcontrol9627776bytes refuses limit. All9outercommands exit0/reaped/groupabsent/logclosed; actual separateRSS. No fuzz or controlledtimingcredit.",
+      "artifact": "docs/reports/M9-performance/current-memory.json"
     }
   ],
-  "blockers": [],
+  "blockers": [
+    "Stable dedicated timing hardware or applicable controlled release comparisons unavailable; human answered no. Representative retainedDOM/reference fixture preparation remains outstanding."
+  ],
   "handoff": {
-    "summary": "Frozen release target/reference accounting; provisional earlier measurements preserved without pass inflation; task blocked on controlled release evidence.",
+    "summary": "Current five-mode1GiB managed-live-memory requirement passes with a rejecting retained-memory control; other required comparisons remain pending.",
     "checks": [
-      "11outcomes/accounting/inputSHA/runtimeequivalence/oldstreamingclosure checks; planning201/diff passed."
+      "Nine finite build/control/workload commands pass cleanly; max sampled wholemanagedheap291304bytes; positivecontrol9627776bytes; actualRSS retained separately.",
+      "Earlier source-applicable allocations retained; no uncontrolled throughput/regression credit."
     ],
     "remaining": [
-      "Run current release streaming memory requalification and non-fuzz controls locally; controlled timing and representative retainedDOM comparison remain pending."
+      "Controlled throughput/reference confidence and regression outcomes; frozen representative retainedDOM/reference fixtures and actual0.75BCLretainedratio."
     ],
     "requests": [
-      "Supply stable dedicated hardware or existing exact applicable release reports; no runtime repair inferred without actual deficit."
+      "Stable dedicated timing hardware or applicable exact controlled reports remain needed; no mandatory release threshold waived."
     ]
   }
 }
