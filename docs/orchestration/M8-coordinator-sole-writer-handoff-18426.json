@@ -1,0 +1,104 @@
+{
+  "task": "M8-gate",
+  "kind": "human-directed sole-writer handoff",
+  "gateStatus": "in_progress; not verified",
+  "primaryBeforeHandoff": "4910214f59ed574943adadcf87550d9a814c7a5a",
+  "worker": {
+    "chat": "01a1336e-b292-7cd1-b9a6-d023ae0ae21d",
+    "branch": "codex/m8-gate",
+    "worktree": "/Users/sebastienros/.codex/worktrees/29a0/xemele",
+    "head": "61fb064d6134e5c459e643cf8fe9f47ce00bfe79",
+    "clean": true,
+    "idle": true
+  },
+  "sourceSha256": "46bddcd748c85e95ddd98549e4f663594707c8d5e6e4ccbadb982c187868753c",
+  "packetSha256": "78dc58760c3f3a2162973d16cf01752a7b85b323bffacd95b1bfc8e68326eb9b",
+  "preparation": {
+    "result": "passed",
+    "commands": 51,
+    "actualOuterSession": 89772,
+    "actualOuterExit": 0,
+    "observerSession": 83675,
+    "actualObserverExit": 0,
+    "report": "docs/orchestration/M8-gate-branch-prepare-session89772.json",
+    "certificatePath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/root-prepare-5f6eba9bf565411bacab44f5d30742d0/root-certificate.json",
+    "certificateSha256": "00145151771eaed0f8f7abe739ff33e59bddd2dd0f2b4fb2652bec2f42ce90ec",
+    "binaries": "Managed/trimmed/NativeAOT package preparation and identities preserved for successor"
+  },
+  "check": {
+    "result": "failed",
+    "actualOuterSession": 18426,
+    "actualOuterExit": 1,
+    "inspectedPassedCommands": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "inspectionFailedCommand": 9,
+    "childExit": 0,
+    "remainingUnrunCommands": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "failure": "XmlToolkit output inspection AssertionError; process exited0 and emitted expected XML plus runtime footer",
+    "boundedSampleOutput": [
+      "<r xmlns:xi=\"http://www.w3.org/2001/XInclude\"><item>offline &amp; safe</item></r>",
+      "Framework=.NET 10.0.11; Architecture=Arm64"
+    ],
+    "sampleLogPath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/check-327ab6232869420689a8d08feb5a8cee/command-9.log",
+    "sampleLogBytes": 125,
+    "sampleLogSha256": "3b4aa22ed691144c520c304e79faaef0e32476e52595698482cbbc76366ee323",
+    "receiptPath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/state/check.json",
+    "receiptSha256": "4be14a6cbf7914a6127fece1d740f9cc9339da05b93b404d93cd678328e17e49",
+    "outerReceiptPath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/root-check-3dba1b93ffd14ac1a20a9beac63e0170/outer-terminal.json",
+    "outerReceiptSha256": "ae845df232ca9428a4cafb943d92e1be5a1954480ea301c3828f10b963a01988",
+    "observer": "Not launched because check failed; no check certificate"
+  },
+  "cleanup": {
+    "all18RegisteredGroupsFreshAbsent": true,
+    "allDirectChildrenReaped": true,
+    "logClosed": true,
+    "inputsMatched": true,
+    "deadlineExceeded": false,
+    "outerRawDeleted": true,
+    "innerRawDeleted": false,
+    "innerLogsInspected": false,
+    "retainedRawSubtree": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/check-327ab6232869420689a8d08feb5a8cee",
+    "retention": "Deliberately preserved incomplete inspection outputs and prepared inputs; successor owns final inspection/consumption. No full raw cleanup claim."
+  },
+  "remaining": {
+    "correctness": [
+      "9: repair/reassess toolkit output assertion",
+      "10: M7 CLI sample",
+      "11: M7 serialization sample",
+      "12: disabled counter control",
+      "13: managed external consumer",
+      "14: trimmed external consumer",
+      "15: NativeAOT external consumer",
+      "16: tasks validate",
+      "17: git diff check"
+    ],
+    "counter": "All four commands UNRUN: positive control, cumulative unit/conformance/differential suites; no consumed claim",
+    "integration": "Existing M8-gate integration and actual verification; no new tasks/framework expansion",
+    "approvedDispositions": "155 exact dispositions retain144false/11null and zero pass credit; annotZ002 remains unwaived/pass"
+  },
+  "uncommittedWork": "No source or primary uncommitted work before this handoff record; retained ignored outputs listed above",
+  "ownership": {
+    "root": "01a12c6c-b333-71d3-877f-0d186618e21d relinquishes all repository writes and new execution after this commit/message",
+    "main": "01a12849-d2be-7292-8cd9-27c1c14b5a3d takes writer/activation custody",
+    "successor": "01a1350e-adc0-7b21-9368-3f67534dec0c awaits main ACTIVATE; root creates no further chats/tasks/workers/reviewers"
+  },
+  "policy": "Human redefined completion plan supersedes further root gate orchestration. Preserve successful preparation and partial checks, exact failures, existing task ownership and earlier milestones."
+}
