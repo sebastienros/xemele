@@ -46,8 +46,11 @@ task validation and diff-check (30 seconds each). Total phase work is540 seconds
 plus10 seconds command cleanup and10 seconds phase reserve. Suggested root outer
 work/hard deadlines:570/580 seconds. The real CLI controls internally cap their
 whole body at105 seconds, children at15 seconds with3 seconds reaping; children
-inherit the outer owned process group. They include prior XML/HTML cases and a
-closed-stdout SVRL failure. No default test suite or allocation probe executes.
+inherit the outer owned process group. They include prior XML/HTML cases, an
+observable read-only-stdout SVRL failure, and a separately named pinned Unix
+Console broken-pipe suppression observation. The latter documents a delivery
+limitation and does not count as successful downstream delivery. No default
+test suite or allocation probe executes.
 
 The runner imports the accepted `M8-xsd-corpus/supervision.py` functions unchanged
 and owns a copy of its `nested_ownership.py` changing only `OUT` to this task's

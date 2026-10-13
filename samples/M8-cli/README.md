@@ -28,8 +28,11 @@ retain their finite defaults. There is no unlimited option.
 Schematron accepts `--phase ID` and `--svrl PATH`; `--svrl -` writes UTF-8 SVRL
 to stdout. A complete valid or warning-only operation stages the full report
 before replacing a requested file atomically. Invalid, incomplete, cancelled,
-or failed operations leave an existing target unchanged. A stdout write failure
-may have emitted bytes and cannot roll them back.
+or failed operations leave an existing target unchanged. Observable stdout write
+exceptions return3 and may have emitted bytes that cannot be rolled back. On the
+reviewed Unix/.NET runtime, standard console output deliberately suppresses a
+broken pipe (`EPIPE`); exit0 reports validation success and cannot guarantee that
+the downstream consumer received the staged SVRL.
 
 Exit codes: 0 complete valid/warning-only; 1 schema/instance/resource/quota
 rejection or incomplete result; 2 invocation/file failure or unknown phase;
