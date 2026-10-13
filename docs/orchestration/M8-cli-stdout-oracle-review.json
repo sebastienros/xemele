@@ -1,0 +1,11 @@
+{
+  "task": "M8-cli",
+  "classification": "Correction of authored stdout control oracle; production behavior unchanged",
+  "originalFailure": "M8-cli-check-attempt-2.json remains failed; expected closed-pipe exit3 differed from actual exit0/empty stderr",
+  "installedRuntime": "Microsoft.NETCore.App 10.0.11 osx-arm64",
+  "systemConsoleSha256": "3000a5a442b77ac67d41a61bb5cfce64742f36b9cad246a4aa1466423d6125a3",
+  "inspection": "Cached dotnet-inspect.osx-arm64 0.26.0 member System.ConsolePal --library exact System.Console.dll --all -m Write -s Decompiled Source --print: EPIPE branch returns without throwing, EAGAIN polls, other errors throw. Read-only inspection; no behavioral probe or counter job.",
+  "primarySource": "https://raw.githubusercontent.com/dotnet/runtime/v10.0.11/src/libraries/System.Console/src/System/ConsolePal.Unix.cs",
+  "authorizedCorrection": "Preserve standard Console production behavior and historical failure. Record pinned Unix closed-pipe suppression separately as a downstream-delivery limitation; add independent real read-only stdout I/O refusal control requiring exit3, Internal failure diagnostic and unchanged sentinel. Retain all file atomicity/earlier command expectations and finite ownership bounds.",
+  "approval": "Root scoped implementation choice within authorized M8-cli; no new XSD disposition or passing credit for a failed original test."
+}
