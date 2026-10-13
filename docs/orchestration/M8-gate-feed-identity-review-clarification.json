@@ -1,0 +1,10 @@
+{
+  "task": "M8-gate",
+  "kind": "source review clarification",
+  "reviewer": "/root/review_m8_contract",
+  "result": "accepted directory-derived archive identity scope",
+  "required": "Canonical cache directory ID/version, exact expected id.version.nupkg basename and actual byte hash. Every alias must have a matching canonical counterpart and identical length/bytes. Distinct canonical casefold target conflicts fail.",
+  "identityPathControl": "Reject entry without exact id/version/id.version.nupkg counterpart.",
+  "claims": "Identity is directory-derived. Do not claim full nuspec validation or invent NuGet version normalization. Only16 colliding archives had actual readonly nuspec metadata inspected by worker; whole-cache byteguards and actual offline restore remain authoritative.",
+  "execution": "Source-only clarification. Corrected restore and new filesystem controls remain unrun. No gate criterion credit."
+}
