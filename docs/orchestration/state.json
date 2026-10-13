@@ -12,8 +12,8 @@
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Goalblocked afterthreeconsecutiveimpasse audits; preserve prepared validation candidate, packages, references and current evidence.",
-    "Await required approval/external evidence; no additional jobs, fuzz work, publication or terminal verified-gate handoff."
+    "Execute approved current candidate validation once; preserve exact run/revision/results.",
+    "No further runs/publication; fuzz remains deferred and dedicated timing evidence still unavailable."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -1884,7 +1884,7 @@
     "Managed XPath normalization/uniqueness has demonstrated quadratic work-limit failure; assign its exact module owner after current storage repair."
   ],
   "hosted_platform_request": {
-    "status": "Initial attempt and later human rerun of old revision failed; prepared current candidate local; existing additional job budget question pending",
+    "status": "Approved current-candidate one new three-job20min matrix; preflight passed, push/start pending",
     "repository": "sebastienros/xemele",
     "visibility": "PRIVATE",
     "local_branch": "codex/m9-os-validation",
@@ -1953,7 +1953,16 @@
     "remote_revision": "eea84f5838f43452df16b0d00384f628c0aab186",
     "retry_revision": "929585ddf1a5413d9560fb7cef4b4180d640da67",
     "retry_job_timeout_minutes": 20,
-    "retry_max_runner_minutes": 60
+    "retry_max_runner_minutes": 60,
+    "retry_authorization": {
+      "humanRequest": "Push the repaired validation branch and run the three OS jobs yourself.",
+      "sourceChat": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+      "candidate": "929585ddf1a5413d9560fb7cef4b4180d640da67",
+      "jobs": 3,
+      "maxMinutesPerJob": 20,
+      "maxTotalRunnerMinutes": 60,
+      "consumed": false
+    }
   },
   "current_memory_evidence": {
     "integration_revision": "6a62f81f325d1cdd1b0111ed469fff3ee48959a2",
@@ -1971,7 +1980,7 @@
     "sourceTreeIdentical": true,
     "pushed": false,
     "jobsStarted": 0,
-    "retryBudgetApproval": "existing-question-pending",
+    "retryBudgetApproval": "approved by direct human: Push the repaired validation branch and run the three OS jobs yourself.",
     "capPerJobMinutes": 20,
     "maximumAdditionalRunnerMinutes": 60,
     "jobCount": 3,
@@ -2012,6 +2021,8 @@
       "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
       "report": "docs/reports/M9-distribution/hosted-attempt2/outcome.json",
       "goalStillBlocked": true
-    }
+    },
+    "hostedRetryAuthorizationNowAvailable": true,
+    "goalStatusNote": "Goal tool remains blocked; authorized hosted distribution work resumes locally. Tool offers no active/resume status mutation."
   }
 }

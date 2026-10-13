@@ -4,10 +4,10 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "blocked",
+  "status": "in_progress",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-hosted-rerun-reconciliation",
-  "base_revision": "b00be04f7058715388af78efd0f1f1abe3a2fe7c",
+  "branch": "codex/m9-hosted-validation-outcome",
+  "base_revision": "6f5d31b1f5f57d7dfe76cec15f53150ab6aa57b9",
   "integration_revision": "f1ca9c15b5c7294620322155b569538d489cd95b",
   "depends_on": [
     "M9-contracts",
@@ -173,11 +173,9 @@
       "artifact": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
     }
   ],
-  "blockers": [
-    "Required Windows/Linux/x64 current-runtime execution stillmissing; initial authorized three-job run failed before packaging. One additional three-job20minute/60runner-minute retry awaits its existing humanbudget question."
-  ],
+  "blockers": [],
   "handoff": {
-    "summary": "Reconciled old-run history: canceled attempt1 followed by human rerun attempt2, all three jobs failed before packaging. Prepared current candidate remains local; required current OS validation remains blocked.",
+    "summary": "Direct human approved one new current-candidate three-OS run,20min/job60runner-min total; executing the authorized validation attempt.",
     "checks": [
       "18localcommands pass withcleanprocessreceipts;two canonicalruntime/tool packages andsymbol pairs identical",
       "Freshisolatedmanaged/trim/NativeAOT consumers andtoolinstall/help pass;nativeMachO64arm64;embeddedSourceLink exactpackagecommit",
@@ -188,7 +186,7 @@
       "Additionalapprovedbudget for three cappedhostedjobs andactual Windows/Linux/x64execution; laneA1/A2remainpending."
     ],
     "requests": [
-      "Keep existing additional runner-budget question pending; do not infer retry approval from general continuation or coordination-message authorization."
+      "No extra runner attempts beyond this new three-job budget without direct human approval."
     ]
   }
 }
