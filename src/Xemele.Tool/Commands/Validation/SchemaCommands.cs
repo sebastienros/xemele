@@ -149,6 +149,6 @@ internal static class SchemaCommands
             temporary = null;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { throw new InvocationException(ex.Message); }
-        finally { if (temporary is not null) File.Delete(temporary); }
+        finally { if (temporary is not null && File.Exists(temporary)) File.Delete(temporary); }
     }
 }

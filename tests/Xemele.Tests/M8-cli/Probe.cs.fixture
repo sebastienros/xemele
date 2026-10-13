@@ -108,7 +108,8 @@ internal static class Probe
             using (var cancel = new CancellationTokenSource()) { cancel.Cancel(); Check(Invoke("validate-schematron", phaseArgs, token: cancel.Token).Code == 3 && File.ReadAllText(report) == "sentinel", "cancel preserves target"); }
             Check(Invoke("validate-schematron", [..phaseArgs, "--phase", "warn"]).Code == 0, "warning-only exit");
             Check(File.ReadAllText(report).Contains("successful-report", StringComparison.Ordinal), "warning SVRL serialized");
-            Check(Invoke("validate-schematron", ["--schema", sch, "--svrl", Path.Combine(directory, "absent/out")]).Code == 2, "report file failure");
+            var fileFailure = Invoke("validate-schematron", ["--schema", sch, "--svrl", Path.Combine(directory, "absent/out")]);
+            Check(fileFailure.Code == 2, $"report file failure: exit={fileFailure.Code}; {fileFailure.Error.Trim()}");
             Check(!Directory.EnumerateFiles(directory, ".xemele-*.tmp").Any(), "staged files cleaned");
             // The owned harness compiles actual existing commands; focused subprocess preservation is separate.
             using var help = new StringWriter(); var old = Console.Out;
