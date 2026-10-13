@@ -1,13 +1,18 @@
 """Qualify cached Coverlet and measure ordinary unit-test branches on disposable copies."""
 import sys
 sys.dont_write_bytecode=True
-import hashlib,importlib.util,json,os,shutil,subprocess,time
+import hashlib,importlib.util,json,os,shutil,subprocess,time,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
 out=ROOT/'artifacts/M9-robustness/ordinary-coverage-core'
 out.mkdir(parents=True,exist_ok=False)
-shutil.copytree(ROOT/'artifacts/M9-robustness/ordinary-coverage/tool',out/'tool')
-shutil.copyfile(ROOT/'artifacts/M9-robustness/ordinary-coverage/tool-identity.json',out/'tool-identity.json')
+package=Path('/Users/sebastienros/.nuget/packages/coverlet.console/6.0.4/coverlet.console.6.0.4.nupkg')
+assert hashlib.sha256(package.read_bytes()).hexdigest()=='48ad640bc67eb52e0f95c2f80f6368b24088033c5792e834d7ec4ae2ae543217'
+with zipfile.ZipFile(package) as archive:
+    for name in archive.namelist():
+        if name.startswith('tools/net6.0/any/') and not name.endswith('/'):
+            target=out/'tool'/name.removeprefix('tools/net6.0/any/');target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(archive.read(name))
+(out/'tool-identity.json').write_text(json.dumps(dict(package='coverlet.console',version='6.0.4',packageSha256='48ad640bc67eb52e0f95c2f80f6368b24088033c5792e834d7ec4ae2ae543217',documentation='https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/GlobalTool.md'),indent=2)+'\n')
 assert (out/'tool/coverlet.console.dll').is_file()
 spec=importlib.util.spec_from_file_location('supervision',ROOT/'docs/reports/M8-xsd-corpus/supervision.py')
 s=importlib.util.module_from_spec(spec);spec.loader.exec_module(s);s.ROOT,s.ARTIFACTS=ROOT,out
