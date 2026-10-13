@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Freeze release criteria and baseline protocol",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-contracts",
   "base_revision": "2a490d6e3966e5362e9ec112c20927aba576ea57",
@@ -29,29 +29,63 @@
     {
       "id": "M9-contracts-A1",
       "description": "Review frozen capability inventory, performance protocol, required package/platform matrix and release exceptions process.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-review"
+      ]
     },
     {
       "id": "M9-contracts-A2",
       "description": "Record exact release inputs and outstanding issue inventory; no unsupported parity claims.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "inputs-usage"
+      ]
     },
     {
       "id": "M9-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "inputs-usage"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/decisions/M9/release-freeze.md",
+    "docs/decisions/M9/release-inputs.json",
+    "docs/reports/M9-contracts/remaining-plan.md",
+    "tests/Contracts/Fixtures/M9/ReleaseUsage/Program.cs"
+  ],
+  "evidence": [
+    {
+      "id": "frozen-review",
+      "kind": "review",
+      "revision": "66744ea0965b44e0e599296ad7762a8902b302d4",
+      "command": "Review existing docs/performance.md, docs/testing.md, M8 gate inputs and actual host; record unchanged gates and human no-runner reply.",
+      "result": "passed",
+      "summary": "Existing mandatory criteria frozen; actual platform and sustained evidence gaps remain open; no relaxed threshold or enlarged exception.",
+      "artifact": "docs/decisions/M9/release-freeze.md"
+    },
+    {
+      "id": "inputs-usage",
+      "kind": "check",
+      "revision": "66744ea0965b44e0e599296ad7762a8902b302d4",
+      "command": "Pinned SDK10.0.400 restore/build; dotnet --fx-version10.0.11 ReleaseUsage.dll; offline input/package/accounting assertions; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "55fragments/1430unique members and retainedM8package hash verified; representative usage passed with0warnings/errors on.NET10.0.11Arm64;201tasks valid. Failed initial SDK-discovery attempt preserved.",
+      "artifact": "docs/reports/M9-contracts/checks.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Freeze existing release gates and exact inputs; representative verified-dependency usage passes; no API/runtime change.",
+    "checks": [
+      "Pinned restore/build/run passed; offline1430API/input/package/XSD accounting checks passed; planning201valid; diff clean."
+    ],
+    "remaining": [
+      "Release lanes must supply actual mandatory evidence; platform/dedicated timing and24hcampaign gaps are not passes."
+    ],
     "requests": []
   }
 }

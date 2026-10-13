@@ -1,6 +1,6 @@
 # Release contract — M9
 
-Decision owner: `M9-contracts`. Earlier milestones are usable independently; M9 adds release evidence and focused compatible fixes rather than completing hidden prerequisites.
+Decision owner: `M9-contracts`. The M9 freeze is [release-freeze.md](../decisions/M9/release-freeze.md), with exact [inputs](../decisions/M9/release-inputs.json) and [remaining mandatory work/issues](../reports/M9-contracts/remaining-plan.md). Earlier milestones are usable independently; M9 adds release evidence and focused compatible fixes rather than completing hidden prerequisites.
 
 Independent lanes after the release contract:
 
