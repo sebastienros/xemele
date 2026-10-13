@@ -36,12 +36,13 @@ for (int cycle = 0; cycle < 3; cycle++)
     Collect(); long baseline = GC.GetTotalMemory(true), allocationStart = GC.GetAllocatedBytesForCurrentThread();
     CreateHeld(engine, input);
     long allocationBytes = GC.GetAllocatedBytesForCurrentThread() - allocationStart;
-    long retainedBytes = GC.GetTotalMemory(true) - baseline;
     string digest = VerifyHeld(engine, expected, expression, expectedXPath);
-    if (retainedBytes <= 0 || allocationBytes <= 0) throw new InvalidDataException($"Invalid counters: baseline={baseline}, retained={retainedBytes}, allocated={allocationBytes}.");
+    long heldLiveBytes = GC.GetTotalMemory(true);
     ClearHeld(); Collect();
-    long releasedDelta = GC.GetTotalMemory(true) - baseline;
-    rows.Add(new { cycle, retainedBytes, allocationBytes, releasedDelta, digest });
+    long releasedLiveBytes = GC.GetTotalMemory(true), retainedBytes = heldLiveBytes - releasedLiveBytes;
+    if (retainedBytes <= 0 || allocationBytes <= 0) throw new InvalidDataException($"Invalid counters: baseline={baseline}, held={heldLiveBytes}, released={releasedLiveBytes}, allocated={allocationBytes}.");
+    long releasedDelta = releasedLiveBytes - baseline;
+    rows.Add(new { cycle, retainedBytes, allocationBytes, baseline, heldLiveBytes, releasedLiveBytes, releasedDelta, digest });
 }
 var output = new { engine, fixture = fixture.GetProperty("id").GetString(), inputBytes = input.Length,
     runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(),
