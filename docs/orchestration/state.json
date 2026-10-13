@@ -7,21 +7,21 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
-  "last_verified_task": "M9-build-compatibility",
-  "last_integrated_revision": "b7f8ecf73b15645d13387f0b717df669f9fc3dfd",
+  "last_verified_task": "M9-corpus-portability",
+  "last_integrated_revision": "3324509c9b981e8080dab3e59d8bdce051e70172",
   "active_assignments": [
     {
       "task_id": "M9-distribution",
-      "branch": "codex/m9-distribution-ready",
-      "worktree_path": "/private/tmp/xemele-m9-distribution-ready",
-      "base_revision": "9b33a6073e41c26b19cb383dfa91179191ba1f82",
-      "stage": "Final hosted recipe preflight and concrete remote branch approval; no execution yet"
+      "branch": "codex/m9-distribution-hosted-repair",
+      "worktree_path": "/private/tmp/xemele-m9-hosted-repair",
+      "base_revision": "3324509c9b981e8080dab3e59d8bdce051e70172",
+      "stage": "Owned corpus provisioning and durable diagnostics for concrete hosted retry"
     }
   ],
   "integration_queue": [],
   "next_actions": [
-    "Validate portable linker host and bounded hosted recipe; ask concrete remote validation branch approval required by prior no-push scope.",
-    "M9-robustness: remaining actual mandatory sustained evidence."
+    "Prepare concrete distribution hosted harness repair and locally verify pinned corpus bytes; record first-run failures.",
+    "Request any additional hosted jobs only after concrete reviewable fix; continue retained robustness work afterward."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -33,7 +33,7 @@
     "communication": "Only Xemele chats and reviewers; never communicate or synchronize other projects, including farewell/cancellation. No globalhostidle claim.",
     "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
     "measurement": "Allocation-only evidence needs no isolation/PARK/exclusive grant. Retain accepted identities, controls, actual counters and bounded cleanup. Timing requirements separate; no foreign coordination.",
-    "remote_push_or_publication": false
+    "remote_push_or_publication": "Only explicit human-approved privatevalidationbranch/job scope; package publication remains unauthorized."
   },
   "implementation_chat_policy": {
     "model": "gpt-6.1-sol",
@@ -1885,5 +1885,36 @@
     "delegation": "Prefer direct serial work; at most3isolated implementation workers when materially useful",
     "scope": "Existing required release gates only; preserve honest failures/155approvedzero-creditdispositions; no speculative expansion"
   },
-  "pending_owned_changes": []
+  "pending_owned_changes": [],
+  "hosted_platform_request": {
+    "status": "original three jobs completed failure; no extra run authorized",
+    "repository": "sebastienros/xemele",
+    "visibility": "PRIVATE",
+    "local_branch": "codex/m9-os-validation",
+    "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+    "job_timeout_minutes": 20,
+    "max_parallel": 3,
+    "max_runner_minutes": 60,
+    "remote_push": true,
+    "workflow_runs": [
+      {
+        "id": 38404705596,
+        "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+        "url": "https://github.com/sebastienros/xemele/actions/runs/38404705596",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 38404776386,
+        "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
+        "status": "completed",
+        "reason": "Registration delay caused code-identical empty trigger; cancel queued duplicate to preserve three-job budget.",
+        "conclusion": "cancelled",
+        "jobs": []
+      }
+    ],
+    "authorization": "Direct human reply: Approve validation branch and jobs",
+    "authorized_scope": "Only new private codex/m9-os-validation branch and3standard20minjobs; no remote main/tag/package publication.",
+    "remote_revision": "eea84f5838f43452df16b0d00384f628c0aab186"
+  }
 }

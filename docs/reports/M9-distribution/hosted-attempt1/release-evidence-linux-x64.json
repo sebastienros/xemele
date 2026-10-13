@@ -1,0 +1,103 @@
+{
+  "task": "M9-distribution",
+  "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+  "result": "failed",
+  "rid": "linux-x64",
+  "runtime": "10.0.11",
+  "commands": [
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "--version"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 2408,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "d0c8e5a09a2e5655cffdca9e350ecbba59a860154f5adadb92398b844f705ed0"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "restore",
+        "/home/runner/work/xemele/xemele/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 2417,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "363e9a139b48fb324f817450d1dc912e97a10e4db357831f40e3dc9788edde8e"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "build",
+        "/home/runner/work/xemele/xemele/tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 2488,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "732d48c03f4f5c8f91276240080096b5bdccc0442744aac4ac4955ede0cd4e58"
+    },
+    {
+      "argv": [
+        "/usr/share/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/home/runner/work/xemele/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/home/runner/work/xemele/xemele/artifacts/M9-distribution/work/unit.xml"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 2586,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "cc5b7ac0891b3ad4530c42af7e418f9b85e1d20854a1b4144ad263d4b89bf4ec",
+      "failureTail": " at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String path, OpenFlags flags, Int32 mode, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)\n           at System.IO.File.ReadAllBytes(String path)\n        /_/tests/Xemele.Tests/M2-dtd-grammar/PinnedTests.cs(19,0): at Xemele.Tests.DtdGrammarPinnedTests.PinnedExternalSubsetEveryShortSplitWithAuthoredModel(String path, String hash, Int32 length, Boolean valid, String oracle)\n           at InvokeStub_DtdGrammarPinnedTests.PinnedExternalSubsetEveryShortSplitWithAuthoredModel(Object, Span`1)\n           at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n    Xemele.Tests.DtdGrammarPinnedTests.PinnedExternalSubsetEveryShortSplitWithAuthoredModel(path: \"xmlconf/ibm/valid/P32/ibm32v01.dtd\", hash: \"40d0c898a768a5b7a7d7caadc77c26be93b046a49ef0d3457a\"\u00b7\u00b7\u00b7, length: 70, valid: True, oracle: \"ibm32v01\") [FAIL]\n      System.IO.DirectoryNotFoundException : Could not find a part of the path '/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/xmlconf/ibm/valid/P32/ibm32v01.dtd'.\n      Stack Trace:\n           at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String path, OpenFlags flags, Int32 mode, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)\n           at System.IO.File.ReadAllBytes(String path)\n        /_/tests/Xemele.Tests/M2-dtd-grammar/PinnedTests.cs(19,0): at Xemele.Tests.DtdGrammarPinnedTests.PinnedExternalSubsetEveryShortSplitWithAuthoredModel(String path, String hash, Int32 length, Boolean valid, String oracle)\n           at InvokeStub_DtdGrammarPinnedTests.PinnedExternalSubsetEveryShortSplitWithAuthoredModel(Object, Span`1)\n           at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n  Finished:    Xemele.Tests (ID = 'd2cc89a435b3065ad2ae4e1b84303bb29b47e8dd38f79fd6a863472dd0712fd3')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 10741, Errors: 0, Failed: 52, Skipped: 0, Not Run: 0, Time: 42.562s\n"
+    }
+  ],
+  "packages": [],
+  "published": false,
+  "sdk": "10.0.400"
+}

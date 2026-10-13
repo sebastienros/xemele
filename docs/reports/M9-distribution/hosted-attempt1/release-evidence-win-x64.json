@@ -1,0 +1,87 @@
+{
+  "task": "M9-distribution",
+  "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+  "result": "failed",
+  "rid": "win-x64",
+  "runtime": "10.0.11",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "--version"
+      ],
+      "receipt": {
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "4b509237900912ac8385460ada8a1332f7cfcca46d8728bf019800de733c535f"
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "D:\\a\\xemele\\xemele\\tests\\Xemele.Tests\\Xemele.Tests.csproj",
+        "--source",
+        "https://api.nuget.org/v3/index.json",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "394a54ea17da0163708e24cf316a2f8f451625d574c944009664d92eeb269b6f"
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "build",
+        "D:\\a\\xemele\\xemele\\tests\\Xemele.Tests\\Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "715d27735f5557e38b4797cfcff8126ea39abf7344703bb09aec422f638a350f"
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "--fx-version",
+        "10.0.11",
+        "D:\\a\\xemele\\xemele\\tests\\Xemele.Tests\\bin\\Release\\net10.0\\Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "D:\\a\\xemele\\xemele\\artifacts\\M9-distribution\\work\\unit.xml"
+      ],
+      "receipt": {
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "logClosed": true
+      },
+      "outputSha256": "a2344ddf7177f3713db4256663341b17007346f7d6c88bd19003a027de74ca05",
+      "failureTail": "iveCasesAreCompleteInvalid(String id, String hash, String transport)\n        --- End of stack trace from previous location ---\n    Xemele.Tests.ConformanceGrammar.OriginalStandaloneTests.OriginalInvNotSa14PreservesCdataAndMixedContentAtEverySplit [FAIL]\n      System.IO.DirectoryNotFoundException : Could not find a part of the path 'D:\\private\\tmp\\xemele-corpus-cache\\w3c-xml-20130923\\resources\\xmlconf\\sun\\invalid\\not-sa14.xml'.\n      Stack Trace:\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)\n           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)\n           at System.IO.File.ReadAllBytes(String path)\n        /_/tests/Xemele.Tests/M2-conformance/OriginalStandaloneTests.cs(44,0): at Xemele.Tests.ConformanceGrammar.OriginalStandaloneTests.Read(String path, String expected)\n        /_/tests/Xemele.Tests/M2-conformance/OriginalStandaloneTests.cs(16,0): at Xemele.Tests.ConformanceGrammar.OriginalStandaloneTests.OriginalInvNotSa14PreservesCdataAndMixedContentAtEverySplit()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing [FAIL]\n      System.InvalidOperationException : Tree real child failed/timeout; retained artifacts: D:\\a\\xemele\\xemele\\artifacts/M2-tree-allocation-probe/child-runs\\5172-356dace570b54866858c576bfc6320a2\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(137,0): at Xemele.Tests.Tree.TreeAllocationChild.<RunPair>g__Run|18_0(String mode, <>c__DisplayClass18_0&)\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(132,0): at Xemele.Tests.Tree.TreeAllocationChild.RunPair()\n        /_/tests/Xemele.Tests/M1-tree/TreeTests.cs(171,0): at Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n  Finished:    Xemele.Tests (ID = 'a746a353aab3e56fd0a0d745281813cda5d6264d90879d99861896a9efe1fd58')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 10741, Errors: 0, Failed: 120, Skipped: 0, Not Run: 0, Time: 54.644s\n"
+    }
+  ],
+  "packages": [],
+  "published": false,
+  "sdk": "10.0.400"
+}

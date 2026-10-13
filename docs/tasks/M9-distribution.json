@@ -6,12 +6,13 @@
   "kind": "verification",
   "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-distribution-ready",
-  "base_revision": "9b33a6073e41c26b19cb383dfa91179191ba1f82",
+  "branch": "codex/m9-distribution-hosted-repair",
+  "base_revision": "5e102ede3e3375d83ae1bd33c7942dc0e1c1eb78",
   "integration_revision": "afc3d0414e1a315e127252a51824b7bb9d28041e",
   "depends_on": [
     "M9-contracts",
-    "M9-build-compatibility"
+    "M9-build-compatibility",
+    "M9-corpus-portability"
   ],
   "goals": [
     "G16",
@@ -99,21 +100,40 @@
       "result": "passed",
       "summary": "Managed pinned linker host compiles0warnings/errors and passes actualILLink/help+refusal onmacOSarm64;3jobs20mineach, duplicategenericCIexcluded. Windows/Linux/hosted jobs remain unrun.",
       "artifact": "docs/reports/M9-distribution/hosted-preflight.json"
+    },
+    {
+      "id": "hosted-attempt1",
+      "kind": "check",
+      "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+      "command": "GitHub Actions run38404705596; three standard jobs timeout20min/job",
+      "result": "failed",
+      "summary": "All SDK restores/builds passed; 10741units executed perOS, Linux/macOS52missing-corpus failures, Windows120failures including child-process failures; package checks never reached. Detailed original summaries retained; zero release matrix credit. Queued duplicate canceled with jobs=[].",
+      "artifact": "docs/reports/M9-distribution/hosted-attempt1/outcome.json"
+    },
+    {
+      "id": "hosted-repair-local",
+      "kind": "check",
+      "revision": "65cda8b87f8b64319caded6a544d217ed6527573",
+      "command": "Bounded upstream download/archive SHA/all3386file SHA checks and corrupt-archive refusal; pinnedSDK builds and full10741unit checks from isolated provisioned bytes",
+      "result": "passed",
+      "summary": "Exact pinned upstream download and3386file hashes pass; corruptedarchive refused. LocalmacOSarm64 full10741/10741passed zero failures/errors/skips/not-run, build0warnings/errors. Windows additional failures need actual diagnostics; no hosted retry run yet.",
+      "artifact": "docs/reports/M9-distribution/hosted-repair-preflight.json"
     }
   ],
   "blockers": [
-    "Bounded hosted OS jobs ready; earlier explicit no-remote-push scope requires human authorization to push codex/m9-os-validation and run privateActionsjobs."
+    "Initial authorized three OS jobs completed failure. Concrete corpus/diagnostic repair passes local10741units; additional bounded hosted run requires approval beyond the initial three-job scope."
   ],
   "handoff": {
-    "summary": "Deterministic local runtime/tool release candidates with notices/docs/SourceLink and actual managed/trim/NativeAOT consumption; full required matrix blocked.",
+    "summary": "Local packages remain valid; first hosted attempt failed before package checks. Concrete corpus/diagnostic repair prepared and locally verified.",
     "checks": [
-      "Local package/symbol deterministic cleanrebuilds; sourceLinkembedded; package-only freshcacheconsumers managed/trim/native all pass; nativeMachOarm64; CLI install/help pass; planning/diff checked."
+      "First hosted3OSattempt failed with retained outcomes; duplicate consumed0jobs.",
+      "Local repair validates bounded pinnedarchive/3386originalfiles, corruptrefusal and10741/10741units; build0warnings/errors."
     ],
     "remaining": [
-      "Await concrete remote validation branch authorization; then inspect actual3OS unit/package/trim/AOT results and fix demonstrated failures."
+      "Execute locally verified repaired recipe onWindows/Linux/macOS after additional bounded-job authorization; diagnose actualWindows failures without reducing criteria."
     ],
     "requests": [
-      "Approve private codex/m9-os-validation branch push and3standardActionsjobs capped20mineach (60runner-minmax); private allowance/billing applies. No remote main/tag/packagepublication."
+      "Approve one additional three-job hosted validation attempt capped20minutes/job (60additionalrunner-minmaximum), with the prepared repaired recipe."
     ]
   }
 }

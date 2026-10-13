@@ -8,7 +8,8 @@ namespace Xemele.Tests.ConformanceGrammar;
 
 public sealed class OriginalStandaloneTests
 {
-    private const string Cache = "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/";
+    private static string Cache => Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES")
+        ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
     [Fact]
     public void OriginalInvNotSa14PreservesCdataAndMixedContentAtEverySplit()
     {
@@ -41,7 +42,7 @@ public sealed class OriginalStandaloneTests
     }
     private static byte[] Read(string path, string expected)
     {
-        byte[] bytes = File.ReadAllBytes(Cache + path);
+        byte[] bytes = File.ReadAllBytes(Path.Combine(Cache, path));
         Assert.Equal(expected, Convert.ToHexStringLower(SHA256.HashData(bytes))); return bytes;
     }
     private sealed class OfflineSubset : XmlResourceResolver

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "M9-corpus-portability",
+  "milestone": "M9",
+  "title": "Portable pinned-corpus roots for two cumulative unit checks",
+  "kind": "infrastructure",
+  "status": "verified",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-corpus-portability",
+  "base_revision": "4aade285427f3976f5d7591538c3458894ed71a3",
+  "integration_revision": "3324509c9b981e8080dab3e59d8bdce051e70172",
+  "depends_on": [
+    "M9-contracts",
+    "M2-conformance",
+    "M2-undeclared-content"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M2-conformance/OriginalStandaloneTests.cs",
+    "tests/Xemele.Tests/Xml/UndeclaredReferences/ContentTests.cs",
+    "docs/reports/M9-corpus-portability/"
+  ],
+  "api_or_output": "Two original-byte checks honor the existing XEMELE_CORPUS_RESOURCES setting without changing source bytes, hashes or assertions.",
+  "acceptance": [
+    {
+      "id": "M9-corpus-portability-A1",
+      "description": "Both formerly fixed local corpus paths honor the existing corpus-root environment setting; original byte/hash/model assertions pass from an isolated root.",
+      "status": "passed",
+      "evidence": [
+        "isolated-original-bytes",
+        "integrated-source-equivalence"
+      ]
+    }
+  ],
+  "implementation": [
+    "tests/Xemele.Tests/M2-conformance/OriginalStandaloneTests.cs: configured corpus root with original bytes/model unchanged",
+    "tests/Xemele.Tests/Xml/UndeclaredReferences/ContentTests.cs: configured corpus root with exact original SHA-256 retained"
+  ],
+  "evidence": [
+    {
+      "id": "isolated-original-bytes",
+      "kind": "check",
+      "revision": "308c982fe0d558e23445d92c4705a70bf9ec6e02",
+      "command": "Pinned 10.0.400 build and .NET10.0.11 focused OriginalInvNotSa14/OriginalE13 tests with XEMELE_CORPUS_RESOURCES pointing to isolated three-file fixture copy",
+      "result": "passed",
+      "summary": "Build zero warnings/errors; 2/2 original-byte/model tests passed, zero failures/skips; exact original hashes and every-split assertions unchanged; bounded processes reaped.",
+      "artifact": "docs/reports/M9-corpus-portability/checks.json"
+    },
+    {
+      "id": "integrated-source-equivalence",
+      "kind": "integration",
+      "revision": "3324509c9b981e8080dab3e59d8bdce051e70172",
+      "command": "git diff tested revision..HEAD -- src tests Directory.Build.props Directory.Packages.props global.json; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated complete source/test/build inputs match actual 2/2 passing focused checks; metadata-only changes require no repeated workload.",
+      "artifact": null
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Two remaining fixed local corpus paths now honor the established corpus-root setting.",
+    "checks": [
+      "Pinned build and 2/2 focused original-byte/model tests pass from an isolated root."
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}
