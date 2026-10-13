@@ -32,6 +32,13 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
         calls += 1
         return copy.deepcopy(inputs if calls == 1 else after)
     binary = {'Tool': {'files': 2, 'sha256': 'complete-output'}}
+    binary_calls = 0
+    def binary_identity():
+        nonlocal binary_calls
+        binary_calls += 1
+        result = copy.deepcopy(binary)
+        if name == 'post-binary-drift' and binary_calls > 1: result['Tool']['sha256'] = 'dependency-modified-during-phase'
+        return result
     prepared = {'passed': True, 'inputs': copy.deepcopy(inputs), 'binaries': copy.deepcopy(binary)}
     if name == 'stale-prepared-binary': prepared['binaries']['Tool']['sha256'] = 'changed-dependency'
     (directory/'prepared.json').write_text(json.dumps(prepared))
@@ -46,10 +53,16 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
     # A real small registered child gives terminal/raw evidence. It never loads a validator or counter.
     workload = [([sys.executable, '-c', "print('PASS bounded guard workload')"], min(3, END-time.monotonic()-10))]
     capture = io.StringIO()
+    clock_calls = 0
+    def expired_clock():
+        nonlocal clock_calls
+        clock_calls += 1
+        return 1 if clock_calls == 1 else 2000
     try:
-        with mock.patch.object(subject, 'HERE', directory), mock.patch.object(subject, 'input_identities', identity), mock.patch.object(subject, 'binaries', lambda: copy.deepcopy(binary)), \
+        with contextlib.ExitStack() as controls, mock.patch.object(subject, 'HERE', directory), mock.patch.object(subject, 'input_identities', identity), mock.patch.object(subject, 'binaries', binary_identity), \
              mock.patch.object(subject, 'commands', lambda _: workload), mock.patch.object(subject, 'module', module), mock.patch.object(sys, 'argv', ['checks.py', phase]), \
              mock.patch.object(Path, 'read_text', read), contextlib.redirect_stdout(capture):
+            if name == 'expired-total': controls.enter_context(mock.patch.object(subject.time, 'monotonic', expired_clock))
             try: subject.main()
             except SystemExit as outcome: assert outcome.code == (0 if expected else 1), (name, outcome.code, capture.getvalue())
         terminal = json.loads((directory/('prepared.json' if phase == 'prepare' else 'results.json')).read_text())
@@ -64,6 +77,12 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
             # The test itself now inspects the refused log AFTER the real group is absent, then deletes it.
             assert 'PASS bounded guard workload' in (retained/'command-0.log').read_text()
             shutil.rmtree(retained)
+        elif name == 'expired-total':
+            assert terminal['deadlineExceeded'] and not terminal['rawDeleted'] and not terminal['commands'], terminal
+            # No workload launched; verify then remove the intentionally retained empty raw directory.
+            retained = ROOT/'artifacts/M8-cli'/next(directory.glob('*-final.receipt.json')).name.removesuffix('-final.receipt.json')
+            assert retained.is_dir() and not list(retained.iterdir()), terminal
+            shutil.rmtree(retained)
         elif expected or change is not None: assert terminal['rawDeleted'], terminal
         CASES += 1
     finally:
@@ -74,6 +93,8 @@ exercise('source-drift', change=lambda x: x['source'].update(sha256='modified'))
 exercise('runtime-drift', change=lambda x: x['runtime'].update(sha256='modified'))
 exercise('environment-drift', change=lambda x: x['environment'].update(DOTNET_EnableDiagnostics='1'))
 exercise('stale-prepared-binary', phase='check')
+exercise('post-binary-drift', phase='check')
 exercise('inspection-refusal', fail_inspection=True)
+exercise('expired-total')
 assert time.monotonic() < END, 'guard total work deadline'
 print(f'PASS phase guards: {CASES} bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion')

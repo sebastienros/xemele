@@ -27,7 +27,7 @@ Each command gets at most240 seconds work and10 seconds terminal cleanup; the
 phase total work is1500 seconds plus10 seconds command cleanup and10 seconds
 phase reserve. Suggested root outer work/hard deadlines:1530/1540 seconds.
 
-Checks run the two actual owned binaries (120 seconds each), six phase guard success/failure controls (60 seconds), the small real CLI
+Checks run the two actual owned binaries (120 seconds each), eight phase guard success/failure controls (60 seconds), the small real CLI
 controls (120 seconds), the existing full public API comparison (60 seconds),
 task validation and diff-check (30 seconds each). Total phase work is540 seconds
 plus10 seconds command cleanup and10 seconds phase reserve. Suggested root outer
