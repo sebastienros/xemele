@@ -1,0 +1,52 @@
+{
+  "task": "M8-xsd-resolved-availability",
+  "phase": "baseline",
+  "result": "SOURCE PASS",
+  "intake": {
+    "head": "d5f8de2f81bfc1162019a21061187888cb476813",
+    "runtimeSourceCommit": "53b9c54a55c44b5453312a58f339a535597b8992",
+    "sourceSha256": "5aaa9659b82188f25e7008556876b6948663333eb5d0121eb55ab28f17af98a7",
+    "harnessSha256": "a858613324e8e135dbc3e5d419f5e2e069f8bde32b3d307c216639937df2482d",
+    "ownedSourcePins": 44,
+    "reviewInputs": 888,
+    "toolchainFiles": 4206,
+    "packageFiles": 552,
+    "apiFragments": 55,
+    "astFiles": 15,
+    "clean": true,
+    "runtimeAndTaskUnchanged": true,
+    "canonical93Matched": true
+  },
+  "reviewers": [
+    "/root/review_m8_contract",
+    "/root/review_m8_model",
+    "/root/review_m8_xpath"
+  ],
+  "priorFinding": "A3 exact93 independent comparison resolved; same-count return/default/access negative controls authored within control14.",
+  "reviewStampSha256": "db2a63790dc2d8fe23b06d51059bc13a28c69c367b2aaaae0cc31ceade8f001b",
+  "release": "Root controls only now. Subsequent actual correctness/preparation/measurement releases require inspected preceding results. Runtime edits and proposed phases remain held.",
+  "bounds": {
+    "controls": {
+      "hardSeconds": 120,
+      "workSeconds": 90,
+      "cleanupReserveSeconds": 30
+    },
+    "checkAndPrepare": {
+      "sharedHardSeconds": 600,
+      "workSeconds": 540,
+      "cleanupReserveSeconds": 60
+    },
+    "measure": {
+      "hardSeconds": 120,
+      "workSeconds": 90,
+      "cleanupReserveSeconds": 30
+    },
+    "recovery": {
+      "hardSeconds": 40
+    }
+  },
+  "custody": "Root retains launch session and printed exact owner path, owner SHA and nonce for owned recovery; registration ACK and family absence required, no host coordination.",
+  "controlsBuildsTestsPreparationMeasurements": "UNRUN at source release",
+  "originalPassCredit": 0,
+  "gatePassCredit": 0
+}
