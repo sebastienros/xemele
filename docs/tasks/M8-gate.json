@@ -4,8 +4,8 @@
   "milestone": "M8",
   "title": "Verify schema validation checkpoint",
   "kind": "gate",
-  "status": "in_progress",
-  "owner": "M8 coordinator / authorized isolated gate worker",
+  "status": "implemented",
+  "owner": "01a1350e-adc0-7b21-9368-3f67534dec0c / single completion chat",
   "branch": "codex/m8-gate",
   "base_revision": "96eac196e296203eaad255f0b5c372c5e2fdcc7b",
   "integration_revision": null,
@@ -49,32 +49,78 @@
     {
       "id": "M8-gate-A1",
       "description": "Verify cumulative product plus every advertised schema profile; no release-task API required.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "gate-preparation",
+        "gate-correctness",
+        "gate-cumulative-allocation"
+      ]
     },
     {
       "id": "M8-gate-A2",
       "description": "All previous suites, schema conformance, CLI and package consumer checks pass, with exact human-approved gate dispositions separately reported: time_maxInclusive007_119 ambiguity; additional14 original standards disagreements and9dependent unassessed cases in docs/orchestration/M8-xsd-standards-policy-pending.json;9 nonpassing input-boundary instances and3indeterminate schemas in docs/orchestration/M8-xsd-input-boundaries-policy-pending.json. Preserve every original failure/fatal/unassessed/indeterminate result and never count these dispositions as passing. No broader exception is authorized. Additionally human-approved exact58 documented dispositions in docs/orchestration/M8-xsd-additional-profile-policy-pending.json and exact53 dispositions (42original false/11null) in docs/orchestration/M8-xsd-residual-policy-pending.json are nonblocking, never passes. Compiler/import/annotation defects, missing-component support and optional-resource mapping work remain outside these dispositions; all other unresolved applicable originals remain blocking. Additionally human-approved exact four original missing-instance nonassessment limitations in docs/orchestration/M8-xsd-missing-nonassessment-policy-pending.json (approval call_2d4e05aaef41499293e682fe147c9db5) and exact four missing-explicit-type schema-oracle disagreements in docs/orchestration/M8-xsd-missing-schema-oracles-policy-pending.json (approval call_d75eafbe87064aa3a95b17175cf85308) are nonblocking, retaining all eight original false results and zero original/gate pass credit. Total155 exact dispositions retain144 original false and11null; annotZ002 work refusal is not waived and requires repair.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "gate-preparation",
+        "gate-correctness",
+        "gate-cumulative-allocation"
+      ]
     },
     {
       "id": "M8-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "gate-preparation",
+        "gate-correctness",
+        "gate-cumulative-allocation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M8-gate/semantic.py: exact XML/runtime output, full suite row accounting, allocation and existing corpus output inspection",
+    "docs/reports/M8-gate/recipes.py: existing preparation, correctness and cumulative commands",
+    "docs/reports/M8-gate/summary.json: durable actual results and source-applicable retained evidence"
+  ],
+  "evidence": [
+    {
+      "id": "gate-preparation",
+      "kind": "check",
+      "revision": "61fb064d6134e5c459e643cf8fe9f47ce00bfe79",
+      "command": "Existing root finite prepare recipe:51 commands; outer session89772 and observer83675",
+      "result": "passed",
+      "summary": "All51 offline preparation commands passed, including local package, managed, trimmed and NativeAOT builds; observed actual exits0/0. Product/build inputs unchanged by gate reporting fixes.",
+      "artifact": "docs/reports/M8-gate/summary.json"
+    },
+    {
+      "id": "gate-correctness",
+      "kind": "check",
+      "revision": "5dd7402891047602ee6dbaef92513e16990ca33a",
+      "command": "Retained checks0\u20138 plus direct finite-supervised existing recipes.commands(check)[9:18] via python3.14 -B /private/tmp/xemele-m8-complete.py",
+      "result": "passed",
+      "summary": "All18 existing correctness commands passed; exact APIs, original grammar/fuzz/earlier samples, disabled control, managed/trim/AOT consumers. Original failed phase remains failed; equivalent product/tests/fixtures/recipes/package/runtime/authorities verified.",
+      "artifact": "docs/reports/M8-gate/summary.json"
+    },
+    {
+      "id": "gate-cumulative-allocation",
+      "kind": "check",
+      "revision": "5dd7402891047602ee6dbaef92513e16990ca33a",
+      "command": "Existing recipes.commands(counter): positive control and all3 cumulative suites, via finite direct completion/remaining-suites scripts; final retained-output inspection via python3.14 -B /private/tmp/xemele-m8-inspect-final.py",
+      "result": "passed",
+      "summary": "12279/12279 tests passed,0failures/errors/skips/notrun; exact8717 inherited identity multiset, all12 schema resource positives and original WarmBorrowed assertions retained. Six real+positive NoEmit child pairs verified; positive4120B and disabled0B control. RNG1035 predicates/Jing1035 agreements/libxml1020+15reference limitations; Schematron95+1reference limitation. XSD39329true/144false/11null unchanged,155exact approved nonpasses zero pass credit, repaired annotZ002true.",
+      "artifact": "docs/reports/M8-gate/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Serialized claim after all gate prerequisites verified. Isolated setup then reviewed source-only gate preparation; root retains sole primary/main/state writes and actual counter launches.",
-    "checks": [],
+    "summary": "Existing M8 gate complete on branch using only verified dependencies. Three concrete gate inspector defects repaired; no product changes or new tasks. Actual passing evidence retained without replay.",
+    "checks": [
+      "51 preparation commands passed;18 correctness commands passed",
+      "12279 cumulative tests passed;8717 exact inherited identities;12 allocation child reports verified",
+      "Task validation and diff checks passed in direct correctness; integrated validation pending"
+    ],
     "remaining": [
-      "Prepare exact cumulative/profile/API/earlier behavior/package/trim/NativeAOT finite recipe",
-      "Root reviewed executable release and actual checks",
-      "Integrated verification and terminal transfer"
+      "Integrate branch and record source-equivalent combined-tree verification"
     ],
     "requests": []
   }

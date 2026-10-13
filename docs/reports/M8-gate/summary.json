@@ -1,0 +1,1301 @@
+{
+  "task": "M8-gate",
+  "result": "passed",
+  "productBuildRevision": "61fb064d6134e5c459e643cf8fe9f47ce00bfe79",
+  "unitAndConsumersRevision": "dc72a4e6192c5475a265511a132cab8f499b51b7",
+  "conformanceDifferentialRevision": "b593e8a6897246262d83e82746fc83175e716f26",
+  "finalInspectionRevision": "5dd7402891047602ee6dbaef92513e16990ca33a",
+  "preparedSourceSha256": "46bddcd748c85e95ddd98549e4f663594707c8d5e6e4ccbadb982c187868753c",
+  "preparation": {
+    "commands": 51,
+    "result": "passed",
+    "actualOuterExit": 0,
+    "actualObserverExit": 0,
+    "report": "docs/orchestration/M8-gate-branch-prepare-session89772.json",
+    "certificateSha256": "00145151771eaed0f8f7abe739ff33e59bddd2dd0f2b4fb2652bec2f42ce90ec"
+  },
+  "correctness": {
+    "commands": 18,
+    "result": "passed",
+    "execution": "commands0\u20138 retained from original terminal check;9\u201317 executed directly with existing finite supervisor",
+    "rows": [
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/identity_controls.py",
+          "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/root-prepare-5f6eba9bf565411bacab44f5d30742d0/root-certificate.json"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "PASS actual identity controls {\"controls\": [{\"name\": \"positive\", \"actualExit\": 0, \"expectedExit\": 0, \"registeredFamiliesAbsent\": true, \"innerWorkDeadline\": 899223.717753125, \"innerHardDeadline\": 899263.717753125, \"outerWorkDeadline\": 899268.717753125, \"outerHardDeadline\": 899278.717753125}, {\"name\": \"missing-packet-negative\", \"actualExit\": 1, \"expectedExit\": 1, \"registeredFamiliesAbsent\": true, \"innerWorkDeadline\": 899566.949598625, \"innerHardDeadline\": 899606.949598625, \"outerWorkDeadline\": 899611.949598625, \"outerHardDeadline\": 899621.949598625}, {\"name\": \"changed-packet-negative\", \"actualExit\": 1, \"expectedExit\": 1, \"registeredFamiliesAbsent\": true, \"innerWorkDeadline\": 899897.032071458, \"innerHardDeadline\": 899937.032071458, \"outerWorkDeadline\": 899942.032071458, \"outerHardDeadline\": 899952.032071458}, {\"name\": \"unknown-environment-negative\", \"actualExit\": 1, \"expectedExit\": 1, \"registeredFamiliesAbsent\": true, \"innerWorkDeadline\": 900228.291548083, \"innerHardDeadline\": 900268.291548083, \"outerWorkDeadline\": 900273.291548083, \"outerHardDeadline\": 900283.291548083}, {\"name\": \"final-positive\", \"actualExit\": 0, \"expectedExit\": 0, \"registeredFamiliesAbsent\": true, \"innerWorkDeadline\": 900560.019852333, \"innerHardDeadline\": 900600.019852333, \"outerWorkDeadline\": 900605.019852333, \"outerHardDeadline\": 900615.019852333}], \"tests\": 0, \"counters\": false, \"controllerWorkDeadline\": 902323.713150166, \"controllerHardDeadline\": 902363.713150166, \"controllerReserveSeconds\": 40}"
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/reuse.py"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "PASS verified evidence reuse {\"cli\": {\"actualCliControls\": 38, \"checkpoint\": \"247203d78c7f4ff6d480ed8c24cc5a548d86f103\", \"guards\": 10, \"normalAssertions\": 1156, \"originalFailures\": 3, \"source\": {\"files\": 333, \"sha256\": \"dddbb1e180737e65e827677b665edc3a835fd83f64cf47d9537c65d5daf52ad6\"}, \"unixEpipeDeliveryCredit\": 0, \"xmlOnlyAssertions\": 1157}, \"compatibleDisabledEvidence\": {\"consumed\": 254, \"countersCollectionsInvoked\": 0, \"routes\": 6, \"source\": \"docs/reports/M8-xsd-resolved-availability/branch-evidence.json\"}, \"historicalWarmBorrowedFailure\": {\"actual\": 7744, \"expected\": 0, \"retained\": true}, \"inheritedNoEmit\": \"real+positive only; no invented disabled child\", \"sourceEquivalence\": {\"baseline\": \"db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6\", \"documentationOnlyDelta\": [\"docs/reports/M8-xsd-corpus/final-implementation-handoff.md\"], \"productOptionsCorpusEquivalent\": true, \"scope\": [\"src/Xemele\", \"tests/corpora/xsd\", \"tests/fixtures\", \"tests/Xemele.Conformance.Tests/Xsd\", \"tests/Xemele.Differential.Tests/Xsd\", \"docs/reports/M8-xsd-corpus\"]}, \"xsd\": {\"annotation\": {\"actual\": \"schema-valid\", \"codes\": [], \"engine\": \"product\", \"expected\": \"valid\", \"id\": \"msMeta/Annotations_w3c.xml#g78/s:annotZ002\", \"kind\": \"schema\", \"passed\": true}, \"branchAttribution\": true, \"exactDispositions\": 155, \"freshGateCampaign\": false, \"gateCredit\": 0, \"originalCredit\": 0, \"originalProduct\": {\"failed\": 144, \"indeterminate\": 11, \"passed\": 39329}, \"separateProfiles\": 5, \"sourceRevision\": \"db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6\"}}"
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/guard_controls.py",
+          "--archive"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "PASS phase guards: 3 bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion"
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/semantic.py",
+          "api"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "action": "api",
+          "passed": true,
+          "result": {
+            "addedRows": 93,
+            "canonicalAddedSha256": "33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d",
+            "compilerRows": 257,
+            "fragments": 55,
+            "lanes": {
+              "Datatypes": 316,
+              "Facets": 316,
+              "Model": 316,
+              "Regex": 316,
+              "RelaxNg": 444,
+              "Reporting": 319,
+              "Schematron": 479,
+              "Xsd": 615
+            },
+            "nullableMigrationRows": 3,
+            "productSha256": "177b0ea524e16185916a4b53121362664ef0395593c4a885ce0f1fa2c13bc640",
+            "publicRows": 1430,
+            "verifiedProvenanceSha256": "5016c3b603fc99470bfdb2f53cbd500b972a4ce8c68d5469372f62b3fd46b187",
+            "xsdRows": 615
+          }
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "samples/M8-xsd-resolved-availability/bin/Release/net10.0/Consumer.dll"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "Consumer: 6 results consumed; resolved and missing states preserved."
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "samples/M8-xsd-resolved-availability/bin/Release/net10.0/XmlOnly.dll"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "Consumer: 6 results consumed; resolved and missing states preserved."
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/semantic.py",
+          "grammar"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "action": "grammar",
+          "passed": true,
+          "result": {
+            "caseModelHashesSha256": "92d70c85aa72080a66b2f613a94885bae187812366d7862e2b4d80d3f787bb93",
+            "childExitAndCleanup": "passed",
+            "counts": {
+              "authored-effective10-output-overrides": 15,
+              "bulk-decode-all-callback-pause-models": 1394,
+              "independent:accepted-model": 1394,
+              "independent:normative-rejection": 1191,
+              "original-suite-output-models": 409,
+              "product:accepted": 1394,
+              "product:rejected": 1191,
+              "reference:accepted": 671,
+              "reference:independent-model-match": 644,
+              "reference:rejected": 1914,
+              "resolved-reference-disagreements": 771,
+              "symbolic-default-declarations": 2,
+              "unresolved-content-occurrences": 2,
+              "verified-original-resources": 3386
+            },
+            "originalOutputWitnessesSha256": "575783663cc4b2b6271f2a0271f8b2005a6ece3a32c0dcd12e8d17d4b9d424fe",
+            "provenanceSha256": "1d114e93e8799d71de79f54c6884fa256d8f445c80b32afa0ffcd94ce1eda377",
+            "referenceResolutionsSha256": "d2e2815fca7483cdca5cd16d7b20f5341bf2bcc2e2f3f040fad87de7de15c143",
+            "result": "passed"
+          }
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "docs/reports/M4-corpus/bin/Release/net10.0/Fuzz.Driver.dll"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "seed": 1295276112,
+          "runtime": ".NET 10.0.11",
+          "generated": 768,
+          "reused": 768,
+          "invalid": 128,
+          "mutation": 32,
+          "quota": 32,
+          "cancellation": 64
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "docs/reports/M7-corpus/bin/Release/net10.0/Fuzz.Driver.dll"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "seed": 1295468628,
+          "iterations": 96,
+          "cultures": 3,
+          "profiles": 3,
+          "byteSeed": 1295467092,
+          "byteIterations": 64,
+          "byteDocuments": 192,
+          "byteStreams": 768,
+          "documents": 864,
+          "streams": 3456,
+          "fragments": 576,
+          "ownership": 2592,
+          "quotas": 12,
+          "cancellations": 1728,
+          "faults": 864,
+          "tokens": 288,
+          "runtime": ".NET 10.0.11"
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "samples/XmlToolkit/bin/Release/net10.0/XmlToolkit.dll",
+          "/Users/sebastienros/.codex/worktrees/29a0/xemele/tests/corpora"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "architecture": "Arm64",
+          "framework": ".NET 10.0.11",
+          "independentXmlToolkitOutput": true
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "samples/M7-cli/bin/Release/net10.0/M7.CliSample.dll"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "HTML.CLI.Internal: owned output I/O failure",
+            "HTML.CLI.Internal: owned input I/O failure",
+            "HTML.CLI.Canceled: Operation canceled.",
+            "HTML.CLI.Internal: owned output I/O failure",
+            "HTML.CLI.Internal: owned input I/O failure",
+            "HTML.CLI.Canceled: Operation canceled.",
+            "HTML.CLI.Quota: HTML tokenizer quota exceeded: DocumentCharacters",
+            "M7 CLI usage and ownership sample passed: 28 controls; .NET 10.0.11; Arm64"
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "samples/M7-serialize/bin/Release/net10.0/M7-serialize.dll"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "<!DOCTYPE html><html><head></head><body><input disabled=\"\"><template><?marker ?><p>\u00e9 &amp; \u5c3e</p></template><script>if(a<b)c()</script></body></html>",
+            "All three APIs, both modes, outer node/template/fragment, UTF8 caller stream and earlier XML passed."
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "docs/reports/M8-gate/bin/Release/net10.0/CounterControl.dll",
+          "--disabled"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "allocatedBytes": 0,
+          "architecture": "Arm64",
+          "countersEnabled": false,
+          "escapedLength": 4096,
+          "mode": "--disabled",
+          "productSha256": "177b0ea524e16185916a4b53121362664ef0395593c4a885ce0f1fa2c13bc640",
+          "runtime": ".NET 10.0.11"
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/semantic.py",
+          "external",
+          "managed"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "action": "external",
+          "passed": true,
+          "result": {
+            "architecture": "Arm64",
+            "framework": ".NET 10.0.11",
+            "independentExpectedOutputMatches": true,
+            "lane": "managed",
+            "stdoutSha256": "ea7df465a80366ba32790bd0246586aa33baa9b201b96ca62f3f0db526ec42e3"
+          }
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/semantic.py",
+          "external",
+          "trim"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "action": "external",
+          "passed": true,
+          "result": {
+            "architecture": "Arm64",
+            "framework": ".NET 10.0.11",
+            "independentExpectedOutputMatches": true,
+            "lane": "trim",
+            "stdoutSha256": "ea7df465a80366ba32790bd0246586aa33baa9b201b96ca62f3f0db526ec42e3"
+          }
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "docs/reports/M8-gate/semantic.py",
+          "external",
+          "aot"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "action": "external",
+          "passed": true,
+          "result": {
+            "architecture": "Arm64",
+            "framework": ".NET 10.0.11",
+            "independentExpectedOutputMatches": true,
+            "lane": "aot",
+            "stdoutSha256": "ea7df465a80366ba32790bd0246586aa33baa9b201b96ca62f3f0db526ec42e3"
+          }
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "tools/planning/tasks.py",
+          "validate"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": [
+            "Validated 201 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership."
+          ]
+        },
+        "allNestedGroupsAbsent": true
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "diff",
+          "--check"
+        ],
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "semantic": {
+          "tail": []
+        },
+        "allNestedGroupsAbsent": true
+      }
+    ]
+  },
+  "cumulative": {
+    "total": 12279,
+    "passed": 12279,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "notRun": 0,
+    "inheritedTotal": 8717,
+    "groups": [
+      {
+        "displayNameCollisions": {
+          "Xemele.Tests.HtmlTreeConstruction.BuilderBehaviorTests.SelectedContentUsesInsertionImplicitExplicitAndEofPopHooks(input: \\\"<select><button><selectedcontent></button><option \\\"\u00b7\u00b7\u00b7, expected: \\\"Y\\\")": 2,
+          "Xemele.Tests.M8RngCompile.CompilerTests.ScopeReferenceAndCombinationRestrictions(content: \\\"<start><element name='a'><empty/></element></start\\\"\u00b7\u00b7\u00b7)": 2,
+          "Xemele.Tests.M8SchCompile.CompilerTests.GrammarRestrictionsFailAtOriginalLocation(content: \\\"<pattern><rule context='root'><assert test='true()\\\"\u00b7\u00b7\u00b7)": 3,
+          "Xemele.Tests.M8XsdCompile.CompilerTests.InvalidSchemaRejectsWithOwnedRestrictionDiagnostics(body: \\\"<xs:complexType name='C'><xs:simpleContent><xs:ext\\\"\u00b7\u00b7\u00b7)": 4,
+          "Xemele.Tests.M8XsdCompile.CompilerTests.InvalidSchemaRejectsWithOwnedRestrictionDiagnostics(body: \\\"<xs:complexType name='T'><xs:sequence><xs:element \\\"\u00b7\u00b7\u00b7)": 2,
+          "Xemele.Tests.M8XsdFacade.PublicTests.NilAndType(xml: \\\"<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-\\\"\u00b7\u00b7\u00b7, expected: False)": 2,
+          "Xemele.Tests.M8XsdFacade.PublicTests.NilAndType(xml: \\\"<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-\\\"\u00b7\u00b7\u00b7, expected: True)": 2,
+          "Xemele.Tests.M8XsdFacade.PublicationTests.InvalidRetainedDefinitionsRejectBeforePublication(body: \\\"<xs:element name='unused' default='text'><xs:compl\\\"\u00b7\u00b7\u00b7)": 2,
+          "Xemele.Tests.M8XsdFacade.PublicationTests.InvalidRetainedDefinitionsRejectBeforePublication(body: \\\"<xs:element name='unused'><xs:complexType><xs:attr\\\"\u00b7\u00b7\u00b7)": 2,
+          "Xemele.Tests.M8XsdFacade.PublicationTests.InvalidRetainedDefinitionsRejectBeforePublication(body: \\\"<xs:simpleType name='Unused'><xs:restriction base=\\\"\u00b7\u00b7\u00b7)": 4,
+          "Xemele.Tests.M8XsdIdentity.ScopeTests.DescendantKeysPropagateAndConflictsAreRemoved(content: \\\"<group><row id='x'/></group><group><row id='x'/></\\\"\u00b7\u00b7\u00b7, valid: False)": 2,
+          "Xemele.Tests.UndeclaredReferences.ContentTests.PairedWfcAndMalformedControls(xml: \\\"<!DOCTYPE r [<!ENTITY % p \\\\\\\"<!ENTITY known 'K'>\\\\\\\">%p\\\"\u00b7\u00b7\u00b7, code: \\\"XML.Syntax\\\")": 3
+        },
+        "displayNamesSha256": "b395e7b749f16373b173865e0d92d86cbe4d7ab1c4d9005d7d3758255faf5156",
+        "errors": 0,
+        "failed": 0,
+        "group": "Xemele.Tests",
+        "identityIdsSha256": "f8ddb47e5e2baed05fa9099f1d122b1d72e5799e5cb92c77fcb66d80e49757be",
+        "inheritedCount": 7789,
+        "inheritedSha256": "1771d6f3b5e171f3995e9246e0d95a3eb976d4ff9bf382a7390b9ccb3a3c1626",
+        "newTypes": [
+          "Xemele.Tests.M8ConstraintLexical.ConstraintTests",
+          "Xemele.Tests.M8ConstraintLexical.OperationTests",
+          "Xemele.Tests.M8ConstraintLexical.RoundTripTests",
+          "Xemele.Tests.M8Datatypes.CompositionTests",
+          "Xemele.Tests.M8DatatypesCore.CoreTests",
+          "Xemele.Tests.M8DatatypesNumeric.NumericTests",
+          "Xemele.Tests.M8DatatypesTemporal.TemporalTests",
+          "Xemele.Tests.M8DatatypesTextBinary.FamilyTests",
+          "Xemele.Tests.M8Facets.ApplicabilityTests",
+          "Xemele.Tests.M8Facets.CallerEngineTests",
+          "Xemele.Tests.M8Facets.CompositeTests",
+          "Xemele.Tests.M8Facets.DefinitionTests",
+          "Xemele.Tests.M8Facets.FacetNumberTests",
+          "Xemele.Tests.M8Facets.FacetTests",
+          "Xemele.Tests.M8Facets.OperationTests",
+          "Xemele.Tests.M8Facets.PrimitiveTests",
+          "Xemele.Tests.M8Facets.ReviewWitnessTests",
+          "Xemele.Tests.M8Model.ModelTests",
+          "Xemele.Tests.M8Model.ResourceTests",
+          "Xemele.Tests.M8Regex.RegexTests",
+          "Xemele.Tests.M8RngCompile.CompilerTests",
+          "Xemele.Tests.M8RngCompile.ResourceTests",
+          "Xemele.Tests.M8RngLexical.LexicalTests",
+          "Xemele.Tests.M8RngValidate.BoundaryTests",
+          "Xemele.Tests.M8RngValidate.BudgetTests",
+          "Xemele.Tests.M8RngValidate.DatatypeTests",
+          "Xemele.Tests.M8RngValidate.EvaluationTests",
+          "Xemele.Tests.M8RngValidate.ResourceTests",
+          "Xemele.Tests.M8SchCompile.CompilerTests",
+          "Xemele.Tests.M8SchCompile.ResourceTests",
+          "Xemele.Tests.M8SchReport.ReportTests",
+          "Xemele.Tests.M8SchRuleScope.RuleScopeTests",
+          "Xemele.Tests.M8SchValidate.BoundaryTests",
+          "Xemele.Tests.M8SchValidate.BudgetTests",
+          "Xemele.Tests.M8SchValidate.CompositionTests",
+          "Xemele.Tests.M8SchValidate.EvaluationTests",
+          "Xemele.Tests.M8SchValidate.LocationTests",
+          "Xemele.Tests.M8SchValidate.TraversalGuardTests",
+          "Xemele.Tests.M8SchemaResourceBase.ResourceBaseTests",
+          "Xemele.Tests.M8SchemaResourceOutcomes.ResourceOutcomeTests",
+          "Xemele.Tests.M8SourceLocations.SourceLocationTests",
+          "Xemele.Tests.M8XPathAccounting.AccountingTests",
+          "Xemele.Tests.M8XsdAttributeFixed.AttributeFixedTests",
+          "Xemele.Tests.M8XsdAttributeFixed.OriginalWitnessTests",
+          "Xemele.Tests.M8XsdCompile.CompilerTests",
+          "Xemele.Tests.M8XsdCompile.CompositionTests",
+          "Xemele.Tests.M8XsdCompile.LocationTests",
+          "Xemele.Tests.M8XsdComponentMapping.NeighborTests",
+          "Xemele.Tests.M8XsdComponentMapping.NormalizationTests",
+          "Xemele.Tests.M8XsdComponentMapping.OriginalWitnessTests",
+          "Xemele.Tests.M8XsdComponentMapping.WildcardNeighborTests",
+          "Xemele.Tests.M8XsdComponentMapping.WildcardWitnessTests",
+          "Xemele.Tests.M8XsdContent.ContentTests",
+          "Xemele.Tests.M8XsdContent.DerivationTests",
+          "Xemele.Tests.M8XsdContent.OperationTests",
+          "Xemele.Tests.M8XsdContent.ReviewRegressionTests",
+          "Xemele.Tests.M8XsdContentFailureAssessment.BoundaryTests",
+          "Xemele.Tests.M8XsdContentFailureAssessment.ContinuationTests",
+          "Xemele.Tests.M8XsdCountedMatcher.LanguageTests",
+          "Xemele.Tests.M8XsdEffectiveContent.MappingTests",
+          "Xemele.Tests.M8XsdFacade.CompositionTests",
+          "Xemele.Tests.M8XsdFacade.CorrectionTests",
+          "Xemele.Tests.M8XsdFacade.PendingJoinTests",
+          "Xemele.Tests.M8XsdFacade.PublicTests",
+          "Xemele.Tests.M8XsdFacade.PublicationTests",
+          "Xemele.Tests.M8XsdFacade.ResourceTests",
+          "Xemele.Tests.M8XsdFixedRestriction.FixedRestrictionTests",
+          "Xemele.Tests.M8XsdFixedRestriction.OperationTests",
+          "Xemele.Tests.M8XsdIdentity.IdentityTests",
+          "Xemele.Tests.M8XsdIdentity.OperationTests",
+          "Xemele.Tests.M8XsdIdentity.ParserBudgetTests",
+          "Xemele.Tests.M8XsdIdentity.ScopeTests",
+          "Xemele.Tests.M8XsdIdentity.XPathTests",
+          "Xemele.Tests.M8XsdImportVisibility.AnnotationTests",
+          "Xemele.Tests.M8XsdImportVisibility.BoundaryTests",
+          "Xemele.Tests.M8XsdImportVisibility.OriginalTests",
+          "Xemele.Tests.M8XsdImportVisibility.VisibilityTests",
+          "Xemele.Tests.M8XsdInstanceAssessment.NeighborTests",
+          "Xemele.Tests.M8XsdInstanceAssessment.OriginalWitnessTests",
+          "Xemele.Tests.M8XsdInstanceHintOrdering.BoundaryTests",
+          "Xemele.Tests.M8XsdInstanceHintOrdering.OrderingTests",
+          "Xemele.Tests.M8XsdInstanceHintOrdering.OriginalTests",
+          "Xemele.Tests.M8XsdMissingComponents.AvailabilityTests",
+          "Xemele.Tests.M8XsdMissingComponents.BoundaryTests",
+          "Xemele.Tests.M8XsdMissingComponents.CompletenessCertificateTests",
+          "Xemele.Tests.M8XsdMissingComponents.HookTests",
+          "Xemele.Tests.M8XsdMissingComponents.IndependentTests",
+          "Xemele.Tests.M8XsdMissingComponents.OriginalTests",
+          "Xemele.Tests.M8XsdMissingComponents.ReviewControls",
+          "Xemele.Tests.M8XsdOptionalComposition.BoundaryTests",
+          "Xemele.Tests.M8XsdOptionalComposition.CompositionTests",
+          "Xemele.Tests.M8XsdOptionalComposition.OriginalTests",
+          "Xemele.Tests.M8XsdParticleNormalization.BatchTests",
+          "Xemele.Tests.M8XsdParticleNormalization.BoundaryTests",
+          "Xemele.Tests.M8XsdParticleNormalization.NeighborTests",
+          "Xemele.Tests.M8XsdParticleNormalization.OriginalTests",
+          "Xemele.Tests.M8XsdPublicationCheckpoints.CheckpointTests",
+          "Xemele.Tests.M8XsdPublicationCheckpoints.ParsingTests",
+          "Xemele.Tests.M8XsdRecursiveComponents.BoundaryTests",
+          "Xemele.Tests.M8XsdRecursiveComponents.NeighborTests",
+          "Xemele.Tests.M8XsdRecursiveComponents.OriginalTests",
+          "Xemele.Tests.M8XsdResolvedAvailability.OriginalTests",
+          "Xemele.Tests.M8XsdResolvedAvailability.QueryTests",
+          "Xemele.Tests.M8XsdSchemaSyntax.NeighborTests",
+          "Xemele.Tests.M8XsdSchemaSyntax.OriginalWitnessTests",
+          "Xemele.Tests.M8XsdTypeRelations.AnySimpleTests",
+          "Xemele.Tests.M8XsdTypeRelations.AttributeTests",
+          "Xemele.Tests.M8XsdTypeRelations.BoundaryTests",
+          "Xemele.Tests.M8XsdTypeRelations.NeighborTests",
+          "Xemele.Tests.M8XsdTypeRelations.OriginalTests",
+          "Xemele.Tests.M8XsdValidate.AssessmentRouteTests",
+          "Xemele.Tests.M8XsdValidate.EvaluatorTests",
+          "Xemele.Tests.M8XsdValidate.OperationTests",
+          "Xemele.Tests.M8XsdValidate.ReviewRegressionTests",
+          "Xemele.Tests.M8XsdValidate.TextAccountingTests",
+          "Xemele.Tests.M8XsdWildcardComposition.CompositionTests",
+          "Xemele.Tests.SchemaResources.SchemaResourceKindTests"
+        ],
+        "nonpasses": [],
+        "not-run": 0,
+        "passed": 10741,
+        "resourceKindTransition": {
+          "baseline": "Xemele.Tests.ResourceKinds.ResourceKindTests.UndefinedKindsFailBeforeResolver(value: 5)",
+          "observed": "Xemele.Tests.ResourceKinds.ResourceKindTests.UndefinedKindsFailBeforeResolver(value: 6)",
+          "passed": true,
+          "reason": "Schema=5 added; Undefined=6"
+        },
+        "schemaResourcePositiveCases": 12,
+        "schemaResourcePositiveIdentitySha256": "06b07a58616c4bb3c52ad4c23b30869c1d479c33426af16334d1b71d110b5f71",
+        "skipped": 0,
+        "total": 10741,
+        "uniqueIds": 10741,
+        "warmBorrowedCases": 5,
+        "xmlSha256": "6a1f9e1a02eeacfd5fb7a6413cb430869986655306e9e618d0b5d8fc0f6bc2dd"
+      },
+      {
+        "displayNameCollisions": {
+          "Xemele.Conformance.Tests.Schematron.ProfileTests.NegativeSchemasRetainExplicitDiagnostics(body: \\\"<pattern><rule context='item'><assert test='true()\\\"\u00b7\u00b7\u00b7, code: \\\"SCH.SchemaRestriction\\\")": 2
+        },
+        "displayNamesSha256": "5f0b3e4c58a67aad51394841c1c416066c15596a12a5b20ec52802aac29d2379",
+        "errors": 0,
+        "failed": 0,
+        "group": "Xemele.Conformance.Tests",
+        "identityIdsSha256": "098722161c3137a54dac63accc2f069e6101024d18f4b6a385c42f66047dac09",
+        "inheritedCount": 408,
+        "inheritedSha256": "037181f47fb62ee040f66496ad3af9a971418af48a4c4542c6e6c8516ebe5894",
+        "newTypes": [
+          "Xemele.Conformance.Tests.RelaxNg.BoundaryTests",
+          "Xemele.Conformance.Tests.RelaxNg.UpstreamTests",
+          "Xemele.Conformance.Tests.Schematron.ProfileTests",
+          "Xemele.Conformance.Tests.Schematron.UpstreamTests",
+          "Xemele.Conformance.Tests.Xsd.BoundaryTests"
+        ],
+        "nonpasses": [],
+        "not-run": 0,
+        "passed": 920,
+        "resourceKindTransition": null,
+        "skipped": 0,
+        "total": 920,
+        "uniqueIds": 920,
+        "warmBorrowedCases": 0,
+        "xmlSha256": "a134a944bf7eda44969b23f0391138cd3b7cb54610ae01a54ce1355d34788800"
+      },
+      {
+        "displayNameCollisions": {},
+        "displayNamesSha256": "5f159fd793f5341c395936d33379465a5a2e05acf36b16c8b120f13e1730697e",
+        "errors": 0,
+        "failed": 0,
+        "group": "Xemele.Differential.Tests",
+        "identityIdsSha256": "ff7fdf1e87c73fa84e87daf27852c13ef651d201fa9bb38805b5b32a1c2dcb09",
+        "inheritedCount": 520,
+        "inheritedSha256": "d0d862ee3db59737e37efb10e5241a7368d1036dcb455e91701525e5e341612b",
+        "newTypes": [
+          "Xemele.Differential.Tests.RelaxNg.ReferenceTests",
+          "Xemele.Differential.Tests.Schematron.XPathReferenceTests"
+        ],
+        "nonpasses": [],
+        "not-run": 0,
+        "passed": 618,
+        "resourceKindTransition": null,
+        "skipped": 0,
+        "total": 618,
+        "uniqueIds": 618,
+        "warmBorrowedCases": 0,
+        "xmlSha256": "263edcd5e761f5406b775ff53905dcbf72aa48fa20acbc2e2b45971e8832e902"
+      }
+    ],
+    "execution": "Actual full suites, no method/type filters. Unique runtime IDs; display names are a multiset because xUnit truncates theory arguments."
+  },
+  "allocation": {
+    "pairs": 12,
+    "rawFileCount": 86,
+    "rawMembershipSha256": "e19abc457c4e97c558a93e569fcd70c1cae247c9ad29b21e89ad16341381494b",
+    "rawRoots": [
+      "artifacts/M2-dtd-framing-allocation-probe/child-runs/41368-8780f0e7477b45f480b63ba887957230",
+      "artifacts/M2-encoding-allocation-probe/child-runs/41368-6b984310fdea4ab8a0a7b9d12a2f1b05",
+      "artifacts/M2-pi-allocation-probe/child-runs/41368-1388ea2a193143fcbdd38a109a31921a",
+      "artifacts/M2-resolver-allocation-probe/child-runs/41368-974ec8fd8ab9482fb14c125faff18b53",
+      "artifacts/M2-streaming-allocation-probe/child-runs/41368-4df1640d84814f30a1e879463835cd3c",
+      "artifacts/M2-tree-allocation-probe/child-runs/41368-c0f5d49203514dacbfc3ebfc271eb6cb"
+    ],
+    "rows": [
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 64000,
+            "Completion": "Declared",
+            "CompletionConsumed": 14,
+            "DiagnosticCode": null,
+            "EscapedObjectLength": 37,
+            "FinalColumn": 64021,
+            "FinalLine": 1,
+            "MeasuredColumn": 64007,
+            "MeasuredConsumed": 32000,
+            "MeasuredIterations": 1000,
+            "MeasuredLine": 1,
+            "Mode": "positive",
+            "Version": 1,
+            "WarmBytes": 0,
+            "WarmColumn": 32007,
+            "WarmConsumed": 32000,
+            "WarmIterations": 1000,
+            "WarmLine": 1
+          }
+        ],
+        "mode": "positive",
+        "probe": "M2-dtd-framing-allocation-probe",
+        "reportSha256": "bd428e702fde64f04d2d7d7911a75598198dec4a21e472aea2e433381677ff2b",
+        "requestReportExact": true,
+        "requestSha256": "cb14ff54cd3ae9ef46a3dce2f9ab2afc0add1f81ad2e44c27b1b9fbb4d9f118a",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 0,
+            "Completion": "Declared",
+            "CompletionConsumed": 14,
+            "DiagnosticCode": null,
+            "EscapedObjectLength": 0,
+            "FinalColumn": 64021,
+            "FinalLine": 1,
+            "MeasuredColumn": 64007,
+            "MeasuredConsumed": 32000,
+            "MeasuredIterations": 1000,
+            "MeasuredLine": 1,
+            "Mode": "real",
+            "Version": 1,
+            "WarmBytes": 0,
+            "WarmColumn": 32007,
+            "WarmConsumed": 32000,
+            "WarmIterations": 1000,
+            "WarmLine": 1
+          }
+        ],
+        "mode": "real",
+        "probe": "M2-dtd-framing-allocation-probe",
+        "reportSha256": "4607f178ee4c57b129dd85c6f97907fae00df00445c7422bacac2f41d873c61d",
+        "requestReportExact": true,
+        "requestSha256": "91bd07c5d46eea13fc48ff08973a1200468af29e4016881bb9f4158a3a380ab3",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 640000,
+            "Encoding": "Ascii",
+            "EscapedObjectLength": 37,
+            "FirstOffset": 60004,
+            "InputLength": 6,
+            "Label": "US-ASCII",
+            "LastOffset": 120003,
+            "MeasuredCalls": 10000,
+            "MeasuredConsumed": 60000,
+            "MeasuredWritten": 60000,
+            "Scalars": "abcd\r\n",
+            "WarmBytes": 0,
+            "WarmCalls": 10000,
+            "WarmConsumed": 60000,
+            "WarmWritten": 60000
+          },
+          {
+            "AllocatedBytes": 640000,
+            "Encoding": "Latin1",
+            "EscapedObjectLength": 37,
+            "FirstOffset": 40004,
+            "InputLength": 4,
+            "Label": "ISO-8859-1",
+            "LastOffset": 80003,
+            "MeasuredCalls": 10000,
+            "MeasuredConsumed": 40000,
+            "MeasuredWritten": 40000,
+            "Scalars": "\u0080\u00e9\r\n",
+            "WarmBytes": 0,
+            "WarmCalls": 10000,
+            "WarmConsumed": 40000,
+            "WarmWritten": 40000
+          },
+          {
+            "AllocatedBytes": 640000,
+            "Encoding": "Windows1252",
+            "EscapedObjectLength": 37,
+            "FirstOffset": 50004,
+            "InputLength": 5,
+            "Label": "Windows-1252",
+            "LastOffset": 100003,
+            "MeasuredCalls": 10000,
+            "MeasuredConsumed": 50000,
+            "MeasuredWritten": 50000,
+            "Scalars": "\u20ac\u2014\u00e9\r\n",
+            "WarmBytes": 0,
+            "WarmCalls": 10000,
+            "WarmConsumed": 50000,
+            "WarmWritten": 50000
+          }
+        ],
+        "mode": "positive",
+        "probe": "M2-encoding-allocation-probe",
+        "reportSha256": "df74d09e08255ca1ba8cfc54c266ab0dec7f87d9b91ce051b079f877a6e7c902",
+        "requestReportExact": true,
+        "requestSha256": "f93e43f14ad7335ecc059db3adc2fd64214af57fc02442c4732f1db3cf385319",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 0,
+            "Encoding": "Ascii",
+            "EscapedObjectLength": 0,
+            "FirstOffset": 60004,
+            "InputLength": 6,
+            "Label": "US-ASCII",
+            "LastOffset": 120003,
+            "MeasuredCalls": 10000,
+            "MeasuredConsumed": 60000,
+            "MeasuredWritten": 60000,
+            "Scalars": "abcd\r\n",
+            "WarmBytes": 0,
+            "WarmCalls": 10000,
+            "WarmConsumed": 60000,
+            "WarmWritten": 60000
+          },
+          {
+            "AllocatedBytes": 0,
+            "Encoding": "Latin1",
+            "EscapedObjectLength": 0,
+            "FirstOffset": 40004,
+            "InputLength": 4,
+            "Label": "ISO-8859-1",
+            "LastOffset": 80003,
+            "MeasuredCalls": 10000,
+            "MeasuredConsumed": 40000,
+            "MeasuredWritten": 40000,
+            "Scalars": "\u0080\u00e9\r\n",
+            "WarmBytes": 0,
+            "WarmCalls": 10000,
+            "WarmConsumed": 40000,
+            "WarmWritten": 40000
+          },
+          {
+            "AllocatedBytes": 0,
+            "Encoding": "Windows1252",
+            "EscapedObjectLength": 0,
+            "FirstOffset": 50004,
+            "InputLength": 5,
+            "Label": "Windows-1252",
+            "LastOffset": 100003,
+            "MeasuredCalls": 10000,
+            "MeasuredConsumed": 50000,
+            "MeasuredWritten": 50000,
+            "Scalars": "\u20ac\u2014\u00e9\r\n",
+            "WarmBytes": 0,
+            "WarmCalls": 10000,
+            "WarmConsumed": 50000,
+            "WarmWritten": 50000
+          }
+        ],
+        "mode": "real",
+        "probe": "M2-encoding-allocation-probe",
+        "reportSha256": "278b9a65e4dbc69a67afa8ed0e92fe2b9686862a8e8bc5a3a9cfa0bea4522d48",
+        "requestReportExact": true,
+        "requestSha256": "fc46345a43a82fab0b623f9983a56ec61808ee43d840acdfaad79fd076b62695",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 6400000,
+            "Completion": "Completed",
+            "CompletionConsumed": 4,
+            "DiagnosticCode": null,
+            "EscapedObjectLength": 37,
+            "MeasuredCalls": 100000,
+            "MeasuredIterations": 10000,
+            "MeasuredUnits": 40000,
+            "Mode": "positive",
+            "TotalCalls": 101005,
+            "TotalUnits": 40400,
+            "Version": 1,
+            "WarmBytes": 64368,
+            "WarmCalls": 1000,
+            "WarmIterations": 100,
+            "WarmUnits": 400
+          }
+        ],
+        "mode": "positive",
+        "probe": "M2-pi-allocation-probe",
+        "reportSha256": "cf768346fc991ec25404a5a4907e6625e6fde78c44adc7ac4d6bf2c84ac3ba9a",
+        "requestReportExact": true,
+        "requestSha256": "bbf8996c3b70b4c166aae5412aa78ff9b634ded12b7d80ff98c2119db901cf91",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 0,
+            "Completion": "Completed",
+            "CompletionConsumed": 4,
+            "DiagnosticCode": null,
+            "EscapedObjectLength": 0,
+            "MeasuredCalls": 100000,
+            "MeasuredIterations": 10000,
+            "MeasuredUnits": 40000,
+            "Mode": "real",
+            "TotalCalls": 101005,
+            "TotalUnits": 40400,
+            "Version": 1,
+            "WarmBytes": 368,
+            "WarmCalls": 1000,
+            "WarmIterations": 100,
+            "WarmUnits": 400
+          }
+        ],
+        "mode": "real",
+        "probe": "M2-pi-allocation-probe",
+        "reportSha256": "db2986f9e8f436c29e22734ee702d3a31c7b4de18b34042cd3e5bc8cf3c032b5",
+        "requestReportExact": true,
+        "requestSha256": "639ec4ab0ecca9386398fdf45ddbb6f330831df7debf7d616e2e12c8b630adfe",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 640000,
+            "EscapedObjectLength": 37,
+            "MeasuredBytes": 40960000,
+            "MeasuredIterations": 10000,
+            "Mode": "positive",
+            "ResolverCalls": 1,
+            "ResourcesOpened": 1,
+            "TotalBytes": 45056000,
+            "Version": 1,
+            "WarmBytes": 0,
+            "WarmIterations": 1000,
+            "WarmReadBytes": 4096000
+          }
+        ],
+        "mode": "positive",
+        "probe": "M2-resolver-allocation-probe",
+        "reportSha256": "bc9cd982cdf85b163ec13084a65cd9db17436889ca7eb7fd79672cdedd59b853",
+        "requestReportExact": true,
+        "requestSha256": "684e86bd2bd86d055245813a58a17c827f874fe1a2949291bc1605e9434e7ddc",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 0,
+            "EscapedObjectLength": 0,
+            "MeasuredBytes": 40960000,
+            "MeasuredIterations": 10000,
+            "Mode": "real",
+            "ResolverCalls": 1,
+            "ResourcesOpened": 1,
+            "TotalBytes": 45056000,
+            "Version": 1,
+            "WarmBytes": 0,
+            "WarmIterations": 1000,
+            "WarmReadBytes": 4096000
+          }
+        ],
+        "mode": "real",
+        "probe": "M2-resolver-allocation-probe",
+        "reportSha256": "ac5ec928dde57a155e0b8d7750d303cb6d7ee3fb3c5327bef2996fe0094826bf",
+        "requestReportExact": true,
+        "requestSha256": "91d9783e6f1ab195121e957c0937af44586ffd251dcc871c5bd2761af8b1d62d",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 7680000,
+            "Completion": "Completed",
+            "CompletionConsumed": 4,
+            "DiagnosticCode": null,
+            "EscapedObjectLength": 37,
+            "MeasuredCalls": 120000,
+            "MeasuredIterations": 10000,
+            "MeasuredUnits": 50000,
+            "Mode": "positive",
+            "TotalCalls": 121205,
+            "TotalUnits": 50500,
+            "Version": 1,
+            "WarmBytes": 77168,
+            "WarmCalls": 1199,
+            "WarmIterations": 100,
+            "WarmUnits": 500
+          }
+        ],
+        "mode": "positive",
+        "probe": "M2-streaming-allocation-probe",
+        "reportSha256": "2392bb9d1b40f01dea2392432a6dc5ccb312d61d9256c5e108b2ba4076e60a7c",
+        "requestReportExact": true,
+        "requestSha256": "e66b961fc8305bc6483675d4af1fa68cbfaccb99c403faf021348ca8e6f88211",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 0,
+            "Completion": "Completed",
+            "CompletionConsumed": 4,
+            "DiagnosticCode": null,
+            "EscapedObjectLength": 0,
+            "MeasuredCalls": 120000,
+            "MeasuredIterations": 10000,
+            "MeasuredUnits": 50000,
+            "Mode": "real",
+            "TotalCalls": 121205,
+            "TotalUnits": 50500,
+            "Version": 1,
+            "WarmBytes": 432,
+            "WarmCalls": 1199,
+            "WarmIterations": 100,
+            "WarmUnits": 500
+          }
+        ],
+        "mode": "real",
+        "probe": "M2-streaming-allocation-probe",
+        "reportSha256": "882d89855fcd62f3b805d0895409e3adb30e213dcda5ed6814286b0e11928290",
+        "requestReportExact": true,
+        "requestSha256": "74e5b47daad4a9a5ec6f11eaa9182121e6d4b83318d8a0561c5be89621e010f9",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 64000,
+            "AttributeIdentity": true,
+            "EscapedObjectLength": 37,
+            "MeasuredConsumed": 21000,
+            "MeasuredIterations": 1000,
+            "Mode": "positive",
+            "Version": 1,
+            "WarmBytes": 64000,
+            "WarmConsumed": 21000,
+            "WarmIterations": 1000
+          }
+        ],
+        "mode": "positive",
+        "probe": "M2-tree-allocation-probe",
+        "reportSha256": "ba887a329d603bab5a6da1ebc5f48819d558ad4127f4c35e670de7abbaddbb66",
+        "requestReportExact": true,
+        "requestSha256": "fbe1cf7ee876d6d1e69448a61f85e7e93dfa9345fc0a5fdbb056cb8089a20cbf",
+        "runtimeProductBindingMatches": true
+      },
+      {
+        "childXmlPassed": true,
+        "measurements": [
+          {
+            "AllocatedBytes": 0,
+            "AttributeIdentity": true,
+            "EscapedObjectLength": 0,
+            "MeasuredConsumed": 21000,
+            "MeasuredIterations": 1000,
+            "Mode": "real",
+            "Version": 1,
+            "WarmBytes": 0,
+            "WarmConsumed": 21000,
+            "WarmIterations": 1000
+          }
+        ],
+        "mode": "real",
+        "probe": "M2-tree-allocation-probe",
+        "reportSha256": "2de38a91aba65f5fd4ee8fb10f4d9ad4709336f367117783462211f9c58a5b5d",
+        "requestReportExact": true,
+        "requestSha256": "ef857d1150082d9ed8752828c217e298f3ecaf2c86b6fa2a2bd9df2ec92e3584",
+        "runtimeProductBindingMatches": true
+      }
+    ],
+    "suiteOutputFiles": 487,
+    "suiteOutputSha256": "59db16eb94287cf1949289b456ab866bf02d4abbb0abdf85ca48238b1e578c93"
+  },
+  "reuse": {
+    "cli": {
+      "actualCliControls": 38,
+      "checkpoint": "247203d78c7f4ff6d480ed8c24cc5a548d86f103",
+      "guards": 10,
+      "normalAssertions": 1156,
+      "originalFailures": 3,
+      "source": {
+        "files": 333,
+        "sha256": "dddbb1e180737e65e827677b665edc3a835fd83f64cf47d9537c65d5daf52ad6"
+      },
+      "unixEpipeDeliveryCredit": 0,
+      "xmlOnlyAssertions": 1157
+    },
+    "compatibleDisabledEvidence": {
+      "consumed": 254,
+      "countersCollectionsInvoked": 0,
+      "routes": 6,
+      "source": "docs/reports/M8-xsd-resolved-availability/branch-evidence.json"
+    },
+    "historicalWarmBorrowedFailure": {
+      "actual": 7744,
+      "expected": 0,
+      "retained": true
+    },
+    "inheritedNoEmit": "real+positive only; no invented disabled child",
+    "sourceEquivalence": {
+      "baseline": "db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6",
+      "documentationOnlyDelta": [
+        "docs/reports/M8-xsd-corpus/final-implementation-handoff.md"
+      ],
+      "productOptionsCorpusEquivalent": true,
+      "scope": [
+        "src/Xemele",
+        "tests/corpora/xsd",
+        "tests/fixtures",
+        "tests/Xemele.Conformance.Tests/Xsd",
+        "tests/Xemele.Differential.Tests/Xsd",
+        "docs/reports/M8-xsd-corpus"
+      ]
+    },
+    "xsd": {
+      "annotation": {
+        "actual": "schema-valid",
+        "codes": [],
+        "engine": "product",
+        "expected": "valid",
+        "id": "msMeta/Annotations_w3c.xml#g78/s:annotZ002",
+        "kind": "schema",
+        "passed": true
+      },
+      "branchAttribution": true,
+      "exactDispositions": 155,
+      "freshGateCampaign": false,
+      "gateCredit": 0,
+      "originalCredit": 0,
+      "originalProduct": {
+        "failed": 144,
+        "indeterminate": 11,
+        "passed": 39329
+      },
+      "separateProfiles": 5,
+      "sourceRevision": "db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6"
+    }
+  },
+  "schemaProfiles": {
+    "relaxNg": {
+      "originalPredicates": 1035,
+      "jingAgreements": 1035,
+      "libxmlAgreements": 1020,
+      "libxmlReferenceLimitations": 15,
+      "productExpectationsExcluded": 0,
+      "execution": "Current full conformance and differential suites"
+    },
+    "schematron": {
+      "agreements": 95,
+      "bclUnicodeReferenceLimitations": 1,
+      "productExpectationsExcluded": 0,
+      "execution": "Current full conformance and differential suites"
+    },
+    "xsd": {
+      "annotation": {
+        "actual": "schema-valid",
+        "codes": [],
+        "engine": "product",
+        "expected": "valid",
+        "id": "msMeta/Annotations_w3c.xml#g78/s:annotZ002",
+        "kind": "schema",
+        "passed": true
+      },
+      "branchAttribution": true,
+      "exactDispositions": 155,
+      "freshGateCampaign": false,
+      "gateCredit": 0,
+      "originalCredit": 0,
+      "originalProduct": {
+        "failed": 144,
+        "indeterminate": 11,
+        "passed": 39329
+      },
+      "separateProfiles": 5,
+      "sourceRevision": "db2e6e2ca193cf5040c2235e73c55bb9c84bfaa6"
+    }
+  },
+  "inputEquivalence": {
+    "onlyChangedSource": [
+      "docs/reports/M8-gate/semantic.py"
+    ],
+    "productTestsFixturesRecipesIdentical": true,
+    "sourceAfter": "c9ade24fd396866e4a97659b0d795a619b80a689e4b30fd339c3bdbd340bbd9e",
+    "sourceBefore": "46bddcd748c85e95ddd98549e4f663594707c8d5e6e4ccbadb982c187868753c",
+    "runtimeToolchainCacheEndpointEqual": true,
+    "preparedBinariesPackageCorpusEqual": true,
+    "authoritativePolicyRecordsEqual": true,
+    "allPreexistingArtifactsUnchanged": true,
+    "noProductTestRecipeBuildConfigChanges": true
+  },
+  "package": {
+    "packageSha256": "70687ffb4cc82eba9d08b3a220337ccc6afe2c785c8175e21a7773a17872e82c",
+    "productSha256": "177b0ea524e16185916a4b53121362664ef0395593c4a885ce0f1fa2c13bc640",
+    "packageDllEqual": true,
+    "initialConsumerCacheAbsent": true,
+    "projectReference": false,
+    "offlineOnly": true,
+    "published": false,
+    "nativeArchitecture": "osx-arm64",
+    "consumerSourceSha256": "aeb8830ee47c3a7e5db575dda42d2261c4e25ab9e50e9fec2d9fbdd930113fa7",
+    "offlineCatalog": {
+      "archiveCount": 7415,
+      "canonicalCount": 7387,
+      "aliasCount": 28,
+      "canonicalCatalogSha256": "f6bfbf3c2b6eee9a07cb21e9c181246d262f9da7fc782247969e67b2d1677c82",
+      "aliasIdentitySha256": "2e0ed48750ad37ba8b4d4a6bf854319d4c5eb64c64326a2e0ed2146c1fd65b7f",
+      "reservedIntegrationIdentity": "xemele.0.8.0-integration.nupkg"
+    },
+    "linkerHost": {
+      "wrapperPath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/linker-host/dotnet",
+      "wrapperSha256": "359190cdf414c76b2db158ca8a73851f1522237373f1959a79dc6c001a3e0d25",
+      "wrapperMode": 493,
+      "templateSha256": "f059dceb06a661d5790aac35f7380ad699c073afc467ae8ee6f68d8f15107259",
+      "inputPinsSha256": "903f5ec1f29ad7eb7f0b5273fc0c706567b481a21573517f5bad1add2dccf3d5",
+      "consumerTemplateSha256": "f7985b97b89e9196fb96e234bd4ea7901711c26978be4664d2d1d455c926f1bc",
+      "dotnet": {
+        "path": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "sha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975"
+      },
+      "python": {
+        "path": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "sha256": "2cbb3ee843d8abcf93ed35bb9102391f18eefccb03d47908547bd8db67bc395c"
+      },
+      "expectedDllPath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.dll",
+      "expectedDllSha256": "573ccab989a5d3b4eb7b56cd6d6c4115e253d504dd57cc85fa6b6312c75a1023",
+      "privateToolFiles": {
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.dll": "573ccab989a5d3b4eb7b56cd6d6c4115e253d504dd57cc85fa6b6312c75a1023",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.deps.json": "19d0f17bfa4cc07112274b3ac00d8edf1a1cdd4e6767cf68b03eb702a6cad970",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.runtimeconfig.json": "1933d4faaf94291d30a80f72aa8e05408b09f5bf084932cb302bf8b8c02a7cf8",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/ILLink.Tasks.dll": "267765b0a028dcfa59e7afe5a7294ef84113e8041a168c61dcd3d2798b54c110"
+      },
+      "canonicalToolFiles": {
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.dll": "573ccab989a5d3b4eb7b56cd6d6c4115e253d504dd57cc85fa6b6312c75a1023",
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.deps.json": "19d0f17bfa4cc07112274b3ac00d8edf1a1cdd4e6767cf68b03eb702a6cad970",
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.runtimeconfig.json": "1933d4faaf94291d30a80f72aa8e05408b09f5bf084932cb302bf8b8c02a7cf8",
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/ILLink.Tasks.dll": "267765b0a028dcfa59e7afe5a7294ef84113e8041a168c61dcd3d2798b54c110"
+      },
+      "runtime": "10.0.11",
+      "rollForward": "Disable",
+      "arguments": "Original linker args forwarded unchanged after exact --fx-version10.0.11",
+      "operation": "Original ILLink ToolTask; no new session/children before exec"
+    }
+  },
+  "retainedFailures": [
+    {
+      "record": "docs/orchestration/M8-coordinator-sole-writer-handoff-18426.json",
+      "result": "failed",
+      "childExit": 0,
+      "cause": "XML demo combined output assertion omitted exact runtime banner"
+    },
+    {
+      "recordSha256": "5933381cdd2fee63132e5c3bcdce51efcc8214d4d82f6daa6571f409a8863075",
+      "result": "failed",
+      "childExit": 0,
+      "cause": "Gate required unique truncated xUnit display names; all10741 unit rows passed"
+    },
+    {
+      "recordSha256": "e7d7fb6613ad04d3fa823d6100768c916594c79f15bb781aff0b330cc39da8fb",
+      "result": "failed",
+      "childExits": [
+        0,
+        0
+      ],
+      "cause": "Gate rejected487 established cumulative corpus reports; both remaining suites passed"
+    }
+  ],
+  "rawProvenance": {
+    "originalCheckReceiptSha256": "4be14a6cbf7914a6127fece1d740f9cc9339da05b93b404d93cd678328e17e49",
+    "finalInspectionSummarySha256": "b18a0b0c5bbe4b439ff3fdeec2f8627cc5a4494528a35a649c9d0351a024b670",
+    "completionScriptSha256": "2e9779f138ad4b454c7660d64bbcaaa6bec2449fbe0ab5bc4b30c0b833670511",
+    "remainingSuitesScriptSha256": "53e386a064aebeb3d74429fc951bdf4696fe664533129f6c2452f49ff5532f2a",
+    "finalInspectionScriptSha256": "0a944c082bbe905fb716a06ed515da8805e8b2ad8a9e5cde2168ef4a0f15a3ae"
+  },
+  "limitations": [
+    "Local osx-arm64/.NET10.0.11 evidence; no crossplatform or throughput claim.",
+    "Unpublished local package only.",
+    "155 exact human-approved XSD nonpasses retain144false/11null, zero original or gate pass credit.",
+    "Historical failed phase receipts remain failed; no check/counter certificate was invented. Human-approved direct completion superseded the earlier whole-phase replay requirement."
+  ]
+}
