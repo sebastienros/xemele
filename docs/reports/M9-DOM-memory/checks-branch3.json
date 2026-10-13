@@ -78,5 +78,39 @@
       "outputSha256": "45ac3cdf69b258afba40bf301160ceb3ad7051a6a3fdd313e80592703326ba49",
       "outputTail": "eamingUnicodeDispatchAllocateZero()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero [FAIL]\n      System.InvalidOperationException : Encoding real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-encoding-allocation-probe/child-runs/53700-e52576599e0645e89d0defd513cb673c\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs(34,0): at Xemele.Tests.EncodingCompatibility.EncodingAllocationChild.Require(Boolean condition, String message)\n        /_/tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs(169,0): at Xemele.Tests.EncodingCompatibility.EncodingAllocationChild.<RunPair>g__Run|18_0(String mode, <>c__DisplayClass18_0&)\n        /_/tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs(130,0): at Xemele.Tests.EncodingCompatibility.EncodingAllocationChild.RunPair()\n        /_/tests/Xemele.Tests/M2-encoding/EncodingTests.cs(125,0): at Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing [FAIL]\n      System.InvalidOperationException : Tree real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-tree-allocation-probe/child-runs/53700-128f2d0a08c94e8a97925f97d1c88da7\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(35,0): at Xemele.Tests.Tree.TreeAllocationChild.Require(Boolean condition, String message)\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(171,0): at Xemele.Tests.Tree.TreeAllocationChild.<RunPair>g__Run|18_0(String mode, <>c__DisplayClass18_0&)\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(132,0): at Xemele.Tests.Tree.TreeAllocationChild.RunPair()\n        /_/tests/Xemele.Tests/M1-tree/TreeTests.cs(171,0): at Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n  Finished:    Xemele.Tests (ID = 'db2fc4c6135bb1ce289f3b459e215e38ea836406f1683a243e31992fab22524c')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 10749, Errors: 0, Failed: 6, Skipped: 0, Not Run: 0, Time: 16.171s\n"
     }
+  ],
+  "unitCounts": {
+    "total": 10749,
+    "passed": 10743,
+    "failed": 6,
+    "errors": 0,
+    "skipped": 0,
+    "not-run": 0
+  },
+  "unitFailures": [
+    {
+      "name": "Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+      "message": "System.InvalidOperationException : PI real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-pi-allocation-probe/child-runs/53700-569d2aa12b5a40309bb75badebb275fd"
+    },
+    {
+      "name": "Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero",
+      "message": "System.InvalidOperationException : Streaming real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-streaming-allocation-probe/child-runs/53700-500d3b0cd1df4690a055da14e61599f8"
+    },
+    {
+      "name": "Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations",
+      "message": "System.InvalidOperationException : Framing real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-dtd-framing-allocation-probe/child-runs/53700-71f0526b9a254f428f0c1b574bd4919c"
+    },
+    {
+      "name": "Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero",
+      "message": "System.InvalidOperationException : Encoding real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-encoding-allocation-probe/child-runs/53700-e52576599e0645e89d0defd513cb673c"
+    },
+    {
+      "name": "Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing",
+      "message": "System.InvalidOperationException : Tree real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-tree-allocation-probe/child-runs/53700-128f2d0a08c94e8a97925f97d1c88da7"
+    },
+    {
+      "name": "Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing",
+      "message": "System.InvalidOperationException : Resolver real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-resolver-allocation-probe/child-runs/53700-fec04173abbd4e9395ba8fac86151e22"
+    }
   ]
 }
