@@ -1,0 +1,84 @@
+{
+  "revision": "867773b6d256b625b59056091b6fbd9d2703aa7e",
+  "phase": "branch4",
+  "result": "failed",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 54619,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+      "outputTail": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 54625,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "304021ce50613c7ec98914dd90fc10d5ebeb82dbce6b817aafffbe023c63cf97",
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-dom-memory-repair/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Xemele.TestUtilities -> /private/tmp/xemele-m9-dom-memory-repair/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll\n  Xemele.Tests -> /private/tmp/xemele-m9-dom-memory-repair/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:04.97\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m9-dom-memory-repair/artifacts/M9-dom-memory/checks-branch4/tests.xml"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 54666,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "409bff78bae50425d72b4b88ce9f2c5e8cd3adb718078a6de2c1186397854394",
+      "outputTail": "eamingUnicodeDispatchAllocateZero()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero [FAIL]\n      System.InvalidOperationException : Encoding real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-encoding-allocation-probe/child-runs/54666-5246239bdc844286b7bf808f289953de\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs(34,0): at Xemele.Tests.EncodingCompatibility.EncodingAllocationChild.Require(Boolean condition, String message)\n        /_/tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs(169,0): at Xemele.Tests.EncodingCompatibility.EncodingAllocationChild.<RunPair>g__Run|18_0(String mode, <>c__DisplayClass18_0&)\n        /_/tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs(130,0): at Xemele.Tests.EncodingCompatibility.EncodingAllocationChild.RunPair()\n        /_/tests/Xemele.Tests/M2-encoding/EncodingTests.cs(125,0): at Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n    Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing [FAIL]\n      System.InvalidOperationException : Tree real child failed/timeout; retained artifacts: /private/tmp/xemele-m9-dom-memory-repair/artifacts/M2-tree-allocation-probe/child-runs/54666-16764034539549699398c4d6d504735c\n      Stack Trace:\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(35,0): at Xemele.Tests.Tree.TreeAllocationChild.Require(Boolean condition, String message)\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(171,0): at Xemele.Tests.Tree.TreeAllocationChild.<RunPair>g__Run|18_0(String mode, <>c__DisplayClass18_0&)\n        /_/tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs(132,0): at Xemele.Tests.Tree.TreeAllocationChild.RunPair()\n        /_/tests/Xemele.Tests/M1-tree/TreeTests.cs(171,0): at Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing()\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n  Finished:    Xemele.Tests (ID = 'db2fc4c6135bb1ce289f3b459e215e38ea836406f1683a243e31992fab22524c')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 10749, Errors: 0, Failed: 6, Skipped: 0, Not Run: 0, Time: 16.495s\n"
+    }
+  ]
+}

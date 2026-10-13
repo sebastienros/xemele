@@ -15,18 +15,22 @@ spec = importlib.util.spec_from_file_location('supervision', ROOT / 'docs/report
 supervisor = importlib.util.module_from_spec(spec); spec.loader.exec_module(supervisor)
 supervisor.ROOT, supervisor.ARTIFACTS = ROOT, out
 env = dict(os.environ, DOTNET_ROOT=str(host.parent), DOTNET_ROLL_FORWARD='Disable',
-           XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources')
+           DOTNET_TieredCompilation='0', DOTNET_TieredPGO='0', DOTNET_ReadyToRun='0',
+           DOTNET_gcServer='0', DOTNET_GCConcurrent='0', XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources')
 report = dict(revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
               phase=args.phase, result='failed', commands=[])
 commands = [
     ([host,'restore','tests/Xemele.Tests/Xemele.Tests.csproj','--source','/private/tmp','-p:NuGetAudit=false','-p:RuntimeFrameworkVersion=10.0.11','--disable-build-servers'],300),
-    ([host,'build','tests/Xemele.Tests/Xemele.Tests.csproj','-c','Release','--no-restore','--disable-build-servers','-m:1','-p:UseSharedCompilation=false','-p:RuntimeFrameworkVersion=10.0.11'],300),
+    ([host,'build','tests/Xemele.Tests/Xemele.Tests.csproj','-c','Release','-t:Rebuild','--no-restore','--disable-build-servers','-m:1','-p:UseSharedCompilation=false','-p:RuntimeFrameworkVersion=10.0.11'],300),
     ([host,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll','-parallelMode','none','-culture','invariant','-noColor','-result-xml',out/'tests.xml'],300),
     (['python3','tools/planning/tasks.py','validate'],30),
 ]
 deadline = time.monotonic() + 1000
 try:
     for argv, cap in commands:
+        if len(report['commands']) == 2:
+            config = json.loads((ROOT/'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.runtimeconfig.json').read_bytes())
+            assert config['runtimeOptions']['framework']['version'] == '10.0.11', config
         index = len(report['commands']); end = min(deadline,time.monotonic()+cap)
         argv = list(map(str,argv))
         receipt = supervisor.supervise_command(argv,index,env,end,end+10)
