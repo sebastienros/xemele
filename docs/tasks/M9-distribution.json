@@ -8,7 +8,7 @@
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-distribution",
   "base_revision": "5a0798757417dfc508847706d118d242a0ef4695",
-  "integration_revision": null,
+  "integration_revision": "afc3d0414e1a315e127252a51824b7bb9d28041e",
   "depends_on": [
     "M9-contracts"
   ],
@@ -50,7 +50,8 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "local-package"
+        "local-package",
+        "partial-local-integration"
       ]
     }
   ],
@@ -79,6 +80,15 @@
       "result": "skipped",
       "summary": "Mandatory release evidence unavailable, not passing or waived. Task remains blocked; only localosx-arm64 credit.",
       "artifact": "docs/reports/M9-distribution/README.md"
+    },
+    {
+      "id": "partial-local-integration",
+      "kind": "integration",
+      "revision": "afc3d0414e1a315e127252a51824b7bb9d28041e",
+      "command": "Merge scoped local delivery; compare runtime/tool/package/consumer/config inputs to tested branch; planning validate/diff.",
+      "result": "passed",
+      "summary": "264inputs source-equivalent to local passing evidence; full matrix unavailable, task remains blocked and never verified.",
+      "artifact": null
     }
   ],
   "blockers": [
