@@ -12,6 +12,7 @@ if(args[0]=="name-check") { foreach(var shape in new[]{"html","xml","prefix","un
 if(args[0]=="ownership") { BenchmarkRunner.Run<TextOwnership>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="symbols") { BenchmarkRunner.Run<BorrowedNames>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="names") { BenchmarkRunner.Run<NameCaches>(args:args.Skip(1).ToArray()); return; }
+if(args[0]=="parser-scans") { BenchmarkRunner.Run<ParserScans>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="scans") { BenchmarkRunner.Run<AttributeScans>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="bdn") { BenchmarkRunner.Run<DomComparison>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="check") {
