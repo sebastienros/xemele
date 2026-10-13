@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/bin/**;**/obj/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Standalone probes own their entry points; the aggregate uses this one. -->
+    <Compile Remove="**/Program.cs" />
+    <Compile Include="Program.cs" />
     <PackageReference Include="BenchmarkDotNet" />
     <ProjectReference Include="../../src/Xemele/Xemele.csproj" />
   </ItemGroup>
