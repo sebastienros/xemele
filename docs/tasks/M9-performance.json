@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Reproducible performance acceptance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-performance-profile",
   "base_revision": "e2a86fe2067d6f98c09e7e1910aaa3ac6ff1da15",
@@ -30,11 +30,13 @@
     {
       "id": "M9-performance-A1",
       "description": "Run frozen throughput/allocation/live-memory benchmarks on controlled hardware against each reference.",
-      "status": "failed",
+      "status": "pending",
       "evidence": [
         "required-controlled-run",
         "current-streaming-memory",
-        "retained-dom-target"
+        "retained-dom-target",
+        "current-repaired-dom-memory",
+        "current-repaired-stream-memory"
       ]
     },
     {
@@ -43,7 +45,9 @@
       "status": "pending",
       "evidence": [
         "required-controlled-run",
-        "current-streaming-memory"
+        "current-streaming-memory",
+        "current-all-engine-qualification",
+        "managed-benchmark-oracles"
       ]
     },
     {
@@ -62,7 +66,11 @@
     "docs/reports/M9-performance/MemoryRunner/MemoryRunner.csproj: links unchanged generated memory oracle against current release runtime",
     "docs/reports/M9-performance/memory.py and current-memory.json: finite five-mode1GiB checks plus retained9MiB control",
     "benchmarks/baselines/release/fixtures.json, fixtures/ and operations.json: ten frozen original primary workloads and semantic oracle",
-    "docs/reports/M9-performance/ManagedWorker/, NativeWorker/ and RustWorker/: actual equivalent owned-DOM/reference-operation preparation"
+    "docs/reports/M9-performance/ManagedWorker/, NativeWorker/ and RustWorker/: actual equivalent owned-DOM/reference-operation preparation",
+    "benchmarks/baselines/release/operations.json: justified finite profilev2 and equivalent explicitUTF8output; original fixtures unchanged",
+    "docs/reports/M9-performance/current-summary.md,current-preparation.json,managed-qualification-current.json,rust-utf8-qualification.json:30engine/fixture qualifications, all earlier failures preserved",
+    "docs/reports/M9-performance/dom-current.py,dom-retention-current.json,memory-current.py,current-memory2.json: actual current repaired-runtime memory passes",
+    "docs/reports/M9-performance/ManagedBenchmarks/: prepared memory-diagnosed ShortRun managed workloads and90untimed operation oracles"
   ],
   "evidence": [
     {
@@ -127,22 +135,60 @@
       "result": "passed",
       "summary": "Actual DOM/model/serialization/compiled-XPath outputs qualified for all10fixtures against both references; failed quota/API-mapping attempts preserved. No throughput claim.",
       "artifact": "docs/reports/M9-performance/reference-qualification.json"
+    },
+    {
+      "id": "current-repaired-dom-memory",
+      "kind": "check",
+      "revision": "17529d1e56ed049366695cc7d6c618957f068154",
+      "command": "python3 docs/reports/M9-performance/dom-current.py --dotnet pinnedhost --attempt profile",
+      "result": "passed",
+      "summary": "All10frozen fixture pairs/60cycles, original failures preserved; current repaired retained aggregate0.687098182 <=0.75; individual geometric mean0.785888009 reported separately.9MiBcontrols detected; no timing credit.",
+      "artifact": "docs/reports/M9-performance/dom-retention-current.json"
+    },
+    {
+      "id": "current-repaired-stream-memory",
+      "kind": "check",
+      "revision": "3145728d4fc908e3ef048bd73f07dc9752faefae",
+      "command": "python3 docs/reports/M9-performance/memory-current.py --dotnet pinnedhost",
+      "result": "passed",
+      "summary": "Fresh exact1GiB profiles for SAX/asyncSAX/pull/asyncpull/push;65fullGCsamples each, complete byte/event counts/early callbacks. Maximumwholemanagedlive289640bytes <8MiB;9MiBretainedcontrol failslimit.9commands exit0,groupsabsent,reaped; RSS separate, no fuzz.",
+      "artifact": "docs/reports/M9-performance/current-memory2.json"
+    },
+    {
+      "id": "current-all-engine-qualification",
+      "kind": "check",
+      "revision": "1c950a5693e89760c411ad2f0f5742ab9fdbcf04",
+      "command": "Affected-only profile-check.py; all10changed RustUTF8 serialization checks; byte-bound unchanged10native qualifications",
+      "result": "passed",
+      "summary": "All10original fixtures qualify for each managed/native/Rust worker,0exclusions. Owned benchmark aggregate cap corrected16\u219232Mi after actual29245440UTF16lowerbound; originalfailure preserved, allruntime/default/targetlimits unchanged. RustUTF8 setup matches serializers, all independent roundtrips pass.",
+      "artifact": "docs/reports/M9-performance/current-preparation.json"
+    },
+    {
+      "id": "managed-benchmark-oracles",
+      "kind": "check",
+      "revision": "e5ca4e766188f1296f2b1bbf75c99dca095904b1",
+      "command": "Finite supervised ManagedBenchmarks restore/build; pinned --qualify90oracles; --list flat; no timing execution",
+      "result": "passed",
+      "summary": "Owned MemoryDiagnoser/ShortRunJob classes compile/list parse, explicitfullGC lifecycle diagnostic,UTF8output,compiledXPath,reader/SAX.90single-operation oracles pass over exact10fixtures/engines. Lifecycle/timing remain unmeasured.",
+      "artifact": "docs/reports/M9-performance/managed-benchmark-preparation.json"
     }
   ],
   "blockers": [
-    "Observed retained-DOM ratio0.935969 exceeds required0.75; route focused storage repair. Managed XPath count query hits100million work limit due quadratic normalization/uniqueness; route focused ordering repair. Dedicated timing and hosted retry authorization still unavailable."
+    "Required comparative throughput, confidence, per-fixture floors and regression validation on dedicated hardware across required architectures remain unavailable; no eligible machine or prior report supplied."
   ],
   "handoff": {
-    "summary": "Frozen representative corpus and direct reference workers prepared; actual retained-DOM target failure and large-query work-limit failure now demonstrated.",
+    "summary": "Verified DOM/XPath/build repairs imported; all10unchanged fixtures qualify against three engines, currentDOM0.687098182 and allfive1GiBmemory bounds pass. Timing remains blocked honestly.",
     "checks": [
-      "Ten fixture pairs /60 retained cycles; aggregate0.935969 versus0.75, failed.",
-      "20native/Rust fixture-operation qualifications pass with original failures retained."
+      "30engine/fixture qualifications, originalscope failures and protocol correction preserved;90managed benchmark operation oracles pass",
+      "Current retainedDOM0.687098182 <=0.75; streamingwholemanagedlive289640bytes <8MiB withpositive9MiBcontrols",
+      "Concrete traversal/repeated intern zero-allocation assertions passed in current integrated10754-unit checks; verified repair allocation tradeoffs imported"
     ],
     "remaining": [
-      "Import verified DOM/XPath and benchmark build repairs, correct the finite aggregate snapshot profile, and qualify the unchanged full corpus; dedicated timing remains unavailable."
+      "Dedicated comparative throughput/confidence/primaryfloor and regression validation on eligiblex64/arm64 hardware; no release timing pass."
     ],
     "requests": [
-      "Create minimal demonstrated runtime repair ownership for Tree/Document.cs + SchemaSourceLocations, and XPath navigation/evaluation ordering; preserve APIs/source diagnostics/finite budgets and frozen corpus."
+      "M9-robustness must reassess whole-source and current original XSD evidence after runtime repairs; fuzz remains explicitly deferred.",
+      "M9-distribution must validate the current repaired runtime; additional hosted retry still awaits its existing budget approval."
     ]
   }
 }

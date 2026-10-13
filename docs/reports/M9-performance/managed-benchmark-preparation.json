@@ -1,0 +1,98 @@
+{
+  "result": "passed",
+  "revision": "e5ca4e766188f1296f2b1bbf75c99dca095904b1",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedBenchmarks/ManagedBenchmarks.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 78105,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "ce8994c721be1092ddbe9450759d0854d1fc71a8c974addf91053de8e509e52b",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedBenchmarks/ManagedBenchmarks.csproj (in 329 ms).\n  1 of 2 projects are up-to-date for restore.\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedBenchmarks/ManagedBenchmarks.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 78107,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "eafa1b8b74a52bf614f0318dbb7ab8d79b1460bf43de864b41ae676c22406fa2",
+      "outputTail": "  Xemele -> /private/tmp/xemele-m9-performance-profile/src/Xemele/bin/Release/net10.0/Xemele.dll\n  ManagedBenchmarks -> /private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedBenchmarks/bin/Release/net10.0/ManagedBenchmarks.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:07.69\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedBenchmarks/bin/Release/net10.0/ManagedBenchmarks.dll",
+        "--qualify"
+      ],
+      "receipt": {
+        "command": 2,
+        "pid": 78113,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "285af91711eb7314cebd996b553a4d76ff7030f857142633a5b3ddbe4e02c71a",
+      "outputTail": "PASS managed benchmark operations feed-small\nPASS managed benchmark operations svg-small\nPASS managed benchmark operations deep-medium\nPASS managed benchmark operations entity-medium\nPASS managed benchmark operations xhtml-medium\nPASS managed benchmark operations build-medium\nPASS managed benchmark operations soap-large\nPASS managed benchmark operations configuration-large\nPASS managed benchmark operations business-large\nPASS managed benchmark operations text-large\nPASS 90 preloaded managed benchmark operation oracles; no timings executed\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m9-performance-profile/docs/reports/M9-performance/ManagedBenchmarks/bin/Release/net10.0/ManagedBenchmarks.dll",
+        "--list",
+        "flat"
+      ],
+      "receipt": {
+        "command": 3,
+        "pid": 78121,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "b063b1db9a98fcc1e9ac78ab4a606dc74fc8e1bd186aa7343f50e7c7d406fb26",
+      "outputTail": "Xemele.ReleaseBenchmarks.ManagedDomBenchmarks.ParseOwnedDom\nXemele.ReleaseBenchmarks.ManagedDomBenchmarks.ParseWithFullCollection\nXemele.ReleaseBenchmarks.ManagedDomBenchmarks.SerializeUtf8\nXemele.ReleaseBenchmarks.ManagedDomBenchmarks.EvaluateCompiledXPath\nXemele.ReleaseBenchmarks.ManagedForwardBenchmarks.ReadAll\n"
+    }
+  ],
+  "timingsExecuted": false
+}
