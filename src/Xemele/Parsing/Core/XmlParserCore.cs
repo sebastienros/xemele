@@ -230,7 +230,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         }
                         if (input[consumed] == '&' && sink is IXmlBulkTextSink)
                         {
-                            int reference = ConsumePredefinedReference(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : [], out var referenceAt, out char value);
+                            int reference = ConsumeScalarReference(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : [], out var referenceAt, out char value);
                             if (reference != 0)
                             {
                                 consumed += reference; fragment[0] = value;
@@ -433,6 +433,25 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         int length = Math.Min(4096, text.Length - source.Index);
         length = (int)Math.Min(length, Math.Min(budget.Remaining(Quota.TokenCharacters), budget.Remaining(Quota.ExpandedCharacters)));
         var run = text.AsSpan(source.Index, length);
+        if (!run.IsEmpty && run[0] == '&')
+        {
+            int reference = PredefinedReferenceLength(run, out char value);
+            if (reference != 0 && budget.Remaining(Quota.ExpandedCharacters) >= reference + 1 && budget.Remaining(Quota.EntityDepth) >= 1)
+            {
+                // Replacement-source spelling charges each consumed scalar,
+                // plus the resolved scalar. Primary document/byte coordinates
+                // do not advance. Near any quota boundary, retain scalar error
+                // ordering and exact locations through the original path.
+                at = source.Reference;
+                budget.TryCharge(Quota.TokenCharacters, reference);
+                budget.TryCharge(Quota.ExpandedCharacters, reference + 1);
+                source.Index += reference; entitySources[^1] = source;
+                RetainValidationReference(false, at);
+                referenceLocation = at; tokenLength = 0; brackets = 0;
+                fragment[0] = value;
+                return fragment.AsSpan(0, 1);
+            }
+        }
         int stop = run.IndexOfAny(TextStops);
         if (stop >= 0) run = run[..stop];
         int surrogate = run.IndexOfAnyInRange('\ud800', '\udfff');
@@ -494,11 +513,36 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (input.StartsWith("&quot;")) { value = '"'; return 6; }
         value = '\0'; return 0;
     }
-    private int ConsumePredefinedReference(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out XmlLocation at, out char value)
+    private static int BmpNumericReferenceLength(ReadOnlySpan<char> input, out char value)
+    {
+        value = '\0';
+        if (!input.StartsWith("&#")) return 0;
+        int index = 2, radix = 10, scalar = 0;
+        if (index < input.Length && input[index] == 'x') { radix = 16; index++; }
+        int beginning = index, maximum = Math.Min(input.Length, 16);
+        for (; index < maximum; index++)
+        {
+            int unit = input[index];
+            if (unit == ';')
+            {
+                if (index == beginning || !XmlScalar(scalar)) return 0;
+                value = (char)scalar; return index + 1;
+            }
+            int digit = unit is >= '0' and <= '9' ? unit - '0' : unit is >= 'a' and <= 'f' ? unit - 'a' + 10 : unit is >= 'A' and <= 'F' ? unit - 'A' + 10 : -1;
+            if (digit < 0 || digit >= radix || scalar > (0xFFFF - digit) / radix) return 0;
+            scalar = scalar * radix + digit;
+        }
+        // Supplementary, long, incomplete and invalid forms keep the complete
+        // scalar parser; this candidate never changes state on failure.
+        return 0;
+    }
+    private int ConsumeScalarReference(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out XmlLocation at, out char value)
     {
         at = default; value = '\0';
-        if (state != State.Data || !textActive || !textStarted || frames.Count == 0 || entities is not null) return 0;
+        if (state != State.Data || !textActive || !textStarted || frames.Count == 0) return 0;
         int length = PredefinedReferenceLength(input, out value);
+        bool numeric = false;
+        if (length == 0) { length = BmpNumericReferenceLength(input, out value); numeric = length != 0; }
         if (length == 0) return 0;
         // Fall back before accepting anything near any boundary so the original
         // scalar path reports the exact first excess unit/reference location.
@@ -514,6 +558,8 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         }
         budget.TryCharge(Quota.DocumentCharacters, length); budget.TryCharge(Quota.TokenCharacters, length);
         budget.TryCharge(Quota.ExpandedCharacters, 1);
+        RetainValidationReference(false, at);
+        if (numeric && White(value)) RetainValidationReference(true, at);
         position.AdvanceColumns(length); normalizedCr = false; brackets = 0; tokenLength = 0;
         return length;
     }

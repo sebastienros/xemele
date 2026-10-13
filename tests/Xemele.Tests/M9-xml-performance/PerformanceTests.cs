@@ -185,6 +185,74 @@ public sealed class PerformanceTests
         var document = XmlDocument.Parse(bytes.AsSpan(), new() { Limits = new() { DocumentCharacters = bytes.Length } }, TestContext.Current.CancellationToken);
         Assert.Equal(new XmlLocation(null, 1, 4, 3), document.OriginalLocation(document.RootElement.Children[0]));
     }
+    [Fact]
+    public void InternalPredefinedReferencesKeepScalarQuotaAccountingAndFailures()
+    {
+        const string xml = "<!DOCTYPE r [<!ENTITY e \"prefix&amp;&lt;&gt;&apos;&quot;suffix\">]><r>&e;</r>";
+        for (int maximum = 1; maximum <= 60; maximum++)
+        {
+            var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse, Limits = new() { ExpandedCharacters = maximum } };
+            var handler = new TextCapture();
+            var scalar = Xemele.Streaming.XmlSaxParser.ParseWithDiagnostics(xml, handler, options, TestContext.Current.CancellationToken);
+            bool parsed = XmlDocument.TryParse(Encoding.UTF8.GetBytes(xml).AsSpan(), out var document, out var diagnostics, options, TestContext.Current.CancellationToken);
+            Assert.Equal(scalar.IsWellFormed, parsed);
+            if (parsed) Assert.Equal(handler.Value.ToString(), document!.RootElement.GetTextContent());
+            else
+            {
+                Assert.Equal(scalar.Diagnostics[0].Code, diagnostics[0].Code);
+                Assert.Equal(scalar.Diagnostics[0].Location.LineNumber, diagnostics[0].Location.LineNumber);
+                Assert.Equal(scalar.Diagnostics[0].Location.LinePosition, diagnostics[0].Location.LinePosition);
+            }
+        }
+    }
+    [Fact]
+    public void InternalPredefinedReferenceKeepsEmptyContentValidationProvenance()
+    {
+        const string xml = "<!DOCTYPE r [<!ELEMENT r EMPTY><!ENTITY e \"prefix&amp;suffix\">]><r>&e;</r>";
+        var document = XmlDocument.Parse(xml, new() { DtdProcessing = XmlDtdProcessing.Parse }, TestContext.Current.CancellationToken);
+        var result = Xemele.Validation.DtdSchema.FromDocument(document).Validate(document);
+        Assert.False(result.IsValid); Assert.True(result.IsComplete);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "DTD.Content" && diagnostic.Location.LinePosition == xml.IndexOf("&e;", StringComparison.Ordinal) + 1);
+    }
+    [Fact]
+    public void PrimaryScalarReferenceCandidatesMatchFullScalarParsing()
+    {
+        string[] references = ["&#945;", "&#x3B1;", "&#32;", "&#13;", "&#x1F600;", "&#000000000000000000000945;", "&#xD800;", "&#0;", "&#xZZ;", "&#X41;", "&#;", "&#123", "&amp;", "&bogus;"];
+        foreach (bool dtd in new[] { false, true }) foreach (string reference in references) foreach (int maximum in new[] { 1, 2, 6 })
+        {
+            string xml = (dtd ? "<!DOCTYPE r [<!ELEMENT r ANY>]>" : "") + "<r>prefix" + reference + "suffix</r>";
+            var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse, Limits = new() { ExpandedCharacters = maximum } };
+            var handler = new TextCapture();
+            var scalar = Xemele.Streaming.XmlSaxParser.ParseWithDiagnostics(xml, handler, options, TestContext.Current.CancellationToken);
+            bool parsed = XmlDocument.TryParse(Encoding.UTF8.GetBytes(xml).AsSpan(), out var document, out var diagnostics, options, TestContext.Current.CancellationToken);
+            Assert.Equal(scalar.IsWellFormed, parsed);
+            if (parsed) Assert.Equal(handler.Value.ToString(), document!.RootElement.GetTextContent());
+            else
+            {
+                Assert.Equal(scalar.Diagnostics[0].Code, diagnostics[0].Code);
+                Assert.Equal(scalar.Diagnostics[0].Location.LineNumber, diagnostics[0].Location.LineNumber);
+                Assert.Equal(scalar.Diagnostics[0].Location.LinePosition, diagnostics[0].Location.LinePosition);
+            }
+        }
+    }
+    [Fact]
+    public void PreparedNumericReferenceDispatchAllocatesZero()
+    {
+        using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null, ExpandedCharacters = null } });
+        var sink = new BulkSink(); var cancel = TestContext.Current.CancellationToken;
+        core.Append("<r>prefix", [], false, sink, cancel);
+        for (int i = 0; i < 20; i++) core.Append("&#945;", [], false, sink, cancel);
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1000; i++) if (core.Append("&#945;", [], false, sink, cancel).Consumed != 6) throw new InvalidOperationException("Incomplete reference dispatch");
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+        Assert.Equal(1026, sink.Units);
+        Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancel).Step);
+    }
+    private sealed class TextCapture : Xemele.Streaming.XmlSaxHandler
+    {
+        internal readonly StringBuilder Value = new();
+        public override void Text(ReadOnlySpan<char> text) => Value.Append(text);
+    }
     private sealed class BulkSink : IXmlBulkTextSink
     {
         internal string[]? ExpectedNames; private int nameIndex;
