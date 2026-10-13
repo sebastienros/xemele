@@ -21,7 +21,7 @@ report = dict(revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=RO
 commands = [
     ([host,'restore','tests/Xemele.Tests/Xemele.Tests.csproj','--source','/private/tmp','-p:NuGetAudit=false','--disable-build-servers'],300),
     ([host,'build','tests/Xemele.Tests/Xemele.Tests.csproj','-c','Release','--no-restore','--disable-build-servers','-m:1','-p:UseSharedCompilation=false'],300),
-    ([host,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll','--report-trx','--results-directory',out/'tests'],300),
+    ([host,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll','-parallelMode','none','-culture','invariant','-noColor','-result-xml',out/'tests.xml'],300),
     (['python3','tools/planning/tasks.py','validate'],30),
 ]
 deadline = time.monotonic() + 1000
