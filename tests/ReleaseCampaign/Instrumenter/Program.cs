@@ -8,4 +8,4 @@ if (!path.Contains(Path.DirectorySeparatorChar + "artifacts" + Path.DirectorySep
     throw new ArgumentException("Instrumentation is confined to a disposable artifact copy.");
 string[] instrumented = Fuzzer.Instrument(path, static name => name.StartsWith("Xemele.", StringComparison.Ordinal), Options.Value).ToArray();
 if (instrumented.Length == 0) throw new InvalidOperationException("No candidate methods instrumented.");
-Console.WriteLine(JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), methods = instrumented.Length, instrumented }));
+Console.WriteLine(JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), types = instrumented.Length, instrumented }));
