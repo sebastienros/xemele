@@ -4,13 +4,16 @@
   "milestone": "M9",
   "title": "Full conformance and sustained robustness campaign",
   "kind": "verification",
-  "status": "blocked",
+  "status": "in_progress",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-robustness",
-  "base_revision": "800f47998e4bc44dd95eb517bb9abe777550cad1",
+  "branch": "codex/m9-current-corpus",
+  "base_revision": "aaa0065e08d7ed0d3e30311fa7f28c60ae09b0f0",
   "integration_revision": "7325a31787b587be1f8f5fcc84f1d5db427b0dbb",
   "depends_on": [
-    "M9-contracts"
+    "M9-contracts",
+    "M9-dom-memory",
+    "M9-xpath-order",
+    "M9-benchmark-build"
   ],
   "goals": [
     "G18"
@@ -79,7 +82,7 @@
     }
   ],
   "blockers": [
-    "Remaining required fuzz work deferred by direct human instruction; existing source-bound conformance evidence retained."
+    "Fuzz planning/execution explicitly deferred by direct human instruction; sustained24h and90%branch gates remain unverified."
   ],
   "handoff": {
     "summary": "Exact non-fuzz conformance closure bound; initial local fuzz evidence retained before direct human deferral.",
@@ -87,8 +90,7 @@
       "PinnedSDK/runtime builds and600type instrumentation pass;3actual instrumented seed replays pass; originalproductionDLLunchanged."
     ],
     "remaining": [
-      "Fuzz work deferred by direct human instruction; required sustained campaign and branch-coverage evidence remains pending.",
-      "Complete remaining non-fuzz current large-stream/resource evidence; preserve bound conformance profiles and dispositions."
+      "Current ordinary corpus/XSD reassessment after the verified four-file runtime repair; fuzz remains deferred."
     ],
     "requests": []
   }
