@@ -1,0 +1,425 @@
+{
+  "task": "M8-gate",
+  "phase": "branch preparation attempt1",
+  "result": "failed",
+  "testedRevision": "a89bd6bddb297e3dc3f86669369d35ba5db4e636",
+  "sourceSha256": "d8aa885d474f5763084a497deabef5fe292e061cdf15b6ae111de6dcd77f5985",
+  "checksSha256": "931b045bdc01867a96b03d6a9e83dba7cff80c78e38b2860e43c889890fba414",
+  "packetSha256": "a6fccf2fb1b3723036f77c58fad48a7c27f5d1d785d9b9d21f250350cbf321f2",
+  "actualOuterExit": 1,
+  "outerSession": 28220,
+  "expectedCommands": 51,
+  "executedCommands": 12,
+  "normalExit0Commands": 11,
+  "failedCommands": 1,
+  "remainingUnrunCommands": 39,
+  "primaryFailure": {
+    "command": 11,
+    "argv": [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "restore",
+      "samples/M2-conformance-profile/Probe.csproj",
+      "--source",
+      "/Users/sebastienros/.nuget/packages",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:RuntimeFrameworkVersion=10.0.11",
+      "-p:UseSharedCompilation=false",
+      "-p:NuGetAudit=false"
+    ],
+    "exit": 1,
+    "reason": "failed",
+    "diagnostics": [
+      "MSBUILD : error MSB1009: Project file does not exist."
+    ]
+  },
+  "secondaryPostPhaseBindingFailure": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/package-identity.json'",
+  "secondaryExplanation": "Package manifest absent because original restore failure stopped before package creation; original primary failure remains unchanged.",
+  "commands": [
+    {
+      "command": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M8-gate/guard_controls.py",
+        "--synthetic"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS phase guards: 11 bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "PASS phase guards: 11 bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion"
+        ]
+      }
+    },
+    {
+      "command": 1,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M1-corpus-import/provision.py"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "Pinned local transport bundle verified/recreated; no network needed when archive/cache exists."
+        ]
+      }
+    },
+    {
+      "command": 2,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M1-corpus-import/import_suite.py",
+        "--check"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "{\"cases\": 2585, \"externalEntityCases\": 323, \"featureReasons\": {\"dtd-prohibited-in-m1\": 2186, \"dtd-validity-oracle\": 242, \"encoding-outside-m1:ASCII\": 4, \"encoding-outside-m1:Shift_JIS\": 1, \"encoding-outside-m1:euc-jp\": 2, \"encoding-outside-m1:iso-2022-jp\": 2, \"encoding-outside-m1:iso-8859-1\": 36, \"encoding-outside-m1:shift_jis\": 1, \"external-both-entities\": 67, \"external-general-entities\": 75, \"external-parameter-entities\": 181, \"historical-xml-edition\": 313, \"namespace-processing-disabled\": 14, \"namespaces-1.1\": 8, \"optional-error-no-binary-oracle\": 33, \"xml-1.1-or-other-version\": 271}, \"files\": 3386, \"m1Outcomes\": {\"rejected\": 242, \"unsupported-profile\": 2343}, \"missingOutputReferences\": 0, \"parserCasesExecuted\": 0, \"sourceTypes\": {\"error\": 33, \"invalid\": 242, \"not-wf\": 1498, \"valid\": 812}, \"standardsPassed\": 0, \"versionAttributes\": {\"1.0\": 396, \"1.1\": 271, \"all\": 1918}}"
+        ]
+      }
+    },
+    {
+      "command": 3,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/Xemele.csproj (in 153 ms).",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 153 ms).",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Tests/Xemele.Tests.csproj (in 238 ms)."
+        ]
+      }
+    },
+    {
+      "command": 4,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll",
+          "  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:12.96"
+        ]
+      }
+    },
+    {
+      "command": 5,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 299 ms).",
+          "  2 of 3 projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 6,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll",
+          "  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:11.11"
+        ]
+      }
+    },
+    {
+      "command": 7,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Protocol/ReferenceProtocol.csproj (in 171 ms).",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Bcl/BclReference.csproj (in 171 ms).",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 229 ms).",
+          "  2 of 5 projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 8,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  BclReference -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll",
+          "  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:16.04"
+        ]
+      }
+    },
+    {
+      "command": 9,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tools/ReferenceRunners/Bcl/BclReference.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 10,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tools/ReferenceRunners/Bcl/BclReference.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Protocol/bin/Release/net10.0/ReferenceProtocol.dll",
+          "  BclReference -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:06.61"
+        ]
+      }
+    },
+    {
+      "command": 11,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/M2-conformance-profile/Probe.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 1,
+      "reason": "failed",
+      "summary": [],
+      "diagnostics": [
+        "MSBUILD : error MSB1009: Project file does not exist."
+      ],
+      "semantic": {
+        "tail": [
+          "MSBUILD : error MSB1009: Project file does not exist.",
+          "Switch: samples/M2-conformance-profile/Probe.csproj"
+        ]
+      }
+    }
+  ],
+  "outerReceiptSha256": "82cf356bd3295f29a865abcaf5516027e99723ffcf4d4b0fcfbbc71066df255c",
+  "phaseReceiptSha256": "43c2ef2d1b05fa3c753f3458e0c2997970defbfd5968f5c330f56c7ffdde10d9",
+  "guards": {
+    "directChildReaped": true,
+    "ownedGroupAbsent": true,
+    "logClosed": true,
+    "inputsMatched": true,
+    "logsInspected": true,
+    "rawDeleted": true,
+    "deadlineExceeded": false
+  },
+  "innerGuards": {
+    "allDirectChildrenReaped": true,
+    "allOwnedGroupsAbsent": true,
+    "logsInspected": true,
+    "rawDeleted": true,
+    "deadlineExceeded": false
+  },
+  "ownedGroups": [
+    16909,
+    17811,
+    17812,
+    17815,
+    17819,
+    17824,
+    17827,
+    17830,
+    17833,
+    17837,
+    17844,
+    17852,
+    17858,
+    17870,
+    17936,
+    17942,
+    17989,
+    17999,
+    18057,
+    18070,
+    18095
+  ],
+  "freshAllOwnedGroupsAbsent": true,
+  "deadlineBudgetObservation": {
+    "phaseInitialBindingSeconds": 183.77,
+    "purpose": "Actual lifecycle evidence for finite bounds only; no performance/timing/isolation claim.",
+    "observation": "One complete input binding exceeds old identity work180 and observer hard180; both perform bindings plus terminal work. Numeric bounds must be reconciled before later phases."
+  },
+  "nextPhaseCertificateIssued": false,
+  "scope": "Preparation only. No cumulative suites, validators, allocation counters or gate criterion pass credit."
+}
