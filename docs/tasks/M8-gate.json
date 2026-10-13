@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Verify schema validation checkpoint",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "01a1350e-adc0-7b21-9368-3f67534dec0c / single completion chat",
   "branch": "codex/m8-gate",
   "base_revision": "96eac196e296203eaad255f0b5c372c5e2fdcc7b",
-  "integration_revision": null,
+  "integration_revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1",
   "depends_on": [
     "M7-gate",
     "M8-cli",
@@ -53,7 +53,8 @@
       "evidence": [
         "gate-preparation",
         "gate-correctness",
-        "gate-cumulative-allocation"
+        "gate-cumulative-allocation",
+        "gate-integrated-verification"
       ]
     },
     {
@@ -63,7 +64,8 @@
       "evidence": [
         "gate-preparation",
         "gate-correctness",
-        "gate-cumulative-allocation"
+        "gate-cumulative-allocation",
+        "gate-integrated-verification"
       ]
     },
     {
@@ -73,7 +75,8 @@
       "evidence": [
         "gate-preparation",
         "gate-correctness",
-        "gate-cumulative-allocation"
+        "gate-cumulative-allocation",
+        "gate-integrated-verification"
       ]
     }
   ],
@@ -109,19 +112,27 @@
       "result": "passed",
       "summary": "12279/12279 tests passed,0failures/errors/skips/notrun; exact8717 inherited identity multiset, all12 schema resource positives and original WarmBorrowed assertions retained. Six real+positive NoEmit child pairs verified; positive4120B and disabled0B control. RNG1035 predicates/Jing1035 agreements/libxml1020+15reference limitations; Schematron95+1reference limitation. XSD39329true/144false/11null unchanged,155exact approved nonpasses zero pass credit, repaired annotZ002true.",
       "artifact": "docs/reports/M8-gate/summary.json"
+    },
+    {
+      "id": "gate-integrated-verification",
+      "kind": "integration",
+      "revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1",
+      "command": "python3 /private/tmp/xemele-m8-verify-integrated.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated gate branch.2949 compiled inputs and all3080 current source inputs equal the tested branch; only gate README/semantic output accounting differs from successful preparation. Source-equivalent51prepare/18correctness/12279cumulative/12allocation evidence retained.201task validation and diff checks passed on combined main; unpublished package/API manifest preserved.",
+      "artifact": "docs/reports/M8-gate/integration.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Existing M8 gate complete on branch using only verified dependencies. Three concrete gate inspector defects repaired; no product changes or new tasks. Actual passing evidence retained without replay.",
+    "summary": "M8 gate integrated and verified at6657e8e0. All mandatory checks passed with honest source-equivalent retained evidence,155approved original nonpasses separate, zero pass inflation. No product change or new task.",
     "checks": [
       "51 preparation commands passed;18 correctness commands passed",
       "12279 cumulative tests passed;8717 exact inherited identities;12 allocation child reports verified",
-      "Task validation and diff checks passed in direct correctness; integrated validation pending"
+      "Task validation and diff checks passed in direct correctness; integrated validation pending",
+      "Integrated main:2949 compiled input files/3080 current source files equal tested branch;201tasks validation and diff check passed"
     ],
-    "remaining": [
-      "Integrate branch and record source-equivalent combined-tree verification"
-    ],
+    "remaining": [],
     "requests": []
   }
 }
