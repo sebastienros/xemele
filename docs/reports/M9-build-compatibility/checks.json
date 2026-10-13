@@ -1,0 +1,64 @@
+{
+  "task": "M9-build-compatibility",
+  "revision": "4413031b2e9b9311c6ac02f69396592fb227ecd6",
+  "result": "passed",
+  "commands": [
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Contracts/Contracts.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RestoreSources=/private/tmp"
+      ],
+      "result": "passed",
+      "warnings": 0,
+      "errors": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Contracts/Fixtures/M9/ReleaseUsage/ReleaseUsage.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RestoreSources=/private/tmp"
+      ],
+      "result": "passed",
+      "warnings": 0,
+      "errors": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Contracts/Fixtures/M9/ReleaseUsage/bin/Release/net10.0/ReleaseUsage.dll"
+      ],
+      "result": "passed",
+      "output": "PASS XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL release usage\n.NET 10.0.11;Arm64"
+    }
+  ],
+  "originalFailure": {
+    "result": "failed",
+    "code": "CS8805",
+    "stage": "Parent Contracts project included executable Program.cs"
+  },
+  "runtimeSourceUnchanged": true,
+  "fixturePayloadUnchanged": true,
+  "ci": {
+    "jobTimeoutMinutes": 20,
+    "maxParallel": 3,
+    "validationBranch": "codex/m9-os-validation",
+    "genericDuplicateJobsExcluded": true,
+    "normalBuildChecksPreserved": true,
+    "hostedExecution": "unrun"
+  }
+}

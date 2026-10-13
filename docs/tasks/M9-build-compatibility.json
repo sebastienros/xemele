@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Repair root contract build and bound existing hosted CI",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-build-compatibility",
   "base_revision": "f9867eca5c8e4f368a5abcba0fa3d912b1cc7b88",
@@ -31,29 +31,53 @@
     {
       "id": "M9-build-compatibility-A1",
       "description": "Repair demonstrated CS8805 root contract-library build failure using existing .cs.fixture convention; standalone M9 usage remains executable with identical behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-build-and-usage"
+      ]
     },
     {
       "id": "M9-build-compatibility-A2",
       "description": "Bound existing generic CI jobs to20minutes before requested validation branch push; preserve existing check coverage and no-publication scope.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-build-and-usage"
+      ]
     },
     {
       "id": "M9-build-compatibility-A3",
       "description": "Run root Contracts and standalone usage checks at known revision, validate ownership/dependencies and record actual integration evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-build-and-usage"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Contracts/Fixtures/M9/ReleaseUsage/Program.cs.fixture",
+    "tests/Contracts/Fixtures/M9/ReleaseUsage/ReleaseUsage.csproj",
+    ".github/workflows/build.yml"
+  ],
+  "evidence": [
+    {
+      "id": "root-build-and-usage",
+      "kind": "check",
+      "revision": "4413031b2e9b9311c6ac02f69396592fb227ecd6",
+      "command": "Pinned SDK build Contracts.csproj and ReleaseUsage.csproj; explicit.NET10.0.11 usage execution; source identity/workflow review; tasks.py validate/diff.",
+      "result": "passed",
+      "summary": "Both projects compile0warnings/errors; unchanged representative usage passes; originalCS8805retained;20minCIcap and reservedbranch exclusion reviewed; no hosted execution claimed.",
+      "artifact": "docs/reports/M9-build-compatibility/checks.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
+    "summary": "Correct root fixture compilation and bound hosted CI without duplicate reserved-branch jobs.",
+    "checks": [
+      "Parent+standalone builds and usage passed; payload/runtime unchanged;202taskvalidation/diff pass."
+    ],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Add verified build repair to distribution dependency before hosted execution."
+    ]
   }
 }
