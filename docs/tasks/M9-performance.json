@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Reproducible performance acceptance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-performance",
   "base_revision": "69b39292e60fe89b3450cecefef1dc539c0399ce",
@@ -28,28 +28,65 @@
       "id": "M9-performance-A1",
       "description": "Run frozen throughput/allocation/live-memory benchmarks on controlled hardware against each reference.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "required-controlled-run"
+      ]
     },
     {
       "id": "M9-performance-A2",
       "description": "Record raw results/environment/confidence and target outcomes; route runtime optimization to separate repair tasks.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "required-controlled-run"
+      ]
     },
     {
       "id": "M9-performance-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "honest-accounting"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
-  "blockers": [],
+  "implementation": [
+    "benchmarks/baselines/release/targets.json",
+    "docs/reports/M9-performance/accounting.json",
+    "docs/reports/M9-performance/README.md"
+  ],
+  "evidence": [
+    {
+      "id": "honest-accounting",
+      "kind": "check",
+      "revision": "d99cc4db2beab15cfe2c0835cc63c51fef3ccfa2",
+      "command": "Offline11target/reference accounting; source-hash checks; Git M8 runtime equivalence; current older streaming closure comparison; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "11required outcomes frozen honestly; M8runtime byte-equivalent;12older streaming closure files changed and not given release reuse credit; no comparative or regression pass claimed.",
+      "artifact": "docs/reports/M9-performance/accounting.json"
+    },
+    {
+      "id": "required-controlled-run",
+      "kind": "check",
+      "revision": "d99cc4db2beab15cfe2c0835cc63c51fef3ccfa2",
+      "command": "Not executed: frozen comparative release benchmarks on stable dedicated hardware.",
+      "result": "skipped",
+      "summary": "No eligible hardware/reports supplied; A1/A2 remain pending. Shared-runner timings cannot satisfy the unchanged protocol.",
+      "artifact": "docs/reports/M9-performance/README.md"
+    }
+  ],
+  "blockers": [
+    "Stable dedicated timing hardware or valid release comparisons unavailable; human answered no."
+  ],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Frozen release target/reference accounting; provisional earlier measurements preserved without pass inflation; task blocked on controlled release evidence.",
+    "checks": [
+      "11outcomes/accounting/inputSHA/runtimeequivalence/oldstreamingclosure checks; planning201/diff passed."
+    ],
+    "remaining": [
+      "Controlled hardware evidence; representative fixture/reference freeze; current live-memory requalification and retainedDOM ratio; actual confidence/targets/regression outcomes."
+    ],
+    "requests": [
+      "Supply stable dedicated hardware or existing exact applicable release reports; no runtime repair inferred without actual deficit."
+    ]
   }
 }
