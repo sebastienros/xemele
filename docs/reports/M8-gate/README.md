@@ -29,7 +29,7 @@ issuing the next certificate. Worker cannot issue a certificate.
 | Phase | Commands | Inner work / hard seconds | Root outer work / hard seconds |
 | --- | ---: | ---: | ---: |
 | preparation | 51 | 12500 / 12680 | 12700 / 12720 |
-| correctness checks | 18 | 3000 / 3180 | 3200 / 3220 |
+| correctness checks | 18 | 3500 / 3680 | 3700 / 3720 |
 | root-only cumulative counters | 4 | 1800 / 1980 | 2000 / 2020 |
 
 The root outer total does not reset the inner clock. Inner work is also clipped
@@ -133,8 +133,13 @@ historical; the full current suite includes the original assertion.
 Actual intended-wrapper identity controls run positive / missing-packet negative / changed-packet negative /
 unknown-environment negative / final-positive with actual exits0/1/1/1/0 required, no tests/counters and
 complete prepared source/binaries/runtime/env/resource/certificate guards. Each
-gets180 seconds work plus10 seconds cleanup; their one parent command gets1000
-seconds, inheriting the phase total. This is a proposed control recipe, not an
+gets180 seconds inner work plus40 seconds inner terminal reserve. Each enclosing
+family waits through the inner hard deadline plus5 seconds launch allowance,
+then has its own10-second cleanup window: at most235 seconds per pair. Allfive
+pairs share one immutable1250-second controller work deadline plus40 seconds
+controller terminal reserve (1290 total); the recipe command has1400 seconds
+work plus10 cleanup. Thus the parent never kills an identity phase at its work
+deadline while final input/binary inspection still owns its full reserve. This is a proposed control recipe, not an
 observed result. The counter check certificate is consumed once; repeat execution
 requires new root review and fresh prepared custody. The inherited NoEmit children
 have only real+positive modes. The compatible verified resolved-availability
