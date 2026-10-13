@@ -39,20 +39,29 @@
     {
       "id": "M9-xml-performance-A1",
       "description": "On all ten frozen XML fixtures, establish semantic-equivalent byte-DOM comparisons with current BCL, pinned libxml2 and xmloxide; record unmodified baseline, allocation/retention controls, native lifecycle differences, versions and raw local evidence outside tracked reports.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "checkpoint-memory",
+        "checkpoint-native"
+      ]
     },
     {
       "id": "M9-xml-performance-A2",
       "description": "Improve raw throughput and allocations toward BCL parity: target geometric-mean latency and allocated-byte ratios <=1.10 and no per-fixture ratio >1.25 for the agreed equivalent default-feature profile; report every deficit honestly and do not relax semantics or exclude fixtures to claim parity.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "checkpoint-parity"
+      ]
     },
     {
       "id": "M9-xml-performance-A3",
       "description": "Preserve default parsing, normalization, source mappings/locations, callbacks/pause/chunk boundaries, cancellation, quotas, DTD/entity provenance and recovery; pass focused and relevant cumulative tests plus task validation, with explicit allocation evidence for new borrowed primitives.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "checkpoint-tests",
+        "checkpoint-scans",
+        "checkpoint-task-validation"
+      ]
     },
     {
       "id": "M9-xml-performance-A4",
@@ -61,15 +70,85 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "XmlParserCore: bounded Unicode/text/reference/ASCII-tag runs, scoped private DOM batches, owned-name handoff and bounded intern accelerator.",
+    "XmlInputDecoder/ByteDomAdapter: validated batch conversion, exact byte maps, operation scratch pool lifetime.",
+    "SlotArena/Document.SourceLocations: segmented owned storage, lossless compact common coordinates and sparse full-width/URI exceptions.",
+    "Document/DomSink/OperationBudget: bounded canonical cache, fused private builder, conditional DTD literal interpretation and cached quota ceilings.",
+    "docs/reports/M9-xml-performance/progress.md: working source/research/native comparison and measurement controls."
+  ],
+  "evidence": [
+    {
+      "id": "checkpoint-tests",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "pinned dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:RuntimeFrameworkVersion=10.0.11; pinned dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -parallelMode none -culture invariant -noColor -result-xml artifacts/M9-xml-performance/caps-cache-tests.xml",
+      "result": "passed",
+      "summary": "10778 tests passed, 0 errors/failed/skipped/not-run. Warm borrowed text and repeated-tag dispatch each observe 0 B.",
+      "artifact": "artifacts/M9-xml-performance/caps-cache-tests.log"
+    },
+    {
+      "id": "checkpoint-memory",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "python3 docs/reports/M9-xml-performance/memory.py",
+      "result": "passed",
+      "summary": "All ten managed semantic digests, 32 KiB/9 MiB compacted heap controls and all native payload/release controls passed. Independent root layouts agree with the held/released heap meter; summed managed retained ratio 0.902x BCL. Native payload excludes allocator metadata/RSS.",
+      "artifact": "artifacts/M9-xml-performance/memory-current/report.json"
+    },
+    {
+      "id": "checkpoint-native",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "python3 docs/reports/M9-xml-performance/reference.py --phase baseline2",
+      "result": "passed",
+      "summary": "20 pinned native/Rust semantic qualifications passed on all ten fixtures; seven-round parse and parse/free/drop lifecycle measurements preserved. Native failure/coordinate contracts differ and timings are local informational.",
+      "artifact": "artifacts/M9-xml-performance/references-baseline2/report.json"
+    },
+    {
+      "id": "checkpoint-scans",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "pinned dotnet --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll scans --iterationTime 250 --artifacts artifacts/M9-xml-performance/scans-bdn",
+      "result": "passed",
+      "summary": "24 ShortRun benchmarks completed, all 0 B steady state. Cached attribute stop scans take about 110 ns versus 1.89-1.91 us for scalar 4096-unit miss/end/multilingual runs; very short dense cases have overlapping uncertainty.",
+      "artifact": "artifacts/M9-xml-performance/scans-bdn/results/Xemele.XmlPerformance.AttributeScans-report-github.md"
+    },
+    {
+      "id": "checkpoint-parity",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "pinned dotnet --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll quick artifacts/M9-xml-performance/caps-cache-quick.json",
+      "result": "failed",
+      "summary": "Seven alternating local screenings: geomean time 2.33x and allocation 0.88x BCL, max allocation 1.22x. Allocation target meets local thresholds; latency still fails. All ten retained in comparison. Text-large time ratio 1.14x. No controlled release credit.",
+      "artifact": "artifacts/M9-xml-performance/caps-cache-quick.json"
+    },
+    {
+      "id": "checkpoint-task-validation",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 207 tasks.",
+      "artifact": "docs/reports/M9-xml-performance/progress.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "User-authorized performance lane after the measured current-main XML/BCL deficit; coordinator creates an explicitly owned repair task because no ready task existed.",
-    "checks": [],
-    "remaining": [
-      "Implement and measure default-compatible hot paths in isolated worktree."
+    "summary": "Tested isolated checkpoint; default allocations and retained memory improve substantially, latency parity remains unmet. Incorporates user-referenced parser study and pinned BCL/native source techniques without dropping semantics.",
+    "checks": [
+      "10778 cumulative unit cases passed.",
+      "24 scan ShortRun cases completed with 0 B warmed allocations.",
+      "All ten managed digests and 20 native qualifications passed; heap/native positive controls passed.",
+      "Task validation passed."
     ],
-    "requests": []
+    "remaining": [
+      "Continue measured latency improvements; current geomean 2.33x BCL fails target.",
+      "Run broader conformance/differential/API/1 GiB streaming checks and final full DOM BDN before integration.",
+      "Quantify optional feature costs and assess storage fields used only by some node kinds."
+    ],
+    "requests": [
+      "Public source-location/provenance switches require an owning contract follow-up; none added."
+    ]
   }
 }
