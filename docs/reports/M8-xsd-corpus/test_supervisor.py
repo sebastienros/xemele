@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import signal
+import shutil
 import threading
 import tempfile
 import time
@@ -394,6 +395,85 @@ class Supervisor(unittest.TestCase):
         error = m.subprocess.CalledProcessError(1, ['git', 'merge-base'])
         with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here), patch.object(m.subprocess, 'run', side_effect=error):
             with self.assertRaises(m.subprocess.CalledProcessError): m.verified_api_inputs()
+
+    def runtime_binding_fixture(self):
+        root = self.root / 'runtime-source'; here = root / 'docs/reports/M8-xsd-corpus'; here.mkdir(parents=True)
+        binding = json.loads((m.HERE / 'verified-api-preparation.json').read_text())
+        paths = set(binding['runtime_production_inputs']) | set(binding['baselines_sha256']) | {p for p in binding['reviewed_build_inputs'] if not Path(p).is_absolute()}
+        paths.update(binding[key] for key in ['runtime_source_manifest', 'runtime_review_plan', 'runtime_api_proof', 'verified_task', 'integration_record'])
+        for name in paths:
+            target = root / name; target.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(m.ROOT / name, target)
+        file = here / 'verified-api-preparation.json'; file.write_text(json.dumps(binding))
+        return root, here, file, binding
+
+    def test_verified_runtime_source_and_api_evidence_membership(self):
+        root, here, file, binding = self.runtime_binding_fixture()
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
+            observed = m.verified_runtime_inputs()
+        self.assertTrue(set(binding['runtime_production_inputs']).issubset(observed))
+        self.assertTrue(set(binding['baselines_sha256']).issubset(observed))
+        self.assertEqual(observed[binding['verified_task']], binding['verified_task_sha256'])
+        self.assertEqual(observed[binding['runtime_api_proof']], binding['runtime_api_proof_sha256'])
+
+    def test_changed_runtime_source_membership_or_bytes_refuses_freeze(self):
+        root, here, file, binding = self.runtime_binding_fixture()
+        extra = root / 'src/Xemele/unreviewed.cs'; extra.write_text('unknown source')
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
+            with self.assertRaisesRegex(AssertionError, 'verified production source membership changed'): m.verified_runtime_inputs()
+            extra.unlink()
+            selected = next(iter(binding['runtime_production_inputs'])); source = root / selected
+            source.write_bytes(source.read_bytes() + b' ')
+            with self.assertRaisesRegex(AssertionError, 'verified runtime/source/API baseline changed'): m.verified_runtime_inputs()
+
+    def test_changed_verified_task_proof_manifest_or_baseline_refuses_freeze(self):
+        root, here, file, binding = self.runtime_binding_fixture()
+        names = [binding[key] for key in ['verified_task', 'runtime_api_proof', 'runtime_source_manifest', 'runtime_review_plan', 'integration_record']] + list(binding['baselines_sha256'])
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
+            for name in names:
+                target = root / name; original = target.read_bytes(); target.write_bytes(original + b' ')
+                with self.subTest(path=name), self.assertRaises(AssertionError): m.verified_runtime_inputs()
+                target.write_bytes(original)
+
+    def test_unverified_runtime_task_cannot_be_rebound_as_verified(self):
+        root, here, file, binding = self.runtime_binding_fixture()
+        task_path = root / binding['verified_task']; task = json.loads(task_path.read_text()); task['status'] = 'in_progress'
+        task_path.write_text(json.dumps(task)); binding['verified_task_sha256'] = m.digest(task_path); file.write_text(json.dumps(binding))
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
+            with self.assertRaises(AssertionError): m.verified_runtime_inputs()
+
+    def supplement_fixture(self):
+        with patch.dict(sys.modules, {'run': m}):
+            driver = m.module('supplement_source_fixture', m.HERE / 'supplements.py')
+        facts = json.loads((m.CORPUS / 'application-supplemental-inputs.json').read_text())
+        ids = [name for group in facts['xml_groups'] for name in group['supplemental_ids']] + [facts['late_hint']['supplemental_id']]
+        rows = [dict(id=name, engine='product', classification='supplemental',
+                     kind='supplemental-schema' if i < 4 and i % 2 == 0 else 'supplemental-instance',
+                     expected='invalid' if i == 4 else 'valid', actual='instance-invalid' if i == 4 else 'schema-valid' if i % 2 == 0 else 'instance-valid',
+                     originalPassed=None, countAsOriginalPass=False, countAsGatePass=False, complete=True, profilePassed=True, codes=['XSD.HintOrder'] if i == 4 else []) for i,name in enumerate(ids)]
+        rows[-1]['originalObservation'] = facts['late_hint']['original_observation']
+        (self.out / 'profile-controls.json').write_text(json.dumps(dict(actual='passed', originalPassed=None, countAsOriginalPass=False, countAsGatePass=False)))
+        file = self.out / 'supplements.json'; file.write_text(json.dumps(rows))
+        return driver, file, rows
+
+    def test_separate_supplement_recipe_is_finite_and_has_no_original_credit(self):
+        driver, file, rows = self.supplement_fixture()
+        self.assertEqual(len(driver.commands(self.out)), 3)
+        self.assertEqual((driver.SECONDS,driver.WORK_SECONDS,driver.CLEANUP_SECONDS),(900,300,10))
+        self.assertEqual(driver.inspect_outputs(self.out), dict(xmlApplicationRows=4,lateHintRows=1,originalPassCredit=0,gatePassCredit=0))
+
+    def test_supplement_mutations_refusals_unexecuted_or_original_credit_refuse(self):
+        driver, file, rows = self.supplement_fixture()
+        mutations = [dict(id='neighbor'), dict(engine='bcl'), dict(classification='applicable'),dict(kind='instance'),dict(expected='valid'),
+                     dict(complete=False),dict(profilePassed=False),dict(originalPassed=False),dict(countAsOriginalPass=True),dict(countAsGatePass=True),
+                     dict(actual='incomplete-refusal'),dict(actual='instance-hint-ordering-limitation'),dict(codes=[])]
+        for changes in mutations:
+            altered=json.loads(json.dumps(rows));altered[-1].update(changes);file.write_text(json.dumps(altered))
+            with self.subTest(changes=changes),self.assertRaises(AssertionError):driver.inspect_outputs(self.out)
+        for altered in [rows[:-1],rows+rows[:1],list(reversed(rows))]:
+            file.write_text(json.dumps(altered))
+            with self.assertRaises(AssertionError):driver.inspect_outputs(self.out)
+        altered=json.loads(json.dumps(rows));altered[-1]['originalObservation']['passed']=True;file.write_text(json.dumps(altered))
+        with self.assertRaises(AssertionError):driver.inspect_outputs(self.out)
 
     def preparation_binding_fixture(self):
         runner = self.out / 'runner.dll'; product = self.out / 'Xemele.dll'

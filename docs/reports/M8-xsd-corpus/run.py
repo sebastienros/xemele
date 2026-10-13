@@ -199,10 +199,49 @@ def verified_api_inputs():
     return {**binding['apiInputs'], binding['source_manifest']: binding['source_manifest_sha256']}
 
 
+def verified_runtime_inputs():
+    """Bind actual verified missing runtime, authoritative task, and nullable/additive API evidence."""
+    binding = json.loads((HERE / 'verified-api-preparation.json').read_text())
+    identities = dict(binding['runtime_production_inputs'])
+    for path_key, sha_key in [('runtime_source_manifest', 'runtime_source_manifest_sha256'),
+                              ('runtime_review_plan', 'runtime_review_plan_sha256'),
+                              ('runtime_api_proof', 'runtime_api_proof_sha256'),
+                              ('verified_task', 'verified_task_sha256'),
+                              ('integration_record', 'integration_record_sha256')]:
+        name = binding[path_key]
+        assert digest(ROOT / name) == binding[sha_key], 'verified runtime binding changed: ' + name
+        identities[name] = binding[sha_key]
+    identities.update(binding['baselines_sha256'])
+    identities.update(binding['reviewed_build_inputs'])
+    for name, present in binding['root_configuration_presence'].items():
+        assert (ROOT / name).exists() is present, 'verified root build configuration membership changed: ' + name
+    task = json.loads((ROOT / binding['verified_task']).read_text())
+    record = json.loads((ROOT / binding['integration_record']).read_text())
+    proof = json.loads((ROOT / binding['runtime_api_proof']).read_text())
+    assert task['status'] == 'verified' and task['integration_revision'] == binding['verified_integration'] == record['testedRevision']
+    assert binding['verified_task_sha256'] == record['verifiedTaskSha256'] == proof['verified_task_sha256']
+    assert record['result'] == 'PASS' and record['summary']['completed'] is True
+    assert record['originalBadCaseWaivers'] is False and proof['original_bad_case_waivers'] is False
+    assert proof['actual_root_tests']['nonassessmentControls'] == 4
+    assert proof['actual_root_tests']['nonassessmentGateCredit'] == proof['actual_root_tests']['nonassessmentOriginalPassCredit'] == 0
+    assert proof['canonical_added_projection'] == record['summary']['addedInternalProjection']
+    assert proof['canonical_added_api_sha256'] == record['canonicalAddedApiSha256']
+    assert proof['released_check_sha256'] == record['receipts']['checks/checks-summary.json']['sha256']
+    assert (proof['public_rows'], proof['api_fragments'], proof['added_internal_rows'], proof['new_type_rows'], proof['new_types'], proof['authored_joins']) == (1430, 55, 93, 80, 11, 13)
+    actual = {str(p.relative_to(ROOT)) for p in (ROOT / 'src/Xemele').rglob('*') if p.is_file()
+              and p.suffix in ('.cs', '.csproj', '.props', '.targets')
+              and not {'bin', 'obj'}.intersection(p.relative_to(ROOT).parts)}
+    assert actual == set(binding['runtime_production_inputs']), 'verified production source membership changed'
+    for name, checksum in identities.items():
+        assert digest(ROOT / name) == checksum, 'verified runtime/source/API baseline changed: ' + name
+    return identities
+
+
 def input_identities(include_binaries=True):
     """Declared complete source/input identities; runtime payload added only after fresh build."""
     dependencies = verified_dependencies()
     api_inputs = verified_api_inputs()
+    runtime_inputs = verified_runtime_inputs()
     identities = {'tests/corpora/xsd/upstream/' + r['path']: r['sha256']
                   for r in json.loads((CORPUS / 'resources.json').read_text())}
     for folder in [CORPUS, HERE, ROOT / 'tests/Xemele.Conformance.Tests/Xsd', ROOT / 'tests/Xemele.Differential.Tests/Xsd']:
@@ -220,6 +259,7 @@ def input_identities(include_binaries=True):
         file = ROOT / f'docs/tasks/{name}.json'
         identities[str(file.relative_to(ROOT))] = digest(file)
     identities.update(api_inputs)
+    identities.update(runtime_inputs)
     if include_binaries:
         for folder in [OUT / 'runner-bin/Release/net10.0', ROOT / 'src/Xemele/bin/Release/net10.0']:
             assert folder.is_dir(), f'missing fresh build folder: {folder}'

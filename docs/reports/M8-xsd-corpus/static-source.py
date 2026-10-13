@@ -177,12 +177,55 @@ assert [Path(f['path']).name for f in late['ordered_schema_inputs']] == ['test93
 for file in late['ordered_schema_inputs'] + [late['instance']]: checked_file(file['path'], file['sha256'])
 xml = supplements['xml_resource']; assert hashlib.sha256((CORPUS / xml['path']).read_bytes()).hexdigest() == xml['sha256']
 api = json.loads((HERE / 'verified-api-preparation.json').read_text()); manifest = ROOT / api['source_manifest']
-assert api['final_freeze_ready'] is False and hashlib.sha256(manifest.read_bytes()).hexdigest() == api['source_manifest_sha256'] == 'f9ee117ee6fbe4326c7260668ecf67a90d370d185d782acb130dc577c07601a8'
-assert len(api['apiInputs']) == 54 and api['apiInputs'] == json.loads(manifest.read_text())['apiInputs']
+assert api['final_freeze_ready'] is True and api['verified_bindings_ready'] is True
+assert api['execution_authorization'].startswith('HOLD;')
+assert hashlib.sha256(manifest.read_bytes()).hexdigest() == api['source_manifest_sha256'] == '838b4db8b5b82b18992f1c646371054a969e9c01d52aaab0520d4f9c74e20960'
+assert len(api['apiInputs']) == 55 and api['apiInputs'] == json.loads(manifest.read_text())['apiInputs']
 assert set(api['apiInputs']) == {str(p.relative_to(ROOT)) for p in (ROOT / 'docs/api').glob('*.txt')}
-for name, checksum in api['apiInputs'].items(): assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == checksum
-import_task = json.loads((ROOT / 'docs/tasks/M8-xsd-import-visibility.json').read_text()); assert import_task['status'] == 'verified'
+public = {}
+for name, checksum in api['apiInputs'].items():
+    assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == checksum
+    for line in (ROOT / name).read_text().splitlines()[1:]:
+        if line:
+            row = json.loads(line); assert row['id'] not in public or public[row['id']] == row; public[row['id']] = row
+assert len(public) == 1430 and (ROOT / 'docs/api/M8-xsd-missing-components.txt').read_bytes() == b'xemele-api-v1\n'
+for file, key in [('runtime_source_manifest','runtime_source_manifest_sha256'),('runtime_review_plan','runtime_review_plan_sha256'),('runtime_api_proof','runtime_api_proof_sha256'),('verified_task','verified_task_sha256'),('integration_record','integration_record_sha256')]:
+    assert hashlib.sha256((ROOT / api[file]).read_bytes()).hexdigest() == api[key]
+proof = json.loads((ROOT / api['runtime_api_proof']).read_text()); record = json.loads((ROOT / api['integration_record']).read_text())
+assert record['result'] == 'PASS' and record['summary']['completed'] is True and record['commands'] == 24
+assert record['sourceSha256'] == api['source_manifest_sha256']
+assert proof['canonical_added_projection'] == record['summary']['addedInternalProjection']
+canonical = 'xemele-api-v1\n' + ''.join(json.dumps(proof['canonical_added_projection'][k], ensure_ascii=False, sort_keys=True, separators=(',', ':')) + '\n' for k in sorted(proof['canonical_added_projection']))
+assert hashlib.sha256(canonical.encode()).hexdigest() == proof['canonical_added_api_sha256'] == '33a4823adf25f638d0e52990918f859c2b64a35359d25aa59c318f4543a1812d'
+assert proof['released_check_sha256'] == record['receipts']['checks/checks-summary.json']['sha256'] == 'c516fdbae022bf65148a2c420b0412fcd4f1418adacde540bbc48eb0dee95105'
+projection = proof['canonical_added_projection']; types = {name[2:] for name in projection if name.startswith('T:')}
+type_rows = {k:v for k,v in projection.items() if any(k[2:] == name or k[2:].startswith(name + '.') for name in types)}
+joins = {k:v for k,v in projection.items() if k not in type_rows}
+assert len(types) == 11 and len(type_rows) == 80 and len(joins) == 13 and len(projection) == 93
+assert joins == {r['id']:r for r in map(json.loads,(ROOT / 'docs/reports/M8-xsd-missing-components/added-joins.golden.txt').read_text().splitlines()[1:])}
+for name, checksum in api['baselines_sha256'].items(): assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == checksum
+for baseline in proof['nullable_baselines']:
+    before = subprocess.run(['git','show',baseline['before_revision'] + ':' + baseline['path']], cwd=ROOT, capture_output=True, check=True, timeout=5).stdout
+    assert hashlib.sha256(before).hexdigest() == baseline['before_sha256']
+    old = {r['id']:r for r in map(json.loads,before.decode().splitlines()[1:])}
+    new = {r['id']:r for r in map(json.loads,(ROOT / baseline['path']).read_text().splitlines()[1:])}
+    assert len(new) == len(old) == baseline['rows'] and baseline['rows'] in (615,257)
+    assert {k:v for k,v in old.items() if new.get(k) != v} == baseline['before_changes']
+    assert {k:v for k,v in new.items() if old.get(k) != v} == baseline['after_changes']
+    assert len(baseline['before_changes']) == len(baseline['after_changes']) == 3
+    assert all('XsdElementDeclaration' in k and ('.#ctor(' in k or '.Deconstruct(' in k or k.endswith('.Type')) for k in baseline['after_changes'])
+assert set(api['runtime_production_inputs']) == {str(p.relative_to(ROOT)) for p in (ROOT / 'src/Xemele').rglob('*') if p.is_file() and p.suffix in ('.cs','.csproj','.props','.targets') and not {'bin','obj'}.intersection(p.relative_to(ROOT).parts)}
+for name, checksum in api['runtime_production_inputs'].items(): assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == checksum
+for name, present in api['root_configuration_presence'].items(): assert (ROOT / name).exists() is present
+for name, checksum in api['reviewed_build_inputs'].items(): assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == checksum
+missing_task = json.loads((ROOT / api['verified_task']).read_text()); assert missing_task['status'] == 'verified' and missing_task['integration_revision'] == api['verified_integration'] == record['testedRevision']
+assert proof['original_bad_case_waivers'] is False and record['originalBadCaseWaivers'] is False
+assert proof['actual_root_tests']['nonassessmentControls'] == 4 and proof['actual_root_tests']['nonassessmentGateCredit'] == proof['actual_root_tests']['nonassessmentOriginalPassCredit'] == 0
 subprocess.run(['git','merge-base','--is-ancestor',api['verified_integration'],'HEAD'],cwd=ROOT,check=True,timeout=5)
+import_task = json.loads((ROOT / 'docs/tasks/M8-xsd-import-visibility.json').read_text()); assert import_task['status'] == 'verified'
+subprocess.run(['git','merge-base','--is-ancestor',import_task['integration_revision'],'HEAD'],cwd=ROOT,check=True,timeout=5)
+root_task = subprocess.run(['git','show','043fcffa5812570c759d55df8ca49b371ffe99f1:docs/tasks/M8-xsd-corpus.json'], cwd=ROOT, capture_output=True,check=True,timeout=5).stdout
+assert (ROOT / 'docs/tasks/M8-xsd-corpus.json').read_bytes() == root_task
 assert hashlib.sha256((ROOT / 'tests/Xemele.Differential.Tests/Xsd/BclEngine.cs.fixture').read_bytes()).hexdigest() == 'b3000849833db1eac95b322f234a183c5e4cc3c1ec39945f9dcc95dedad1d664'
 original_runner = subprocess.run(['git','show','f05c780328613d7b0fec89ba14462eea8a4998cc:tests/Xemele.Conformance.Tests/Xsd/Runner.cs.fixture'],cwd=ROOT,capture_output=True,text=True,check=True,timeout=5).stdout
 current_runner = (ROOT / 'tests/Xemele.Conformance.Tests/Xsd/Runner.cs.fixture').read_text()
@@ -192,4 +235,22 @@ def method(source, name):
         depth += (source[end] == '{') - (source[end] == '}'); end += 1
     return source[start:end]
 for name in ['VerifiedOptionalMissing','VerifiedHintOrdering']: assert method(original_runner,name) == method(current_runner,name)
-print('PASS follow-up SOURCE data/AST only: four exact approval copies/147 unique dispositions (11null);13 obligations/12active;2 XML groups/4original IDs+onlyaddB163 supplement;54 verified API fragments/membership;old4/7 methods and complete BCL fixture unchanged;all executable/new native controls UNRUN;final freeze held')
+print('PASS follow-up SOURCE data/AST only: four exact approval copies/147 unique dispositions (11null);13 obligations/12active;2 XML groups/4original IDs+onlyaddB163 supplement;55 verified API fragments/public1430/93added exact projection/3nullable rows each/238production bindings;old4/7 methods and complete BCL fixture unchanged;all executable/new native controls UNRUN;root source review/execution release held')
+
+accepted_run = ast.parse(subprocess.run(['git','show','8b383532239f22be19a809acc95dea50a2b8fbc1:docs/reports/M8-xsd-corpus/run.py'],cwd=ROOT,capture_output=True,text=True,check=True,timeout=5).stdout)
+current_run = ast.parse((HERE / 'run.py').read_text())
+for name in ['preparation_commands','verify_preparation_bindings','prepare','campaign','execute_cases']:
+    assert ast.dump(function(current_run),include_attributes=False) == ast.dump(function(accepted_run),include_attributes=False)
+plan = json.loads((HERE / 'final-execution-recipes.json').read_text())
+assert len(plan['preparation']['children']) == plan['preparation']['expected_children'] == 10
+assert len(plan['full_campaign']['children']) == plan['full_campaign']['expected_children'] == 186
+assert len(plan['supplements']['children']) == plan['supplements']['expected_children'] == 3
+assert (plan['preparation']['intrinsic_seconds'],plan['full_campaign']['intrinsic_seconds'],plan['supplements']['intrinsic_seconds']) == (1800,3600,900)
+for index, (engine,testset) in enumerate((e,t) for e in ['product','bcl'] for t in inventory['testSets']):
+    child = plan['full_campaign']['children'][index]; assert child[-3:-1] == [testset,engine]
+assert sum(len(([g['schema']] if g['schema'] else []) + g['instances'] + g['supplementalInstances']) for g in inventory['groups']) == plan['full_campaign']['rows_per_engine'] == 41736
+caps_node = next(n.value for n in current_run.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='CAPS' for t in n.targets))
+assert plan['full_campaign']['effective_limits'] == {k.arg:ast.literal_eval(k.value) for k in caps_node.keywords}
+assert hashlib.sha256((HERE / 'controls.py').read_bytes()).hexdigest() == 'e63bbe537edf275a0ce64ffdb75e8716a5c972ddeee6b68bbfc23ef9cae8b69b'
+assert hashlib.sha256((HERE / 'nested_ownership.py').read_bytes()).hexdigest() == 'fe1db7d70cc4b10a04aaa5ac8107cd69a95f7a16e21a0888892ef70c5f05a128'
+print('PASS final SOURCE packet: unchanged ten-child preparation/freeze/campaign/execute functions and caps; exact10+186+3 recipes;root task bytes unchanged;new runtime/API/supplement controls all UNRUN;no project imports or launches')
