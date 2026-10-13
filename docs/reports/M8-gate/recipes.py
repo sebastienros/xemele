@@ -18,7 +18,7 @@ PROJECTS = [
  'docs/reports/M8-gate/CounterControl.csproj', 'samples/M7-cli/M7.CliSample.csproj', 'samples/M7-serialize/M7-serialize.csproj']
 BINARY_FOLDERS = [str(Path(p).parent/'bin/Release/net10.0') for p in PROJECTS] + ['src/Xemele/bin/Release/net10.0']
 PACKAGE_WORK = OUT/'external'
-PHASES = {'prepare': {'work':12500,'reserve':180}, 'check': {'work':6200,'reserve':180}, 'identity': {'work':700,'reserve':40}, 'counter': {'work':1800,'reserve':180}}
+PHASES = {'prepare': {'work':14000,'reserve':180}, 'check': {'work':6200,'reserve':180}, 'identity': {'work':700,'reserve':40}, 'counter': {'work':1800,'reserve':180}}
 
 def dll(path,*args): return [NET,'--fx-version','10.0.11',str(path),*map(str,args)]
 def py(file,*args): return [sys.executable,'-B',file,*map(str,args)]
@@ -28,7 +28,7 @@ def commands(phase):
   for project in PROJECTS:
    commands += [([NET,'restore',project,'--source','/Users/sebastienros/.nuget/packages',*FLAGS],240),
                 ([NET,'build',project,'-c','Release','--no-restore','--no-incremental',*FLAGS],240)]
-  commands += [(py('docs/reports/M8-gate/native_selection.py'),60),(py('docs/reports/M8-gate/package_inputs.py','layout'),60),
+  commands += [(py('docs/reports/M8-gate/native_selection.py'),60),(py('docs/reports/M8-gate/package_inputs.py','layout'),600),
                ([NET,'pack','src/Xemele/Xemele.csproj','-c','Release','--no-build','--no-restore','-p:PackageVersion=0.8.0-integration','-o',str(PACKAGE_WORK/'feed'),*FLAGS],120),
                (py('docs/reports/M8-gate/package_inputs.py','package'),30)]
   project = str(PACKAGE_WORK/'consumer/Consumer.csproj')

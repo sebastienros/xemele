@@ -134,6 +134,8 @@ if sys.argv[1:] == ['--synthetic']:
     exercise('late-final-publication')
     exercise('interrupted-after-replace')
     exercise('late-terminal-output')
+    import feed_controls
+    CASES += feed_controls.run(END)
 if sys.argv[1:] == ['--archive']:
     # Actual prepared package bytes: valid identity succeeds; mutation after freeze must refuse.
     import identities as archive_subject

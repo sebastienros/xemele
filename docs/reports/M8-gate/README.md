@@ -1,10 +1,10 @@
 # M8 gate source packet
 
-Source repair only. Root preparation attempt1 failed at command11 (MSB1009 on
-the nonexistent profile Probe.csproj); the actual project is Sample.csproj.
-Its11 synthetic controls and11 earlier commands exited0;39 later commands were
-unrun. No preparation pass/certificate or gate criterion credit is claimed.
-Root alone ran that attempt; worker has run no executable gate workload.
+Source repair only. Root attempt1 remains failed at command11/MSB1009;
+root attempt2 remains failed at command40/Ambiguous local package filename.
+Attempt2 recorded40 successful commands, one failed command and10 unrun package
+commands. Neither failed preparation issued a certificate or earns gate credit.
+Root alone executed those attempts; worker has run no executable gate workload.
 The task record remains with root. This isolated branch owns only this directory.
 All commands below require root's reviewed release and root process custody.
 
@@ -31,7 +31,7 @@ issuing the next certificate. Worker cannot issue a certificate.
 
 | Phase | Commands | Inner work / hard seconds | Root outer work / hard seconds |
 | --- | ---: | ---: | ---: |
-| preparation | 51 | 12500 / 12680 | 13280 / 13300 |
+| preparation | 51 | 14000 / 14180 | 14780 / 14800 |
 | correctness checks | 18 | 6200 / 6380 | 6980 / 7000 |
 | root-only cumulative counters | 4 | 1800 / 1980 | 2580 / 2600 |
 
@@ -50,8 +50,9 @@ with no trailing newline; it includes argv, command counts and every bound.
 
 The root outer total does not reset the inner clock. Inner work is also clipped
 to inherited hard-deadline minus the full phase reserve; a shorter ancestor
-window never consumes the terminal reserve or resets a clock. Preparation starts with11 counter-free synthetic receipt/inspection/publication
-guards and registered tiny-child cleanup controls before provisioning/builds.
+window never consumes the terminal reserve or resets a clock. Preparation starts with16 counter-free synthetic controls:11 receipt/cleanup/
+publication controls plusfive tiny filesystem catalog controls using the actual
+helper. Allfive new controls are UNRUN until root releases fresh preparation.
 After package freeze, three actual archive controls prove valid acceptance,
 mutation refusal and missing-record refusal without mutating canonical inputs.
 
@@ -102,11 +103,34 @@ before executable checks. NativeAOT/trim toolchain readiness alone is not a pass
 
 The external package is unpublished local `0.8.0-integration`, net10.0 only,
 with DLL equality to actual source/API product DLL. The actual nupkg archive
-is rehashed against its frozen preparation record before/after every check. New gate phase guards include14 controls: the11
+is rehashed against its frozen preparation record before/after every check. New gate phase guards include19 controls: the16
 preparation receipt/cleanup/publication/late-terminal-output guards plus valid prepared-archive acceptance, actual
 post-freeze archive-mutation refusal and missing-record refusal.
  A fresh absent private consumer
-cache, explicit local feed and no ProjectReference are enforced. Managed,
+cache, explicit local feed and no ProjectReference are enforced.
+The local-feed layout600-second command first preflights the complete canonical
+catalog before creating any feed links. Exact ID/version directory coordinates,
+case-folded canonical target, canonical source path, length and SHA256 are bound.
+Every generic alias must have one same-directory canonical peer and identical
+length/SHA; missing peers, differing bytes, unexpected archive paths, identity/
+filename mismatch, case-folded target conflicts and a cached generated integration
+identity all fail. Identity is directory-derived as accepted by root contract review. No nuspec
+validation is claimed beyond the16 audited collisions, and no NuGet version
+normalization is inferred. Whole-cache endpoint byte guards and actual offline
+restores remain authoritative. Canonical entries are selected
+in deterministic target order; full bindings stay active in memory, with only
+concise counts/digests retained. Canonical cache bytes remain untouched.
+
+Read-only audit found7415 archives:7387 canonical targets plus28 byte-identical
+generic copies, with zero canonical case-folded collisions. The six generic-name
+collision groups contain16 distinct versions; all have identical canonical peers.
+They are top-level separate regular copies, not embedded archive entries. Their
+sixteen checked nuspec IDs/versions match their directory coordinates.
+
+Preparation child work now sums12180;51 cleanup windows add510, leaving1310
+shared work seconds in14000 plus180terminal reserve. Root initial binding remains
+inside the shared clock; bounds are reviewed before a fresh launch, never reset.
+ Managed,
 trimmed and native osx-arm64 binaries assert independent earlier XML/HTML/CSS
 outputs, RNG/XSD valid+invalid results, Schematron findings and independently
 expected SVRL element/attribute/text/location semantics plus UTF8 stream ownership.
