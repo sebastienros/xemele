@@ -1,0 +1,1738 @@
+{
+  "task": "M8-gate",
+  "phase": "prepare",
+  "result": "passed",
+  "testedRevision": "61fb064d6134e5c459e643cf8fe9f47ce00bfe79",
+  "source": {
+    "files": 3079,
+    "sha256": "46bddcd748c85e95ddd98549e4f663594707c8d5e6e4ccbadb982c187868753c"
+  },
+  "actualOuterExit": 0,
+  "outerSession": 89772,
+  "phaseReceiptSha256": "beddffc62a7ae90e1efabea0c4a7a5351cf58e90273f5d8d507d413a0031143f",
+  "outerReceiptSha256": "c2fd6a2a6cf2875b4c0f4f1e2617fd7cc7a78a10b3e9a96d1f33cb76e113f763",
+  "sourcePacketSha256": "78dc58760c3f3a2162973d16cf01752a7b85b323bffacd95b1bfc8e68326eb9b",
+  "checksSha256": "931b045bdc01867a96b03d6a9e83dba7cff80c78e38b2860e43c889890fba414",
+  "commands": [
+    {
+      "command": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M8-gate/guard_controls.py",
+        "--synthetic"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS phase guards: 16 bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "PASS phase guards: 16 bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion"
+        ]
+      }
+    },
+    {
+      "command": 1,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M1-corpus-import/provision.py"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "Pinned local transport bundle verified/recreated; no network needed when archive/cache exists."
+        ]
+      }
+    },
+    {
+      "command": 2,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M1-corpus-import/import_suite.py",
+        "--check"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "{\"cases\": 2585, \"externalEntityCases\": 323, \"featureReasons\": {\"dtd-prohibited-in-m1\": 2186, \"dtd-validity-oracle\": 242, \"encoding-outside-m1:ASCII\": 4, \"encoding-outside-m1:Shift_JIS\": 1, \"encoding-outside-m1:euc-jp\": 2, \"encoding-outside-m1:iso-2022-jp\": 2, \"encoding-outside-m1:iso-8859-1\": 36, \"encoding-outside-m1:shift_jis\": 1, \"external-both-entities\": 67, \"external-general-entities\": 75, \"external-parameter-entities\": 181, \"historical-xml-edition\": 313, \"namespace-processing-disabled\": 14, \"namespaces-1.1\": 8, \"optional-error-no-binary-oracle\": 33, \"xml-1.1-or-other-version\": 271}, \"files\": 3386, \"m1Outcomes\": {\"rejected\": 242, \"unsupported-profile\": 2343}, \"missingOutputReferences\": 0, \"parserCasesExecuted\": 0, \"sourceTypes\": {\"error\": 33, \"invalid\": 242, \"not-wf\": 1498, \"valid\": 812}, \"standardsPassed\": 0, \"versionAttributes\": {\"1.0\": 396, \"1.1\": 271, \"all\": 1918}}"
+        ]
+      }
+    },
+    {
+      "command": 3,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 4,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll",
+          "  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:12.62"
+        ]
+      }
+    },
+    {
+      "command": 5,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 6,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll",
+          "  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:10.63"
+        ]
+      }
+    },
+    {
+      "command": 7,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 8,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  BclReference -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll",
+          "  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:15.98"
+        ]
+      }
+    },
+    {
+      "command": 9,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tools/ReferenceRunners/Bcl/BclReference.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 10,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tools/ReferenceRunners/Bcl/BclReference.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Protocol/bin/Release/net10.0/ReferenceProtocol.dll",
+          "  BclReference -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:06.57"
+        ]
+      }
+    },
+    {
+      "command": 11,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/M2-conformance-profile/Sample.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 12,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-conformance-profile/Sample.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Protocol/bin/Release/net10.0/ReferenceProtocol.dll",
+          "  Sample -> /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M2-conformance-profile/bin/Release/net10.0/Xemele.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:10.36"
+        ]
+      }
+    },
+    {
+      "command": 13,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/M2-conformance-grammar/Probe.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 14,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-conformance-grammar/Probe.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tools/ReferenceRunners/Protocol/bin/Release/net10.0/ReferenceProtocol.dll",
+          "  Probe -> /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M2-conformance-grammar/bin/Release/net10.0/Xemele.Tests.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:10.28"
+        ]
+      }
+    },
+    {
+      "command": 15,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/XmlToolkit/XmlToolkit.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 16,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/XmlToolkit/XmlToolkit.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+          "  XmlToolkit -> /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/XmlToolkit/bin/Release/net10.0/XmlToolkit.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:08.13"
+        ]
+      }
+    },
+    {
+      "command": 17,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "src/Xemele.Tool/Xemele.Tool.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 18,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "src/Xemele.Tool/Xemele.Tool.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+          "  Xemele.Tool -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:07.53"
+        ]
+      }
+    },
+    {
+      "command": 19,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "docs/reports/M4-corpus/Fuzz.Driver.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 20,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M4-corpus/Fuzz.Driver.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele.Fuzz -> /Users/sebastienros/.codex/worktrees/29a0/xemele/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll",
+          "  Fuzz.Driver -> /Users/sebastienros/.codex/worktrees/29a0/xemele/docs/reports/M4-corpus/bin/Release/net10.0/Fuzz.Driver.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:09.98"
+        ]
+      }
+    },
+    {
+      "command": 21,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "docs/reports/M7-corpus/Fuzz.Driver.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 22,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M7-corpus/Fuzz.Driver.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+          "  Fuzz.Driver -> /Users/sebastienros/.codex/worktrees/29a0/xemele/docs/reports/M7-corpus/bin/Release/net10.0/Fuzz.Driver.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:08.43"
+        ]
+      }
+    },
+    {
+      "command": 23,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 24,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  ApiCheck -> /Users/sebastienros/.codex/worktrees/29a0/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:04.47"
+        ]
+      }
+    },
+    {
+      "command": 25,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "docs/reports/M8-contracts/ApiCheck/ApiCheck.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 26,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M8-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  ApiCheck -> /Users/sebastienros/.codex/worktrees/29a0/xemele/docs/reports/M8-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:04.42"
+        ]
+      }
+    },
+    {
+      "command": 27,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "docs/reports/M8-xsd-resolved-availability/harness/Missing.Api.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 28,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M8-xsd-resolved-availability/harness/Missing.Api.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Missing.Api -> /Users/sebastienros/.codex/worktrees/29a0/xemele/docs/reports/M8-xsd-resolved-availability/harness/bin/Release/net10.0/Missing.Api.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:04.50"
+        ]
+      }
+    },
+    {
+      "command": 29,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/M8-xsd-resolved-availability/Consumer.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M8-xsd-resolved-availability/Consumer.csproj (in 219 ms).",
+          "  1 of 2 projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 30,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M8-xsd-resolved-availability/Consumer.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+          "  Consumer -> /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M8-xsd-resolved-availability/bin/Release/net10.0/Consumer.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:07.58"
+        ]
+      }
+    },
+    {
+      "command": 31,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/M8-xsd-resolved-availability/XmlOnly.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M8-xsd-resolved-availability/XmlOnly.csproj (in 199 ms)."
+        ]
+      }
+    },
+    {
+      "command": 32,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M8-xsd-resolved-availability/XmlOnly.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  XmlOnly -> /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M8-xsd-resolved-availability/bin/Release/net10.0/XmlOnly.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:04.54"
+        ]
+      }
+    },
+    {
+      "command": 33,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "docs/reports/M8-gate/CounterControl.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 34,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M8-gate/CounterControl.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+          "  CounterControl -> /Users/sebastienros/.codex/worktrees/29a0/xemele/docs/reports/M8-gate/bin/Release/net10.0/CounterControl.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:07.76"
+        ]
+      }
+    },
+    {
+      "command": 35,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/M7-cli/M7.CliSample.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 36,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M7-cli/M7.CliSample.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+          "  M7.CliSample -> /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M7-cli/bin/Release/net10.0/M7.CliSample.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:07.39"
+        ]
+      }
+    },
+    {
+      "command": 37,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "samples/M7-serialize/M7-serialize.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  All projects are up-to-date for restore."
+        ]
+      }
+    },
+    {
+      "command": 38,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M7-serialize/M7-serialize.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Xemele -> /Users/sebastienros/.codex/worktrees/29a0/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+          "  M7-serialize -> /Users/sebastienros/.codex/worktrees/29a0/xemele/samples/M7-serialize/bin/Release/net10.0/M7-serialize.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:07.75"
+        ]
+      }
+    },
+    {
+      "command": 39,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M8-gate/native_selection.py"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS native selection {\"developer\": \"/Applications/Xcode.app/Contents/Developer\", \"clang\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang\", \"linker\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld\", \"sdk\": \"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk\"}"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "PASS native selection {\"developer\": \"/Applications/Xcode.app/Contents/Developer\", \"clang\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang\", \"linker\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld\", \"sdk\": \"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk\"}"
+        ]
+      }
+    },
+    {
+      "command": 40,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M8-gate/package_inputs.py",
+        "layout"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS package preparation layout"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "PASS package preparation layout"
+        ]
+      }
+    },
+    {
+      "command": 41,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "-p:PackageVersion=0.8.0-integration",
+        "-o",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/feed",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  The package Xemele.0.8.0-integration is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.",
+          "  Successfully created package '/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/feed/Xemele.0.8.0-integration.nupkg'."
+        ]
+      }
+    },
+    {
+      "command": 42,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M8-gate/package_inputs.py",
+        "package"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS package preparation package"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "PASS package preparation package"
+        ]
+      }
+    },
+    {
+      "command": 43,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj",
+        "--source",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/feed",
+        "--packages",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj (in 396 ms)."
+        ]
+      }
+    },
+    {
+      "command": 44,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "Build succeeded.",
+        "    0 Warning(s)",
+        "    0 Error(s)"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Consumer -> /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/bin/Release/net10.0/Consumer.dll",
+          "",
+          "Build succeeded.",
+          "    0 Warning(s)",
+          "    0 Error(s)",
+          "",
+          "Time Elapsed 00:00:04.27"
+        ]
+      }
+    },
+    {
+      "command": 45,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj",
+        "-r",
+        "osx-arm64",
+        "-p:PublishTrimmed=true",
+        "--source",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/feed",
+        "--packages",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj (in 828 ms)."
+        ]
+      }
+    },
+    {
+      "command": 46,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "publish",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-t:Rebuild,Publish",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false",
+        "-r",
+        "osx-arm64",
+        "--self-contained",
+        "true",
+        "-p:PublishTrimmed=true",
+        "-o",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/trim"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Consumer -> /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/bin/Release/net10.0/osx-arm64/Consumer.dll",
+          "  Optimizing assemblies for size. This process might take a while.",
+          "  Consumer -> /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/trim/"
+        ]
+      }
+    },
+    {
+      "command": 47,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj",
+        "-r",
+        "osx-arm64",
+        "-p:PublishAot=true",
+        "--source",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/feed",
+        "--packages",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Determining projects to restore...",
+          "  Restored /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj (in 793 ms)."
+        ]
+      }
+    },
+    {
+      "command": 48,
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "publish",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/Consumer.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-t:Rebuild,Publish",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false",
+        "-r",
+        "osx-arm64",
+        "--self-contained",
+        "true",
+        "-p:PublishAot=true",
+        "-o",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/aot"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "  Consumer -> /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/bin/Release/net10.0/osx-arm64/Consumer.dll",
+          "  Generating native code",
+          "  Consumer -> /Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/aot/"
+        ]
+      }
+    },
+    {
+      "command": 49,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M8-gate/native_selection.py"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS native selection {\"developer\": \"/Applications/Xcode.app/Contents/Developer\", \"clang\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang\", \"linker\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld\", \"sdk\": \"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk\"}"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "PASS native selection {\"developer\": \"/Applications/Xcode.app/Contents/Developer\", \"clang\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang\", \"linker\": \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld\", \"sdk\": \"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk\"}"
+        ]
+      }
+    },
+    {
+      "command": 50,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/reports/M8-gate/package_inputs.py",
+        "freeze"
+      ],
+      "exit": 0,
+      "reason": "completed",
+      "summary": [
+        "PASS package preparation freeze"
+      ],
+      "diagnostics": [],
+      "semantic": {
+        "tail": [
+          "PASS package preparation freeze"
+        ]
+      }
+    }
+  ],
+  "guards": {
+    "rawDeleted": true,
+    "logsInspected": true,
+    "allOwnedGroupsAbsent": true,
+    "allDirectChildrenReaped": true,
+    "deadlineExceeded": false
+  },
+  "inputsMatched": true,
+  "groups": [
+    29718,
+    29802,
+    29803,
+    29806,
+    29809,
+    29812,
+    29815,
+    29818,
+    29821,
+    29824,
+    29829,
+    29832,
+    29835,
+    29841,
+    29851,
+    29854,
+    29864,
+    29867,
+    29884,
+    29887,
+    29894,
+    29897,
+    29903,
+    29906,
+    29923,
+    29926,
+    29943,
+    29946,
+    29955,
+    29958,
+    29971,
+    29974,
+    29979,
+    29984,
+    29988,
+    29991,
+    29996,
+    29999,
+    30007,
+    30010,
+    30020,
+    30023,
+    30027,
+    30030,
+    30036,
+    30041,
+    30046,
+    30049,
+    30056,
+    30070,
+    30078,
+    30083,
+    30087,
+    30090,
+    30099,
+    30127,
+    30135,
+    30138,
+    30159,
+    30167
+  ],
+  "binaryDirectories": {
+    "tests/Xemele.Tests/bin/Release/net10.0": {
+      "files": 62,
+      "sha256": "8009fb4f31378db6870b97b10c0bd4d12886589b72542ed17b93ff0940bb1848"
+    },
+    "tests/Xemele.Conformance.Tests/bin/Release/net10.0": {
+      "files": 62,
+      "sha256": "0d84b9c13c514b6904a6dadd772d3e3a35a19d43f186e2add732e9841429a938"
+    },
+    "tests/Xemele.Differential.Tests/bin/Release/net10.0": {
+      "files": 65,
+      "sha256": "49650695242f788d3a1871925646d4628fed316e21f54cacc00b801deca07a45"
+    },
+    "tools/ReferenceRunners/Bcl/bin/Release/net10.0": {
+      "files": 7,
+      "sha256": "9fc7d62b515ac5d5dea52d895e5f41eb912d43f020214c374539a24d7f6b44c5"
+    },
+    "samples/M2-conformance-profile/bin/Release/net10.0": {
+      "files": 9,
+      "sha256": "f15e7e49455dff6795a99d953757f4f6fc1efd74aeaba22cca8875119dc41410"
+    },
+    "samples/M2-conformance-grammar/bin/Release/net10.0": {
+      "files": 9,
+      "sha256": "eedbf22c5ba25375e09f866ab31290d626ababe53a3f698b5760b77699643c79"
+    },
+    "samples/XmlToolkit/bin/Release/net10.0": {
+      "files": 7,
+      "sha256": "2c637375a9ad9e1d62e0a77b2dbc895974dbff6b489b532c4dec7a26659d7497"
+    },
+    "src/Xemele.Tool/bin/Release/net10.0": {
+      "files": 7,
+      "sha256": "d88c6433517390b026fa4ccca956726c600fc35c29351f59698c805c21003e1e"
+    },
+    "docs/reports/M4-corpus/bin/Release/net10.0": {
+      "files": 12,
+      "sha256": "1ea3ee67260bb583b0c6dd0cb84071f3e585b225b11c452038358d37b397aa2d"
+    },
+    "docs/reports/M7-corpus/bin/Release/net10.0": {
+      "files": 7,
+      "sha256": "33ed9126787b30638202e6e4e3170a43a21b8b393923ae32e7428182a1815610"
+    },
+    "docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0": {
+      "files": 33,
+      "sha256": "9b6f4d68f091b0aa1a1e01ab992afefd8acc3fa3275895f55a281ccad4d89ce7"
+    },
+    "docs/reports/M8-contracts/ApiCheck/bin/Release/net10.0": {
+      "files": 33,
+      "sha256": "17a93f10e9ad2c62026e85dcf2ab7dcf21c78eafe5190c40306711a412148e18"
+    },
+    "docs/reports/M8-xsd-resolved-availability/harness/bin/Release/net10.0": {
+      "files": 33,
+      "sha256": "1ed6aeda6f8d1c14c931de6de93ff3f753e11905413cedaf11744d2949eb3a11"
+    },
+    "samples/M8-xsd-resolved-availability/bin/Release/net10.0": {
+      "files": 12,
+      "sha256": "b6372b097a417f80f390c3acb99fdaca6f8e761b773afe1eeff1aeb247fbc0a9"
+    },
+    "docs/reports/M8-gate/bin/Release/net10.0": {
+      "files": 7,
+      "sha256": "6812f5a3d59c462054ebcac35254712c797c1c1c2d5b355d4cfceef27ec5340a"
+    },
+    "samples/M7-cli/bin/Release/net10.0": {
+      "files": 7,
+      "sha256": "cdec1b37ae739752fa78d4ecd244b2a5c06d6ac847a0ed005c7f212d4e39f7ad"
+    },
+    "samples/M7-serialize/bin/Release/net10.0": {
+      "files": 7,
+      "sha256": "48c4350258e264c3d9284eb5ccacd19cdc52f7edb4006f951fe003e02ddbb10f"
+    },
+    "src/Xemele/bin/Release/net10.0": {
+      "files": 3,
+      "sha256": "06a0f84eb456b63b787a47ebdb8b9c7a2c5b98b2cdfabef725c391461ac5f3f5"
+    },
+    "artifacts/M8-gate/external/consumer/bin/Release/net10.0": {
+      "files": 10,
+      "sha256": "9d66dee264be8daecebd133bc0590ae6743c59c574a433234d64548b5742dac2"
+    },
+    "artifacts/M8-gate/external/trim": {
+      "files": 54,
+      "sha256": "96513903fb12fdaa03fd5ce801ec8b0750d44edea7f23b6d343e59ac3014fc2e"
+    },
+    "artifacts/M8-gate/external/aot": {
+      "files": 4,
+      "sha256": "2fcd3da1d00879c1e35bb6f9e26d3a30d19e687ddca1b1e8c1271d7bf9769574"
+    }
+  },
+  "xmlResources": {
+    "files": 3386,
+    "bytes": 2722978,
+    "cases": 2585,
+    "resourceMembershipSha256": "3a08107f5b11e2102ead46efae1afcebb03c3ee9a9c69cbc84ec75af450e9b72",
+    "caseIdsSha256": "6b68e642ce92b8444911b31e7fe40ad108b724cb286a76cbf82c87e1695dc1fb",
+    "sourceBundleSha256": "c67aa290f2491d23d160242e8184c81b616366e6a345e510020050414b24bd5e",
+    "e14Sha256": "acfca92db2a079a319237acf2334acd215aa4c609a344e066f97fe6fd138adab",
+    "archiveSha256": "9b61db9f5dbffa545f4b8d78422167083a8568c59bd1129f94138f936cf6fc1f"
+  },
+  "schemaResources": {
+    "files": 42270,
+    "bytes": 84051446,
+    "identitySha256": "d127ea1aa91001e41825bcb7da50a954449f8dde2bf368c2d47ff889b4a00aa6",
+    "externalPinsSha256": "67abd9f1b017bb85bdfd7477ae4e9b0efaa04b243a65477e1e07c88ba558abdc"
+  },
+  "package": {
+    "packageSha256": "70687ffb4cc82eba9d08b3a220337ccc6afe2c785c8175e21a7773a17872e82c",
+    "productSha256": "177b0ea524e16185916a4b53121362664ef0395593c4a885ce0f1fa2c13bc640",
+    "packageDllEqual": true,
+    "initialConsumerCacheAbsent": true,
+    "projectReference": false,
+    "offlineOnly": true,
+    "published": false,
+    "nativeArchitecture": "osx-arm64",
+    "consumerSourceSha256": "aeb8830ee47c3a7e5db575dda42d2261c4e25ab9e50e9fec2d9fbdd930113fa7",
+    "offlineCatalog": {
+      "archiveCount": 7415,
+      "canonicalCount": 7387,
+      "aliasCount": 28,
+      "canonicalCatalogSha256": "f6bfbf3c2b6eee9a07cb21e9c181246d262f9da7fc782247969e67b2d1677c82",
+      "aliasIdentitySha256": "2e0ed48750ad37ba8b4d4a6bf854319d4c5eb64c64326a2e0ed2146c1fd65b7f",
+      "reservedIntegrationIdentity": "xemele.0.8.0-integration.nupkg"
+    },
+    "linkerHost": {
+      "wrapperPath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/consumer/linker-host/dotnet",
+      "wrapperSha256": "359190cdf414c76b2db158ca8a73851f1522237373f1959a79dc6c001a3e0d25",
+      "wrapperMode": 493,
+      "templateSha256": "f059dceb06a661d5790aac35f7380ad699c073afc467ae8ee6f68d8f15107259",
+      "inputPinsSha256": "903f5ec1f29ad7eb7f0b5273fc0c706567b481a21573517f5bad1add2dccf3d5",
+      "consumerTemplateSha256": "f7985b97b89e9196fb96e234bd4ea7901711c26978be4664d2d1d455c926f1bc",
+      "dotnet": {
+        "path": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "sha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975"
+      },
+      "python": {
+        "path": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "sha256": "2cbb3ee843d8abcf93ed35bb9102391f18eefccb03d47908547bd8db67bc395c"
+      },
+      "expectedDllPath": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.dll",
+      "expectedDllSha256": "573ccab989a5d3b4eb7b56cd6d6c4115e253d504dd57cc85fa6b6312c75a1023",
+      "privateToolFiles": {
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.dll": "573ccab989a5d3b4eb7b56cd6d6c4115e253d504dd57cc85fa6b6312c75a1023",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.deps.json": "19d0f17bfa4cc07112274b3ac00d8edf1a1cdd4e6767cf68b03eb702a6cad970",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.runtimeconfig.json": "1933d4faaf94291d30a80f72aa8e05408b09f5bf084932cb302bf8b8c02a7cf8",
+        "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/external/packages/microsoft.net.illink.tasks/10.0.11/tools/net/ILLink.Tasks.dll": "267765b0a028dcfa59e7afe5a7294ef84113e8041a168c61dcd3d2798b54c110"
+      },
+      "canonicalToolFiles": {
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.dll": "573ccab989a5d3b4eb7b56cd6d6c4115e253d504dd57cc85fa6b6312c75a1023",
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.deps.json": "19d0f17bfa4cc07112274b3ac00d8edf1a1cdd4e6767cf68b03eb702a6cad970",
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/illink.runtimeconfig.json": "1933d4faaf94291d30a80f72aa8e05408b09f5bf084932cb302bf8b8c02a7cf8",
+        "/Users/sebastienros/.nuget/packages/microsoft.net.illink.tasks/10.0.11/tools/net/ILLink.Tasks.dll": "267765b0a028dcfa59e7afe5a7294ef84113e8041a168c61dcd3d2798b54c110"
+      },
+      "runtime": "10.0.11",
+      "rollForward": "Disable",
+      "arguments": "Original linker args forwarded unchanged after exact --fx-version10.0.11",
+      "operation": "Original ILLink ToolTask; no new session/children before exec"
+    }
+  },
+  "allocationChildren": null,
+  "actual": "Root externally observed the completed tool session exit0 before this certificate/summary call; no worker certificate.",
+  "nextPhaseCertificate": {
+    "path": "/Users/sebastienros/.codex/worktrees/29a0/xemele/artifacts/M8-gate/root-prepare-5f6eba9bf565411bacab44f5d30742d0/root-certificate.json",
+    "sha256": "00145151771eaed0f8f7abe739ff33e59bddd2dd0f2b4fb2652bec2f42ce90ec"
+  }
+}
