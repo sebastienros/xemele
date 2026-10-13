@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Full conformance and sustained robustness campaign",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-current-corpus",
   "base_revision": "aaa0065e08d7ed0d3e30311fa7f28c60ae09b0f0",
@@ -31,26 +31,38 @@
       "id": "M9-robustness-A1",
       "description": "Run full declared corpora/differentials/fuzz regressions and sustained fuzz/resource/cancellation campaigns.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "current-suites",
+        "current-original-xsd"
+      ]
     },
     {
       "id": "M9-robustness-A2",
       "description": "Record corpus revisions/counts, duration/seeds/findings and no unresolved release-blocking defects.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "current-suites",
+        "current-original-xsd"
+      ]
     },
     {
       "id": "M9-robustness-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "current-suites",
+        "current-original-xsd"
+      ]
     }
   ],
   "implementation": [
     "tests/ReleaseCampaign/Instrumenter/: pinned SharpFuzz2.3.0 instrumenter confined to disposable candidate artifacts",
     "tests/ReleaseCampaign/XmlDriver/: bounded XML byte decoder/parser/internalDTD target, no ambient external resolver or catch-all exception filter",
     "tests/ReleaseCampaign/seeds/xml/: three original authored replay seeds",
-    "docs/reports/M9-robustness/reuse.py: exact unchanged conformance closure and retained original-profile accounting"
+    "docs/reports/M9-robustness/reuse.py: exact unchanged conformance closure and retained original-profile accounting",
+    "docs/reports/M9-robustness/current-corpus.py: exact verified four-file M9 runtime renewal and unchanged released fixed-corpus executor/row inspection",
+    "docs/reports/M9-robustness/historical-controls.py: unchanged39historical guards on exact copied original binding fixtures; current production separately verified",
+    "docs/reports/M9-robustness/current-suite-binding.json,current-xsd.json: current10754/920/618source-equivalent suites and actual83472row corpus reassessment"
   ],
   "evidence": [
     {
@@ -79,19 +91,41 @@
       "result": "passed",
       "summary": "Actual localengine41677executions,373paths,370newpaths; zero observedcrashes/hangs; clean entiregroup exit. No sustainedduration/branchpercentage/crash-positive qualification credit. Fuzz deferred by human after completion.",
       "artifact": "docs/reports/M9-robustness/afl-engine-smoke.json"
+    },
+    {
+      "id": "current-suites",
+      "kind": "check",
+      "revision": "e343f12f2a3672d199a4232a25b388638782d0df",
+      "command": "Exact current runtime/corpus/fixture/suite/reference/build Git closure comparison to actual verified M9 XPath integration checks",
+      "result": "passed",
+      "summary": "Current10754units+920conformance+618differential tests remain byte-bound to passing M9 repairs,0nonpasses. Old wholeM8runtime reuse explicitly superseded; no sustainedfuzz/branchcredit.",
+      "artifact": "docs/reports/M9-robustness/current-suite-binding.json"
+    },
+    {
+      "id": "current-original-xsd",
+      "kind": "check",
+      "revision": "aeb75df7172c0e9154afabd7107306186ab50b13",
+      "command": "python3 -B docs/reports/M9-robustness/current-corpus.py --resume; released186engine/set commands and exact original tuple inspection",
+      "result": "passed",
+      "summary": "83472rows inspected across93sets/product+BCL; originalproduct39329true/144false/11null unchanged,155exact approved nonpasses with0added pass/gate credit; annotZ002true.186children exit0,groupsabsent,reaped; source/corpus identities unchanged; bounds satisfied. Preparation failures retained.",
+      "artifact": "docs/reports/M9-robustness/current-xsd.json"
     }
   ],
   "blockers": [
-    "Fuzz planning/execution explicitly deferred by direct human instruction; sustained24h and90%branch gates remain unverified."
+    "Fuzz planning/execution explicitly deferred by direct human instruction; required24hcampaigns/90%branchcoverage and crash-positive qualification remain unverified."
   ],
   "handoff": {
-    "summary": "Exact non-fuzz conformance closure bound; initial local fuzz evidence retained before direct human deferral.",
+    "summary": "Current ordinary suites and complete fixed XSD corpus reassessed after verified runtime repairs; exact approved original outcomes preserved. Fuzz remains deferred and lane remainsblocked.",
     "checks": [
-      "PinnedSDK/runtime builds and600type instrumentation pass;3actual instrumented seed replays pass; originalproductionDLLunchanged."
+      "10754units+920conformance+618differential current-source bound; currentperformance1GiBresourcecontrols preserved separately",
+      "Actual83472two-engine rows,186clean children; original39329true/144false/11null,155exactzero-creditdispositions,annotZ002true",
+      "Initialprelaunch ownership failure and historicalfreeze-positive rejection retained;39unchangedhistorical controls use exactcopied originalfixtures, currentproduction reviewed separately"
     ],
     "remaining": [
-      "Current ordinary corpus/XSD reassessment after the verified four-file runtime repair; fuzz remains deferred."
+      "Sustained fuzz/branch/crash-positive gates remain pending under explicit human deferral; no further fuzz planning or execution."
     ],
-    "requests": []
+    "requests": [
+      "Current local distribution/package checks must reflect the verified repaired runtime; hostedretry awaits existing budget approval."
+    ]
   }
 }

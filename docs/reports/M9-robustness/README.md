@@ -1,3 +1,7 @@
+# Robustness evidence status
+
+Current [ordinary corpus reassessment](current-summary.md) preserves the original scope/dispositions after verified M9runtime repairs. Fuzz planning/execution remains explicitly deferred; mandatory duration/coverage/crash-positive gates remain pending.
+
 # Actual initial fuzz qualification
 
 SharpFuzz 2.3.0 compiles on pinned SDK 10.0.400/.NET 10.0.11. Its instrumenter
