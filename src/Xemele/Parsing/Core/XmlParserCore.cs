@@ -473,7 +473,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (input[0] is '<' or ']' or '\r' or '\n') return 0;
         int capacity = Math.Min(4096, Math.Min(input.Length, position.ColumnCapacity));
         capacity = (int)Math.Min(capacity, Math.Min(budget.Remaining(Quota.DocumentCharacters), budget.Remaining(Quota.TokenCharacters)));
-        if (capacity < 2) return 0;
+        if (capacity == 0) return 0;
         var candidate = input[..capacity]; int length = 0, pairs = 0;
         long expandedCapacity = budget.Remaining(Quota.ExpandedCharacters);
         while (length < candidate.Length)
@@ -496,7 +496,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             if (reference == 0 || budget.Remaining(Quota.EntityDepth) < 1) break;
             length += reference; references++;
         }
-        if (length < 2) return 0;
+        if (length == 0) return 0;
         at = position.Current(sourceMode == 2 ? offsets[0] : null);
         budget.TryCharge(Quota.DocumentCharacters, length - pairs); budget.TryCharge(Quota.TokenCharacters, length - pairs);
         budget.TryCharge(Quota.ExpandedCharacters, references); position.AdvanceColumns(length - pairs);

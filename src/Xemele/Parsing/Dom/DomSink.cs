@@ -197,7 +197,7 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
         return true;
     }
     public bool StartElementContent() => true;
-    public bool EndElement(XmlNameView name, XmlLocation location) { parent = parent.Parent; return true; }
+    public bool EndElement(XmlNameView name, XmlLocation location) { parent.Require(); parent = Document.Handle(Document.Nodes[parent.Slot].Parent); return true; }
     public bool StartText(XmlTextKind kind, ReadOnlySpan<char> piTarget, XmlLocation location)
     {
         cancellation.ThrowIfCancellationRequested();
@@ -248,15 +248,18 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
     {
         cancellation.ThrowIfCancellationRequested();
         // Outer whitespace is delivered by syntax but cannot be a document child.
-        if (textKind == XmlTextKind.Text && parent.Kind == XmlNodeKind.Document) return true;
+        if (textKind == XmlTextKind.Text) { parent.Require(); if (parent.Slot == 0) return true; }
         if (fragment.Length > Array.MaxLength - text.Length)
         {
             Diagnostic = new("XML.ResourceLimit", XmlDiagnosticSeverity.Error, "DOM text capacity exceeded.", location);
             return false;
         }
-        text.Append(fragment);
-        if (!tokenEnded) return true;
-        string value = text.ToString();
+        if (!tokenEnded) { text.Append(fragment); return true; }
+        // A complete single borrowed fragment needs just its final owned
+        // string. Fragmented/normalized tokens retain accumulated scratch.
+        string value;
+        if (text.Length == 0) value = fragment.ToString();
+        else { text.Append(fragment); value = text.ToString(); }
         XmlNodeKind kind = textKind switch
         {
             XmlTextKind.Text => XmlNodeKind.Text,

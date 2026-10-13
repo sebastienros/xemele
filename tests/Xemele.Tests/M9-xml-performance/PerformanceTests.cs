@@ -248,6 +248,18 @@ public sealed class PerformanceTests
         Assert.Equal(1026, sink.Units);
         Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancel).Step);
     }
+    [Theory]
+    [InlineData("a")] [InlineData("α")] [InlineData("😀")] [InlineData(">")]
+    [InlineData("&amp;")] [InlineData("&#13;")] [InlineData("x&amp;y")]
+    public void SingleOwnedTextFragmentsPreserveValueAndSourceAnchor(string body)
+    {
+        string xml = "<r>" + body + "</r>";
+        var reference = new System.Xml.XmlDocument { PreserveWhitespace = true };
+        using var reader = System.Xml.XmlReader.Create(new StringReader(xml), new System.Xml.XmlReaderSettings { IgnoreWhitespace = false }); reference.Load(reader);
+        var actual = XmlDocument.Parse(Encoding.UTF8.GetBytes(xml).AsSpan(), cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(reference.DocumentElement!.InnerText, actual.RootElement.GetTextContent());
+        Assert.Equal(new XmlLocation(null, 1, 4, 3), actual.OriginalLocation(actual.RootElement.FirstChild));
+    }
     private sealed class TextCapture : Xemele.Streaming.XmlSaxHandler
     {
         internal readonly StringBuilder Value = new();

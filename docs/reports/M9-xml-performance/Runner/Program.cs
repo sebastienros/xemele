@@ -9,6 +9,7 @@ using Xemele.Streaming;
 using Candidate=Xemele.XmlDocument;
 using Bcl=System.Xml.XmlDocument;
 if(args[0]=="name-check") { foreach(var shape in new[]{"html","xml","prefix","unicode","long"}) { new BorrowedNames{Shape=shape}.Setup(); Console.WriteLine("PASS exact names "+shape); } return; }
+if(args[0]=="ownership") { BenchmarkRunner.Run<TextOwnership>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="symbols") { BenchmarkRunner.Run<BorrowedNames>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="names") { BenchmarkRunner.Run<NameCaches>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="scans") { BenchmarkRunner.Run<AttributeScans>(args:args.Skip(1).ToArray()); return; }
