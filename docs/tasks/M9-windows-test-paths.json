@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "id": "M9-windows-test-paths",
+  "milestone": "M9",
+  "title": "Native separator paths for Windows fixture and allocation child guards",
+  "kind": "infrastructure",
+  "status": "in_progress",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-windows-test-paths",
+  "base_revision": "782f86da3773e63ad992a6b14f438be8c815f761",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-gate",
+    "M9-contracts"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationChild.cs",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationChild.cs",
+    "tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs",
+    "tests/Xemele.Tests/M8-xsd-type-relations/OriginalTests.cs",
+    "docs/reports/M9-windows-test-paths/"
+  ],
+  "api_or_output": "Normalize construction of owned test paths to native separators; preserve all child capability/provenance/path confinement checks and original fixtures/expectations.",
+  "acceptance": [
+    {
+      "id": "M9-windows-test-paths-A1",
+      "description": "Five test harnesses construct native-separator paths; all existing strict descendant, canonical path, capability, fingerprint and original oracle assertions remain unchanged.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-windows-test-paths-A2",
+      "description": "Focused schema original/hash and four real/positive allocation child checks pass on integrated local source; document actual Windows42 failure and that Windows rerun remains unexecuted.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Repair mixed separator construction identified by actual Windows hosted failures without changing runtime or skipping tests.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
