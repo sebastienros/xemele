@@ -4,13 +4,16 @@
   "milestone": "M9",
   "title": "Reproducible performance acceptance",
   "kind": "verification",
-  "status": "blocked",
+  "status": "in_progress",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "branch": "codex/m9-dom-reference",
-  "base_revision": "c3c9f6228c26025330f6644786a83f9222b6f7a1",
+  "branch": "codex/m9-performance-profile",
+  "base_revision": "e2a86fe2067d6f98c09e7e1910aaa3ac6ff1da15",
   "integration_revision": "68c7523bf4451152a52e16c522c4a7738c5fe6dc",
   "depends_on": [
-    "M9-contracts"
+    "M9-contracts",
+    "M9-dom-memory",
+    "M9-xpath-order",
+    "M9-benchmark-build"
   ],
   "goals": [
     "G18"
@@ -136,7 +139,7 @@
       "20native/Rust fixture-operation qualifications pass with original failures retained."
     ],
     "remaining": [
-      "Focused owned DOM storage and XPath ordering repairs; then affected retention/query evidence and controlled timing."
+      "Import verified DOM/XPath and benchmark build repairs, correct the finite aggregate snapshot profile, and qualify the unchanged full corpus; dedicated timing remains unavailable."
     ],
     "requests": [
       "Create minimal demonstrated runtime repair ownership for Tree/Document.cs + SchemaSourceLocations, and XPath navigation/evaluation ordering; preserve APIs/source diagnostics/finite budgets and frozen corpus."
