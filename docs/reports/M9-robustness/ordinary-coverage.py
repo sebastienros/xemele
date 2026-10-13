@@ -4,7 +4,10 @@ sys.dont_write_bytecode=True
 import hashlib,importlib.util,json,os,shutil,subprocess,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
-out=ROOT/'artifacts/M9-robustness/ordinary-coverage'
+out=ROOT/'artifacts/M9-robustness/ordinary-coverage-core'
+out.mkdir(parents=True,exist_ok=False)
+shutil.copytree(ROOT/'artifacts/M9-robustness/ordinary-coverage/tool',out/'tool')
+shutil.copyfile(ROOT/'artifacts/M9-robustness/ordinary-coverage/tool-identity.json',out/'tool-identity.json')
 assert (out/'tool/coverlet.console.dll').is_file()
 spec=importlib.util.spec_from_file_location('supervision',ROOT/'docs/reports/M8-xsd-corpus/supervision.py')
 s=importlib.util.module_from_spec(spec);spec.loader.exec_module(s);s.ROOT,s.ARTIFACTS=ROOT,out
@@ -46,7 +49,7 @@ try:
     tests=out/'tests';shutil.copytree(project.parent/'bin/Release/net10.0',tests)
     args=f'--fx-version 10.0.11 "{tests / "Xemele.Tests.dll"}" -parallelMode none -culture invariant -noColor -result-xml "{out / "unit.xml"}"'
     run([host,'--fx-version','10.0.11',tool,tests/'Xemele.Tests.dll','--target',host,'--targetargs',args,
-         '--include','[Xemele]*','--exclude-assemblies-without-sources','None',
+         '--include','[Xemele]Xemele.Parsing.Syntax.XmlParserCore*','--include','[Xemele]Xemele.Parsing.Input.XmlInputDecoder*','--exclude-assemblies-without-sources','None',
          '--format','json','--output',out/'unit-coverage.json'],500)
     report['productionSha256After']=sha(original);assert report['productionSha256Before']==report['productionSha256After']
     coverage=json.loads((out/'unit-coverage.json').read_bytes());assert coverage
