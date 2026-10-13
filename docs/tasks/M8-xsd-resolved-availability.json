@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-resolved-availability",
+  "milestone": "M8",
+  "title": "Bound resolved XSD availability queries and preserve dangling-reference semantics",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator / assigned isolated resolved availability worker",
+  "branch": "codex/m8-xsd-resolved-availability",
+  "base_revision": "2479f26a0a3eb171b16500abbf9aff1ee544ce55",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-missing-components"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs",
+    "tests/Xemele.Tests/M8-xsd-resolved-availability/",
+    "tests/fixtures/M8-xsd-resolved-availability/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-resolved-availability/",
+    "samples/M8-xsd-resolved-availability/",
+    "docs/reports/M8-xsd-resolved-availability/"
+  ],
+  "api_or_output": "Bounded invocation-local resolved availability queries through unchanged public/internal APIs; exact original corpus and missing-component regressions",
+  "acceptance": [
+    {
+      "id": "M8-xsd-resolved-availability-A1",
+      "description": "Reproduce the unchanged annotZ002 original SCHEMA.Limit at the verified baseline, then complete it VALID with the existing ordinary 100M work/1M component/64MiB document limits. Avoid rebuilding closure when no unavailable reference exists, without weakening partial graphs, complete immutable publication, charging, cancellation or refusal. A later unavailable registration immediately disables the shortcut; no global cache or cached false result.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-resolved-availability-A2",
+      "description": "Preserve the original xsd015.e, xsd016.e, elemM002 and idB005 INVALID metadata and schema-valid original nonpass observations separately from standards behavior. Prove exact unresolved QNames, absence of fabricated types, strict compiler rejection and incomplete required consumption. Test case-corrected keyInfo with equal IDs in separate documents accepted versus duplicate IDs within one document rejected. Retain all four separately approved missing-instance nonassessment original failures. No original/gate pass credit or additional waiver is supplied by these regressions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-resolved-availability-A3",
+      "description": "Verify resolved queries, late missing registration, reverse-chain/diamond/use separation, registration/publication charges, cancellation and prior refusal including null caps. Preserve earlier owned/affected checks, unchanged public1430/55 fragments, frozen615/257 and exact93 internal additions, normal and true XML-only consumers. Record actual baseline/proposed allocation-only comparisons for increasing resolved graphs/repeated queries and cold/warm public compilation/retained schemas, with consumed results, positive and counter-disabled controls, root-only counter launch, finite owned-family cleanup and no raw archives or timing/host-isolation claims.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Claimed by sole M8 coordinator after ready output and source-only root-cause review. Isolated worker setup follows; no implementation/check/counter evidence yet.",
+    "checks": [],
+    "remaining": [
+      "Claim through coordination before implementation; isolated worker required. Original annotZ002 SHAfff58be90b04ace4117786f19d8a450ed81b0e074f9c67d9316a3275a028b6cd and current Availability.cs SHA9f43303f2a934130694c558ad089e9c64b0d6eb9cd2f0bb83b4132cd3291c603 are source-triage identities, not executed repair evidence."
+    ],
+    "requests": [
+      "Only Availability.cs runtime edits allowed. Shared compiler/contracts/build files and corpus originals remain outside ownership. Root owns policy adjudication, main/state integration and all actual counter launches."
+    ]
+  }
+}
