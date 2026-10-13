@@ -8,8 +8,8 @@ from recipes import ROOT,HERE,PHASES
 # One controller clock includes module preparation, five pairs, inspection and terminal cleanup.
 started=time.monotonic()
 controller_reserve=40
-hard_cap=min(started+1290,float(os.environ['XEMELE_GATE_HARD_DEADLINE']))
-end=min(started+1250,float(os.environ['XEMELE_GATE_WORK_DEADLINE']),hard_cap-controller_reserve)
+hard_cap=min(started+3840,float(os.environ['XEMELE_GATE_HARD_DEADLINE']))
+end=min(started+3800,float(os.environ['XEMELE_GATE_WORK_DEADLINE']),hard_cap-controller_reserve)
 hard=min(end+controller_reserve,hard_cap)
 
 def module(name,path):
@@ -41,7 +41,7 @@ with nested.interruptions():
    record=nested.supervise_family_command(supervisor,[sys.executable,'-B','docs/reports/M8-gate/checks.py','identity',sys.argv[1]],index,env,outer_work,outer_hard)
    record.update(pairStarted=pair_started,innerWorkDeadline=inner_work,innerHardDeadline=inner_hard,
                  outerWorkDeadline=outer_work,outerHardDeadline=outer_hard,
-                 innerWorkMaximumSeconds=180,innerReserveSeconds=40,launchAllowanceSeconds=5,outerCleanupSeconds=10)
+                 innerWorkMaximumSeconds=700,innerReserveSeconds=40,launchAllowanceSeconds=5,outerCleanupSeconds=10)
    nested.durable(raw/f'terminal-{index}.json',record)
    assert record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed'] and record['nestedOwnership']['allOwnedGroupsAbsent']
    output=(raw/f'command-{index}.log').read_text(errors='replace')

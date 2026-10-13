@@ -1,7 +1,10 @@
 # M8 gate source packet
 
-Source preparation only. No gate build, restore, provisioning, discovery, test,
-probe, allocation counter, package consumer, trim or NativeAOT execution has run.
+Source repair only. Root preparation attempt1 failed at command11 (MSB1009 on
+the nonexistent profile Probe.csproj); the actual project is Sample.csproj.
+Its11 synthetic controls and11 earlier commands exited0;39 later commands were
+unrun. No preparation pass/certificate or gate criterion credit is claimed.
+Root alone ran that attempt; worker has run no executable gate workload.
 The task record remains with root. This isolated branch owns only this directory.
 All commands below require root's reviewed release and root process custody.
 
@@ -28,13 +31,18 @@ issuing the next certificate. Worker cannot issue a certificate.
 
 | Phase | Commands | Inner work / hard seconds | Root outer work / hard seconds |
 | --- | ---: | ---: | ---: |
-| preparation | 51 | 12500 / 12680 | 12860 / 12880 |
-| correctness checks | 18 | 3500 / 3680 | 3860 / 3880 |
-| root-only cumulative counters | 4 | 1800 / 1980 | 2160 / 2180 |
+| preparation | 51 | 12500 / 12680 | 13280 / 13300 |
+| correctness checks | 18 | 6200 / 6380 | 6980 / 7000 |
+| root-only cumulative counters | 4 | 1800 / 1980 | 2580 / 2600 |
 
 Accepted root parent source SHA256:
-`1af448c7a5ebda57d0091f15cde4877531a9caa647c8e45fcb25a6c4af377602`.
-The documented outer bounds match that parent.
+`28c344b25ef8653abc8cff38de60c63f5b36879179c7092d58d94a94cdc36a13`.
+The documented outer bounds match that parent, whose post-phase allowance is
+600 seconds. Accepted observer SHA256
+`23be0a30713915c09f7fbadae61461a66bba3274e853cff8917f20178e44eb99`
+has a fixed600-second hard bound. Root initial input binding remains inside the
+shared phase clock. Attempt1 observed183.77 seconds for that binding; this is
+lifecycle budget evidence only, with no performance/timing/isolation claim.
 
 `recipeSha256` hashes the contained packet `recipe` object using UTF-8 bytes of
 Python `json.dumps(recipe, sort_keys=True, separators=(',', ':'), ensure_ascii=True)`
@@ -48,7 +56,7 @@ After package freeze, three actual archive controls prove valid acceptance,
 mutation refusal and missing-record refusal without mutating canonical inputs.
 
 Per-child work bounds appear
-in the recipe (30–1400 seconds). Each child has at most10 seconds cleanup, split
+in the recipe (30–4000 seconds). Each child has at most10 seconds cleanup, split
 by the accepted helper into at most4 direct and6 nested cleanup seconds. Child
 hard deadlines are clipped to the immutable phase hard deadline minus its terminal reserve less20 seconds;
 the phase reserves180 seconds for remaining binding, terminal sweeps, raw
@@ -141,12 +149,16 @@ historical; the full current suite includes the original assertion.
 Actual intended-wrapper identity controls run positive / missing-packet negative / changed-packet negative /
 unknown-environment negative / final-positive with actual exits0/1/1/1/0 required, no tests/counters and
 complete prepared source/binaries/runtime/env/resource/certificate guards. Each
-gets180 seconds inner work plus40 seconds inner terminal reserve. Each enclosing
+gets700 seconds inner work plus40 seconds inner terminal reserve. Each enclosing
 family waits through the inner hard deadline plus5 seconds launch allowance,
-then has its own10-second cleanup window: at most235 seconds per pair. Allfive
-pairs share one immutable1250-second controller work deadline plus40 seconds
-controller terminal reserve (1290 total); the recipe command has1400 seconds
-work plus10 cleanup. Thus the parent never kills an identity phase at its work
+then has its own10-second cleanup window: at most755 seconds per pair. Allfive
+pairs share one immutable3800-second controller work deadline plus40 seconds
+controller terminal reserve (3840 total); the recipe command has4000 seconds
+work plus10 cleanup. Five maximum755-second pairs sum3775, leaving25 seconds
+in controller work. Check command work sums5320 plus18 ten-second cleanup
+windows=5500, leaving700 seconds work slack plus180 terminal reserve.
+These fixed reviewed bounds replace the insufficient old caps before any new
+launch; no launched deadline is reset or extended. Thus the parent never kills an identity phase at its work
 deadline while final input/binary inspection still owns its full reserve. This is a proposed control recipe, not an
 observed result. The counter check certificate is consumed once; repeat execution
 requires new root review and fresh prepared custody. The inherited NoEmit children

@@ -9,7 +9,7 @@ FLAGS = ['--disable-build-servers','-m:1','-p:RuntimeFrameworkVersion=10.0.11','
 PROJECTS = [
  'tests/Xemele.Tests/Xemele.Tests.csproj', 'tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj',
  'tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj', 'tools/ReferenceRunners/Bcl/BclReference.csproj',
- 'samples/M2-conformance-profile/Probe.csproj', 'samples/M2-conformance-grammar/Probe.csproj',
+ 'samples/M2-conformance-profile/Sample.csproj', 'samples/M2-conformance-grammar/Probe.csproj',
  'samples/XmlToolkit/XmlToolkit.csproj', 'src/Xemele.Tool/Xemele.Tool.csproj',
  'docs/reports/M4-corpus/Fuzz.Driver.csproj', 'docs/reports/M7-corpus/Fuzz.Driver.csproj',
  'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj', 'docs/reports/M8-contracts/ApiCheck/ApiCheck.csproj',
@@ -18,7 +18,7 @@ PROJECTS = [
  'docs/reports/M8-gate/CounterControl.csproj', 'samples/M7-cli/M7.CliSample.csproj', 'samples/M7-serialize/M7-serialize.csproj']
 BINARY_FOLDERS = [str(Path(p).parent/'bin/Release/net10.0') for p in PROJECTS] + ['src/Xemele/bin/Release/net10.0']
 PACKAGE_WORK = OUT/'external'
-PHASES = {'prepare': {'work':12500,'reserve':180}, 'check': {'work':3500,'reserve':180}, 'identity': {'work':180,'reserve':40}, 'counter': {'work':1800,'reserve':180}}
+PHASES = {'prepare': {'work':12500,'reserve':180}, 'check': {'work':6200,'reserve':180}, 'identity': {'work':700,'reserve':40}, 'counter': {'work':1800,'reserve':180}}
 
 def dll(path,*args): return [NET,'--fx-version','10.0.11',str(path),*map(str,args)]
 def py(file,*args): return [sys.executable,'-B',file,*map(str,args)]
@@ -41,7 +41,7 @@ def commands(phase):
                   '-r','osx-arm64','--self-contained','true',f'-p:{prop}=true','-o',str(PACKAGE_WORK/lane)],600)]
   return commands + [(py('docs/reports/M8-gate/native_selection.py'),60),(py('docs/reports/M8-gate/package_inputs.py','freeze'),60)]
  if phase == 'check':
-  return [(py('docs/reports/M8-gate/identity_controls.py','${CERT}'),1400),(py('docs/reports/M8-gate/reuse.py'),90),(py('docs/reports/M8-gate/guard_controls.py','--archive'),90),
+  return [(py('docs/reports/M8-gate/identity_controls.py','${CERT}'),4000),(py('docs/reports/M8-gate/reuse.py'),90),(py('docs/reports/M8-gate/guard_controls.py','--archive'),90),
           (py('docs/reports/M8-gate/semantic.py','api'),180),
           (dll('samples/M8-xsd-resolved-availability/bin/Release/net10.0/Consumer.dll'),60),
           (dll('samples/M8-xsd-resolved-availability/bin/Release/net10.0/XmlOnly.dll'),60),
