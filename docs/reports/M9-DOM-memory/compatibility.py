@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
-parser=argparse.ArgumentParser(); parser.add_argument('--phase',required=True); args=parser.parse_args()
+parser=argparse.ArgumentParser(); parser.add_argument('--phase',required=True); parser.add_argument('--api-only',action='store_true'); args=parser.parse_args()
 host=Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
 out=ROOT/'artifacts/M9-dom-memory'/('compatibility-'+args.phase); out.mkdir(parents=True,exist_ok=False)
 spec=importlib.util.spec_from_file_location('supervision',ROOT/'docs/reports/M8-xsd-corpus/supervision.py')
@@ -19,6 +19,11 @@ env=dict(os.environ,PATH=str(host.parent)+os.pathsep+os.environ.get('PATH',''),D
 report=dict(revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             result='failed',commands=[],suites={})
 flags=['--disable-build-servers','-m:1','-p:RuntimeFrameworkVersion=10.0.11','-p:UseSharedCompilation=false','-p:NuGetAudit=false']
+if args.api_only:
+    old=json.loads((HERE/'compatibility-attempt1.json').read_bytes())
+    assert all(r['counts']['total']==r['counts']['passed'] and not r['failures'] for r in old['suites'].values())
+    assert not subprocess.check_output(['git','diff',old['revision'],'--','src','tests/Xemele.Conformance.Tests','tests/Xemele.Differential.Tests','tests/Xemele.TestUtilities','tools/ReferenceRunners','Directory.Build.props','Directory.Packages.props','global.json'],cwd=ROOT)
+    report['suites']=old['suites'];report['reusedSuites']='docs/reports/M9-DOM-memory/compatibility-attempt1.json'
 deadline=time.monotonic()+1500
 def run(argv,cap):
     index=len(report['commands']); end=min(deadline,time.monotonic()+cap)
@@ -28,12 +33,12 @@ def run(argv,cap):
     report['commands'].append(row); print(row['outputTail'],flush=True)
     if not supervisor.workload_succeeded(receipt): raise RuntimeError('Compatibility check failed')
 try:
-    for project in ['tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj',
+    for project in ([] if args.api_only else ['tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj',
                     'tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj',
-                    'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj']:
+                    'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj']):
         run([host,'restore',project,'--source','/private/tmp',*flags],200)
         run([host,'build',project,'-c','Release','--no-restore','--no-incremental',*flags],200)
-    for name in ['Xemele.Conformance.Tests','Xemele.Differential.Tests']:
+    for name in ([] if args.api_only else ['Xemele.Conformance.Tests','Xemele.Differential.Tests']):
         result=out/(name+'.xml')
         try:
             run([host,'--fx-version','10.0.11',f'tests/{name}/bin/Release/net10.0/{name}.dll',
@@ -43,9 +48,8 @@ try:
                 tree=ET.parse(result).getroot(); assemblies=tree.findall('assembly')
                 report['suites'][name]=dict(counts={k:sum(int(a.get(k,'0')) for a in assemblies) for k in ['total','passed','failed','errors','skipped','not-run']},
                     failures=[dict(name=t.get('name'),message=t.findtext('failure/message')) for t in tree.findall('.//test') if t.get('result')!='Pass'])
-    api=out/'api.json'; run(['python3','-B','tools/ApiBaseline/compare.py','--report',api],100)
-    data=json.loads(api.read_bytes()); report['api']=dict(matched=data['matched'],members=len(data['provenance']),
-            fragments=len(data['inventory']['apiFragments']),assemblySha256=data['assemblySha256'],checkerOutput=data['checkerOutput'])
+    run(['python3','-B','docs/reports/M9-DOM-memory/api.py'],260)
+    report['api']=json.loads((HERE/'api.json').read_bytes())
     assert report['api']['matched'] and report['api']['members']==1430
     report['result']='passed'
 finally:
