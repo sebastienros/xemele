@@ -33,3 +33,5 @@ Local ShortRun mean times were 2871→3077 µs (distinct), 3116→3185 µs (mult
 Eight focused storage regressions and all earlier unit tests passed: 10,749 total, zero failures/errors/skips/not-run. Initial build/report-option and runtime-provenance failures remain failed records; no credit was assigned until the test configuration was rebuilt to pin both parent and children to 10.0.11.
 
 Affected conformance, differential and compiled API checks are recorded separately. Earlier 44,287-input whole-source conformance reuse no longer applies verbatim after these two runtime files changed. Original XSD disposition evidence remains historical until the owning robustness lane reassesses current applicability. Fuzzing remains explicitly deferred.
+
+Affected suites passed: 920 conformance and 618 differential tests, zero failures/errors/skips/not-run. The approved M9 union and metadata extractor exactly match all 1,430 public members across 55 fragments and all 222 first-preview members; missing/changed controls refuse. The generic fragment-discovery rejection remains an unsuccessful attempt.
