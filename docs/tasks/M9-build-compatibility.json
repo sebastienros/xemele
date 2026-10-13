@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "M9-build-compatibility",
+  "milestone": "M9",
+  "title": "Repair root contract build and bound existing hosted CI",
+  "kind": "infrastructure",
+  "status": "in_progress",
+  "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "branch": "codex/m9-build-compatibility",
+  "base_revision": "f9867eca5c8e4f368a5abcba0fa3d912b1cc7b88",
+  "integration_revision": null,
+  "depends_on": [
+    "M9-contracts",
+    "M0-ci"
+  ],
+  "goals": [
+    "G16",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md",
+    "docs/tasks/README.md"
+  ],
+  "owns": [
+    "tests/Contracts/Fixtures/M9/ReleaseUsage/",
+    ".github/workflows/build.yml",
+    "docs/reports/M9-build-compatibility/"
+  ],
+  "api_or_output": "Correct fixture discovery and bounded existing CI without runtime changes",
+  "acceptance": [
+    {
+      "id": "M9-build-compatibility-A1",
+      "description": "Repair demonstrated CS8805 root contract-library build failure using existing .cs.fixture convention; standalone M9 usage remains executable with identical behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-build-compatibility-A2",
+      "description": "Bound existing generic CI jobs to20minutes before requested validation branch push; preserve existing check coverage and no-publication scope.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-build-compatibility-A3",
+      "description": "Run root Contracts and standalone usage checks at known revision, validate ownership/dependencies and record actual integration evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
