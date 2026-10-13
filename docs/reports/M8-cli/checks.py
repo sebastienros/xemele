@@ -70,6 +70,35 @@ def module(name, path):
     result = importlib.util.module_from_spec(spec); spec.loader.exec_module(result)
     return result
 
+def verify_preparation_certificate(path, prepared_path):
+    path = Path(path).resolve()
+    assert (ROOT/'artifacts/M8-cli').resolve() in path.parents, 'Root preparation certificate must be in task artifacts'
+    certificate = json.loads(path.read_text())
+    assert certificate['issuer'] == 'M8-root-coordinator', 'Root-issued preparation certificate required'
+    assert certificate['preparedSha256'] == sha(prepared_path), 'Root certificate does not match preparation receipt'
+    outer_path = Path(certificate['outerReceiptPath']).resolve()
+    assert (ROOT/'artifacts/M8-cli').resolve() in outer_path.parents, 'Owned outer terminal receipt required'
+    assert certificate['outerReceiptSha256'] == sha(outer_path), 'Outer terminal receipt changed'
+    outer = json.loads(outer_path.read_text())
+    assert outer['exit'] == 0 and outer['reason'] == 'completed', 'Outer preparation did not exit successfully'
+    assert outer['directChildReaped'] and outer['ownedGroupAbsent'] and outer['logClosed'], 'Outer family did not terminate cleanly'
+    ownership = outer['nestedOwnership']
+    assert ownership['allOwnedGroupsAbsent'] and not ownership.get('pendingIntents') and not ownership.get('remainingGroups'), 'Outer nested ownership incomplete'
+    assert outer['deadlineExceeded'] is False and outer['inputsMatched'] is True and outer['logsInspected'] is True, 'Outer deadline/binding/inspection guards failed'
+    return {'path': str(path), 'sha256': sha(path), 'outerReceiptSha256': sha(outer_path)}
+
+def publish_phase(target, payload, identifier):
+    temporary = target.parent/(identifier+'-publish.tmp')
+    try:
+        with temporary.open('x') as stream:
+            json.dump(payload, stream, indent=2); stream.write('\n'); stream.flush(); os.fsync(stream.fileno())
+        os.replace(temporary, target)
+        descriptor = os.open(target.parent, os.O_RDONLY)
+        try: os.fsync(descriptor)
+        finally: os.close(descriptor)
+    finally:
+        temporary.unlink(missing_ok=True)
+
 def commands(phase):
     if phase == 'prepare':
         projects = [('src/Xemele.Tool/Xemele.Tool.csproj', []), ('tests/Xemele.Tests/M8-cli/Probe.csproj', ['-p:SchemaXmlOnly=false']),
@@ -83,12 +112,14 @@ def commands(phase):
         ([sys.executable, 'tools/planning/tasks.py', 'validate'], 30), (['git', 'diff', '--check'], 30)]
 
 def main():
-    if len(sys.argv) != 2 or sys.argv[1] not in ['recipe', 'prepare', 'check']: raise SystemExit('recipe|prepare|check')
+    if len(sys.argv) < 2 or sys.argv[1] not in ['recipe', 'prepare', 'check']: raise SystemExit('recipe|prepare|check ROOT_CERTIFICATE')
     phase = sys.argv[1]
+    if len(sys.argv) != (3 if phase == 'check' else 2): raise SystemExit('recipe|prepare|check ROOT_CERTIFICATE')
     if phase == 'recipe':
         print(json.dumps({'inputs': input_identities(), 'prepare': commands('prepare'), 'check': commands('check'),
                           'prepare_total_work_seconds': 1500, 'check_total_work_seconds': 540, 'per_command_cleanup_seconds': 10,
                           'phase_terminal_cleanup_seconds': 10, 'supervisor': 'docs/reports/M8-xsd-corpus/supervision.py',
+                          'check_requires': 'ROOT-issued certificate matching prepared.json and completed clean outer terminal receipt; worker never issues certificates',
                           'nested_original_sha256': sha(ROOT/'docs/reports/M8-xsd-corpus/nested_ownership.py'),
                           'nested_copy_sha256': sha(HERE/'nested_ownership.py')}, indent=2)); return
     # Set one total deadline before binding; neither failed commands nor binding work reset it.
@@ -109,6 +140,7 @@ def main():
             # Ancestors must be valid open registries in this task's artifact root, and propagate to every command.
             nested.registries(ENV)
             if phase == 'check':
+                payload['preparationCertificate'] = verify_preparation_certificate(sys.argv[2], HERE/'prepared.json')
                 prepared = json.loads((HERE/'prepared.json').read_text())
                 assert prepared['passed'], 'Preparation did not pass'
                 assert stable_inputs(prepared['inputs']) == stable_inputs(payload['inputs']), 'Preparation inputs changed'
@@ -143,6 +175,9 @@ def main():
                 after_binaries = binaries(); payload['afterBinaries'] = after_binaries
                 if phase == 'check': assert payload.get('binaries') == after_binaries, 'Output directory drift during checks'
                 else: payload['binaries'] = after_binaries
+                if phase == 'check':
+                    certificate_after = verify_preparation_certificate(sys.argv[2], HERE/'prepared.json')
+                    assert payload.get('preparationCertificate') == certificate_after, 'Preparation certificate or outer receipt changed during checks'
             except BaseException as error:
                 payload['bindingFailure'] = type(error).__name__+': '+str(error); payload['passed'] = False
             # Sweep every local registry, including one whose supervisor raised before returning a record.
@@ -173,16 +208,23 @@ def main():
             # Include final inspection/deletion/publication work in the immutable total hard deadline.
             payload['deadlineExceeded'] |= time.monotonic() >= hard
             payload['passed'] &= not payload['deadlineExceeded'] and payload['rawDeleted']
-            nested.durable(HERE/(identifier+'-final.receipt.json'), payload)
-            # Stable convenience receipt is fsynced and atomically replaced, including failed attempts.
             target = HERE/('prepared.json' if phase == 'prepare' else 'results.json')
-            temporary = HERE/(identifier+'-publish.tmp')
-            with temporary.open('x') as stream:
-                json.dump(payload, stream, indent=2); stream.write('\n'); stream.flush(); os.fsync(stream.fileno())
-            os.replace(temporary, target)
-            descriptor = os.open(HERE, os.O_RDONLY)
-            try: os.fsync(descriptor)
-            finally: os.close(descriptor)
+            try:
+                nested.durable(HERE/(identifier+'-final.receipt.json'), payload)
+                publish_phase(target, payload, identifier)
+                # Check only after replacement and directory fsync have returned.
+                if time.monotonic() >= hard: raise TimeoutError('Phase hard deadline exceeded during final publication')
+            except BaseException as error:
+                payload['passed'] = False
+                payload['publicationFailure'] = type(error).__name__+': '+str(error)
+                payload['deadlineExceeded'] |= time.monotonic() >= hard
+                # Exactly one reconciliation attempt. A failed/overtime outer run cannot issue a certificate,
+                # even if interrupted filesystem writes leave an old inner passed receipt behind.
+                try:
+                    nested.durable(HERE/(identifier+'-publication-failure.receipt.json'), payload)
+                    publish_phase(target, payload, identifier+'-reconcile')
+                except BaseException as reconciliation:
+                    payload['reconciliationFailure'] = type(reconciliation).__name__+': '+str(reconciliation)
     print(json.dumps({'phase': phase, 'passed': payload['passed'], 'bindingFailure': payload['bindingFailure'],
                       'allOwnedGroupsAbsent': payload['allOwnedGroupsAbsent'], 'rawDeleted': payload['rawDeleted'],
                       'deadlineExceeded': payload['deadlineExceeded'], 'receipt': str(receipt)}), flush=True)

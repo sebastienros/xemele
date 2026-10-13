@@ -16,8 +16,21 @@ After release:
 
 ```
 python3 docs/reports/M8-cli/checks.py prepare
-python3 docs/reports/M8-cli/checks.py check
+python3 docs/reports/M8-cli/checks.py check ABSOLUTE_ROOT_PREPARATION_CERTIFICATE
 ```
+
+Root runs preparation under its reviewed finite outer family parent. After the
+outer process exits0 and its source/binary/deadline/inspection/terminal guards pass,
+root alone issues the certificate under this checkout's `artifacts/M8-cli/`:
+`issuer="M8-root-coordinator"`, `preparedSha256` (actual `prepared.json` hash),
+`outerReceiptPath` and `outerReceiptSha256` (actual durable completed outer result).
+The referenced outer receipt must have exit0/reason completed,
+`directChildReaped`, `ownedGroupAbsent`, `logClosed`,
+`nestedOwnership.allOwnedGroupsAbsent` with no pending intents/remaining groups,
+`deadlineExceeded=false`, `inputsMatched=true`, and `logsInspected=true`.
+Checks verify this certificate and outer receipt before and after the phase.
+The worker never issues a product certificate. A leftover inner passed receipt
+after an interrupted or overtime outer run cannot authorize checks.
 
 Preparation restores offline from `/Users/sebastienros/.nuget/packages` and builds
 the actual Tool, owned regular and XML-only checks, and the existing compiled
@@ -27,7 +40,7 @@ Each command gets at most240 seconds work and10 seconds terminal cleanup; the
 phase total work is1500 seconds plus10 seconds command cleanup and10 seconds
 phase reserve. Suggested root outer work/hard deadlines:1530/1540 seconds.
 
-Checks run the two actual owned binaries (120 seconds each), eight phase guard success/failure controls (60 seconds), the small real CLI
+Checks run the two actual owned binaries (120 seconds each), ten phase guard success/failure controls (60 seconds), the small real CLI
 controls (120 seconds), the existing full public API comparison (60 seconds),
 task validation and diff-check (30 seconds each). Total phase work is540 seconds
 plus10 seconds command cleanup and10 seconds phase reserve. Suggested root outer
@@ -53,6 +66,12 @@ Source, entire SDK/runtime trees and effective environment are checked at both e
 of each phase. Dynamic ancestor registry paths are pinned separately per phase;
 stable environment fields must also match preparation. `results.json` and concise
 receipts retain command/outcome/boundary/cleanup evidence. No raw archive is retained.
+Final replacement/fsync is followed by the immutable hard-deadline check. A caught
+exception/interruption or expired publication writes a durable failed receipt and
+makes exactly one failed-state reconciliation attempt; no recursive success seals.
+Actual outer completion governs reuse even if reconciliation itself is interrupted.
+Two bounded failure controls advance the clock during final publication and interrupt
+after replacement, checking failed persisted state/exit and terminal raw cleanup.
 The worker makes no isolation,
 host-idle, throughput, timing, or allocation claim. Root alone launches counters.
 

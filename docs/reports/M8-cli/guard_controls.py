@@ -42,6 +42,14 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
     prepared = {'passed': True, 'inputs': copy.deepcopy(inputs), 'binaries': copy.deepcopy(binary)}
     if name == 'stale-prepared-binary': prepared['binaries']['Tool']['sha256'] = 'changed-dependency'
     (directory/'prepared.json').write_text(json.dumps(prepared))
+    # Synthetic observer data is confined to failure-injection controls, never product preparation.
+    outer_path = directory/'outer.receipt.json'
+    outer_path.write_text(json.dumps({'exit': 0, 'reason': 'completed', 'directChildReaped': True, 'ownedGroupAbsent': True,
+        'logClosed': True, 'nestedOwnership': {'allOwnedGroupsAbsent': True, 'pendingIntents': [], 'remainingGroups': {}},
+        'deadlineExceeded': False, 'inputsMatched': True, 'logsInspected': True}))
+    certificate = directory/'root-certificate.json'
+    certificate.write_text(json.dumps({'issuer': 'M8-root-coordinator', 'preparedSha256': subject.sha(directory/'prepared.json'),
+        'outerReceiptPath': str(outer_path), 'outerReceiptSha256': subject.sha(outer_path)}))
     original_module = subject.module
     def module(module_name, path):
         if module_name == 'schema_cli_nested': path = Path(__file__).with_name('nested_ownership.py')
@@ -58,11 +66,24 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
         nonlocal clock_calls
         clock_calls += 1
         return 1 if clock_calls == 1 else 2000
+    original_publish = subject.publish_phase
+    publication_calls = 0
+    late_publication = False
+    original_clock = time.monotonic
+    def publish(target, payload, identifier):
+        nonlocal publication_calls, late_publication
+        publication_calls += 1
+        original_publish(target, payload, identifier)
+        if publication_calls == 1:
+            if name == 'late-final-publication': late_publication = True
+            if name == 'interrupted-after-replace': raise KeyboardInterrupt('guard interruption after final replace/fsync')
+    def publication_clock(): return original_clock()+10000 if late_publication else original_clock()
     try:
         with contextlib.ExitStack() as controls, mock.patch.object(subject, 'HERE', directory), mock.patch.object(subject, 'input_identities', identity), mock.patch.object(subject, 'binaries', binary_identity), \
-             mock.patch.object(subject, 'commands', lambda _: workload), mock.patch.object(subject, 'module', module), mock.patch.object(sys, 'argv', ['checks.py', phase]), \
+             mock.patch.object(subject, 'commands', lambda _: workload), mock.patch.object(subject, 'module', module), mock.patch.object(subject, 'publish_phase', publish), mock.patch.object(sys, 'argv', ['checks.py', phase]+([str(certificate)] if phase == 'check' else [])), \
              mock.patch.object(Path, 'read_text', read), contextlib.redirect_stdout(capture):
             if name == 'expired-total': controls.enter_context(mock.patch.object(subject.time, 'monotonic', expired_clock))
+            if name == 'late-final-publication': controls.enter_context(mock.patch.object(subject.time, 'monotonic', publication_clock))
             try: subject.main()
             except SystemExit as outcome: assert outcome.code == (0 if expected else 1), (name, outcome.code, capture.getvalue())
         terminal = json.loads((directory/('prepared.json' if phase == 'prepare' else 'results.json')).read_text())
@@ -70,6 +91,10 @@ def exercise(name, phase='prepare', change=None, fail_inspection=False, expected
         assert terminal['allOwnedGroupsAbsent'] and terminal['allDirectChildrenReaped'], (name, terminal)
         assert list(directory.glob('*-final.receipt.json')), 'durable final receipt required'
         if change is not None or phase == 'check': assert terminal['bindingFailure'], (name, terminal)
+        if name in ['late-final-publication', 'interrupted-after-replace']:
+            assert terminal['publicationFailure'] and publication_calls == 2 and not terminal['passed'] and terminal['rawDeleted'], terminal
+            assert list(directory.glob('*-publication-failure.receipt.json')), 'durable publication failure'
+            if name == 'late-final-publication': assert terminal['deadlineExceeded'], terminal
         if fail_inspection:
             assert not terminal['rawDeleted'] and not terminal['logsInspected'] and terminal['bindingFailure'], terminal
             retained = ROOT/'artifacts/M8-cli'/Path(terminal['terminalCleanup'][0]['registry']).parent.name
@@ -96,5 +121,7 @@ exercise('stale-prepared-binary', phase='check')
 exercise('post-binary-drift', phase='check')
 exercise('inspection-refusal', fail_inspection=True)
 exercise('expired-total')
+exercise('late-final-publication')
+exercise('interrupted-after-replace')
 assert time.monotonic() < END, 'guard total work deadline'
 print(f'PASS phase guards: {CASES} bounded success/failure controls; durable refusals, real registered child cleanup, raw retention/inspection/deletion')
