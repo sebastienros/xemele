@@ -9,19 +9,11 @@
   "last_verified_checkpoint": "M8-gate",
   "last_verified_task": "M9-build-compatibility",
   "last_integrated_revision": "b7f8ecf73b15645d13387f0b717df669f9fc3dfd",
-  "active_assignments": [
-    {
-      "task_id": "M9-distribution",
-      "branch": "codex/m9-distribution-ready",
-      "worktree_path": "/private/tmp/xemele-m9-distribution-ready",
-      "base_revision": "9b33a6073e41c26b19cb383dfa91179191ba1f82",
-      "stage": "Final hosted recipe preflight and concrete remote branch approval; no execution yet"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Validate portable linker host and bounded hosted recipe; ask concrete remote validation branch approval required by prior no-push scope.",
-    "M9-robustness: remaining actual mandatory sustained evidence."
+    "Execute only frozen validation branch push/3boundedjobs if human explicitly approves; preserve no remote main/tag/packagepublication.",
+    "Continue M9-robustness independent evidence while approval pending."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -1885,5 +1877,17 @@
     "delegation": "Prefer direct serial work; at most3isolated implementation workers when materially useful",
     "scope": "Existing required release gates only; preserve honest failures/155approvedzero-creditdispositions; no speculative expansion"
   },
-  "pending_owned_changes": []
+  "pending_owned_changes": [],
+  "hosted_platform_request": {
+    "status": "human-approval-pending",
+    "repository": "sebastienros/xemele",
+    "visibility": "PRIVATE",
+    "local_branch": "codex/m9-os-validation",
+    "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+    "job_timeout_minutes": 20,
+    "max_parallel": 3,
+    "max_runner_minutes": 60,
+    "remote_push": false,
+    "workflow_runs": []
+  }
 }
