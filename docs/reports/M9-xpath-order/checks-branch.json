@@ -1,0 +1,58 @@
+{
+  "revision": "5148ac79f55f8e112ad8a7b36d470ba17ca8b415",
+  "phase": "branch",
+  "result": "failed",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "/private/tmp",
+        "-p:NuGetAudit=false",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "--disable-build-servers"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": 62836,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "f73510a05a7b9eca3e8d8fd41465867236e76b21672b6067bbd51ba3f555589b",
+      "outputTail": "  Determining projects to restore...\n  Restored /private/tmp/xemele-m9-xpath-order/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 156 ms).\n  Restored /private/tmp/xemele-m9-xpath-order/src/Xemele/Xemele.csproj (in 156 ms).\n  Restored /private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj (in 260 ms).\n"
+    },
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "-t:Rebuild",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:RuntimeFrameworkVersion=10.0.11"
+      ],
+      "receipt": {
+        "command": 1,
+        "pid": 62845,
+        "exit": 1,
+        "reason": "failed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "outputSha256": "7059e523491cc0518de2e9d71e4d533098dde3d81b6fdfe91ba67dfe28e09cb6",
+      "outputTail": "Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(36,29): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(37,22): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(39,30): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(64,26): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(65,55): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n\nBuild FAILED.\n\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(36,29): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(37,22): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(39,30): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(64,26): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/M9-xpath-order/OrderingTests.cs(65,55): error xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken to allow test cancellation to be more responsive. (https://xunit.net/xunit.analyzers/rules/xUnit1051) [/private/tmp/xemele-m9-xpath-order/tests/Xemele.Tests/Xemele.Tests.csproj]\n    0 Warning(s)\n    5 Error(s)\n\nTime Elapsed 00:00:12.51\n"
+    }
+  ]
+}

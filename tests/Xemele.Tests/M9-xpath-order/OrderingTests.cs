@@ -32,11 +32,11 @@ public sealed class OrderingTests
     public void DescendantCountAndOverlappingUnionsPreserveOrderWithinFiniteWork()
     {
         var document = Wide(4096); var options = new XPathContext
-        { Limits = new() { MaxOperations = 5000000, MaxNodeSetItems = 100000, MaxInputItems = 100000 } };
-        Assert.Equal(4096d, XPathExpression.Compile("count(//n)").Evaluate(document.RootElement, options).AsNumber());
-        var result = XPathExpression.Compile("/r/n[3] | /r/n[1] | /r/n[3] | /r/n[2]").Evaluate(document.RootElement, options).AsNodeSet();
+        { Limits = new() { MaxOperations = 5000000, MaxNodeSetItems = 100000, MaxInputItems = 100000 }, CancellationToken = TestContext.Current.CancellationToken };
+        Assert.Equal(4096d, XPathExpression.Compile("count(//n)", cancellationToken: TestContext.Current.CancellationToken).Evaluate(document.RootElement, options).AsNumber());
+        var result = XPathExpression.Compile("/r/n[3] | /r/n[1] | /r/n[3] | /r/n[2]", cancellationToken: TestContext.Current.CancellationToken).Evaluate(document.RootElement, options).AsNodeSet();
         Assert.Equal(new[] { "0", "1", "2" }, result.Select(n => n.Node!.Value.Attributes[0].Value));
-        Assert.Equal("4094", XPathExpression.Compile("string(/r/n[last()]/preceding-sibling::n[1]/@a)").Evaluate(document.RootElement, options).AsString());
+        Assert.Equal("4094", XPathExpression.Compile("string(/r/n[last()]/preceding-sibling::n[1]/@a)", cancellationToken: TestContext.Current.CancellationToken).Evaluate(document.RootElement, options).AsString());
     }
 
     [Fact]
@@ -59,10 +59,11 @@ public sealed class OrderingTests
         var document = Wide(8); var nav = new XPathNavigator(document, Budget()); var foreign = Wide(1);
         Assert.Throws<XPathEvaluationException>(() => nav.Normalize([XPathItem.FromNode(foreign.RootElement)], Budget()));
         Assert.Throws<ArgumentException>(() => nav.Normalize([default], Budget()));
-        var context = new XPathContext { Limits = new() { MaxInputItems = 100000, MaxNodeSetItems = 3, MaxOperations = 1000000 } };
+        var quotaDocument = Wide(3);
+        var context = new XPathContext { Limits = new() { MaxInputItems = 100000, MaxNodeSetItems = 3, MaxOperations = 1000000 }, CancellationToken = TestContext.Current.CancellationToken };
         // Existing member repetitions do not consume new unique slots.
-        Assert.Equal(3d, XPathExpression.Compile("count(/r/n[1] | /r/n[2] | /r/n[3] | /r/n[1])").Evaluate(document.RootElement, context).AsNumber());
-        Assert.Throws<XPathEvaluationException>(() => XPathExpression.Compile("/r/n[1] | /r/n[2] | /r/n[3] | /r/n[4]").Evaluate(document.RootElement, context));
+        Assert.Equal(3d, XPathExpression.Compile("count(/r/n[1] | /r/n[2] | /r/n[3] | /r/n[1])", cancellationToken: TestContext.Current.CancellationToken).Evaluate(quotaDocument.RootElement, context).AsNumber());
+        Assert.Throws<XPathEvaluationException>(() => XPathExpression.Compile("/r/n[1] | /r/n[2] | /r/n[3] | /r/n[1]/x", cancellationToken: TestContext.Current.CancellationToken).Evaluate(quotaDocument.RootElement, context));
     }
 
     private sealed class CancelAfterBudget(CancellationTokenSource source, long at) : IXPathBudget
