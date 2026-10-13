@@ -75,7 +75,8 @@
         "feature-review",
         "borrowed-name-checks",
         "borrowed-name-benchmarks",
-        "coarse-components"
+        "coarse-components",
+        "exact-parser-scans"
       ]
     }
   ],
@@ -215,6 +216,15 @@
       "result": "passed",
       "summary": "16 ShortRun cases completed, ASCII/multilingual lengths 1/8/128/4096. Direct owned string takes 66-80% of scratch-copy time with identical final owned-string bytes; initialized scratch excluded. Not a 0 B ownership claim.",
       "artifact": "artifacts/M9-xml-performance/ownership-bdn/results/Xemele.XmlPerformance.TextOwnership-report-github.md"
+    },
+    {
+      "id": "exact-parser-scans",
+      "kind": "check",
+      "revision": "f3fe62e9def6c4874309893cadd0440180ee5883",
+      "command": "pinned .NET 10.0.11 XmlPerformanceRunner.dll parser-scans --iterationTime 250 --artifacts artifacts/M9-xml-performance/parser-scans-bdn (same tiering/PGO/ReadyToRun settings as checkpoint-parity)",
+      "result": "passed",
+      "summary": "108 ShortRun cases completed; all timed scans 0 B. Exact XML text/name sets plus tag delimiters; setup exhaustively compares 65,536 UTF-16 code units and prepared miss/early/end/multilingual inputs. Long miss scalar/cached times: text 2723/161 ns, names 1412/162 ns, tags 1369/228 ns. Tiny candidates favor scalar code. Temporary tiny-name runtime guard passed 10792 unit cases, then seven alternating document rounds measured 1.0037x prior latency; reverted. No new runtime or parity credit. Full source patch hash and all limitations are in scan-strategies.md.",
+      "artifact": "docs/reports/M9-xml-performance/scan-strategies.md"
     }
   ],
   "blockers": [],
@@ -228,10 +238,11 @@
       "1430 compiled API members identical; standard API baseline failed on pre-existing empty M8-datatypes.txt.",
       "Task validation passed.",
       "Borrowed-name literal/packed/XXH3/hybrid prototypes measured; exact-name guards passed. XML hybrid rejected after whole-document paired comparison. Coarse instrumentation qualified all ten fixtures.",
-      "16 ownership ShortRun cases passed with explicit final-string allocation; two alternating document comparisons preserved. Memory and public API controls pass."
+      "16 ownership ShortRun cases passed with explicit final-string allocation; two alternating document comparisons preserved. Memory and public API controls pass.",
+      "108 exact text/name/tag scan ShortRun cases completed with 0 B and exhaustive UTF-16 setup guards. Tiny-name scalar trial rejected after whole-document comparison; retained runtime unchanged."
     ],
     "remaining": [
-      "BCL latency target still fails. Largest residual is feed-small 3.06x; entity-medium 2.61x, structural fixtures 1.32-2.42x. Continue measured parser-loop and persistence work.",
+      "BCL latency target still fails. Latest retained runtime: geomean 1.89x, feed-small 3.08x, entity-medium 2.66x, structural fixtures 1.31-2.41x. Exact-set scan benchmarks are complete; tiny-name threshold trial did not improve document parsing. Continue measured parser-loop and persistence work.",
       "Do not mark implemented/verified or unlock dependents until the latency criterion passes.",
       "Controlled release/cross-platform performance evidence has not been run."
     ],
