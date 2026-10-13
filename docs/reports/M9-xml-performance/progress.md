@@ -1,6 +1,6 @@
 # XML performance lane — working checkpoint
 
-The lane is **in progress**. Allocation targets pass in the current local screening run; latency targets do not. The final 20-case BenchmarkDotNet ShortRun at source revision `412ea52687d45e7ba5104ea177f32370da67d79e` gives geometric mean Xemele/BCL latency 1.94×, allocation 0.88×, maximum allocation ratio 1.22×. Summed retained managed DOM heap is 0.902× BCL. No default features were removed. These ARM64 shared-host observations are informational, not controlled release or cross-platform evidence.
+The lane is **in progress**. Allocation targets pass in the current local screening run; latency targets do not. The final 20-case BenchmarkDotNet ShortRun at source revision `b80f8a471005e778d63df8adec025fb98090c2e0` gives geometric mean Xemele/BCL latency 1.88×, allocation 0.88×, maximum allocation ratio 1.22×. Summed retained managed DOM heap is 0.902× BCL. No default features were removed. These ARM64 shared-host observations are informational, not controlled release or cross-platform evidence.
 
 Apple M4 Pro, macOS 15.8.1, SDK 10.0.400, runtime 10.0.11; TieredCompilation/PGO/ReadyToRun disabled consistently for these managed screenings. Native references: libxml2 2.15.4, commit 96498992efa48d52b0e8b83058bd88dbdaf153c1; xmloxide 0.5.0, commit 555055f1ea6bf9944488fd96415b6f03b5b43696, Rust 1.95.0. GC is concurrent workstation; no claim that concurrent GC was disabled.
 
@@ -8,22 +8,22 @@ Prepared UTF-8 bytes, DOM materialization, namespace processing, whitespace, int
 
 | Fixture | Xemele ms | BCL ms | Time ratio | Allocation ratio | Retained ratio | libxml2 parse ms | xmloxide parse ms |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| feed-small | 0.050 | 0.016 | 3.06 | 1.02 | 1.17 | 0.019 | 0.019 |
-| svg-small | 0.197 | 0.104 | 1.90 | 0.72 | 0.71 | 0.100 | 0.099 |
-| deep-medium | 0.587 | 0.256 | 2.30 | 1.02 | 1.05 | 0.222 | 0.245 |
-| entity-medium | 6.355 | 1.779 | 3.57 | 0.71 | 1.03 | 1.082 | 5.434 |
-| xhtml-medium | 3.081 | 1.363 | 2.26 | 0.97 | 0.98 | 1.481 | 1.586 |
-| build-medium | 3.787 | 2.457 | 1.54 | 0.66 | 0.66 | 2.329 | 2.074 |
-| soap-large | 12.968 | 5.464 | 2.37 | 1.22 | 1.23 | 5.086 | 6.935 |
-| configuration-large | 18.553 | 14.696 | 1.26 | 0.70 | 0.70 | 10.280 | 9.416 |
-| business-large | 64.605 | 45.596 | 1.42 | 0.91 | 0.91 | 26.385 | 27.420 |
-| text-large | 19.478 | 18.081 | 1.08 | 1.00 | 1.01 | 20.485 | 19.793 |
+| feed-small | 0.054 | 0.018 | 3.06 | 1.02 | 1.17 | 0.019 | 0.019 |
+| svg-small | 0.202 | 0.110 | 1.84 | 0.72 | 0.71 | 0.100 | 0.099 |
+| deep-medium | 0.592 | 0.263 | 2.25 | 1.02 | 1.05 | 0.222 | 0.245 |
+| entity-medium | 4.945 | 1.897 | 2.61 | 0.71 | 1.03 | 1.082 | 5.434 |
+| xhtml-medium | 3.042 | 1.383 | 2.20 | 0.97 | 0.98 | 1.481 | 1.586 |
+| build-medium | 3.907 | 2.568 | 1.52 | 0.66 | 0.66 | 2.329 | 2.074 |
+| soap-large | 13.931 | 5.752 | 2.42 | 1.22 | 1.23 | 5.086 | 6.935 |
+| configuration-large | 19.572 | 14.807 | 1.32 | 0.70 | 0.70 | 10.280 | 9.416 |
+| business-large | 67.204 | 47.879 | 1.40 | 0.91 | 0.91 | 26.385 | 27.420 |
+| text-large | 19.894 | 17.668 | 1.13 | 1.00 | 1.01 | 20.485 | 19.793 |
 
 The current library preserves strict Unicode validation, scalar columns, byte offsets, durable per-node/member locations, quotas, DTD defaults/normalization, unknown-reference provenance and recovery. General callback/pause contracts remain on their original event path. Private DOM batching does not expose borrowed source views or retain the parser in the document.
 
 Changes so far: bounded UTF-8/ASCII conversion; bulk ordinary text and predefined references; complete ASCII tags including primary DTD tags with guarded fallback; cached ASCII identifier scan plus fused QName validation; owned-name DOM handoff and bounded canonical caches; conditional DTD interpretation scratch for plain primary literals; synchronous private DOM tag batching; pooled operation scratch; 256-slot segmented owned arenas; lossless 12-byte common source coordinates with sparse full-width/URI exceptions; cached quota ceilings.
 
-The latest cumulative checks are 10,781 unit tests passed, including zero-byte warmed borrowed text and repeated-tag dispatch regressions. The final broader checks pass: 920 conformance and 618 differential cases; compiled API comparison is identical. Exact commands and source revisions are in the task JSON. All five 1 GiB streaming modes pass the corrected compacted live-heap oracle (whole-heap peaks 133,296–149,552 bytes), and a retained 9 MiB negative control fails that oracle as intended. These streaming binaries precede the last DOM-only changes; decoder, quota and streaming paths are unchanged. Failed attempts remain in ignored artifacts; no stale-binary result is credited. The lane remains isolated because the latency criterion fails; it is not marked implemented or verified.
+The latest cumulative checks are 10,785 unit tests passed, including zero-byte warmed borrowed text and repeated-tag dispatch regressions. The final broader checks pass: 920 conformance and 618 differential cases; compiled API comparison is identical. Exact commands and source revisions are in the task JSON. All five 1 GiB streaming modes pass the corrected compacted live-heap oracle (whole-heap peaks 133,296–149,552 bytes), and a retained 9 MiB negative control fails that oracle as intended. These streaming binaries precede the last DOM-only changes; decoder, quota and streaming paths are unchanged. Failed attempts remain in ignored artifacts; no stale-binary result is credited. The lane remains isolated because the latency criterion fails; it is not marked implemented or verified.
 
 ## Source findings and the referenced parser study
 
@@ -39,7 +39,7 @@ Raw logs, binaries, per-round data, layout graphs and failed attempts live under
 
 ## Remaining causes and constraints
 
-The original main ratios ranged from 9.27× to 34.21× BCL latency; current ratios range from 1.08× to 3.57×. This is a large improvement, but structural and entity-heavy documents still fail parity. Ordinary large-text scanning is close to BCL; replacing more scans alone is unlikely to close the structural gap.
+The original main ratios ranged from 9.27× to 34.21× BCL latency; current ratios range from 1.13× to 3.06×. This is a large improvement, but structural and entity-heavy documents still fail parity. Ordinary large-text scanning is close to BCL; replacing more scans alone is unlikely to close the structural gap.
 
 Measured costs and code evidence must be distinguished. [The feature experiment](feature-costs.md) measures durable coordinates at about 5–12% of structural latency, insufficient to explain the full gap. Whole primary ASCII tag batching reduced the entity fixture from 7.54 ms in the prior full ShortRun to 6.50 ms in the prior checkpoint; unchanged allocation and broader semantic tests support keeping it, though these are separate short measurement windows. Removing duplicate canonical-name probes reduced work at the DOM boundary without changing retained storage.
 
@@ -50,3 +50,5 @@ The public surface extractor finds 1,430 members identical to the baseline (SHA-
 The latest compatible change fuses the opening `<` and complete ASCII tag in the private DOM path. It avoids a second parser-loop iteration, preflights the entire bounded lexeme before changing token state, and preserves exact source mappings/quota failure locations. All 10,781 unit, 920 conformance and 618 differential tests pass. Seven alternating before/after/BCL screenings give after/before latency geomean 0.891× with unchanged allocation; the final full ShortRun improves BCL-relative geomean from 2.22× to 1.94×. No parity claim is made.
 
 [Borrowed-name experiments](name-lookups.md) address the user's HTML literal and packed/hash cache suggestions. The HTML literal prototype returns shared strings with 0 B warmed allocation and about 2.85 ns/name. The XML hybrid showed no meaningful whole-document speedup and was reverted; only the measured prototype and its regression coverage remain. HTML runtime adoption requires the owning tokenizer task.
+
+Reference fast paths at the latest checkpoint batch complete predefined references inside internal replacement text and short valid BMP numeric references in primary text. Both preserve scope-specific quota accounting, DTD validation provenance and exact boundary fallback. All 10,785 unit, 920 conformance and 618 differential tests pass; warmed numeric dispatch is 0 B. Entity-medium falls from 6.53 ms to 4.84 ms in seven alternating before/after/BCL screenings (26% lower latency), and the full ShortRun measures 4.95 ms / 2.61× BCL. Overall latency geomean is now 1.88× BCL; allocations remain 0.88×. The largest residual ratio is feed-small at 3.06×.

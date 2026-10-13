@@ -34,3 +34,13 @@ Raw variant logs/results and the two failing experimental allocation cases are p
 In the qualified run, entity-medium takes 6.28 ms total, with 0.37 ms in tag parsing, 0.066 ms in end tags and 0.34 ms in tag persistence. SOAP takes 17.58 ms total, with 2.53/0.97/2.95 ms in those scopes; business takes 83.14 ms, with 14.99/2.65/20.37 ms. These coarse, instrumented scopes include observer and GC effects and are diagnostic estimates, not exact release percentages. Timestamp-pair calibration is about 9 ns. Substantial work remains outside these scopes, so optimizing name lookup or tag persistence alone cannot close the measured latency gap.
 
 The measured borrowed-name prototypes and rejected XML hybrid are documented in [name-lookups.md](name-lookups.md).
+
+## Reference scanning and entity-source accounting
+
+The remaining entity-medium cost includes repeatedly entering the scalar state machine for each character of `&amp;` in replacement text and short numeric references such as `&#945;` in primary text. The compatible fast paths distinguish these units: replacement-source spelling charges expanded characters for every consumed scalar plus one resolved scalar, while primary spelling charges document/token characters plus one expanded scalar. Internal replacement does not advance primary byte offsets or source columns. Both paths preflight every relevant quota and preserve the original scalar path near a boundary. DTD validation reference provenance is retained.
+
+Only the five complete predefined references are batched inside internal replacement text. Primary numeric candidates are bounded to sixteen source units and valid BMP XML scalars. Supplementary, invalid, incomplete and longer forms still use the full parser. These are guarded implementation choices, not removed XML features.
+
+At runtime source `b80f8a471005e778d63df8adec025fb98090c2e0`, 10,785 unit, 920 conformance and 618 differential cases pass. Focused checks compare every nearby expansion-quota boundary with the scalar SAX path, check DTD EMPTY-content provenance, cover decimal/hexadecimal/whitespace/invalid/supplementary/long numeric forms with and without DTDs, and observe 0 B warmed numeric-reference dispatch.
+
+Seven alternating before/after/BCL screening rounds against `412ea52687d45e7ba5104ea177f32370da67d79e` reduce entity-medium from 6.530 ms to 4.840 ms (0.741×). Geomean after/before latency is 0.966× across all ten fixtures; small changes on unaffected fixtures are treated as measurement/layout effects. No fixture is removed from the parity check. Raw data: `artifacts/M9-xml-performance/references-paired.json`.
