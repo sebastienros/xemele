@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Native separator paths for Windows fixture and allocation child guards",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-windows-test-paths",
   "base_revision": "782f86da3773e63ad992a6b14f438be8c815f761",
@@ -32,23 +32,59 @@
     {
       "id": "M9-windows-test-paths-A1",
       "description": "Five test harnesses construct native-separator paths; all existing strict descendant, canonical path, capability, fingerprint and original oracle assertions remain unchanged.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-native-path-checks"
+      ]
     },
     {
       "id": "M9-windows-test-paths-A2",
       "description": "Focused schema original/hash and four real/positive allocation child checks pass on integrated local source; document actual Windows42 failure and that Windows rerun remains unexecuted.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-native-path-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationChild.cs: construct owned paths with native segments, all remaining source bytes unchanged",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationChild.cs: construct owned paths with native segments, all remaining source bytes unchanged",
+    "tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs: construct owned paths with native segments, all remaining source bytes unchanged",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs: construct owned paths with native segments, all remaining source bytes unchanged",
+    "tests/Xemele.Tests/M8-xsd-type-relations/OriginalTests.cs: construct owned paths with native segments, all remaining source bytes unchanged"
+  ],
+  "evidence": [
+    {
+      "id": "focused-native-path-checks",
+      "kind": "check",
+      "revision": "720e3bad53c3845295b90bee6ae4ccb020c2513a",
+      "command": "PinnedSDK offline restore/build and bounded standalone xUnit .NET10.0.11: M8XsdTypeRelations.OriginalTests plus4 exact allocation parent facts; source projection",
+      "result": "passed",
+      "summary": "43/43focused checks pass, no failures/errors/skips/not-run;39original/hash plus4parent real/positive pairs.7commands clean lifecycle receipts.10native path constructions are the only source changes. Windowsrerun unrun, no fullmatrix credit.",
+      "artifact": "docs/reports/M9-windows-test-paths/checks.json"
+    },
+    {
+      "id": "sandbox-restore-timeout",
+      "kind": "check",
+      "revision": "720e3bad53c3845295b90bee6ae4ccb020c2513a",
+      "command": "Bounded sandboxed offline restore180s, subsequent elevated owned group inspection",
+      "result": "failed",
+      "summary": "Restore exceeded bound; direct child reaped/log closed but sandbox denied absence inspection. Subsequent read-only inspection proves exact owned group7829absent. No passing restore/test credit for this attempt.",
+      "artifact": "docs/reports/M9-windows-test-paths/attempt1.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Repair mixed separator construction identified by actual Windows hosted failures without changing runtime or skipping tests.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Ten native-segment test path constructions fixed;strict assertions/provenance and allcase identities preserved.43focused local checks pass.",
+    "checks": [
+      "Pinnedbuild and43focusedactual checks pass with clean process receipts;4allocation tests each run real/positive children",
+      "Projection proves all other source bytes unchanged; fixture/oracle assertions and runtime unchanged"
+    ],
+    "remaining": [
+      "Actual Windows10754suite/package/trim/AOT/tool results remain pending inM9-distribution; no Windows verification claim"
+    ],
+    "requests": [
+      "A fresh GitHub run needs explicit new human budget; consumed prior three-job approval provides no extra execution."
+    ]
   }
 }
