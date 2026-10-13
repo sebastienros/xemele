@@ -1,11 +1,11 @@
 {
-  "status": "SOURCE REPAIR ONLY after root failed preparation attempts1/2; canonical-feed repair and five new controls UNRUN; fresh preparation/check/counter withheld; no task state edits",
+  "status": "SOURCE REPAIR ONLY after root failed preparation attempts1/2/3; consumer central package management opt-out unrun; fresh preparation/check/counter withheld; no task state edits",
   "serializedClaim": "e8230dfb967aa15cea120f831a35a40e4ce15807",
   "branch": "codex/m8-gate",
   "worktree": "/Users/sebastienros/.codex/worktrees/29a0/xemele",
   "sourceClosure": {
     "files": 3077,
-    "sha256": "6bb822c2858d015f5549219c4d06276b39ace527c13f6b53ccbe4f7260906f2a",
+    "sha256": "d2bf5fb083b7b8148a3e068639cf395d61f1978480e419fa644e310821bea9b9",
     "rows": {
       ".editorconfig": "52fea1f0356bd75fac75af115cfc5ea3b1c4c82c6cf67083659f6118de227e1b",
       "Directory.Build.props": "6246df4df357d19fcf9d0a7f208fc49884004e2b103b77d69c86fd0b401c94a3",
@@ -404,10 +404,10 @@
       "docs/reports/M8-contracts/ApiCheck/ApiCheck.csproj": "9e2471253b03044607a9f34efa8a33ce861f75c2e3c77af92a22354e76edf01a",
       "docs/reports/M8-contracts/ApiCheck/Program.cs": "6926c417c6a6e314909481dfd471a90190ac6bc42399a5a33707190aec5d2d96",
       "docs/reports/M8-gate/Consumer.cs.template": "aeb8830ee47c3a7e5db575dda42d2261c4e25ab9e50e9fec2d9fbdd930113fa7",
-      "docs/reports/M8-gate/Consumer.csproj.template": "720b0ba5304ca7417e9483dafb3ae14c90ddca1184ea382fb5874f704c8458a1",
+      "docs/reports/M8-gate/Consumer.csproj.template": "9e9843b22abc2d9218b510af676a11b7c901f27dca44e879e7e82e293a9033d8",
       "docs/reports/M8-gate/CounterControl.cs.fixture": "1123330ed1f42275b63e20b3e2fc56d2f40e94b5dba01e2b42d2652adc097f30",
       "docs/reports/M8-gate/CounterControl.csproj": "90e5b2e4d3b43d97e66ae88c5d695fe23e369ca73924e2eafd15f3d209394f0e",
-      "docs/reports/M8-gate/README.md": "6c362e1d109901383d66e14bc66897c630bf60a77637e799da986258ed5b9e7d",
+      "docs/reports/M8-gate/README.md": "90a00b3b1b60d1de3a8eeb8ba120c8a81ea4fd442b27b232a676b9fa2f365a2c",
       "docs/reports/M8-gate/checks.py": "931b045bdc01867a96b03d6a9e83dba7cff80c78e38b2860e43c889890fba414",
       "docs/reports/M8-gate/consumer-expected.txt": "1145369e60fd3c3c60b8be096aba97640a8041d6df7f54b983df11db80d859a6",
       "docs/reports/M8-gate/feed_controls.py": "9a447fb3fc21977a1e064049e6058a48f756ffd309c087587f192f1087965e61",
@@ -3093,10 +3093,10 @@
   },
   "scriptHashes": {
     "docs/reports/M8-gate/Consumer.cs.template": "aeb8830ee47c3a7e5db575dda42d2261c4e25ab9e50e9fec2d9fbdd930113fa7",
-    "docs/reports/M8-gate/Consumer.csproj.template": "720b0ba5304ca7417e9483dafb3ae14c90ddca1184ea382fb5874f704c8458a1",
+    "docs/reports/M8-gate/Consumer.csproj.template": "9e9843b22abc2d9218b510af676a11b7c901f27dca44e879e7e82e293a9033d8",
     "docs/reports/M8-gate/CounterControl.cs.fixture": "1123330ed1f42275b63e20b3e2fc56d2f40e94b5dba01e2b42d2652adc097f30",
     "docs/reports/M8-gate/CounterControl.csproj": "90e5b2e4d3b43d97e66ae88c5d695fe23e369ca73924e2eafd15f3d209394f0e",
-    "docs/reports/M8-gate/README.md": "6c362e1d109901383d66e14bc66897c630bf60a77637e799da986258ed5b9e7d",
+    "docs/reports/M8-gate/README.md": "90a00b3b1b60d1de3a8eeb8ba120c8a81ea4fd442b27b232a676b9fa2f365a2c",
     "docs/reports/M8-gate/checks.py": "931b045bdc01867a96b03d6a9e83dba7cff80c78e38b2860e43c889890fba414",
     "docs/reports/M8-gate/consumer-expected.txt": "1145369e60fd3c3c60b8be096aba97640a8041d6df7f54b983df11db80d859a6",
     "docs/reports/M8-gate/feed_controls.py": "9a447fb3fc21977a1e064049e6058a48f756ffd309c087587f192f1087965e61",
@@ -4340,7 +4340,7 @@
     "lateTerminalOutput": "Included in root prior11 passed synthetic controls at a89bd6b, attributed only to exact historical source; fresh complete preparation remains unrun/withheld.",
     "newFilesystemCatalogControls": {
       "count": 5,
-      "status": "SOURCE ONLY/UNRUN",
+      "status": "Root actual5 included in16 passing preparation controls at f843e7653; unchanged control source, exact historical scope only; fresh preparation withheld",
       "actualHelper": "package_inputs.preflight_catalog",
       "cases": [
         "different-versions-same-generic-name",
@@ -4350,9 +4350,15 @@
         "identity-path-mismatch"
       ],
       "scratch": "Owned tiny filesystem fixtures, removed after control; no product or cache mutation"
+    },
+    "actualHistoricalPreparationControls": {
+      "count": 16,
+      "testedRevision": "f843e7653c2504131745abdc63544c14eb702de2",
+      "recordSha256": "84614466e0ac50840bb1804167be73bdf19ad90cb9ae01e8d2e25042f5a5306c",
+      "gatePhasePassCredit": 0
     }
   },
-  "runtimeBinaryEnvironment": "Root attempt2 restored/built all18 declared projects and selected native toolchain; package layout failed.10 remaining package commands and complete correctness/counter phases unrun. Fresh feed repair/source/caps require final review and new preparation.",
+  "runtimeBinaryEnvironment": "Root attempt3 built18 projects, passed16 controls, canonical layout/local pack/product DLL equality; external consumer restore failedNU1008. Seven later preparation commands, complete check/counter phases unrun. Fresh CPM opt-out requires root review/new preparation.",
   "rootAuthority": "Root sole main/primary/task-state/integration writer and actual counter launcher; worker no certificates, runtime/shared edits, new actors or publication",
   "remaining": [
     "Root source review including corrected finite parent/observer templates",
@@ -4362,19 +4368,19 @@
     "Integrated verification, necessary checkpoint custody, transient cleanup and final transfer"
   ],
   "knownLimitations": [
-    "Historical preparation attempts1/2 failed; no successful preparation certificate or gate criterion credit.",
-    "Canonical feed repair/five new filesystem controls/source numeric adjustment are unrun.",
-    "Fresh package/trim/NativeAOT, complete correctness/cumulative counters unrun.",
+    "Historical preparation attempts1/2/3 failed; no successful preparation certificate or gate criterion credit.",
+    "Consumer CPM opt-out source is unrun; seven later attempt3 commands stayed unrun.",
+    "Complete consumer/trim/NativeAOT validation, full correctness/cumulative counters unrun.",
     "Original CLI failures/EPIPE limitation,155 exact nonpassing/null dispositions and reference limitations remain preserved."
   ],
   "authorityBinding": "Explicit reuse.recordHashes dictionary is hash-checked in initial/final inputs and before every check/counter command; new gate orchestration output excluded.",
   "sourceOnlyNotes": [
-    "Worker source repair only: canonical catalog preflight and five new tiny filesystem controls added UNRUN; no executable/state writes.",
-    "Root attempts1/2 stay failed, with actual completed prefix/control scopes separate from unrun commands; no phase certificate/gate credit.",
-    "Read-only audit7415 archives/7387 canonical/28 identical aliases;6 generic collision groups16 distinct-version copies with exact concise pins.",
-    "Directory-derived identity/path/filename contract accepted by root; no helper nuspec validation or invented version normalization.",
-    "Reviewed source numeric proposal layout600/prepare14000+180/rootouter14780/14800; other caps unchanged; no deadline resets.",
-    "Five new filesystem controls and all fresh preparation/check/counter jobs are withheld until final root source acceptance/release."
+    "Worker narrow source repair only: consumer template ManagePackageVersionsCentrally=false; no runtime/shared config/task changes or executable jobs.",
+    "Root attempts1/2/3 remain failed with original causes/unrun counts and no phase certificate/gate credit.",
+    "Root attempt3 actual43normal/1failed/7unrun,16 controls/canonical feed/localpack/product DLL equality passed only exact scopes;53 groups absent/raw+partial external cleanup terminal.",
+    "No command, deadline, package version, offline/fresh private cache, NoProjectReference or output semantics changed.",
+    "Recipe canonical hash unchanged; source/script/packet pins and11 ASTs refreshed. All corrected consumer/full check/counter execution remains withheld.",
+    "LocalSDK10.0.400 source import order confirms project CPMfalse overrides earlier Directory.Packages.props before NuGet.targets central-enabled condition; no SDK execution."
   ],
   "nestedIdentityBounds": {
     "controls": 5,
@@ -4501,7 +4507,7 @@
     "retention": "Full catalog active in memory only; concise counts/digests, no large/raw catalog archive",
     "nuspecScope": "No helper nuspec validation; only16 colliding archives were actually inspected read-only",
     "actualAuthority": "Whole-cache endpoint byte guards and actual explicit-offline restores",
-    "rootContractReview": "Directory-derived minimum accepted by root; fresh source acceptance/release pending"
+    "rootContractReview": "Accepted directory-derived minimum; root actual attempt3 preflight/catalog/package equality passed only declared preparation scope; complete preparation failed"
   },
   "readOnlyFeedAudit": {
     "archives": 7415,
@@ -4705,5 +4711,84 @@
     "nextPhaseCertificateIssued": false,
     "gateCriterionPassCredit": 0,
     "nativeSelectionOnly": "Actual selected compiler/linker/SDK, no native consumer build/run credit"
+  },
+  "historicalPreparationAttempt3": {
+    "attribution": "Root actual execution only; original failed preparation remains failed and earns no phase/gate credit",
+    "recordPath": "/Users/sebastienros/github/xemele/docs/orchestration/M8-gate-branch-prepare-attempt-3.json",
+    "recordSha256": "84614466e0ac50840bb1804167be73bdf19ad90cb9ae01e8d2e25042f5a5306c",
+    "cleanupPath": "/Users/sebastienros/github/xemele/docs/orchestration/M8-gate-branch-prepare-attempt-3-cleanup.json",
+    "cleanupSha256": "faa2ae85135e2ba210aef2c555ae5ddaea724733744b73cdbecea86ad43e5f19",
+    "sourcePlanPath": "/Users/sebastienros/github/xemele/docs/orchestration/M8-gate-consumer-cpm-repair-source-plan.json",
+    "sourcePlanSha256": "91151d3cab251b14e2a1119b63c60f3a3678214d662cfc74ae78a69965f470dd",
+    "testedRevision": "f843e7653c2504131745abdc63544c14eb702de2",
+    "actualOuterSession": 27760,
+    "actualOuterExit": 1,
+    "expectedCommands": 51,
+    "executedCommands": 44,
+    "normalExit0Commands": 43,
+    "failedCommands": 1,
+    "remainingUnrunCommands": 7,
+    "syntheticControlsActualPassed": 16,
+    "primaryFailure": {
+      "command": 43,
+      "entryPoint": "external consumer restore",
+      "exit": 1,
+      "error": "NU1008: explicit PackageReference Version with inherited central package management"
+    },
+    "secondaryFailure": "Incomplete package/consumer preparation follows original restore failure; primary unchanged",
+    "freshAbsentRegisteredGroups": 53,
+    "rawDeleted": true,
+    "partialExternalLayoutRemoved": true,
+    "nextPhaseCertificateIssued": false,
+    "gateCriterionPassCredit": 0,
+    "actualPriorScopes": [
+      "18 project restores/builds",
+      "16 guard/filesystem controls",
+      "canonical feed layout",
+      "local package creation",
+      "actual package/source DLL equality"
+    ],
+    "offlineCatalog": {
+      "archiveCount": 7415,
+      "canonicalCount": 7387,
+      "aliasCount": 28,
+      "canonicalCatalogSha256": "f6bfbf3c2b6eee9a07cb21e9c181246d262f9da7fc782247969e67b2d1677c82",
+      "aliasIdentitySha256": "2e0ed48750ad37ba8b4d4a6bf854319d4c5eb64c64326a2e0ed2146c1fd65b7f",
+      "reservedIntegrationIdentity": "xemele.0.8.0-integration.nupkg"
+    }
+  },
+  "consumerCpmRepair": {
+    "ownedPath": "docs/reports/M8-gate/Consumer.csproj.template",
+    "property": "ManagePackageVersionsCentrally=false",
+    "reason": "External consumer under repository inherits Directory.Packages.props CPM=true but owns explicit PackageReference version",
+    "packageReference": "Xemele 0.8.0-integration unchanged",
+    "preserved": [
+      "fresh private cache",
+      "explicit offline feed",
+      "no ProjectReference",
+      "actual archive/product DLL equality",
+      "managed/trim/AOT expected outputs",
+      "exact commands/deadlines"
+    ],
+    "sharedConfigurationChanged": false,
+    "status": "SOURCE ONLY; corrected consumer restore/build/run unrun",
+    "localSdkSourceImportOrder": {
+      "sdk": "10.0.400",
+      "sequence": [
+        "implicitSdk.props",
+        "Microsoft.Common.props",
+        "NuGet.props",
+        "Directory.Packages.props",
+        "consumerPropertyGroupCPMfalse",
+        "NuGet.targetsCentralEnabledCondition"
+      ],
+      "sourceFiles": {
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/Sdks/Microsoft.NET.Sdk/Sdk/Sdk.props": "41dc552e294cd1f0c6e640c302c112b0788fa8776ecac73e7fa013382a3bf713",
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/Current/Microsoft.Common.props": "87a2707df41f5abbbd8ad5678715c169ba40ee7543fef4a98d7852ff17e94e48",
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/NuGet.props": "0bd56dea541dd607af6287264e4f5aa3dd223e42d2ffcac9a5230d41bbac3d7e",
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/NuGet.targets": "ce10b22f349503468546cd445e3e0ed7637e6b759b90a225a6c96ba2759bd0fb"
+      },
+      "scope": "Read-only source inspection; no MSBuild import/evaluation/restore executed by worker"
+    }
   }
 }

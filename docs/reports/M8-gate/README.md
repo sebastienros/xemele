@@ -1,10 +1,13 @@
 # M8 gate source packet
 
-Source repair only. Root attempt1 remains failed at command11/MSB1009;
-root attempt2 remains failed at command40/Ambiguous local package filename.
-Attempt2 recorded40 successful commands, one failed command and10 unrun package
-commands. Neither failed preparation issued a certificate or earns gate credit.
-Root alone executed those attempts; worker has run no executable gate workload.
+Source repair only. Root attempts1/2 remain failed at command11/MSB1009 and
+command40/ambiguous feed filename. Attempt3 remains failed at command43/NU1008:
+the external consumer inherited central package management while supplying its
+exact PackageReference version. Root recorded43 normal commands, one failed and
+seven unrun;16 preparation controls passed only their exact declared scope.
+The consumer template now explicitly disables central package management. No
+successful preparation/certificate/gate credit is claimed. Root alone executed
+those attempts; worker has run no executable gate workload.
 The task record remains with root. This isolated branch owns only this directory.
 All commands below require root's reviewed release and root process custody.
 
@@ -106,8 +109,11 @@ with DLL equality to actual source/API product DLL. The actual nupkg archive
 is rehashed against its frozen preparation record before/after every check. New gate phase guards include19 controls: the16
 preparation receipt/cleanup/publication/late-terminal-output guards plus valid prepared-archive acceptance, actual
 post-freeze archive-mutation refusal and missing-record refusal.
- A fresh absent private consumer
-cache, explicit local feed and no ProjectReference are enforced.
+ The external consumer template explicitly sets ManagePackageVersionsCentrally=false
+so its unchanged PackageReference owns exact0.8.0-integration despite repository
+Directory.Packages.props inheritance. Shared repository configuration is unchanged.
+A fresh absent private consumer cache, explicit local feed and no ProjectReference
+are enforced.
 The local-feed layout600-second command first preflights the complete canonical
 catalog before creating any feed links. Exact ID/version directory coordinates,
 case-folded canonical target, canonical source path, length and SHA256 are bound.
