@@ -8,7 +8,7 @@
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-hosted-rerun-reconciliation",
   "base_revision": "b00be04f7058715388af78efd0f1f1abe3a2fe7c",
-  "integration_revision": "a8385a21c58ecdc4ed7a361d275c4c7e05a7b371",
+  "integration_revision": "f1ca9c15b5c7294620322155b569538d489cd95b",
   "depends_on": [
     "M9-contracts",
     "M9-build-compatibility",
@@ -161,6 +161,15 @@
       "command": "Read-only gh api run38404776386 (run_attempt2), jobs, and attempt1; inspect supplied failed log; compare prepared candidate source closure",
       "result": "failed",
       "summary": "Human-triggered second attempt executed all three jobs on the old commit: Linux/macOS10741 tests52 failures each; Windows10741 tests120 failures. Missing-corpus failures retained; packaging not reached. Historical attempt1 canceled/jobs=[] remains true. Candidate929585dd is still local and includes later corpus/portability/runtime10754 repairs; no new run/push.",
+      "artifact": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
+    },
+    {
+      "id": "hosted-rerun-reconciliation-integrated",
+      "kind": "integration",
+      "revision": "f1ca9c15b5c7294620322155b569538d489cd95b",
+      "command": "Merge report-only reconciliation preserving non-overlapping XML performance task claim; python3 tools/planning/tasks.py validate; git diff --check; source closure comparison",
+      "result": "passed",
+      "summary": "Reconciled both run38404776386 attempts and preserved all3 old-revision failures without adding matrix credit.207 task records validate; source/workflow/package inputs unchanged. Current candidate remains local; no push/jobs/fuzz. Distribution remains blocked.",
       "artifact": "docs/reports/M9-distribution/hosted-attempt2/outcome.json"
     }
   ],
