@@ -8,7 +8,7 @@
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-current-memory",
   "base_revision": "7325a31787b587be1f8f5fcc84f1d5db427b0dbb",
-  "integration_revision": "814b6b6e798f330142c09345343572f20f211fd4",
+  "integration_revision": "6a62f81f325d1cdd1b0111ed469fff3ee48959a2",
   "depends_on": [
     "M9-contracts"
   ],
@@ -93,6 +93,15 @@
       "command": "python3 -B docs/reports/M9-performance/memory.py --dotnet pinned10.0.400host",
       "result": "passed",
       "summary": "Five current1GiBmodes pass exact byte/event/text/earlyEOF oracles;65liveheap samples/mode, max291304bytes<8388608 including buffers/runtime. Retained9MiBcontrol9627776bytes refuses limit. All9outercommands exit0/reaped/groupabsent/logclosed; actual separateRSS. No fuzz or controlledtimingcredit.",
+      "artifact": "docs/reports/M9-performance/current-memory.json"
+    },
+    {
+      "id": "current-memory-integrated",
+      "kind": "integration",
+      "revision": "6a62f81f325d1cdd1b0111ed469fff3ee48959a2",
+      "command": "Compare complete measured runtime/runner/helper/profile/config/caller Git blob closure; planning validate; diff check",
+      "result": "passed",
+      "summary": "Integrated measured source closure exactly matches all five passing1GiB checks and9MiBcontrol. No repeated workload or unrun controlled throughput/retainedDOM credit.",
       "artifact": "docs/reports/M9-performance/current-memory.json"
     }
   ],
