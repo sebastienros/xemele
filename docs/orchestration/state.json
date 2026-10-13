@@ -20,8 +20,8 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Execute only frozen validation branch push/3boundedjobs if human explicitly approves; preserve no remote main/tag/packagepublication.",
-    "Continue M9-robustness independent evidence while approval pending."
+    "Collect approved run 38404705596 actual OS evidence; preserve three-job/60-minute cap and no remote main/tag/package publication.",
+    "Continue owned M9 robustness qualification independently."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -1887,7 +1887,7 @@
   },
   "pending_owned_changes": [],
   "hosted_platform_request": {
-    "status": "human-approved; push next",
+    "status": "approved three-job run in_progress",
     "repository": "sebastienros/xemele",
     "visibility": "PRIVATE",
     "local_branch": "codex/m9-os-validation",
@@ -1895,9 +1895,23 @@
     "job_timeout_minutes": 20,
     "max_parallel": 3,
     "max_runner_minutes": 60,
-    "remote_push": false,
-    "workflow_runs": [],
+    "remote_push": true,
+    "workflow_runs": [
+      {
+        "id": 38404705596,
+        "revision": "46e61208875bffd3db57ee2ab8643c080689aa64",
+        "url": "https://github.com/sebastienros/xemele/actions/runs/38404705596",
+        "status": "in_progress"
+      },
+      {
+        "id": 38404776386,
+        "revision": "eea84f5838f43452df16b0d00384f628c0aab186",
+        "status": "cancellation requested while pending",
+        "reason": "Registration delay caused code-identical empty trigger; cancel queued duplicate to preserve three-job budget."
+      }
+    ],
     "authorization": "Direct human reply: Approve validation branch and jobs",
-    "authorized_scope": "Only new private codex/m9-os-validation branch and3standard20minjobs; no remote main/tag/package publication."
+    "authorized_scope": "Only new private codex/m9-os-validation branch and3standard20minjobs; no remote main/tag/package publication.",
+    "remote_revision": "eea84f5838f43452df16b0d00384f628c0aab186"
   }
 }
