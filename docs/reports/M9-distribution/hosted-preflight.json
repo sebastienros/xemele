@@ -1,0 +1,32 @@
+{
+  "task": "M9-distribution",
+  "revision": "8f138b63a7435edc1060fbc7a35d66531ab3ed46",
+  "scope": "Hosted recipe preflight only; no Windows/Linux execution or remote push",
+  "portableLinkerHost": {
+    "build": "passed",
+    "positiveActualIlLink": "passed",
+    "wrongDllRefused": true,
+    "runtime": "10.0.11",
+    "executionHost": "macOSarm64",
+    "windowsApphostExecution": "unrun"
+  },
+  "requiredRemoteBranch": "codex/m9-os-validation",
+  "jobTimeoutMinutes": 20,
+  "maxParallel": 3,
+  "maximumRunnerMinutes": 60,
+  "genericDuplicateWorkflowExcluded": true,
+  "rootBuildRepair": "M9-build-compatibility verified",
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "build",
+      "tools/Packaging/LinkerHost/LinkerHost.csproj",
+      "-c",
+      "Release",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false",
+      "-p:RestoreSources=/private/tmp"
+    ]
+  ]
+}

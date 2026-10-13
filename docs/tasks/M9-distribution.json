@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M9 coordinator 01a13526-d4ff-7dc0-86d1-505ef7f29975",
   "branch": "codex/m9-distribution-ready",
   "base_revision": "9b33a6073e41c26b19cb383dfa91179191ba1f82",
@@ -90,10 +90,19 @@
       "result": "passed",
       "summary": "264inputs source-equivalent to local passing evidence; full matrix unavailable, task remains blocked and never verified.",
       "artifact": null
+    },
+    {
+      "id": "hosted-preflight",
+      "kind": "check",
+      "revision": "8f138b63a7435edc1060fbc7a35d66531ab3ed46",
+      "command": "PinnedSDK LinkerHost build; actual pinnedILLink --help positive; wrongDLL refusal; bounded workflow/source review; tasks.py validate/diff.",
+      "result": "passed",
+      "summary": "Managed pinned linker host compiles0warnings/errors and passes actualILLink/help+refusal onmacOSarm64;3jobs20mineach, duplicategenericCIexcluded. Windows/Linux/hosted jobs remain unrun.",
+      "artifact": "docs/reports/M9-distribution/hosted-preflight.json"
     }
   ],
   "blockers": [
-    "Hosted jobs not executed; earlier remote-push exclusion requires human authorization for the specific validation branch."
+    "Bounded hosted OS jobs ready; earlier explicit no-remote-push scope requires human authorization to push codex/m9-os-validation and run privateActionsjobs."
   ],
   "handoff": {
     "summary": "Deterministic local runtime/tool release candidates with notices/docs/SourceLink and actual managed/trim/NativeAOT consumption; full required matrix blocked.",
@@ -101,10 +110,10 @@
       "Local package/symbol deterministic cleanrebuilds; sourceLinkembedded; package-only freshcacheconsumers managed/trim/native all pass; nativeMachOarm64; CLI install/help pass; planning/diff checked."
     ],
     "remaining": [
-      "Prepare bounded standard GitHub platform jobs; actual execution awaits explicit remote branch push authorization and results."
+      "Await concrete remote validation branch authorization; then inspect actual3OS unit/package/trim/AOT results and fix demonstrated failures."
     ],
     "requests": [
-      "Approve pushing codex/m9-os-validation to the existing private Xemele repository for capped3x20minActionsjobs. No remote main/tag/package publication."
+      "Approve private codex/m9-os-validation branch push and3standardActionsjobs capped20mineach (60runner-minmax); private allowance/billing applies. No remote main/tag/packagepublication."
     ]
   }
 }

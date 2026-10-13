@@ -14,9 +14,10 @@ Windows has a concrete exact-runtime managed ILLink host, because servicing-suff
 ILLink runtimeconfig cannot be assumed to start under Disable roll-forward.
 Hosted-specific behavior is still UNRUN and gets no credit until actual outputs.
 
-Before push: smallest owning build repair corrects M9 usage fixture parent-library
-CS8805 (executable Program.cs must use existing .cs.fixture convention) and caps the
-older generic build.yml workflow, which also triggers on a branch push.
+The owning M9-build-compatibility repair is verified: parent Contracts and standalone
+usage build0warnings/errors; the fixture uses the established .cs.fixture convention.
+Generic build.yml is capped20minutes and excludes only the reserved validation
+branch push to prevent duplicate jobs; normal build/PR checks are preserved.
 
 A new private validation branch must contain the current local implementation and
 workflow. Earlier explicit instruction excludes remote pushes, so pushing that
@@ -27,3 +28,7 @@ Standard private jobs use included minutes and can be billed beyond the allowanc
 This supplies OS correctness/package evidence when executed. Shared hosted timing
 remains informational under the frozen performance protocol; the6-hour GitHub job
 limit does not establish a24-hour fuzz campaign without validated continuation.
+
+GitHub sources: https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+https://docs.github.com/en/actions/reference/limits
+https://docs.github.com/en/billing/concepts/product-billing/github-actions
