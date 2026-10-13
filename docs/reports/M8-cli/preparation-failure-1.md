@@ -8,10 +8,14 @@ was considered an invalid entry point under warnings-as-errors.
 
 The owned source fix renames that helper and all call sites to `PrimarySchema`.
 No follow-up executable work has been run by the worker. Four later preparation
-commands and all seven checks remain unrun. The original failed root receipts
-`prepare-c2dadc7d0fc3483382ca0235ce739b8a*.receipt.json` and `prepared.json` are
-preserved unchanged locally; the owned ignore rules keep these durable execution
-receipts out of the source commit. The failure is not reclassified as passing.
+commands and all seven checks remain unrun. Root preserved the original failure
+in primary's `docs/orchestration/M8-cli-preparation-attempt-1.json`: actual outer
+exit1, all five owned groups absent, raw output already deleted. After consumption,
+root authorized deletion of exactly the seven generated local failed-phase
+receipts (`prepare-c2dadc7d0fc3483382ca0235ce739b8a*.receipt.json` and `prepared.json`).
+No other artifacts were removed. Successful future `prepared.json` must remain
+until root certificate/check consumption. Ignore rules separate generated receipts
+from clean source status and identities. The failure is not reclassified as passing.
 
 The recipe now retains up to8 distinct compiler error/exception lines, each
 capped at512 characters, and binds the original failed command/arguments/exit
