@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Bound resolved XSD availability queries and preserve dangling-reference semantics",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated resolved availability worker",
   "branch": "codex/m8-xsd-resolved-availability",
   "base_revision": "2479f26a0a3eb171b16500abbf9aff1ee544ce55",
@@ -33,33 +33,97 @@
     {
       "id": "M8-xsd-resolved-availability-A1",
       "description": "Reproduce the unchanged annotZ002 original SCHEMA.Limit at the verified baseline, then complete it VALID with the existing ordinary 100M work/1M component/64MiB document limits. Avoid rebuilding closure when no unavailable reference exists, without weakening partial graphs, complete immutable publication, charging, cancellation or refusal. A later unavailable registration immediately disables the shortcut; no global cache or cached false result.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "baseline-actual-allocation",
+        "branch-actual-checks",
+        "branch-actual-allocation"
+      ]
     },
     {
       "id": "M8-xsd-resolved-availability-A2",
       "description": "Preserve the original xsd015.e, xsd016.e, elemM002 and idB005 INVALID metadata and schema-valid original nonpass observations separately from standards behavior. Prove exact unresolved QNames, absence of fabricated types, strict compiler rejection and incomplete required consumption. Test case-corrected keyInfo with equal IDs in separate documents accepted versus duplicate IDs within one document rejected. Retain all four separately approved missing-instance nonassessment original failures. No original/gate pass credit or additional waiver is supplied by these regressions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-actual-checks"
+      ]
     },
     {
       "id": "M8-xsd-resolved-availability-A3",
       "description": "Verify resolved queries, late missing registration, reverse-chain/diamond/use separation, registration/publication charges, cancellation and prior refusal including null caps. Preserve earlier owned/affected checks, unchanged public1430/55 fragments, frozen615/257 and exact93 internal additions, normal and true XML-only consumers. Record actual baseline/proposed allocation-only comparisons for increasing resolved graphs/repeated queries and cold/warm public compilation/retained schemas, with consumed results, positive and counter-disabled controls, root-only counter launch, finite owned-family cleanup and no raw archives or timing/host-isolation claims.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-actual-controls",
+        "branch-actual-checks",
+        "baseline-actual-allocation",
+        "branch-actual-allocation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs: invocation-local missing-reference indication and polled no-missing query shortcut; full charged closure/publication unchanged",
+    "tests/Xemele.Tests/M8-xsd-resolved-availability/:16 owned original/QName/strict/nonassessment/ID/query/late-registration/quota/cancellation/publication cases",
+    "tests/fixtures/M8-xsd-resolved-availability/: exact six original schemas and five original metadata excerpts with SHA manifest",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-resolved-availability/: unchanged allocation-only six-route probe, first/warm/retained/positive/disabled controls",
+    "docs/reports/M8-xsd-resolved-availability/: independently pinned full93 API guard, source inventories, finite inherited lifecycle and accepted actual baseline/proposed summaries",
+    "samples/M8-xsd-resolved-availability/: normal and true XML-only consumers"
+  ],
+  "evidence": [
+    {
+      "id": "baseline-actual-allocation",
+      "kind": "check",
+      "revision": "d5f8de2f81bfc1162019a21061187888cb476813",
+      "command": "docs/reports/M8-xsd-resolved-availability/harness/launch.py --released db2a63790dc2d8fe23b06d51059bc13a28c69c367b2aaaae0cc31ceade8f001b measure (root coordinator, accepted fresh single-use preparation)",
+      "result": "passed",
+      "summary": "Actual unchanged original annotZ002 SCHEMA.Limit under100M work/1M components/64MiB; query8/32/64 warm1224/5112/10256B, cold49472B, positive4120B, retained-owner heapdelta6496600B. Consumed254, no timing/live-object census. Raw52/prepared outputs removed after registered-family absence.",
+      "artifact": "docs/reports/M8-xsd-resolved-availability/baseline-evidence.json"
+    },
+    {
+      "id": "branch-actual-controls",
+      "kind": "check",
+      "revision": "cc9b87472ee23a1f420f67f4ca3d7784f2aaa461",
+      "command": "docs/reports/M8-xsd-resolved-availability/harness/launch.py --released 5bcc9650ac4a98772c465daea4d430ce9b5f5660c537bd39a815745816450d1c controls (root coordinator)",
+      "result": "passed",
+      "summary": "Actual15 controls passed, including full93 same-count signature/default/access mutation rejection; counters disabled, all families reaped/logs closed/absent, raw341 removed. Root source runtimef71e1ebfa95609b831000b79c3d7e8d885d5258f.",
+      "artifact": "docs/reports/M8-xsd-resolved-availability/branch-evidence.json"
+    },
+    {
+      "id": "branch-actual-checks",
+      "kind": "check",
+      "revision": "cc9b87472ee23a1f420f67f4ca3d7784f2aaa461",
+      "command": "docs/reports/M8-xsd-resolved-availability/harness/launch.py --released 5bcc9650ac4a98772c465daea4d430ce9b5f5660c537bd39a815745816450d1c check (root coordinator)",
+      "result": "passed",
+      "summary": "Actual24 commands/704 independently selected methods2222 cases passed:16 owned cases plus unchanged694/2206; unchanged annotVALID; exact unresolved QNames/no fabricated types/strict rejection/required nonassessment; corrected cross-document IDs and duplicate within-document rejection; late registration/quota/cancel/refusal/full immutable publication. Public1430/55/frozen615+257/full93+13joins/both consumers/disabled6 consumed254/planning passed. Original metadata/nonpass observations and prior four nonassessments retain zero original/gate disposition credit. Raw442 removed after whole-family absence.",
+      "artifact": "docs/reports/M8-xsd-resolved-availability/branch-evidence.json"
+    },
+    {
+      "id": "branch-actual-allocation",
+      "kind": "check",
+      "revision": "cc9b87472ee23a1f420f67f4ca3d7784f2aaa461",
+      "command": "docs/reports/M8-xsd-resolved-availability/harness/launch.py --released 5bcc9650ac4a98772c465daea4d430ce9b5f5660c537bd39a815745816450d1c prepare then measure (root coordinator, accepted fresh single-use preparation)",
+      "result": "passed",
+      "summary": "Actual prepare3/disabled6 routes254 consumed then allocation6 routes passed. Query8/32/64 first+warm thread/global0B and work/growth0; compile warm367313.75/455635.5/554517.25B vs418307.5/685675.5/1019743B; positive4120B, cold49496B (+24), retained-owner delta4705456B vs6496600B. Original unchangedSHA annotVALID under unchanged ordinary caps. Root only counters; no timing/host isolation/distinct-object census. Raw5+52/prepared outputs removed after families absent.",
+      "artifact": "docs/reports/M8-xsd-resolved-availability/branch-evidence.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed by sole M8 coordinator after ready output and source-only root-cause review. Isolated worker setup follows; no implementation/check/counter evidence yet.",
-    "checks": [],
+    "summary": "Branch implemented and actual root evidence accepted; minimal polled invocation-local shortcut fixes unchanged annotZ002 under ordinary caps. Full publication, partial semantics and frozen APIs preserved. Metadata-only handoff is not newly tested code.",
+    "checks": [
+      "Root actual15 controls/24commands704methods2222cases passed;16owned and unchanged694/2206",
+      "Public1430/55/frozen615+257/full93 API/both consumers/disabled6 consumed254 passed",
+      "Actual baseline/proposed first/warm/cold/retained/positive allocation comparisons accepted; query0B/work/growth0; annotVALID",
+      "All families reaped/logs closed/absent; raw341+442+5+52 removed and preparations consumed once"
+    ],
     "remaining": [
-      "Claim through coordination before implementation; isolated worker required. Original annotZ002 SHAfff58be90b04ace4117786f19d8a450ed81b0e074f9c67d9316a3275a028b6cd and current Availability.cs SHA9f43303f2a934130694c558ad089e9c64b0d6eb9cd2f0bb83b4132cd3291c603 are source-triage identities, not executed repair evidence."
+      "Root merge and primary-main source/input/config/recipe/implemented-task rebind with fresh SOURCE review",
+      "Fresh root integrated controls/check and final planning validation before verified status; integration_revision remains null",
+      "Full corpus/gate work and approved original dispositions remain separate; zero bad-case original/gate pass credit"
     ],
     "requests": [
-      "Only Availability.cs runtime edits allowed. Shared compiler/contracts/build files and corpus originals remain outside ownership. Root owns policy adjudication, main/state integration and all actual counter launches."
+      "Root sole primary/state writer and actual-counter launcher; worker has zero active jobs/PIDs/sessions/cells",
+      "Preserve historical tested packet/manifests; use owned integration-rebind-plan.md for fresh primary-main bindings",
+      "Reuse actual branch allocations only after root proves identical runtime/probe/fixture/toolchain and consumed-result inputs; otherwise root must obtain fresh evidence"
     ]
   }
 }
