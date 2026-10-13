@@ -1,0 +1,22 @@
+{
+  "task": "M8-gate",
+  "kind": "source-only repair plan",
+  "reviewedSourceRevision": "24e694b8e0946085fe5c876ee570e04ecc59a2ac",
+  "observation": "Attempt4 inspected command46 trimmed publication failed with MSB6006 linker dotnet exit150/NETSDK1144 after46 normal commands. Actual outer session47687 remains running at plan creation; terminal cleanup is not yet claimed.",
+  "cause": "The actual cached Microsoft.NET.ILLink.Tasks10.0.11 runtimeconfig requests10.0.11-servicing.26373.116. DOTNET_ROLL_FORWARD=Disable requires that exact version, whereas the installed pinned runtime is10.0.11.",
+  "proposedOwnedRepair": "Add a gate-owned pinned linker host wrapper, generated into the external consumer layout and selected by that consumer's BeforeTargets=_RunILLink target via _DotNetHostDirectory/_DotNetHostFileName. The wrapper validates its expected linker DLL and invokes the pinned dotnet host with --fx-version10.0.11, forwarding original linker arguments. Bind generated wrapper/template bytes and expected linker identity in the active package preparation/freeze evidence. Preserve process-family custody and inherited command deadline.",
+  "preserved": [
+    "DOTNET_ROLL_FORWARD=Disable and exact installed runtime10.0.11",
+    "Original NuGet cache, linker DLL, package archives and runtimeconfig bytes",
+    "Fresh private consumer cache, explicit offline feed, exact package version and no ProjectReference",
+    "Actual trimming, warnings as errors, independent consumer behavior and NativeAOT requirements",
+    "Existing finite command counts and deadlines, with source-only review before any executable release",
+    "Original attempt4 failed trimmed publication and four unrun preparation commands"
+  ],
+  "primarySourceReview": [
+    "https://raw.githubusercontent.com/dotnet/runtime/v10.0.11/src/tools/illink/src/ILLink.Tasks/LinkTask.cs",
+    "https://raw.githubusercontent.com/dotnet/msbuild/main/src/Utilities/ToolTask.cs"
+  ],
+  "execution": "Source change withheld until actual outer terminal completion and consumed failure cleanup. No fresh preparation/check/counter execution authorized by this plan.",
+  "credit": "Repaired CPM restore and managed consumer build have actual inspected exit0 receipts. Trim publication failed; NativeAOT and remaining commands unrun. All gate criteria remain pending."
+}
