@@ -4,7 +4,7 @@ sys.dont_write_bytecode=True
 import argparse,hashlib,importlib.util,json,os,subprocess,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
-p=argparse.ArgumentParser();p.add_argument('--phase',required=True);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--phase',required=True);p.add_argument('--resolver-only',action='store_true');a=p.parse_args()
 host=Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
 out=ROOT/'artifacts/M9-benchmark-build'/a.phase;out.mkdir(parents=True,exist_ok=False)
 spec=importlib.util.spec_from_file_location('supervision',ROOT/'docs/reports/M8-xsd-corpus/supervision.py')
@@ -23,7 +23,8 @@ def run(argv,cap):
     return text
 try:
     parent='benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj'
-    for project in [parent,*[f'benchmarks/Xemele.Benchmarks/{name}/Probe.csproj' for name in ['M8-sch-compile','M8-sch-report','M8-sch-rule-scope','M8-sch-validate']], 'benchmarks/Xemele.Benchmarks/M8-rng-validate/Rng.Probe.csproj']:
+    projects = ['benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/Xemele.ResolverSample.csproj'] if a.resolver_only else [parent,*[f'benchmarks/Xemele.Benchmarks/{name}/Probe.csproj' for name in ['M8-sch-compile','M8-sch-report','M8-sch-rule-scope','M8-sch-validate']], 'benchmarks/Xemele.Benchmarks/M8-rng-validate/Rng.Probe.csproj']
+    for project in projects:
         run([host,'restore',project,'--source','/private/tmp',*flags],120)
         run([host,'build',project,'-c','Release','--no-restore',*flags],150)
     # List again after nested builds: generated child obj files must stay excluded.
