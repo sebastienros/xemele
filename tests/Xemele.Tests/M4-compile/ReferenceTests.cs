@@ -71,8 +71,15 @@ public sealed class ReferenceTests
         {
             using var token = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
             using var started = new ManualResetEventSlim();
-            var work = Task.Run(()=> {started.Set(); return new XPathCompiler().Compile(expression,context,token.Token);},TestContext.Current.CancellationToken);
-            started.Wait(TestContext.Current.CancellationToken); await Task.Delay(1,TestContext.Current.CancellationToken); token.Cancel();
+            var work = Task.Factory.StartNew(()=> {started.Set(); return new XPathCompiler().Compile(expression,context,token.Token);},
+                TestContext.Current.CancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            started.Wait(TestContext.Current.CancellationToken);
+            // A millisecond timer can resume after the whole scan on Windows.
+            // Keep the original interval without timer or threadpool scheduling.
+            long start = System.Diagnostics.Stopwatch.GetTimestamp();
+            while(System.Diagnostics.Stopwatch.GetElapsedTime(start) < TimeSpan.FromMilliseconds(1))
+            { TestContext.Current.CancellationToken.ThrowIfCancellationRequested(); Thread.SpinWait(64); }
+            token.Cancel();
             var error = await Assert.ThrowsAsync<OperationCanceledException>(async()=>await work.WaitAsync(TimeSpan.FromSeconds(10),TestContext.Current.CancellationToken));
             Assert.Equal(token.Token,error.CancellationToken);
         }
