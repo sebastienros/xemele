@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "M9-ci-maintenance",
+  "milestone": "M9",
+  "title": "Post-gate legacy CI compatibility repair",
+  "kind": "infrastructure",
+  "status": "in_progress",
+  "owner": "CI worker 01a13aba-4ab6-7571-a3ca-cfe00a45b23b",
+  "branch": "codex/m9-ci-maintenance",
+  "base_revision": "258317278bd6e814eb59aa45b8f0801af16a10ab",
+  "integration_revision": null,
+  "depends_on": [
+    "M9-api",
+    "M9-performance",
+    "M9-distribution",
+    "M9-robustness",
+    "M9-build-compatibility",
+    "M9-corpus-portability",
+    "M9-dom-memory",
+    "M9-xpath-order",
+    "M9-benchmark-build",
+    "M9-xml-performance",
+    "M9-windows-test-paths"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/tasks/README.md",
+    "docs/specs/release.md"
+  ],
+  "owns": [
+    ".github/workflows/build.yml",
+    "tools/ApiBaseline/",
+    "tests/Xemele.TestUtilities/Build/",
+    "docs/reports/M0-api-wiring/verify.py",
+    "docs/reports/M0-tests-mtp/check_runner.py",
+    "docs/reports/M0-corpora-wiring/check_cli.py",
+    "docs/reports/M9-ci-maintenance/"
+  ],
+  "api_or_output": "Preserve complete compiled API/corpus/test checks in capped legacy CI; additive integration checkpoint preserves original M9 release evidence.",
+  "acceptance": [
+    {
+      "id": "M9-ci-maintenance-A1",
+      "description": "Allow header-only join fragments only alongside a nonempty fully validated API union; reject malformed/duplicate/empty aggregate APIs and preserve actual compiled comparison/negative controls.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-ci-maintenance-A2",
+      "description": "Update only stale bootstrap/portable test workflow guards as demonstrated; retain ordinary tests/foundation/corpus checks and exclude release-validation pushes from unrelated generic CI.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-ci-maintenance-A3",
+      "description": "Locally verify discovery/build/API/test-driver compatibility, then execute fixed-revision three-OS Build and validate attempts capped at 20 minutes/job and max 3 parallel jobs until success; preserve actual outcomes and original failure.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Direct human authorization: fix and retry until workflows succeed; dedicated private validation branch only, no publication.",
+    "checks": [],
+    "remaining": [
+      "Read originalfailure, implement minimalowningrepair, locallyverify thenrunone3OSmatrix"
+    ],
+    "requests": []
+  }
+}

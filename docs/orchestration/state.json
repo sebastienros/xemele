@@ -1,18 +1,27 @@
 {
   "objective": "Execute M9 only through integrated verified M9-gate and terminal cleanup/handoff to main.",
-  "coordinator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+  "coordinator_chat_id": "01a13aba-4ab6-7571-a3ca-cfe00a45b23b",
   "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "previous_coordinator_chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
-  "coordinator_write_status": "ACTIVATE MAIN terminalM9handoff atcontainingcommit; completionchat relinquishes allsource/main/statewrites; main directcollection",
+  "coordinator_write_status": "New CI worker sole main/state writer after explicit ACTIVATE; former CI chat paused/read-only. Existing uncommitted draft preserved; correct graph before committing claim/implementation.",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M9-gate",
   "last_verified_task": "M9-gate",
   "last_integrated_revision": "20f3551b2652e1eeee5f891af24664044d118c04",
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M9-ci-maintenance",
+      "branch": "codex/m9-ci-maintenance",
+      "worktree_path": "/private/tmp/xemele-m9-ci-maintenance",
+      "base_revision": "258317278bd6e814eb59aa45b8f0801af16a10ab"
+    }
+  ],
   "integration_queue": [],
   "next_actions": [
-    "Main collect docs/orchestration/terminal-M9-handoff.json andverifiedM9gate; no sourcewrite/remoteaction needed bycompletionchat."
+    "New CI worker corrects inherited draft graph and commits serializedclaim beforeimplementation.",
+    "Implement minimal legacyworkflowcompatibilityfixes and retryfixedGitHubworkflows untilpass.",
+    "Integrate verifiedCIfixes locally; preserveM9historicalverification and returnterminalhandoff."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -142,7 +151,7 @@
   },
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
-  "milestone_progress": "13/13M9verified on revisedreleasegate; allcurrentrequiredcode/corpus/API/coverage/resource/package/platformchecks pass. Originalcampaign/dedicatedtiming/0.75retainedrequirements remainexplicit nonpasses/deferred underhuman decisions. Unpublished localcandidate.",
+  "milestone_progress": "Original 13-task M9 release checkpoint verified historically; additive CI maintenance in progress, gate reassessment planned.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -2301,5 +2310,22 @@
     "originalFullReleaseEvidenceClaimed": false,
     "cleanup": "docs/orchestration/cleanup-M9-gate.json",
     "terminalHandoff": "docs/orchestration/terminal-M9-handoff.json"
+  },
+  "postgate_ci_authorization": {
+    "human": "Rerun after fixes",
+    "scope": "One fixedrevision generic3OSmatrix20min/job60minmax; validationbranchonly, no releasejobs/dispatch/retries/publication",
+    "previousFailure": 38522581382
+  },
+  "ci_continuation_handoff": {
+    "worker_chat_id": "01a13aba-4ab6-7571-a3ca-cfe00a45b23b",
+    "main_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "verified_M9_checkpoint": "258317278bd6e814eb59aa45b8f0801af16a10ab",
+    "preserved_draft": "docs/tasks/M9-ci-maintenance.json",
+    "initial_validation_failure": "M9-gate does not cover M9-ci-maintenance; draft depends on gate; owningworker must correct metadata without weakeningvalidator",
+    "human_authorization": "Fix and retry and fix again until workflows succeeded; use newworker",
+    "implementation_model": "gpt-6.1-sol",
+    "reasoning": "high",
+    "retry_policy": "Hosted fixedrevision retries authorized;20min/job3OSmax; no remotemain/tags/publication",
+    "status": "Created read-only; ACTIVATE follows; metadata notcommitted while inheritedgraphinvalid"
   }
 }
