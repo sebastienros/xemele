@@ -160,7 +160,7 @@ internal static class OptimisticSax
             i = 0; line = 1; lineStart = 0; cont = 0; depth = 0; scope = 0; bindingCount = 0; rootSeen = false;
             referenceBudget = referenceLimit; declaredIndex = 0;
             frames[0] = default;
-            if (deliver) handler.StartDocument();
+            if (deliver) { handler.StartDocument(); cancellation.ThrowIfCancellationRequested(); }
             if (n >= 3 && s[0] == 0xEF && s[1] == 0xBB && s[2] == 0xBF) { i = 3; lineStart = 3; }
             var head = s[i..];
             if (head.Length >= 6 && head.StartsWith("<?xml"u8) && head[5] is (byte)' ' or (byte)'\t' or (byte)'\n' or (byte)'\r')
@@ -314,6 +314,7 @@ internal static class OptimisticSax
                 Ascii.ToUtf16(s[encodingStart..encodingEnd], buffer.AsSpan(versionLength), out _);
                 handler.Declaration(new XmlDeclaration(buffer.AsSpan(0, versionLength), buffer.AsSpan(versionLength, encodingLength), standalone,
                     new XmlLocation(null, 1, 1, charInput ? null : declarationOffset)));
+                cancellation.ThrowIfCancellationRequested();
             }
             return true;
         }
@@ -343,6 +344,7 @@ internal static class OptimisticSax
                 int count = Math.Min(TextChunk, i - at);
                 Ascii.ToUtf16(s.Slice(at, count), buffer, out _);
                 handler.Text(buffer.AsSpan(0, count));
+                cancellation.ThrowIfCancellationRequested();
                 at += count;
             }
             return true;
@@ -408,7 +410,7 @@ internal static class OptimisticSax
             {
                 Utf8.ToUtf16(run, buffer, out int read, out int written, replaceInvalidSequences: false);
                 if (written != read) high = true;
-                if (written > 0) handler.Text(buffer[..written]);
+                if (written > 0) { handler.Text(buffer[..written]); cancellation.ThrowIfCancellationRequested(); }
                 run = run[read..];
             }
             TrackLines(start, end, high);
@@ -452,7 +454,7 @@ internal static class OptimisticSax
                 if (written != read) high = true;
                 length += written;
                 run = run[read..];
-                if (status == OperationStatus.DestinationTooSmall) { handler.Text(buffer.AsSpan(0, length)); length = 0; }
+                if (status == OperationStatus.DestinationTooSmall) { handler.Text(buffer.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; }
             }
             TrackLines(start, end, high);
         }
@@ -476,13 +478,13 @@ internal static class OptimisticSax
                 if (emit) AppendSegment(segment, end, ref length);
                 if (stop == '<')
                 {
-                    if (emit && length > 0) handler.Text(scratch.AsSpan(0, length));
+                    if (emit && length > 0) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); }
                     i = end; return true;
                 }
                 if (!Reference(end, out int value, out int referenceLength)) return false;
                 if (emit)
                 {
-                    if (length + 2 > TextChunk) { handler.Text(scratch.AsSpan(0, length)); length = 0; }
+                    if (length + 2 > TextChunk) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; }
                     length = Append(scratch!, length, value);
                 }
                 i = segment = at = end + referenceLength;
@@ -567,6 +569,7 @@ internal static class OptimisticSax
                 int length = Decode(bodyStart, bodyEnd, out bool high);
                 TrackLines(bodyStart, bodyEnd, high);
                 handler.Comment(scratch.AsSpan(0, length));
+                cancellation.ThrowIfCancellationRequested();
             }
             else if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
             i = bodyEnd + 3;
@@ -584,8 +587,10 @@ internal static class OptimisticSax
             if (emit)
             {
                 handler.StartCData();
+                cancellation.ThrowIfCancellationRequested();
                 EmitRun(bodyStart, bodyEnd);
                 handler.EndCData();
+                cancellation.ThrowIfCancellationRequested();
             }
             else if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
             i = bodyEnd + 3;
@@ -626,6 +631,7 @@ internal static class OptimisticSax
                 Utf8.ToUtf16(s[bodyStart..bodyEnd], buffer.AsSpan(targetLength), out _, out int written, replaceInvalidSequences: false);
                 TrackLines(bodyStart, bodyEnd, written != bodyEnd - bodyStart);
                 handler.ProcessingInstruction(buffer.AsSpan(0, targetLength), buffer.AsSpan(targetLength, written));
+                cancellation.ThrowIfCancellationRequested();
             }
             else if (++internCount + 8 > nameLimit) return false;
             i = p;
@@ -646,7 +652,11 @@ internal static class OptimisticSax
             i++;
             if (!emit && i - tagStart >= tokenLimit) return false;
             scope = frame.SavedScope; bindingCount = frame.BindingStart;
-            if (emit) handler.EndElement(new XmlEndElement(frame.Name.Local, frame.Name.Prefix, frame.Uri, Loc(closeLine, closeColumn, tagStart)));
+            if (emit)
+            {
+                handler.EndElement(new XmlEndElement(frame.Name.Local, frame.Name.Prefix, frame.Uri, Loc(closeLine, closeColumn, tagStart)));
+                cancellation.ThrowIfCancellationRequested();
+            }
             depth--;
             return true;
         }
@@ -822,7 +832,8 @@ internal static class OptimisticSax
                 var location = Loc(tagLine, tagColumn, tagStart);
                 handler.StartElement(new XmlStartElement(name.Local, name.Prefix, elementUri,
                     new XmlAttributeView(attributes.AsSpan(0, attributeCount), attributeChars), new XmlNamespaceView(namespaces.AsSpan(0, declarationCount)), empty, location));
-                if (empty) handler.EndElement(new XmlEndElement(name.Local, name.Prefix, elementUri, location));
+                cancellation.ThrowIfCancellationRequested();
+                if (empty) { handler.EndElement(new XmlEndElement(name.Local, name.Prefix, elementUri, location)); cancellation.ThrowIfCancellationRequested(); }
             }
             if (empty)
             {

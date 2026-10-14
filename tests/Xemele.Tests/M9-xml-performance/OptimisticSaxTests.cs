@@ -224,6 +224,74 @@ public sealed class OptimisticSaxTests
         Assert.DoesNotContain(handler.Events, e => e.StartsWith("S:c"));
     }
 
+    [Theory]
+    [InlineData("StartDocument")]
+    [InlineData("Declaration")]
+    [InlineData("Comment")]
+    [InlineData("ProcessingInstruction")]
+    [InlineData("StartElement")]
+    [InlineData("Text")]
+    [InlineData("StartCData")]
+    [InlineData("EndCData")]
+    [InlineData("EndElement")]
+    public void CancellationInsideAnyCallbackStopsDeliveryLikeTheStreamingParser(string cancelIn)
+    {
+        const string xml = "<?xml version=\"1.0\"?><!--c--><?pi d?><a x=\"1\">t<![CDATA[c]]><b/></a>";
+        foreach (int mode in new[] { 0, 1, 2 })
+        {
+            using var source = new CancellationTokenSource();
+            var handler = new CancelingHandler(source, cancelIn);
+            Action parse = mode switch
+            {
+                0 => () => XmlSaxParser.Parse(xml, handler, cancellationToken: source.Token),
+                1 => () => XmlSaxParser.Parse(Encoding.UTF8.GetBytes(xml), handler, cancellationToken: source.Token),
+                _ => () => XmlSaxParser.Parse(new MemoryStream(Encoding.UTF8.GetBytes(xml)), handler, cancellationToken: source.Token),
+            };
+            Assert.Throws<OperationCanceledException>(parse);
+            Assert.True(handler.Canceled);
+            // The fast path stops at the next callback boundary: nothing past the canceling event follows it.
+            if (mode != 2) Assert.Equal(cancelIn, handler.Delivered[^1]);
+        }
+    }
+
+    [Fact]
+    public void CancellationInsideEndDocumentDoesNotFailACompletedParse()
+    {
+        const string xml = "<a/>";
+        foreach (int mode in new[] { 0, 1, 2 })
+        {
+            using var source = new CancellationTokenSource();
+            var handler = new CancelingHandler(source, "EndDocument");
+            if (mode == 0) XmlSaxParser.Parse(xml, handler, cancellationToken: source.Token);
+            else if (mode == 1) XmlSaxParser.Parse(Encoding.UTF8.GetBytes(xml), handler, cancellationToken: source.Token);
+            else XmlSaxParser.Parse(new MemoryStream(Encoding.UTF8.GetBytes(xml)), handler, cancellationToken: source.Token);
+            Assert.True(handler.Canceled);
+        }
+    }
+
+    private sealed class CancelingHandler(CancellationTokenSource source, string cancelIn) : XmlSaxHandler
+    {
+        public readonly List<string> Delivered = [];
+        public bool Canceled;
+
+        private void Hit(string name)
+        {
+            Delivered.Add(name);
+            if (name == cancelIn) { Canceled = true; source.Cancel(); }
+        }
+
+        public override void StartDocument() => Hit("StartDocument");
+        public override void EndDocument() => Hit("EndDocument");
+        public override void Declaration(XmlDeclaration declaration) => Hit("Declaration");
+        public override void Comment(ReadOnlySpan<char> text) => Hit("Comment");
+        public override void ProcessingInstruction(ReadOnlySpan<char> target, ReadOnlySpan<char> data) => Hit("ProcessingInstruction");
+        public override void StartElement(XmlStartElement element) => Hit("StartElement");
+        public override void EndElement(XmlEndElement element) => Hit("EndElement");
+        public override void Text(ReadOnlySpan<char> text) => Hit("Text");
+        public override void StartCData() => Hit("StartCData");
+        public override void EndCData() => Hit("EndCData");
+    }
+
     private static Recorder SlowCharacters(string xml, XmlParseOptions options)
     {
         var recorder = new Recorder();
