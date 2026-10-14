@@ -1,3 +1,5 @@
+Current gate accounting: [human offline campaign revision](offline-decision.json) makes harness/campaign execution nonblocking for M9 in Codex. [Ordinary source bindings](offline-source-binding.json) preserve the passing correctness, corpus, resource and coverage evidence. Offline execution remains unrun here, with no campaign or crash-positive pass. Dedicated timing is unaffected. The following original status notes are retained as history.
+
 Current [ordinary XMLcore branch coverage](core-coverage-review.md) passes91.9753%without exclusions; it supplies no sustained campaign credit.
 
 # Robustness evidence status

@@ -1,0 +1,55 @@
+{
+  "id": "M9-human-offline-campaign-revision",
+  "authority": "Direct human instruction inspected in main orchestration chat",
+  "sourceThread": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+  "sourceTurn": "01a1380e-7ac2-7bf2-8f80-9d0c89498243",
+  "instruction": "we need to start a new worker thread for M9, and first verify that the branch codex/m9-user-run-xml-fuzz gets correctly merged in main because I made some improvements tot the campaign harness. Skip the requirement that the harness needs to run to unblock, I'll do it offline since this is not an valid operation in Codex.",
+  "originalAcceptance": [
+    {
+      "id": "M9-robustness-A1",
+      "description": "Run full declared corpora/differentials/fuzz regressions and sustained fuzz/resource/cancellation campaigns.",
+      "status": "pending",
+      "evidence": [
+        "current-suites",
+        "current-original-xsd",
+        "ordinary-core-branch-coverage"
+      ]
+    },
+    {
+      "id": "M9-robustness-A2",
+      "description": "Record corpus revisions/counts, duration/seeds/findings and no unresolved release-blocking defects.",
+      "status": "pending",
+      "evidence": [
+        "current-suites",
+        "current-original-xsd",
+        "ordinary-core-branch-coverage"
+      ]
+    },
+    {
+      "id": "M9-robustness-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": [
+        "current-suites",
+        "current-original-xsd",
+        "ordinary-core-branch-coverage"
+      ]
+    }
+  ],
+  "revision": "Campaign/harness execution, sustained duration and crash-positive qualification are offline human work and nonblocking for M9 verification in Codex. Ordinary correctness, conformance, fixed regressions, resource checks and XML core coverage remain required.",
+  "executionStatus": "NOT RUN by this chat; no preparation, qualification, crash control or campaign launched",
+  "executionCredit": 0,
+  "mergedHarnessRevision": "9cd5c5ce529b6715dbbe7b547b0b9bf0b1f09318",
+  "unaffectedRequirements": [
+    "Dedicated comparative timing targets and required architecture evidence",
+    "Concrete confirmed product bugs",
+    "Original 155 approved XSD nonpasses with zero additional credit",
+    "Package publication remains separate"
+  ],
+  "reportedFindings": {
+    "xmlCrashPositive": "Human-reported deliberate detection control PASS; not independently verified here and not a product defect.",
+    "htmlLegacy": "Human reported crashes without finding IDs, input paths, stacks or reproduction; no product defect independently confirmed by prior coordinator. Preserve user artifacts/processes.",
+    "confirmedUnresolvedProductDefects": []
+  },
+  "application": "M9-robustness revised acceptance and downstream M9-gate robustness accounting; original release-freeze/testing requirements preserved as historical criteria, without execution passes."
+}

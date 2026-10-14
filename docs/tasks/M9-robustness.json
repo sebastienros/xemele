@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Full conformance and sustained robustness campaign",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-offline-robustness",
   "base_revision": "c28f7c0720a7944cfdb3f1a8e835ec0f4dc8eb59",
@@ -29,32 +29,41 @@
   "acceptance": [
     {
       "id": "M9-robustness-A1",
-      "description": "Run full declared corpora/differentials/fuzz regressions and sustained fuzz/resource/cancellation campaigns.",
-      "status": "pending",
+      "description": "Under the explicit human offline-campaign revision, verify full declared ordinary corpora/differentials/fixed regressions and resource/cancellation evidence plus required XML core coverage; campaign/harness execution is offline and nonblocking, with no execution credit.",
+      "status": "passed",
       "evidence": [
         "current-suites",
         "current-original-xsd",
-        "ordinary-core-branch-coverage"
+        "ordinary-core-branch-coverage",
+        "human-offline-campaign-revision",
+        "offline-source-binding",
+        "offline-execution-unrun"
       ]
     },
     {
       "id": "M9-robustness-A2",
-      "description": "Record corpus revisions/counts, duration/seeds/findings and no unresolved release-blocking defects.",
-      "status": "pending",
+      "description": "Record corpus revisions/counts and original dispositions, preserve historical campaign duration/seeds/findings and honest unrun/offline status, and assess confirmed release defects separately from unverified human reports.",
+      "status": "passed",
       "evidence": [
         "current-suites",
         "current-original-xsd",
-        "ordinary-core-branch-coverage"
+        "ordinary-core-branch-coverage",
+        "human-offline-campaign-revision",
+        "offline-source-binding",
+        "offline-execution-unrun"
       ]
     },
     {
       "id": "M9-robustness-A3",
-      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "description": "Demonstrate revised robustness using only verified integrated dependencies and source-applicable ordinary evidence; preserve earlier behavior and original campaign criteria/history without relabeling offline execution passed.",
+      "status": "passed",
       "evidence": [
         "current-suites",
         "current-original-xsd",
-        "ordinary-core-branch-coverage"
+        "ordinary-core-branch-coverage",
+        "human-offline-campaign-revision",
+        "offline-source-binding",
+        "offline-execution-unrun"
       ]
     }
   ],
@@ -68,7 +77,9 @@
     "docs/reports/M9-robustness/current-suite-binding.json,current-xsd.json: current10754/920/618source-equivalent suites and actual83472row corpus reassessment",
     "tests/ReleaseCampaign/CoverageControl/: fixed realcovered/uncovered collector control; no fuzz target",
     "tests/ReleaseCampaign/CoverageCases/:32fixed byte/character DOCTYPEerror/normalization checks",
-    "docs/reports/M9-robustness/ordinary-coverage.py,ordinary-coverage-scope.json,core-coverage-summary.json,core-coverage-review.md: complete reviewed11fileXMLcore branchscope, noexclusions"
+    "docs/reports/M9-robustness/ordinary-coverage.py,ordinary-coverage-scope.json,core-coverage-summary.json,core-coverage-review.md: complete reviewed11fileXMLcore branchscope, noexclusions",
+    "docs/reports/M9-robustness/offline-decision.json: exact human instruction, original acceptance snapshot and narrow offline release revision",
+    "docs/reports/M9-robustness/verify-offline-scope.py,offline-source-binding.json: retained ordinary evidence bound to current runtime/corpus/tests/build sources"
   ],
   "evidence": [
     {
@@ -142,22 +153,50 @@
       "result": "passed",
       "summary": "Current unchangedXMLcore2086/2268branches=91.9753% source-boundon integratedmain;10754ordinarytests and32namedcases pass, collectorpositive/negativecontrol proven. No exclusions/campaigncredit; sustainedfuzzstilldeferred.",
       "artifact": "docs/reports/M9-robustness/coverage-integration.json"
+    },
+    {
+      "id": "human-offline-campaign-revision",
+      "kind": "review",
+      "revision": "b6ad6b1db2b2d8e363431afc127172e643015603",
+      "command": "Read actual human message in main orchestration turn01a1380e-7ac2-7bf2-8f80-9d0c89498243; reconcile explicit ACTIVATE",
+      "result": "passed",
+      "summary": "Human explicitly makes harness/campaign execution offline/nonblocking for M9 in Codex. Original criteria retained in offline-decision.json; dedicated timing and confirmed runtime defects remain required. This is review evidence, no execution pass.",
+      "artifact": "docs/reports/M9-robustness/offline-decision.json"
+    },
+    {
+      "id": "offline-source-binding",
+      "kind": "check",
+      "revision": "b6ad6b1db2b2d8e363431afc127172e643015603",
+      "command": "python3 -B docs/reports/M9-robustness/verify-offline-scope.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Current source equivalent to actual10754units/920conformance/618differential executions, 83472XSDrows, and XMLcore2086/2268branches=91.9753%;0coverage exclusions,155original nonpasses zero additional credit,annotZ002true. No runtime/harness execution or dedicated timing credit.",
+      "artifact": "docs/reports/M9-robustness/offline-source-binding.json"
+    },
+    {
+      "id": "offline-execution-unrun",
+      "kind": "check",
+      "revision": "b6ad6b1db2b2d8e363431afc127172e643015603",
+      "command": "NOT EXECUTED: prepare/qualify/run/resume, crash-positive controls and sustained campaigns",
+      "result": "skipped",
+      "summary": "Offline human work under explicit gate revision; no harness build, fuzz launch, campaign duration or crash qualification pass. Human reported XML deliberate-control PASS and unspecified HTMLlegacy crashes remain unverified here. No concrete product defect supplied/confirmed.",
+      "artifact": "docs/reports/M9-robustness/offline-decision.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Direct human requests a user-run local XML fuzz route; preparation/build/instrumentation and instructions authorized, no unattended campaign launch. Automatic long-campaign deferral remains.",
+    "summary": "Revised robustness satisfied by retained source-applicable ordinary results and explicit human offline-campaign revision. Original criteria/history remain preserved; campaign execution stays unrun/offline.",
     "checks": [
-      "10754units+920conformance+618differential current-source bound; currentperformance1GiBresourcecontrols preserved separately",
-      "Actual83472two-engine rows,186clean children; original39329true/144false/11null,155exactzero-creditdispositions,annotZ002true",
-      "Initialprelaunch ownership failure and historicalfreeze-positive rejection retained;39unchangedhistorical controls use exactcopied originalfixtures, currentproduction reviewed separately",
-      "Ordinary XMLcore/decodercoverage2086/2268=91.9753% with0exclusions; all10754tests+32newfixedchecks pass; originalproductionunchanged."
+      "10754units/920conformance/618differential passing evidence source-bound; hosted native-path correction included",
+      "83472XSDrows,39329true/144false/11null,155approved zero-credit dispositions,annotZ002true unchanged",
+      "XMLcore2086/2268branches=91.9753%,0exclusions;32fixed checks and collector controls retained",
+      "208task validation and diff checks pass; no harness executed"
     ],
     "remaining": [
-      "Sustained fuzz/crash-positive gates remain pending under explicit human deferral; no further fuzz planning/execution."
+      "Offline human campaigns/crash qualification remain unrun evidence and supply no execution pass; nonblocking under human revision.",
+      "Rebind affected correctness/corpus/coverage evidence if active XML-performance runtime changes integrate."
     ],
     "requests": [
-      "Current local distribution/package checks must reflect the verified repaired runtime; hostedretry awaits existing budget approval."
+      "M9-gate must apply the narrow offline revision and preserve unrun campaign status; dedicated timing remains mandatory."
     ]
   }
 }
