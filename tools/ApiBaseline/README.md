@@ -93,3 +93,21 @@ and prints a compact result; without it stdout is the complete JSON report.
 The checker scope is docs/decisions/M0/api-compatibility.md, including required
 future signature-family expansion. The CI verifier and focused reproduction live
 in docs/reports/M0-api-wiring/; contract fixtures are not shipped runtime baselines.
+
+## Clean-checkout CI prerequisites
+
+`prepare_corpus.py` reuses the bounded, hash-pinned XML archive provisioner and
+copies its exact 3,386 resources into the ignored manifest paths. Discovery still
+checks every fixture byte. `--archive` supports an existing pinned offline archive.
+
+After building, `prepare_runtime.py` installs runtime 10.0.11 if needed and pins
+generated net10.0 application runtimeconfigs to it with roll-forward disabled.
+SDK selection stays governed by global.json.
+
+`prepare_references.py` builds Jing and libxml2 at the frozen RNG source revisions,
+checks runner source hashes, records actual platform binary/class hashes, and
+restores System.Security.Cryptography.Xml 10.0.11 for independent canonical checks.
+It requires Java/Javac, CMake and a C compiler. The original engine calls and
+reference limitation/oracle assertions remain in use. CI exports the generated
+identity file and Java executable through environment variables; historical local
+defaults remain supported. Outputs stay ignored under artifacts/M9-ci-maintenance.

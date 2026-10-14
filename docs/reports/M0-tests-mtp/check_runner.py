@@ -17,7 +17,7 @@ def main():
     log = []
 
     def run(args, expected=0):
-        result = subprocess.run(args, cwd=ROOT, text=True, stdout=subprocess.PIPE,
+        result = subprocess.run(args, cwd=ROOT, text=True, encoding="utf-8", stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT)
         entry = "$ " + shlex.join(args) + "\n" + result.stdout + f"Exit: {result.returncode}\n"
         log.append(entry)
@@ -71,7 +71,7 @@ def main():
                 raise RuntimeError(f"Expected controlled assertion failure absent: {project}")
         log.append("All three controlled assertion failures propagated exit 2.\n")
     finally:
-        (results / "runner-verification.txt").write_text("\n".join(log))
+        (results / "runner-verification.txt").write_text("\n".join(log), encoding="utf-8")
         print(f"Runner transcript: {results / 'runner-verification.txt'}", flush=True)
 
 

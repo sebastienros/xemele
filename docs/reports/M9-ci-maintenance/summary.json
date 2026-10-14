@@ -14,7 +14,10 @@
     "Disable checkout newline conversion before checkout.",
     "Exclude both release validation branches from generic CI.",
     "Pin missing System.IO.Hashing 10.0.11 in aggregate benchmark project; source/algorithm unchanged.",
-    "Full MTP driver uses release-equivalent JIT/GC settings, serial collections/modules and invariant culture."
+    "Full MTP driver uses release-equivalent JIT/GC settings, serial collections/modules and invariant culture.",
+    "Explicit UTF-8 driver decode/report output and job-wide Python UTF-8 mode.",
+    "Install actual runtime10.0.11 and pin generated application runtimeconfigs with rollForward Disable.",
+    "Build Jing/libxml2 from frozen revisions, record actual binary/class hashes, restore canonical XML reference package; environment overrides for identity/Java paths preserve all original RNG assertions."
   ],
   "local_failures": [
     {
@@ -57,6 +60,18 @@
     "bootstrap": "2 checksum/independent expectation checks passed",
     "runtime_pack": "created; unpublished"
   },
-  "hosted_attempts": [],
-  "scope": "No runtime/test source changed; original 12754 standalone gate evidence retained separately. No fuzz campaign, release duplicate, remote main/tag or publication."
+  "hosted_attempts": [
+    {
+      "run": 38579445155,
+      "url": "https://github.com/sebastienros/xemele/actions/runs/38579445155",
+      "revision": "6b67f294e9ecab5fbad80a59ae5bf8f636d66819",
+      "conclusion": "failure",
+      "jobs": {
+        "windows-latest": "Passed build/API; Python cp1252 decode failed on UTF-8 multilingual test list before ordinary runtime tests.",
+        "macos-latest": "12744 MTP outcomes: 12572 pass/172 fail/0skip; 166 pinned-runtime mismatches (10.0.13 vs10.0.11), 2 missing RNG engines, 4 missing canonical XML reference package.",
+        "ubuntu-latest": "Same 172 failure categories as macOS; build/API passed."
+      }
+    }
+  ],
+  "scope": "Runtime source and API/corpus/release inputs preserved; only reference-test identity/Java paths made portable. Original standalone gate evidence retained separately. No fuzz campaign, release duplicate, remote main/tag or publication."
 }

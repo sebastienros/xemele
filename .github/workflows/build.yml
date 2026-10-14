@@ -8,6 +8,8 @@ permissions:
 jobs:
   build:
     timeout-minutes: 20
+    env:
+      PYTHONUTF8: '1'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -24,6 +26,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
       - name: Validate planning records
         run: python tools/planning/tasks.py validate
       - name: Test fragment discovery
@@ -38,6 +44,10 @@ jobs:
         run: dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
       - name: Compare compiled runtime API and verify foundation contracts
         run: python -B docs/reports/M0-api-wiring/verify.py
+      - name: Prepare pinned runtime and independent reference engines
+        run: |
+          python -B tools/ApiBaseline/prepare_runtime.py
+          python -B tools/ApiBaseline/prepare_references.py
       - name: Discover and execute MTP tests and verify failure exit codes
         env:
           DOTNET_TieredCompilation: '0'

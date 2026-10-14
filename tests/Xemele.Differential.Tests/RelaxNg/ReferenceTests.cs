@@ -53,14 +53,16 @@ public sealed class ReferenceTests
                 requests.Add(string.Join('\t', paths));
             }
             string input = Path.Combine(directory, "requests.tsv"); await File.WriteAllLinesAsync(input, requests, TestContext.Current.CancellationToken);
-            using var identities = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "docs/reports/M8-rng-corpus/reference-build.json")));
+            using var identities = JsonDocument.Parse(File.ReadAllText(Environment.GetEnvironmentVariable("XEMELE_RNG_REFERENCE_IDENTITY")
+                ?? Path.Combine(Root, "docs/reports/M8-rng-corpus/reference-build.json")));
             var identity = identities.RootElement.GetProperty(engine);
             var start = new ProcessStartInfo { RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false };
             if (engine == "jing")
             {
                 string jar = identity.GetProperty("jarPath").GetString()!; Assert.Equal(identity.GetProperty("jarSha256").GetString(), Hash(File.ReadAllBytes(jar)));
                 string classes = identity.GetProperty("classPath").GetString()!; foreach (var file in identity.GetProperty("runnerClassHashes").EnumerateObject()) Assert.Equal(file.Value.GetString(), Hash(File.ReadAllBytes(Path.Combine(classes, file.Name))));
-                start.FileName = "/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/bin/java";
+                start.FileName = Environment.GetEnvironmentVariable("XEMELE_JAVA")
+                    ?? "/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/bin/java";
                 start.ArgumentList.Add("-cp"); start.ArgumentList.Add(classes + Path.PathSeparator + jar); start.ArgumentList.Add("RngReference");
             }
             else
