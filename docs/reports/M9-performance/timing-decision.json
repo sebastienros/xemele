@@ -52,5 +52,19 @@
     "checkpoint": "08a7ba712",
     "report": "docs/reports/M9-xml-performance/progress.md"
   },
-  "application": "M9-performance revised timing acceptance and downstream M9-gate; no fuzz launch or hardware claim."
+  "application": "M9-performance revised timing acceptance and downstream M9-gate; no fuzz launch or hardware claim.",
+  "priorGateAcceptance": [
+    {
+      "id": "M9-gate-A1",
+      "description": "Verify all cumulative gates, API/performance/package/robustness evidence and resolved repair dependencies at final integrated revision. Apply the explicit human offline campaign revision recorded in docs/reports/M9-robustness/offline-decision.json; campaign/harness execution remains offline/unrun and nonblocking, while dedicated timing and confirmed defects remain mandatory."
+    },
+    {
+      "id": "M9-gate-A2",
+      "description": "Repeat affected acceptance checks on exact package revision; document exceptions and outstanding exclusions; publication remains separate. Record offline campaign execution separately from actual passing checks; no original sustained-duration or crash-positive pass is implied."
+    },
+    {
+      "id": "M9-gate-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior."
+    }
+  ]
 }
