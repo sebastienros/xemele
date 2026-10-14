@@ -26,10 +26,26 @@ public sealed partial class XmlDocument
         long expanded = limits.ExpandedCharacters ?? long.MaxValue;
         if (input.Length > (limits.DocumentCharacters ?? long.MaxValue) || input.Length > expanded) return false;
         var candidate = new XmlDocument(limits);
-        var parser = new OptimisticParser(candidate, input, limits, cancellationToken);
-        if (!parser.Run()) return false;
+        bool parsed = input.Contains((byte)'\r')
+            ? ParseNormalized(candidate, input, limits, cancellationToken, charInput: false)
+            : new OptimisticParser(candidate, input, limits, cancellationToken).Run();
+        if (!parsed) return false;
         document = candidate;
         return true;
+    }
+
+    // CR and CRLF input is parsed from an LF-normalized copy; line and column numbers are unchanged and byte offsets are mapped back.
+    private static bool ParseNormalized(XmlDocument candidate, ReadOnlySpan<byte> input, XmlResourceLimits limits, CancellationToken cancellationToken, bool charInput)
+    {
+        byte[] buffer = FastLineBreaks.Rent(input.Length, out bool pooled);
+        int[]? dropped = null;
+        try
+        {
+            int length = FastLineBreaks.Normalize(input, buffer, !charInput, ref dropped, out int droppedCount);
+            var parser = new OptimisticParser(candidate, buffer.AsSpan(0, length), limits, cancellationToken, charInput, input.Length, dropped, droppedCount);
+            return parser.Run();
+        }
+        finally { FastLineBreaks.Release(buffer, pooled, dropped); }
     }
 
     // Character input is transcoded once to UTF-8 and parsed by the same fast path with byte offsets
@@ -51,8 +67,10 @@ public sealed partial class XmlDocument
             ReadOnlySpan<byte> bytes = rented.AsSpan(0, byteCount);
             if (byteCount > (limits.DocumentCharacters ?? long.MaxValue) || byteCount > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
             var candidate = new XmlDocument(limits);
-            var parser = new OptimisticParser(candidate, bytes, limits, cancellationToken, charInput: true);
-            if (!parser.Run()) return false;
+            bool parsed = bytes.Contains((byte)'\r')
+                ? ParseNormalized(candidate, bytes, limits, cancellationToken, charInput: true)
+                : new OptimisticParser(candidate, bytes, limits, cancellationToken, charInput: true).Run();
+            if (!parsed) return false;
             document = candidate;
             return true;
         }
@@ -119,7 +137,10 @@ public sealed partial class XmlDocument
         private readonly ReadOnlySpan<byte> s;
         private readonly int n;
         private readonly bool charInput;
-        private uint Off(int offset) => charInput ? uint.MaxValue : (uint)offset;
+        private readonly int[]? dropped;
+        private readonly int droppedCount;
+        private int droppedCursor;
+        private uint Off(int offset) => charInput ? uint.MaxValue : (uint)(dropped is null ? offset : FastLineBreaks.Raw(dropped, droppedCount, ref droppedCursor, offset));
         private readonly CancellationToken cancellation;
         private readonly int maxDepth, maxMembers, tokenLimit, nameLimit;
         private long referenceBudget;
@@ -136,14 +157,15 @@ public sealed partial class XmlDocument
         private OptimisticMembers attributes, declarations;
         private int attributeCount, declarationCount;
 
-        internal OptimisticParser(XmlDocument doc, ReadOnlySpan<byte> input, XmlResourceLimits limits, CancellationToken cancellation, bool charInput = false)
+        internal OptimisticParser(XmlDocument doc, ReadOnlySpan<byte> input, XmlResourceLimits limits, CancellationToken cancellation, bool charInput = false, int rawLength = -1, int[]? dropped = null, int droppedCount = 0)
         {
             this.doc = doc; this.charInput = charInput; s = input; n = input.Length; this.cancellation = cancellation;
             maxDepth = limits.Depth ?? int.MaxValue;
             maxMembers = Math.Min(MaxMembers, limits.AttributesPerElement ?? int.MaxValue);
             tokenLimit = limits.TokenCharacters ?? int.MaxValue;
             nameLimit = limits.InternedNames ?? int.MaxValue;
-            referenceBudget = (limits.ExpandedCharacters ?? long.MaxValue) - input.Length;
+            referenceBudget = (limits.ExpandedCharacters ?? long.MaxValue) - (rawLength < 0 ? input.Length : rawLength);
+            this.dropped = dropped; this.droppedCount = droppedCount;
             line = 1;
             frames = new OptimisticFrame[16];
             frames[0] = new() { Slot = 0, First = -1, Last = -1 };

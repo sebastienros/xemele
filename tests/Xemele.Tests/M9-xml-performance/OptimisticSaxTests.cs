@@ -20,6 +20,9 @@ public sealed class OptimisticSaxTests
         "<a>&#65;&#x1F600;&#xe9;&#9;</a>", "<a b='&#65;&#10;&#x20;&#x1F600;'/>",
         "\uFEFF<a/>", "\uFEFF<?xml version='1.0'?>\n<a>é</a>",
         "<a xmlns:p='u' xmlns:q='u'><p:x q:x='1'/></a>", "<a  b = '1'\n c\t=\"2\" />", "<a>x\ny\n  é\nz</a>",
+        "<a>\r\n<b/>\r\n</a>", "<?xml version='1.0'\r\n?>\r\n<a\r\n  b='x\r\ny\rz'\r\n/>\r\n", "\r\n<!--c\r\nd--><a>é\r\n€\r😀\r\n<?p x\r\ny?><![CDATA[\r\n\r\r\n]]></a>\r\n",
+        "\r\r\n\n\r<a/>\r\n\r\n", "<a>\r</a>", "<a/>\r",
+        "<r>" + string.Concat(Enumerable.Repeat("\r\n<i k='v\r\nw'>é\r\n<!--\r\n--></i>\r", 700)) + "</r>\r\n",
         "<a><?p?><!----><![CDATA[]]><![CDATA[ x\n é ]]></a>", "<?xml version='1.0'?> <?pi x?> <a/> <!--t--> ",
         "<a xmlns='u'><b xmlns='u'/><c/></a>", "<?xml version='1.0' encoding='utf-8'?><a/>",
     ];
@@ -34,7 +37,7 @@ public sealed class OptimisticSaxTests
     public static TheoryData<string> Declined() => new()
     {
         "", "<a>]]></a>", "<a b='<'/>", "<a b='1' b='2'/>", "<a:b/>", "<a:b:c/>", "<a>&foo;</a>", "<a>&#0;</a>", "<a>&#xD800;</a>",
-        "<a>&#x110000;</a>", "<a>&#;</a>", "<a/><b/>", "<a><b></a>", "<a>\r\n<b/>\r\n</a>", "\uFEFF\uFEFF<a/>",
+        "<a>&#x110000;</a>", "<a>&#;</a>", "<a/><b/>", "<a><b></a>", "<a>&#13;\r\n&#10;</a>", "\uFEFF\uFEFF<a/>",
         "<a>\uFFFF</a>", "<a>\u0001</a>", "<!DOCTYPE a><a/>", "<a xmlns:xmlns='x'/>", "<a b='1'c='2'/>", "<a 1='x'/>",
         "<?xml version='1.0' encoding='ISO-8859-1'?><a/>", "<a xmlns:p='u' xmlns:q='u'><p:x p:x='1' q:x='2'/></a>",
     };
@@ -314,7 +317,7 @@ public sealed class OptimisticSaxTests
             var merged = new List<string>();
             foreach (string e in Events)
             {
-                if (e.StartsWith("T:") && merged.Count > 0 && merged[^1].StartsWith("T:")) merged[^1] += e[2..];
+                if (e.StartsWith("T:", StringComparison.Ordinal) && merged.Count > 0 && merged[^1].StartsWith("T:", StringComparison.Ordinal)) merged[^1] += e[2..];
                 else merged.Add(e);
             }
             return merged;

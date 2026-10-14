@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Text;
 using System.Text.Unicode;
+using Xemele.Internal.Operations;
 
 namespace Xemele.Streaming;
 
@@ -40,8 +41,23 @@ internal static class OptimisticSax
         var limits = options.Limits;
         if (options.Recover || input.IsEmpty) return false;
         if (input.Length > (limits.DocumentCharacters ?? long.MaxValue) || input.Length > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
-        var parser = new SaxParser(input, handler, limits, cancellationToken, charInput: false);
-        return parser.Run();
+        return input.Contains((byte)'\r')
+            ? RunNormalized(input, handler, limits, cancellationToken, charInput: false)
+            : new SaxParser(input, handler, limits, cancellationToken, charInput: false).Run();
+    }
+
+    // CR and CRLF input is parsed from an LF-normalized copy; line and column numbers are unchanged and byte offsets are mapped back.
+    private static bool RunNormalized(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlResourceLimits limits, CancellationToken cancellationToken, bool charInput)
+    {
+        byte[] buffer = FastLineBreaks.Rent(input.Length, out bool pooled);
+        int[]? dropped = null;
+        try
+        {
+            int length = FastLineBreaks.Normalize(input, buffer, !charInput, ref dropped, out int droppedCount);
+            var parser = new SaxParser(buffer.AsSpan(0, length), handler, limits, cancellationToken, charInput, input.Length, dropped, droppedCount);
+            return parser.Run();
+        }
+        finally { FastLineBreaks.Release(buffer, pooled, dropped); }
     }
 
     internal static bool TryParse(ReadOnlySpan<char> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken)
@@ -56,8 +72,10 @@ internal static class OptimisticSax
         {
             if (Utf8.FromUtf16(input, rented, out _, out int written, replaceInvalidSequences: false) != OperationStatus.Done || written != byteCount) return false;
             if (byteCount > (limits.DocumentCharacters ?? long.MaxValue) || byteCount > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
-            var parser = new SaxParser(rented.AsSpan(0, byteCount), handler, limits, cancellationToken, charInput: true);
-            return parser.Run();
+            var bytes = rented.AsSpan(0, byteCount);
+            return bytes.Contains((byte)'\r')
+                ? RunNormalized(bytes, handler, limits, cancellationToken, charInput: true)
+                : new SaxParser(bytes, handler, limits, cancellationToken, charInput: true).Run();
         }
         finally { if (pooled) ArrayPool<byte>.Shared.Return(rented); }
     }
@@ -125,14 +143,15 @@ internal static class OptimisticSax
         private List<string>? declared;
         private int declaredIndex;
 
-        internal SaxParser(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlResourceLimits limits, CancellationToken cancellation, bool charInput)
+        internal SaxParser(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlResourceLimits limits, CancellationToken cancellation, bool charInput, int rawLength = -1, int[]? dropped = null, int droppedCount = 0)
         {
             this.handler = handler; this.charInput = charInput; s = input; n = input.Length; this.cancellation = cancellation;
             maxDepth = limits.Depth ?? int.MaxValue;
             maxMembers = Math.Min(MaxMembers, limits.AttributesPerElement ?? int.MaxValue);
             tokenLimit = limits.TokenCharacters ?? int.MaxValue;
             nameLimit = limits.InternedNames ?? int.MaxValue;
-            referenceLimit = (limits.ExpandedCharacters ?? long.MaxValue) - input.Length;
+            referenceLimit = (limits.ExpandedCharacters ?? long.MaxValue) - (rawLength < 0 ? input.Length : rawLength);
+            this.dropped = dropped; this.droppedCount = droppedCount;
             frames = new Frame[16];
             table = new SaxName?[128];
             bindingPrefixes = new string[8]; bindingUris = new string[8];
@@ -172,7 +191,11 @@ internal static class OptimisticSax
             return true;
         }
 
-        private XmlLocation Loc(int atLine, int atColumn, int atOffset) => new(null, atLine, atColumn, charInput ? null : atOffset);
+        private readonly int[]? dropped;
+        private readonly int droppedCount;
+        private int droppedCursor;
+        private XmlLocation Loc(int atLine, int atColumn, int atOffset) => new(null, atLine, atColumn,
+            charInput ? null : dropped is null ? atOffset : FastLineBreaks.Raw(dropped, droppedCount, ref droppedCursor, atOffset));
 
         private int Column(int position) => position - lineStart - cont + 1;
 
