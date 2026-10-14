@@ -29,7 +29,8 @@ def main():
     def command(selector, path):
         # MTP native CLI has no VSTest logger or MSBuild switch forwarding.
         return ["dotnet", "test", selector, path, "-c", "Release", "--no-build",
-                "--no-restore", "--no-ansi", "--no-progress"]
+                "--no-restore", "--no-ansi", "--no-progress", "--parallel", "none",
+                "--culture", "invariant", "--max-parallel-test-modules", "1"]
 
     def tests(directory):
         return [test for report in directory.glob("*.xunit.xml")

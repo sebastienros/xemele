@@ -39,6 +39,12 @@ jobs:
       - name: Compare compiled runtime API and verify foundation contracts
         run: python -B docs/reports/M0-api-wiring/verify.py
       - name: Discover and execute MTP tests and verify failure exit codes
+        env:
+          DOTNET_TieredCompilation: '0'
+          DOTNET_TieredPGO: '0'
+          DOTNET_ReadyToRun: '0'
+          DOTNET_gcServer: '0'
+          DOTNET_GCConcurrent: '0'
         run: python -B docs/reports/M0-tests-mtp/check_runner.py
       - name: Verify focused corpus MTP tests and root offline CLI
         run: python -B docs/reports/M0-corpora-wiring/check_cli.py

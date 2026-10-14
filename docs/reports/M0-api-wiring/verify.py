@@ -71,10 +71,12 @@ def fixture_checks():
             # Split actual goldens and assign distinct valid inventory IDs. File order
             # and ID order deliberately differ from compiled member order.
             remapped = [dict(row, id=f'entry-{len(entries)-index:04}') for index, row in enumerate(entries)]
-            files = [fragment(root, 'a', remapped[::2]), fragment(root, 'z', remapped[1::2])]
+            files = [fragment(root, 'a', remapped[::2]), fragment(root, 'z', remapped[1::2]),
+                     fragment(root, 'join', [])]
             snapshots = [path.read_bytes() for path in files]
             report = union(root, assembly(stage), directory, stage)
             assert report['matched'] and len(report['provenance']) == len(entries)
+            assert 'docs/api/join.txt' in report['inventory']['apiFragments']
             assert all(row['id'] != row['member'] for row in report['provenance'])
             assert {row['source'] for row in report['provenance']} == {'docs/api/a.txt', 'docs/api/z.txt'}
             canonical, _ = compose(root)
