@@ -9,12 +9,20 @@
   "last_verified_checkpoint": "M8-gate",
   "last_verified_task": "M9-distribution",
   "last_integrated_revision": "f065b4f5b9c63cd955fc86c8eda0b5213617d5de",
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M9-robustness",
+      "chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
+      "branch": "codex/m9-offline-robustness",
+      "worktree_path": "/private/tmp/xemele-m9-offline-robustness",
+      "base_revision": "c28f7c0720a7944cfdb3f1a8e835ec0f4dc8eb59",
+      "scope": "Narrow human offline-execution revision and source-applicable ordinary robustness verification; no harness execution"
+    }
+  ],
   "integration_queue": [],
   "next_actions": [
-    "Fresh M9 worker records narrow human offline-execution revision in owning robustness/gate criteria, retaining unrun evidence and historical requirements.",
-    "Finish revised robustness and remaining release requirements; collect active Xemele XML-performance handoff without duplicate work.",
-    "Main remains read-only until M9 terminal handoff; no automated campaign/harness execution."
+    "Verify revised robustness with source-applicable ordinary evidence; preserve original campaign criteria as offline/unrun.",
+    "Collect active XML-performance owned handoff; dedicated x64/arm64 comparative timing remains pending."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -46,9 +54,10 @@
     "from_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
     "thread_id": "01a13810-0096-7491-abf5-382065b22b4c",
     "host_id": "local",
-    "status": "Created read-only; explicit ACTIVATE follows containing commit",
+    "status": "ACTIVATE received; sole M9 primary/main/state custody",
     "merged_user_harness_revision": "9cd5c5ce529b6715dbbe7b547b0b9bf0b1f09318",
-    "activation_sent": false
+    "activation_sent": true,
+    "transfer_revision": "c28f7c0720a7944cfdb3f1a8e835ec0f4dc8eb59"
   },
   "benchmark_policy": "Allocation-only: no isolation, PARK, ACK or exclusivity workflow per direct human instruction. Keep preparation identities, correctness, controls, actual counters and bounded cleanup. Genuine throughput/timing requirements unchanged; foreign communication/synchronization prohibited.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
