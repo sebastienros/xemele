@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Full conformance and sustained robustness campaign",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-offline-robustness",
   "base_revision": "c28f7c0720a7944cfdb3f1a8e835ec0f4dc8eb59",
-  "integration_revision": "837ef54b5a2b080110699d2c47dc126f257ae460",
+  "integration_revision": "cb7d5fc2e62354961a704d119586b9a94c933007",
   "depends_on": [
     "M9-contracts",
     "M9-dom-memory",
@@ -37,7 +37,8 @@
         "ordinary-core-branch-coverage",
         "human-offline-campaign-revision",
         "offline-source-binding",
-        "offline-execution-unrun"
+        "offline-execution-unrun",
+        "offline-robustness-integrated"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "ordinary-core-branch-coverage",
         "human-offline-campaign-revision",
         "offline-source-binding",
-        "offline-execution-unrun"
+        "offline-execution-unrun",
+        "offline-robustness-integrated"
       ]
     },
     {
@@ -63,7 +65,8 @@
         "ordinary-core-branch-coverage",
         "human-offline-campaign-revision",
         "offline-source-binding",
-        "offline-execution-unrun"
+        "offline-execution-unrun",
+        "offline-robustness-integrated"
       ]
     }
   ],
@@ -180,6 +183,15 @@
       "result": "skipped",
       "summary": "Offline human work under explicit gate revision; no harness build, fuzz launch, campaign duration or crash qualification pass. Human reported XML deliberate-control PASS and unspecified HTMLlegacy crashes remain unverified here. No concrete product defect supplied/confirmed.",
       "artifact": "docs/reports/M9-robustness/offline-decision.json"
+    },
+    {
+      "id": "offline-robustness-integrated",
+      "kind": "integration",
+      "revision": "cb7d5fc2e62354961a704d119586b9a94c933007",
+      "command": "python3 -B docs/reports/M9-robustness/verify-offline-scope.py; python3 tools/planning/tasks.py validate; git diff --check; owned-path diff review",
+      "result": "passed",
+      "summary": "Integrated narrow human offline revision; all ordinary runtime/corpus/coverage and latest OS unit source closures match retained executions. No harness or campaign run, no execution credit. No confirmed product defect supplied; active XML changes require affected revalidation.",
+      "artifact": "docs/reports/M9-robustness/offline-source-binding.json"
     }
   ],
   "blockers": [],

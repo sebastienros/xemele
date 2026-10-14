@@ -7,22 +7,14 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
-  "last_verified_task": "M9-distribution",
-  "last_integrated_revision": "f065b4f5b9c63cd955fc86c8eda0b5213617d5de",
-  "active_assignments": [
-    {
-      "task_id": "M9-robustness",
-      "chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
-      "branch": "codex/m9-offline-robustness",
-      "worktree_path": "/private/tmp/xemele-m9-offline-robustness",
-      "base_revision": "c28f7c0720a7944cfdb3f1a8e835ec0f4dc8eb59",
-      "scope": "Narrow human offline-execution revision and source-applicable ordinary robustness verification; no harness execution"
-    }
-  ],
+  "last_verified_task": "M9-robustness",
+  "last_integrated_revision": "cb7d5fc2e62354961a704d119586b9a94c933007",
+  "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Verify revised robustness with source-applicable ordinary evidence; preserve original campaign criteria as offline/unrun.",
-    "Collect active XML-performance owned handoff; dedicated x64/arm64 comparative timing remains pending."
+    "Collect active M9-xml-performance final owned handoff; do not duplicate its measurements or alter its branch.",
+    "Integrate accepted XML changes, then rerun affected ordinary correctness/corpus/coverage/API/package/memory checks only where sources changed.",
+    "M9-performance needs eligible dedicated x64/arm64 timing evidence or explicit narrow human decision; M9-gate cannot be verified while this requirement remains open."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -152,11 +144,17 @@
   },
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
-  "milestone_progress": "Required OS distribution matrix verified with all three OS 10,754-unit passes and actual managed/trim/NativeAOT/tool execution. API and local compatible repairs remain verified. Dedicated comparative timing, active XML performance work and deferred sustained fuzz requirements still prevent M9-gate completion.",
+  "milestone_progress": "10/13 M9 tasks verified. Revised robustness verified on integrated unchanged ordinary sources under human offline campaign decision; sustained campaigns/crash qualification remain unrun/offline with zero execution credit. Dedicated comparative timing and active XML-performance task remain before planned M9-gate.",
   "blockers": [
-    "Required dedicated-machine x64/arm64 comparative timing evidence unavailable."
+    "Required dedicated x64/arm64 comparative timing evidence remains unavailable; human offline waiver does not revise performance thresholds."
   ],
-  "pending_decisions": [],
+  "pending_decisions": [
+    {
+      "scope": "M9-performance only",
+      "decision": "Supply eligible dedicated x64/arm64 comparative timing reports/hardware or explicitly revise this remaining release evidence gate; no timing pass can be inferred from local shared measurements.",
+      "status": "Outstanding independent of offline campaign waiver"
+    }
+  ],
   "timing_queue": [],
   "completed_assignments": [
     {
@@ -1887,9 +1885,7 @@
     "delegation": "Prefer direct serial work; at most3isolated implementation workers when materially useful",
     "scope": "Existing required release gates only; preserve honest failures/155approvedzero-creditdispositions; no speculative expansion"
   },
-  "pending_owned_changes": [
-    "Managed XPath normalization/uniqueness has demonstrated quadratic work-limit failure; assign its exact module owner after current storage repair."
-  ],
+  "pending_owned_changes": [],
   "hosted_platform_request": {
     "status": "Required source-bound OS distribution matrix passed; Windows single job succeeded; no further runner budget",
     "repository": "sebastienros/xemele",
@@ -2188,6 +2184,8 @@
       "Historical criteria/evidence retained",
       "Known concrete product bugs remain assessable",
       "Unrelated dedicated timing requirements unchanged"
-    ]
+    ],
+    "owning_decision": "docs/reports/M9-robustness/offline-decision.json",
+    "robustnessIntegrationRevision": "cb7d5fc2e62354961a704d119586b9a94c933007"
   }
 }
