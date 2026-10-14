@@ -13,7 +13,7 @@ public sealed class ReferenceTests
     {
         get { for (var p = new DirectoryInfo(AppContext.BaseDirectory); p is not null; p = p.Parent) if (File.Exists(Path.Combine(p.FullName, "global.json"))) return p.FullName; throw new InvalidOperationException("Repository root unavailable."); }
     }
-    private static string Corpus => Path.Combine(Root, "tests/corpora/relaxng");
+    private static string Corpus => Path.GetFullPath(Path.Combine(Root, "tests", "corpora", "relaxng"));
     private static byte[] Verified(JsonElement f)
     {
         string relative = f.GetProperty("path").GetString()!;

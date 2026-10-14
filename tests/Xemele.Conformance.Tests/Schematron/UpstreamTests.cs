@@ -97,7 +97,7 @@ public sealed class UpstreamTests
         var cases = inventory.RootElement.GetProperty("cases").EnumerateArray().ToArray();
         Assert.Equal(50, cases.Length); Assert.Equal(51, cases.Sum(c => c.GetProperty("schemaVariants").GetInt32()));
         Assert.Equal(50, cases.Select(c => c.GetProperty("id").GetString()).Distinct().Count());
-        Assert.Equal(cases.Select(c => c.GetProperty("path").GetString()).Order(), Directory.GetFiles(Path.Combine(Corpus, "upstream"), "*.xml", SearchOption.AllDirectories).Where(p => !p.EndsWith("pom.xml", StringComparison.Ordinal)).Select(p => Path.GetRelativePath(Corpus, p)).Order());
+        Assert.Equal(cases.Select(c => c.GetProperty("path").GetString()).Order(), Directory.GetFiles(Path.Combine(Corpus, "upstream"), "*.xml", SearchOption.AllDirectories).Where(p => !p.EndsWith("pom.xml", StringComparison.Ordinal)).Select(p => Path.GetRelativePath(Corpus, p).Replace(Path.DirectorySeparatorChar, '/')).Order());
         using var ledger = JsonDocument.Parse(File.ReadAllText(Path.Combine(Corpus, "applicability.json")));
         Assert.Equal(cases.Select(c => c.GetProperty("id").GetString()).Order(), ledger.RootElement.GetProperty("cases").EnumerateArray().Select(c => c.GetProperty("id").GetString()).Order());
         foreach (var c in ledger.RootElement.GetProperty("cases").EnumerateArray()) Assert.NotEmpty(c.GetProperty("reason").GetString()!);
