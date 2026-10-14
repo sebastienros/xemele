@@ -22,9 +22,9 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Record human timing revision in owning performance task/report and downstream gate.",
-    "Collect bounded XML-performance final handoff, including retained-memory method/profile reconciliation and current ratios.",
-    "Integrate accepted source changes and rerun only affected ordinary release checks; campaigns stay offline/unrun."
+    "Wait for existing XML optimizer result without duplicating work or integrating its active branch.",
+    "Collect final owned handoff and same-profile retained-memory reconciliation; preserve measured latency deficits and current A2failed state.",
+    "Only then integrate eligible source changes and rerun affected ordinary API/corpus/coverage/package/memory checks; campaigns remain offline/unrun and dedicated timing remains informational."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -1887,7 +1887,8 @@
     "implementation_model": "gpt-6.1-sol",
     "reasoning": "high",
     "delegation": "Prefer direct serial work; at most3isolated implementation workers when materially useful",
-    "scope": "Existing required release gates only; preserve honest failures/155approvedzero-creditdispositions; no speculative expansion"
+    "scope": "Existing required release gates only; preserve honest failures/155approvedzero-creditdispositions; no speculative expansion",
+    "active_lane_noncollision": "Direct human reminder: do not collide with existing optimization chat01a1361b-a82b-7f52-8c53-9988c0c55811. Keep its claim/branch/worktree intact; no duplicate measurements, source edits or premature integration."
   },
   "pending_owned_changes": [],
   "hosted_platform_request": {
@@ -2206,5 +2207,21 @@
     "status": "Requested same-profile/method reconciliation from owner before acceptance; no confirmed regression/failure relabel yet",
     "originalEvidence": 0.6870981818629037,
     "originalStatus": "Retained as history; GetTotalMemory meter validity being assessed against owner new SOH/LOH controls"
+  },
+  "active_xml_checkpoint": {
+    "branch": "codex/xml-performance",
+    "reportedSourceRevision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+    "committedReportRevision": "08a7ba712",
+    "taskStatus": "in_progress",
+    "acceptanceA2": "failed: local latency1.8788xBCL; owner explicitly retains lane in_progress until target passes",
+    "otherAcceptance": "Owner reports A1/A3/A4passed; not coordinator integrated verification",
+    "correctnessReported": {
+      "units": 10803,
+      "conformance": 920,
+      "differential": 618
+    },
+    "retainedRatioReported": 0.9015108,
+    "sourceIntegrated": false,
+    "scopeOfHumanTimingDeferral": "Dedicated release timing only; no broader XML optimization acceptance change inferred"
   }
 }
