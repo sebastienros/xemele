@@ -1,3 +1,5 @@
+A separate [direct human memory decision](memory-decision.json) accepts the current approximately0.90xBCL retained budget while latency improvements continue. Final integrated source/control verification awaits the existing optimizer handoff; original0.75target and older meter history remain explicit.
+
 Current gate accounting: [direct human timing revision](timing-decision.json) defers dedicated timing and accepts local comparisons as informational. Original timing thresholds remain reported, with no timing-target pass. Memory/allocation requirements are unchanged; current XML branch retention is being reconciled before verification. The following original status notes remain history.
 
 # Release performance accounting

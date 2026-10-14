@@ -29,7 +29,7 @@
   "acceptance": [
     {
       "id": "M9-performance-A1",
-      "description": "Under the explicit human timing revision, verify frozen allocation/live-memory results and review available local comparative timing as informational. Dedicated x64/arm64 throughput/confidence/reference target verification is deferred, with no original timing-target pass credit.",
+      "description": "Under the explicit human timing revision, verify frozen allocation/live-memory results and review available local comparative timing as informational. Dedicated x64/arm64 throughput/confidence/reference target verification is deferred, with no original timing-target pass credit. Apply the separate human approximately0.90xBCL retained-memory budget in docs/reports/M9-performance/memory-decision.json; preserve the accepted current budget while improving latency, with original0.75target not passed.",
       "status": "pending",
       "evidence": [
         "required-controlled-run",
@@ -37,7 +37,8 @@
         "retained-dom-target",
         "current-repaired-dom-memory",
         "current-repaired-stream-memory",
-        "human-informational-timing-revision"
+        "human-informational-timing-revision",
+        "human-current-memory-budget"
       ]
     },
     {
@@ -49,7 +50,8 @@
         "current-streaming-memory",
         "current-all-engine-qualification",
         "managed-benchmark-oracles",
-        "human-informational-timing-revision"
+        "human-informational-timing-revision",
+        "human-current-memory-budget"
       ]
     },
     {
@@ -73,7 +75,8 @@
     "docs/reports/M9-performance/current-summary.md,current-preparation.json,managed-qualification-current.json,rust-utf8-qualification.json:30engine/fixture qualifications, all earlier failures preserved",
     "docs/reports/M9-performance/dom-current.py,dom-retention-current.json,memory-current.py,current-memory2.json: actual current repaired-runtime memory passes",
     "docs/reports/M9-performance/ManagedBenchmarks/: prepared memory-diagnosed ShortRun managed workloads and90untimed operation oracles",
-    "docs/reports/M9-performance/timing-decision.json: direct human dedicated timing deferral, original acceptance and unchanged memory/allocation gates"
+    "docs/reports/M9-performance/timing-decision.json: direct human dedicated timing deferral, original acceptance and unchanged memory/allocation gates",
+    "docs/reports/M9-performance/memory-decision.json: directly verified human acceptance of current approximately0.90xBCL retained-memory budget"
   ],
   "evidence": [
     {
@@ -192,20 +195,29 @@
       "result": "passed",
       "summary": "Human defers dedicated timing and accepts reviewed local measurements as informational. No original timing thresholds/confidence/floors passed. RetainedDOM0.75,streaming8MiB and allocation requirements unchanged; active branch memory result needs reconciliation.",
       "artifact": "docs/reports/M9-performance/timing-decision.json"
+    },
+    {
+      "id": "human-current-memory-budget",
+      "kind": "review",
+      "revision": "fc5f4ed31d18a2a71b94c738b07039b8ddf12d5f",
+      "command": "read_thread actual human userMessage01a1381c-17ce-7ec3-932d-3313fde0059b in existing XML optimization chat",
+      "result": "passed",
+      "summary": "Human accepts current approximately0.90xBCL retained memory and asks it be preserved during latency improvements. Reported controlled ratio0.9015108; current worker source remains unintegrated. No original0.75pass, old0.687meter currently under validity reconciliation.",
+      "artifact": "docs/reports/M9-performance/memory-decision.json"
     }
   ],
   "blockers": [
-    "Current XML-performance retained-memory report0.902x needs same-profile reconciliation against unchanged0.75target; timing now deferred by explicit human decision."
+    "Await active XML-performance final owned handoff and integrated current controls; human accepts current approximately0.90retained budget, original0.75target not passed."
   ],
   "handoff": {
-    "summary": "Direct human dedicated-timing revision recorded; no original timing target passes. Existing memory/allocation evidence retained as history; current XML lane report requires same-profile retained-memory reconciliation before performance verification.",
+    "summary": "Human dedicated-timing deferral and separately verified current approximately0.90retained-memory approval recorded. Active optimizer retains ownership; final source-integrated verification awaits its handoff. Original target failures/unrun evidence preserved.",
     "checks": [
       "Original frozen fixtures/reference qualifications/memory reports preserved",
       "Dedicated comparisons remain NOT RUN; human review decision recorded separately"
     ],
     "remaining": [
-      "Collect current XML-performance owned handoff and review local results/deficits",
-      "Reconcile current retained-memory0.902report against unchanged0.75target and original0.687098evidence; no memory waiver"
+      "Await active optimization lane final handoff without collision; review actual local comparisons and deficits",
+      "Verify accepted approximately0.90current retained budget and unchanged streaming/allocation controls at integrated source; reconcile historical meter issue"
     ],
     "requests": [
       "M9-gate must apply narrow informational-timing revision while retaining ordinary correctness and unchanged memory/allocation gates"
