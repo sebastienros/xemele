@@ -1,3 +1,5 @@
+Final current evidence: [revised performance](final-performance.json) and [five-mode1GiB checks](final-stream-memory.json) pass the explicitly revised gate. Controlled retained ratio is0.827740xBCL, within the acceptedapproximately0.90budget. Original dedicated timing remains NOT RUN; local DOM timings and SAX deficits are informational. Historical status and decisions follow.
+
 A separate [direct human memory decision](memory-decision.json) accepts the current approximately0.90xBCL retained budget while latency improvements continue. Final integrated source/control verification awaits the existing optimizer handoff; original0.75target and older meter history remain explicit.
 
 Current gate accounting: [direct human timing revision](timing-decision.json) defers dedicated timing and accepts local comparisons as informational. Original timing thresholds remain reported, with no timing-target pass. Memory/allocation requirements are unchanged; current XML branch retention is being reconciled before verification. The following original status notes remain history.

@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Reproducible performance acceptance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-final-performance",
   "base_revision": "fbcd4ff300c85582615867461a7743addec7a69d",
@@ -30,7 +30,7 @@
     {
       "id": "M9-performance-A1",
       "description": "Under the explicit human timing revision, verify frozen allocation/live-memory results and review available local comparative timing as informational. Dedicated x64/arm64 throughput/confidence/reference target verification is deferred, with no original timing-target pass credit. Apply the separate human approximately0.90xBCL retained-memory budget in docs/reports/M9-performance/memory-decision.json; preserve the accepted current budget while improving latency, with original0.75target not passed.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "required-controlled-run",
         "current-streaming-memory",
@@ -38,20 +38,22 @@
         "current-repaired-dom-memory",
         "current-repaired-stream-memory",
         "human-informational-timing-revision",
-        "human-current-memory-budget"
+        "human-current-memory-budget",
+        "final-revised-performance"
       ]
     },
     {
       "id": "M9-performance-A2",
       "description": "Record actual environments, local informational results and all measured deficits; preserve original thresholds and unrun dedicated evidence. Resolve unchanged allocation/live-memory gates and route confirmed runtime failures to owning repairs.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "required-controlled-run",
         "current-streaming-memory",
         "current-all-engine-qualification",
         "managed-benchmark-oracles",
         "human-informational-timing-revision",
-        "human-current-memory-budget"
+        "human-current-memory-budget",
+        "final-revised-performance"
       ]
     },
     {
@@ -59,7 +61,8 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "honest-accounting"
+        "honest-accounting",
+        "final-revised-performance"
       ]
     }
   ],
@@ -76,7 +79,8 @@
     "docs/reports/M9-performance/dom-current.py,dom-retention-current.json,memory-current.py,current-memory2.json: actual current repaired-runtime memory passes",
     "docs/reports/M9-performance/ManagedBenchmarks/: prepared memory-diagnosed ShortRun managed workloads and90untimed operation oracles",
     "docs/reports/M9-performance/timing-decision.json: direct human dedicated timing deferral, original acceptance and unchanged memory/allocation gates",
-    "docs/reports/M9-performance/memory-decision.json: directly verified human acceptance of current approximately0.90xBCL retained-memory budget"
+    "docs/reports/M9-performance/memory-decision.json: directly verified human acceptance of current approximately0.90xBCL retained-memory budget",
+    "docs/reports/M9-performance/final-performance.json,final-stream-memory.json: actual final-source revised performance with historical/unrun limits explicit"
   ],
   "evidence": [
     {
@@ -204,21 +208,31 @@
       "result": "passed",
       "summary": "Human accepts current approximately0.90xBCL retained memory and asks it be preserved during latency improvements. Reported controlled ratio0.9015108; current worker source remains unintegrated. No original0.75pass, old0.687meter currently under validity reconciliation.",
       "artifact": "docs/reports/M9-performance/memory-decision.json"
+    },
+    {
+      "id": "final-revised-performance",
+      "kind": "check",
+      "revision": "7dea17c7c6937562400ba3185b79122bd63ab66d",
+      "command": "python3 -B docs/reports/M9-performance/memory-current.py --dotnet pinned10.0.400host; source-bind final XML DOM qualification and12754ordinary checks; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Five current1GiBmodes pass all fixed byte/event/text/earlyEOF oracles and65samples; max297832wholemanagedlivebytes<8MiB;9MiBcontrol9653656refuseslimit.9commands exit0,reaped,groupabsent,logclosed. Current controlled retained0.827740<=acceptedapprox0.90; DOMlatGM0.536721/allocGM0.787536,max1.013942/1.139822. Dedicatedtimingunrun, SAXdeficitsinformational, old0.687meter no current credit.",
+      "artifact": "docs/reports/M9-performance/final-performance.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Human dedicated-timing deferral and separately verified current approximately0.90retained-memory approval recorded. Active optimizer retains ownership; final source-integrated verification awaits its handoff. Original target failures/unrun evidence preserved.",
+    "summary": "Revised final performance criteria satisfied with actual current DOM/allocation/compacted retention and five1GiBstreaming checks. Original dedicated timing and0.75retained target never relabeled passed.",
     "checks": [
-      "Original frozen fixtures/reference qualifications/memory reports preserved",
-      "Dedicated comparisons remain NOT RUN; human review decision recorded separately"
+      "Five1GiBprofiles and9MiBcontrol,9clean finite command receipts",
+      "Current retained0.827740 meets acceptedapprox0.90budget; finalDOM A2ratios pass",
+      "12754ordinary/API/migration evidence retained; actual allocation assertions passed"
     ],
     "remaining": [
-      "Await active optimization lane final handoff without collision; review actual local comparisons and deficits",
-      "Verify accepted approximately0.90current retained budget and unchanged streaming/allocation controls at integrated source; reconcile historical meter issue"
+      "Final current-core branchcoverage/originalXSD/package/platform gate checks"
     ],
     "requests": [
-      "M9-gate must apply narrow informational-timing revision while retaining ordinary correctness and unchanged memory/allocation gates"
+      "Packaging owner must update tools/Packaging/verify.py EXPECTED_UNIT_TESTS10754 to11216 before any new --unit-tests OS run; no hosted budget inferred",
+      "Gate must record original timing/campaign unrun statuses and source-currentOS evidence limits honestly"
     ]
   }
 }
