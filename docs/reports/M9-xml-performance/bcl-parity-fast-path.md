@@ -145,3 +145,45 @@ streaming path). Allocation is roughly 4 KB per parse regardless of document siz
 fixture. The speedups (7-30x) are far outside the same-DLL control noise, so no reversed-order repeat was needed.
 Splitting the cost: the validation pass alone runs at about BCL-reader speed, so the remaining gap is the delivery
 pass. Taping pass-1 tokens would remove most of the repeated scanning and hashing; it was left out for complexity.
+
+## Follow-up: review fixes, line breaks, and repeatability
+
+### Review fixes
+- **Token limits.** PI targets, closing-tag whitespace and whitespace runs outside the root are charged against
+  `TokenCharacters` exactly as the streaming parser does (tight limits of 5/8/11/14/20 are part of the harnesses).
+- **Bounded stack.** PI target length no longer controls an unbounded `stackalloc`.
+- **Name-table probing** is bounded (`MaxProbes = 256`); pathological collisions bail to the streaming parser.
+- **Cancellation.** A seekable stream's final read honors the token. In SAX, the token is checked after every
+  delivery callback (`StartDocument`, declaration, text, comment, PI, CDATA, start/end element), so cancelling from a
+  handler stops delivery like the streaming parser. It is deliberately not checked after `EndDocument`: the streaming
+  parser completes successfully in that case, and a test documents it.
+
+### CR and CRLF
+Input containing CR is rewritten to LF in a pooled buffer (`FastLineBreaks`), recording the output index of every LF
+whose CR was folded. Line/column are identical after normalization (CR, LF and CRLF are each one break); byte offsets
+are mapped back as `index + (folded CRLFs before it)`. Quota prechecks and the reference budget use the raw length.
+`&#13;` references still bail to the streaming parser. Pretty-printed (CRLF) copies of the fixtures keep the same
+ratios as the LF versions: DOM geomean 0.67x BCL, SAX 2.04x BCL reader.
+
+### Repeatability
+Same-DLL control noise aside, BenchmarkDotNet runs in normal and `--reverse` (after-first) order agree:
+
+| | normal | reversed |
+|---|---:|---:|
+| geomean after/BCL | 0.662 | 0.669 |
+| geomean before/BCL | 1.84 | 1.80 |
+| geomean after/before | 0.35 | 0.35 |
+
+Per-fixture after/BCL agrees within about 0.05 (build 0.47, business 0.56, configuration 0.40, deep 0.58,
+entity-medium 2.55, feed-small 1.02, soap 0.54, svg 0.58, text-large 0.66, xhtml 0.51).
+
+### Validation
+DOM harness: 1.04M inputs, SAX harness: 1.17M inputs (including CR/CRLF/mixed variants), 0 divergences. Full
+`Xemele.Tests` run: only the two pre-existing failures (`PreparedAffineAsciiDispatchAllocatesZero`,
+`PreparedBorrowedTextDispatchAllocatesZero`), which also fail on the base commit.
+
+### Not done
+- DOCTYPE/entity input (entity-medium: 2.6x BCL in DOM, ~11x in SAX) still uses the streaming parser.
+- Non-ASCII element/attribute names bail to the streaming parser.
+- SAX token tape (est. ~30% off the delivery pass) is not implemented.
+- Retained-memory (`memory.py`) was not re-run for this revision.
