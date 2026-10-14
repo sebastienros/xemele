@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Improve XML parsing throughput and allocations against BCL and native references",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-xml-completion",
   "base_revision": "18831839a502dcc9b8c53c555cc9cec26a67414b",
@@ -50,15 +50,21 @@
       "status": "passed",
       "evidence": [
         "checkpoint-memory",
-        "checkpoint-native"
+        "checkpoint-native",
+        "final-dom-qualification",
+        "final-correctness-api",
+        "final-owned-source-review"
       ]
     },
     {
       "id": "M9-xml-performance-A2",
       "description": "Improve raw throughput and allocations toward BCL parity: target geometric-mean latency and allocated-byte ratios <=1.10 and no per-fixture ratio >1.25 for the agreed equivalent default-feature profile; report every deficit honestly and do not relax semantics or exclude fixtures to claim parity.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
-        "checkpoint-parity"
+        "checkpoint-parity",
+        "final-dom-qualification",
+        "final-correctness-api",
+        "final-owned-source-review"
       ]
     },
     {
@@ -73,7 +79,10 @@
         "final-Xemele.Differential.Tests",
         "final-api-surface",
         "text-ownership-benchmark",
-        "affine-streaming-checks"
+        "affine-streaming-checks",
+        "final-dom-qualification",
+        "final-correctness-api",
+        "final-owned-source-review"
       ]
     },
     {
@@ -86,7 +95,10 @@
         "borrowed-name-benchmarks",
         "coarse-components",
         "exact-parser-scans",
-        "affine-measurement-review"
+        "affine-measurement-review",
+        "final-dom-qualification",
+        "final-correctness-api",
+        "final-owned-source-review"
       ]
     }
   ],
@@ -98,7 +110,10 @@
     "docs/reports/M9-xml-performance/progress.md: working source/research/native comparison and measurement controls.",
     "XmlParserCore.ConsumeWholeAsciiTag: preflight bounded complete primary tags including opening delimiter; exact quota/source-location fallback preserved.",
     "XmlParserCore reference runs: predefined references in internal replacement charge source spelling plus resolved scalar; guarded <=16-unit BMP numeric primary references preserve Unicode/quota/provenance fallback.",
-    "DomSink: direct final ownership for complete single fragments, scoped internal parent access; private core accepts valid one-unit ordinary text runs."
+    "DomSink: direct final ownership for complete single fragments, scoped internal parent access; private core accepts valid one-unit ordinary text runs.",
+    "src/Xemele/Parsing/Dom/OptimisticDomParser.cs and Streaming/Sax/OptimisticSaxParser.cs: integrated default-compatible validating fast paths with fallback and bounded pooled replay",
+    "src/Xemele/Parsing/Dom/Factories.cs: honor cancellation after seekable EOF probe",
+    "docs/reports/M9-xml-performance/completion-measurements.py,.json,completion-attempt1.json,completion-checks.json,completion.md: final-source qualification and preserved failures"
   ],
   "evidence": [
     {
@@ -253,28 +268,49 @@
       "result": "passed",
       "summary": "Owned ASCII decoder eliminates per-character mapping writes and combines conversion/newline runs; exact byte coordinates remain. Replaced mapping-wrapper prototype after character-DOM regressions with ordinary spans plus an affine base. Corrected comparison-context imbalance, fingerprinted baseline, added standalone reproduction and balanced quick harness. Full-window benefit is small and fixture-dependent; no 10-14% headline or CPU attribution claimed.",
       "artifact": "docs/reports/M9-xml-performance/affine-mappings.md"
+    },
+    {
+      "id": "final-dom-qualification",
+      "kind": "check",
+      "revision": "880b08d213f7d43344ace687133c6a86b95522e9",
+      "command": "Build existing Runner/MemoryWorker; python3 -B docs/reports/M9-xml-performance/completion-measurements.py (initial attempt plus affected-only continuation)",
+      "result": "passed",
+      "summary": "Ten frozen default-feature UTF8 owned-DOM fixtures: latency geomean0.536721/max1.013942,allocation geomean0.787536/max1.139822 vsBCL; all A2limits met. Controlled held/released aggregate0.827740; SOH/LOHcontrols, exactdigests,XPath,serializationroundtrips pass. Initial XPathobserver16MiBfailure retained; documented128MiBcorrection observer-only. Timing informational; SAX ratios/deficits remain separately reported. Measured span-Parse code unchanged by subsequent one-line Load EOF cancellation fix.",
+      "artifact": "docs/reports/M9-xml-performance/completion-measurements.json"
+    },
+    {
+      "id": "final-correctness-api",
+      "kind": "check",
+      "revision": "880b08d213f7d43344ace687133c6a86b95522e9",
+      "command": "Pinned.NET10.0.11 full ordinary unit/conformance/differential suites with tiering disabled; approvedM9 API union/extractor (artifact destination only changed); migration Examples.dll; planning validation/diff checks",
+      "result": "passed",
+      "summary": "11216units+920conformance+618differential=12754pass,0fail/errors/skips/not-run.1430compiledmembers/222preview unchanged,2negativecontrols refuse;20migrationchecks pass. Focused EOFprobe cancellation test firstfailed1/1; one-line cancellation checkpoint fixes it and fullsuitepasses. No fuzz/campaign launched.",
+      "artifact": "docs/reports/M9-xml-performance/completion-checks.json"
+    },
+    {
+      "id": "final-owned-source-review",
+      "kind": "review",
+      "revision": "880b08d213f7d43344ace687133c6a86b95522e9",
+      "command": "Review merged optimisticDOM/SAX routing, boundedStream64MiB fallback, quota/namespace/reference constraints, borrowedtape/arena finally-return paths, cancellation and exactsource/API checks",
+      "result": "passed",
+      "summary": "Direct human integrated optimizer result and completion instruction governs expanded existing task ownership. Generalstream/async paths retain streamingparser; whole-buffer fastpaths validate before results/events and fallback without duplicated callbacks. Bounds/pools/location/quota controls and new cancellation regression reviewed. Source review makes no campaign/dedicated timing claim.",
+      "artifact": "docs/reports/M9-xml-performance/completion.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Selected lean affine mapping checkpoint: 10803/920/618 cases, fresh memory/streaming controls and API equivalence pass. Latest full local BDN is 1.88x BCL latency, 0.88x allocation, 0.90x retained heap. Gains are modest and mixed across fixtures. Latency criterion fails, so the lane stays isolated and in_progress.",
+    "summary": "Integrated optimizer source renewed with final ten-fixture UTF8ownedDOM A2pass and concrete EOFcancellationfix. Default XML correctness/API preserved; final release evidence remains separate.",
     "checks": [
-      "10803 unit, 920 conformance and 618 differential cases passed at selected source e1582649; new ASCII decoder and mapped dispatch each measure 0 B warmed allocation.",
-      "Latest full 20-case local BDN: 1.8788x BCL latency, 0.8758x allocation. Latency target fails; all ten fixtures retained. Context imbalance in the old screening was corrected and standalone runs are primary evidence.",
-      "Current managed digests, rooted layouts, compacted-heap controls and native payload/release controls pass. Retained heap sum 0.9015108x BCL; native timing binaries/corpus unchanged from earlier qualifications.",
-      "Five fresh 1 GiB streaming modes pass at e1582649, whole-heap peaks 133120-150008 bytes. Expected negative-control detection passes after correcting orchestration exit-code assumption. 97 streaming mutation controls pass.",
-      "1430 extracted public API members are identical. Standard pipeline still rejects the pre-existing header-only M8-datatypes fragment; no pipeline pass claimed. Task validation passes 207 tasks.",
-      "Exact scan/name prototypes and rejected experiments remain documented. HTML runtime paths were not edited. Lane is isolated, not integrated or verified."
+      "12754ordinarychecks pass;1430API/222preview/2negativecontrols;20migrationchecks",
+      "Ten fixture DOM latency0.536721x/geomeanalloc0.787536x;max1.013942/1.139822 meetA2",
+      "Current compacted retained aggregate0.827740xBCL;qualifiedSOH/LOHcontrols;initialobserverfailure retained"
     ],
     "remaining": [
-      "Fresh final-source ten-fixture DOM timing/allocation/retention qualification; original A2 still not proven.",
-      "Final integrated API/memory/coverage/package/corpus checks under revised M9 gate."
+      "Final release package/platform/corecoverage/originalXSD/1GiB checks belong to revised performance/gate work",
+      "SAX UTF8reported1.127xBCL andUTF16 1.279x remain informational deficits; no all-input/all-reference parity claim"
     ],
     "requests": [
-      "Public source-location/provenance switches require an owning contract follow-up; none added.",
-      "API baseline owner must repair pre-existing header-only docs/api/M8-datatypes.txt before standard comparison can run.",
-      "A conditional member arena follow-up must preserve warmed prepared-capacity 0 B allocation contracts; allocating per-node payload classes failed those contracts.",
-      "HTML tokenizer owner: replace per-token name.ToString()/attrName.ToString() with verified known-literal span matching plus bounded exact custom-name cache; preserve quotas, ASCII folding, foreign-name adjustment, chunk boundaries and owned callback tokens. Prototype and evidence: docs/reports/M9-xml-performance/name-lookups.md. No HTML runtime paths edited in this XML task."
+      "Gate must preserve historicaldedicated timing/campaign unrun statuses and acceptedapproximately0.90memorydecision; no publication"
     ]
   }
 }

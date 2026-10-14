@@ -1,0 +1,9 @@
+# Final integrated XML completion
+
+The ten frozen UTF-8 owned-DOM fixtures now meet M9-xml-performance-A2: candidate/BCL latency geometric mean 0.536721 (maximum 1.013942), allocation geometric mean 0.787536 (maximum 1.139822). All fixtures remain included with default features. Local timing is informational under the separate human release decision. SAX still has the reported 1.127x UTF-8 / 1.279x UTF-16 latency deficits; this DOM result supplies no SAX parity claim.
+
+Controlled compacted held-minus-released retained memory sums to 0.827740x BCL. Both 32 KiB SOH and 9 MiB LOH controls pass. Every candidate/reference fixture passes its frozen semantic digest, XPath and serialization roundtrip. The original last-fixture 16 MiB XPath oracle failure is retained separately; only the verification context was corrected to the already documented 128 MiB ancestor-text profile. Parsing defaults, limits and expected results were unchanged; nine completed fixture results and the unchanged timing run were reused.
+
+Review reproduced ignored cancellation during the seekable EOF probe: the focused test failed because no exception was thrown. A single cancellation check after the probe resolves it. Byte-span Parse/TryParse and all measured parsing/storage code are unchanged by this Load-only fix. The corrected source passes 11,216 units, 920 conformance and 618 differential checks, with zero failures/errors/skips/not-run. The approved API union matches 1,430 members and all 222 preview signatures; two mismatch controls refuse. All 20 migration checks actually execute and pass.
+
+Older failed criteria, allocation observations and author reports remain historical evidence. No campaign, crash qualification or dedicated timing run was launched. Final package/platform, original XSD, current core coverage and five-mode streaming evidence remain gate work.
