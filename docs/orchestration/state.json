@@ -20,8 +20,9 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Prepare exact two-job20mincap Windows/Linux validation branch; do not push or dispatch until explicitly approved.",
-    "Preserve current macOSarm64 and all historical OSresults; finalize gate after actual current matrix or explicit narrow human decision."
+    "Collect actual approvedWindows/Linux run38522581339 results; no further push/dispatch/retry.",
+    "Preserve collateral legacy CI failures/107seconds separately; do not count them as release validation.",
+    "Finalize verified revisedM9 gate/checkpoint/cleanup if required matrix passes; main can collect terminalhandoff directly."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -152,21 +153,8 @@
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
   "milestone_progress": "12/13M9verified; revised final performance verified. Final gate still requires current core coverage, original XSD/corpora and exact-package/platform evidence.",
-  "blockers": [
-    "Current Windows/Linux renewal budget or explicit gate revision; all current local mandatory checks passed."
-  ],
-  "pending_decisions": [
-    {
-      "scope": "Current Windows/Linux source-bound release validation",
-      "preparedBranch": "codex/m9-final-os-validation",
-      "preparedRevision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
-      "maximumJobs": 2,
-      "maximumMinutesPerJob": 20,
-      "maximumRunnerMinutes": 40,
-      "status": "Explicit approval requested; no remote push/run started",
-      "alternative": "Only an explicit human revision can defer current Windows/Linux, preserving historical results separately from current macOS evidence."
-    }
-  ],
+  "blockers": [],
+  "pending_decisions": [],
   "timing_queue": [],
   "completed_assignments": [
     {
@@ -2058,26 +2046,40 @@
     "all_owned_processes_terminal": true
   },
   "current_hosted_validation_candidate": {
-    "branch": "codex/m9-os-validation",
-    "revision": "b2e2457c4f3355d54c7afae64dc5f3033b650b5a",
-    "integratedSourceRevision": "140b737333474b8f19dba5aeec697b13aa1ff5e0",
-    "sourceTreeIdentical": true,
-    "pushed": true,
-    "jobsStarted": 1,
-    "retryBudgetApproval": "Direct human reply: Approve one Windows job, 20-minute cap",
-    "jobCount": 1,
-    "rid": "win-x64",
-    "capPerJobMinutes": 20,
-    "maximumAdditionalRunnerMinutes": 20,
-    "fuzzIncluded": false,
-    "remoteMainTagsPublicationChanged": false,
-    "remoteRevision": "a19b7ea866fca5472460365f717875308516f42b",
-    "scope": "ExplicitWindowsNuGetconfig and singleWindows workflow only; runtime/unit/consumer/build sources unchanged from allOS10754unit passing source",
-    "run": 38460364837,
-    "runUrl": "https://github.com/sebastienros/xemele/actions/runs/38460364837",
-    "runStatus": "completed",
-    "runConclusion": "success",
-    "retryBudgetConsumed": true
+    "branch": "codex/m9-final-os-validation",
+    "revision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
+    "run": 38522581339,
+    "runUrl": "https://github.com/sebastienros/xemele/actions/runs/38522581339",
+    "runStatus": "in_progress",
+    "jobs": [
+      "linux-x64",
+      "win-x64"
+    ],
+    "maxMinutesPerJob": 20,
+    "maximumRunnerMinutes": 40,
+    "pushes": 1,
+    "dispatches": 0,
+    "additionalRetriesAuthorized": false,
+    "authorization": {
+      "sourceThread": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+      "sourceTurn": "01a13919-630d-7852-ad3f-391c5daa5297",
+      "sourceItem": "01a13919-6344-7d43-9ef7-dd343dea1e1b",
+      "human": "Continue. Use GitHub workers if necessary.",
+      "scope": "Main exact two-job20mincap/40total proposal approved; actual userMessage independently read."
+    },
+    "collateralWorkflow": {
+      "run": 38522581382,
+      "name": "Build and validate",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": 3,
+      "observedJobSeconds": 107,
+      "cause": "Existing build.yml ignores only old validation branch, so new approved branch push also triggered legacy workflow. Preparation missed this trigger exclusion. Failed known fragment-discovery before runtime validation; no release credit.",
+      "cancellation": "Attempted immediately on discovery; API reported run already completed.",
+      "noRerun": true
+    },
+    "publication": false,
+    "remoteMainOrTagsChanged": false
   },
   "goal_blocked_audit": {
     "goalStatusNote": "Prior pause revoked by direct human resume; goal tool exposes no active/resume mutation. Work resumed and progressed.",
@@ -2269,8 +2271,8 @@
     "gap": "No final-source qualified ten-fixture DOM/allocation/retention rerun; A2 not passed."
   },
   "routine_main_update_delivery": {
-    "status": "rejected by automatic approval review",
-    "reason": "Review did not recognize explicit authorization for routine follow-up to main chat",
+    "status": "Second automatic-review rejection; main direct collection is authoritative fallback",
+    "reason": "Review treated historical rollout authorization as untrusted; no workaround or further messaging retry.",
     "action": "No retry or workaround; updates provided in this chat. Terminal handoff authorization will be assessed separately."
   },
   "current_local_gate": {
