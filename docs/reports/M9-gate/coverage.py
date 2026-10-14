@@ -54,7 +54,7 @@ try:
     tests=out/'tests';shutil.copytree(project.parent/'bin/Release/net10.0',tests)
     args=f'--fx-version 10.0.11 "{tests / "Xemele.Tests.dll"}" -parallelMode none -culture invariant -noColor -result-xml "{out / "unit.xml"}"'
     run([host,'--fx-version','10.0.11',tool,tests/'Xemele.Tests.dll','--target',host,'--targetargs',args,
-         '--include','[Xemele]Xemele.Parsing.Syntax.XmlParserCore*','--include','[Xemele]Xemele.Parsing.Input.XmlInputDecoder*','--include','[Xemele]Xemele.XmlDocument*','--include','[Xemele]Xemele.Streaming.OptimisticSax*','--include','[Xemele]Xemele.Internal.Operations.FastLineBreaks*','--include','[Xemele]Xemele.Internal.Operations.OptimisticDoctype*','--exclude-assemblies-without-sources','None',
+         '--include','[Xemele]Xemele.Parsing.Syntax.XmlParserCore*','--include','[Xemele]Xemele.Parsing.Input.XmlInputDecoder*','--include','[Xemele]Xemele.XmlDocument*','--include','[Xemele]Xemele.Streaming.OptimisticSax*','--include','[Xemele]Xemele.Internal.Operations.FastLineBreaks*','--include','[Xemele]Xemele.Internal.Operations.OptimisticDoctype*','--include','[Xemele]Xemele.Internal.Operations.OptimisticEntity*','--include','[Xemele]Xemele.Streaming.SaxName*','--include','[Xemele]Xemele.Streaming.SaxTapeProbe*','--exclude-assemblies-without-sources','None',
          '--format','json','--output',out/'unit-coverage.json'],500)
     report['productionSha256After']=sha(original);assert report['productionSha256Before']==report['productionSha256After']
     coverage=json.loads((out/'unit-coverage.json').read_bytes());assert coverage
