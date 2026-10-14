@@ -143,7 +143,8 @@ Geomean vs the BCL `XmlReader` drops from about 17x to 2.05x (1.7x without entit
 streaming path). Allocation is roughly 4 KB per parse regardless of document size, below the BCL reader on every
 fixture. The speedups (7-30x) are far outside the same-DLL control noise, so no reversed-order repeat was needed.
 Splitting the cost: the validation pass alone runs at about BCL-reader speed, so the remaining gap is the delivery
-pass. Taping pass-1 tokens would remove most of the repeated scanning and hashing; it was left out for complexity.
+pass. Taping pass-1 tokens would remove most of the repeated scanning and hashing; this was done in the later
+"SAX token tape" follow-up (the table above is the pre-tape state).
 
 ## Follow-up: review fixes, line breaks, and repeatability
 
@@ -183,7 +184,7 @@ DOM harness: 1.04M inputs, SAX harness: 1.17M inputs (including CR/CRLF/mixed va
 
 ### Not done
 - Non-ASCII element/attribute names bail to the streaming parser.
-- SAX token tape (est. ~30% off the delivery pass) is not implemented.
+- ~~SAX token tape~~ was implemented later; see "Follow-up: SAX token tape" below.
 - Retained-memory (`memory.py`) was not re-run for this revision.
 
 ## Follow-up: internal-subset DOCTYPE and general entities (DOM UTF-8/UTF-16 and SAX)
@@ -243,3 +244,80 @@ keeps the raw CR); non-ASCII DOCTYPE/entity names; EntityDepth 1 with inner refe
 
 The other fixtures are unchanged within noise; entity-medium goes from 3.2x slower than the BCL to 0.33x in DOM and
 from 11x to 0.64x in SAX.
+
+## Follow-up: SAX token tape
+
+### Design
+Pass 1 still validates the whole document with nothing delivered, but it now also records a compact tape of what it
+decided. Pass 2 (`Replay`) walks the tape and calls the handler; it does not re-scan bytes, re-hash names or re-parse
+attributes.
+
+- **Tape.** A pooled `int[]` (ArrayPool). Every record starts with a kind word: declaration, misc (whitespace outside
+  the root), text, comment, CDATA, PI, DOCTYPE, rich text (text with references; a list of span / char / entity /
+  end parts), start element and end element. Offsets index the LF-normalised input. Locations are stored as line,
+  column and the already-mapped raw byte offset, so CR/CRLF documents replay with the same `Loc()` results.
+- **Start record.** A head word (`kind | empty | attrCount | declCount`), name id, namespace-URI id, line, column,
+  offset, then 7 ints per attribute and 5 per namespace declaration.
+- **Ids instead of strings.** Names, namespace URIs and DOCTYPE entities are ids into per-parse tables
+  (`nameById`, `uriList`, `OptimisticEntity.TapeId`), so replay resolves prefixes and URIs once, in pass 1. Namespace
+  bindings are resolved in pass 1; attribute `FastAttribute` carries its `SaxName` and URI id.
+- **Attribute arena.** Decoded attribute values go into one pooled `char[]` during pass 1; the tape stores arena
+  offsets and replay only slices them (same `XmlAttributeView` backing as before).
+- **Caps and overflow policy.** The tape is capped at 8M ints (32 MiB) and the arena at 8M chars (16 MiB); the
+  initial tape is `Clamp(n/4, 256, 1M)` ints and grows by doubling. If either cap would be exceeded, recording stops,
+  the pooled buffers are returned, and delivery falls back to the original re-scanning pass 2 (`emit=true`). That is
+  the safe option: identical events, no bail after validation, memory bounded. The tape cap check is exact (replays iff
+  `cap >= recorded size`); the arena check can be fuzzy by a few chars because ArrayPool buckets are rounded up and
+  complex attribute values reserve slack.
+- **Pooled-buffer safety.** The tape, scratch and arena are all rented through `Rent`/`Return` and returned in
+  `Run()`'s `finally`, so declined documents, handler exceptions and cancellation all return them.
+- **Cancellation.** Replay checks the token after every callback except `EndDocument`, which matches the re-scan and
+  the streaming parser (and covers polling: every record produces a callback). Pass 1 polls every 1024 content
+  iterations, so a canceled token still stops a large document before anything is delivered.
+
+### Validation
+- `OptimisticSaxTests` gains tests that (a) compare the tape, the re-scan (zero caps) and the streaming parser on
+  plain, namespace, attribute, CRLF and DOCTYPE/entity documents; (b) start the tape at tiny initial sizes to exercise
+  growth; (c) sweep the tape cap to the exact recorded size (replays iff cap >= size) and the arena cap (single
+  false->true transition, identical events); (d) assert `Rented == Returned` for declined documents, handlers that
+  throw at every callback, and cancellation after every callback; (e) large documents, a 460k-element document beyond
+  the default cap (re-scan fallback), a canceled token on large inputs, and a mutation fuzzer.
+- sdiff harness (tight limits, CRLF, DOCTYPE/entities): 2,625,280 inputs, 298,818 accepted by both,
+  `divergences=0`.
+- Full `Xemele.Tests`: 11,215 tests, only the two known failures (`PreparedAffineAsciiDispatchAllocatesZero`,
+  `PreparedBorrowedTextDispatchAllocatesZero`). `Xemele.Conformance.Tests` 920/920, `Xemele.Differential.Tests` 618/618.
+  The DOM harness was not rerun: DOM code is untouched apart from the new `TapeId` field.
+
+### Results
+In-process paired runner, minimum of runs, microseconds. "before" is the previous commit (two-pass re-scan); a second
+run of the "after" build reproduced every row within 3% (geomean 1.127 vs 1.136 of BCL).
+
+| fixture | UTF-8 before | UTF-8 after | UTF-8 after/BCL | UTF-16 before | UTF-16 after | UTF-16 after/BCL | BCL us | alloc before B | alloc after B |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| feed-small | 12 | 9 | 1.09 | 12 | 10 | 1.19 | 8 | 3,904 | 4,472 |
+| svg-small | 63 | 41 | 1.63 | 65 | 42 | 1.65 | 26 | 4,384 | 4,952 |
+| deep-medium | 144 | 100 | 0.94 | 146 | 117 | 1.13 | 106 | 12,832 | 15,392 |
+| entity-medium | 777 | 568 | 0.48 | 775 | 577 | 0.48 | 1,187 | 49,351 | 49,928 |
+| xhtml-medium | 935 | 700 | 1.29 | 1,052 | 790 | 1.55 | 546 | 4,384 | 4,952 |
+| build-medium | 1,499 | 926 | 1.81 | 1,529 | 949 | 1.83 | 512 | 3,921 | 4,488 |
+| soap-large | 3,175 | 2,329 | 1.03 | 3,250 | 2,890 | 1.30 | 2,224 | 4,673 | 5,241 |
+| configuration-large | 6,507 | 4,024 | 1.68 | 6,633 | 4,226 | 1.79 | 2,397 | 4,195 | 4,794 |
+| business-large | 16,735 | 11,571 | 1.31 | 17,158 | 12,866 | 1.44 | 8,855 | 4,039 | 4,620 |
+| text-large | 13,811 | 12,338 | 0.79 | 17,331 | 16,027 | 1.15 | 15,690 | 3,189 | 3,677 |
+| **geomean vs BCL** | | | **1.587 -> 1.127** | | | **1.702 -> 1.279** | | | |
+
+Geomean after/before is 0.71 (UTF-8) and 0.75 (UTF-16). Managed allocation per parse rises by ~0.5 KB (name/URI/entity
+tables); the tape itself is pooled and adds no GC allocation. The 1-10 MB UTF-16 allocations of the large fixtures are
+the pre-existing transcode buffers. UTF-16 gains less on large inputs because the transcode is a fixed cost.
+
+### Decision
+Kept: 25-38% off the delivery-heavy fixtures (build-medium 1.60x faster, configuration-large 1.62x, svg-small 1.54x,
+xhtml-medium 1.34x, business-large 1.45x), far above same-DLL noise and reproduced by a second run.
+
+### Remaining gaps (not done)
+- svg-small (1.63x), build-medium (1.81x) and configuration-large (1.68x) are still slower than the BCL reader.
+  Pass 1 itself runs at roughly BCL speed, so the remainder is recording plus replay. Ideas: hold simple ASCII attribute
+  values as byte spans instead of copying them into the char arena, skip arena writes for `xmlns` values, and let
+  `XmlAttributeView` read the tape directly.
+- Documents beyond the tape caps use the old re-scan (correct, slower).
+- Non-ASCII names still bail; retained memory (`memory.py`) was not re-run.
