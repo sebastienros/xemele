@@ -5,9 +5,9 @@
   "title": "Improve XML parsing throughput and allocations against BCL and native references",
   "kind": "feature",
   "status": "in_progress",
-  "owner": "XML performance lane 01a1361b-a82b-7f52-8c53-9988c0c55811",
-  "branch": "codex/xml-performance",
-  "base_revision": "b44a2d24feab66ec7f11f56703d48983cc525c2d",
+  "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
+  "branch": "codex/m9-xml-completion",
+  "base_revision": "18831839a502dcc9b8c53c555cc9cec26a67414b",
   "integration_revision": null,
   "depends_on": [
     "M9-dom-memory"
@@ -32,7 +32,15 @@
     "src/Xemele/Options/XmlParseOptions.cs",
     "tests/Xemele.Tests/M9-xml-performance/",
     "benchmarks/Xemele.Benchmarks/M9-xml-performance/",
-    "docs/reports/M9-xml-performance/"
+    "docs/reports/M9-xml-performance/",
+    "src/Xemele/Internal/Operations/FastLineBreaks.cs",
+    "src/Xemele/Internal/Operations/OptimisticDoctype.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Prefix.cs",
+    "src/Xemele/Parsing/Dom/Factories.cs",
+    "src/Xemele/Parsing/Dom/OptimisticDomParser.cs",
+    "src/Xemele/Streaming/Callbacks/Views.cs",
+    "src/Xemele/Streaming/Sax/OptimisticSaxParser.cs",
+    "src/Xemele/Streaming/Sax/XmlSaxParser.cs"
   ],
   "api_or_output": "Measured compatible XML hot-path improvements, pinned BCL/libxml2/xmloxide comparisons and explicit measured feature-cost tradeoffs. Preserve all default XML correctness, diagnostics, quotas, source coordinates and earlier APIs; any public feature switch requires owning-contract follow-up.",
   "acceptance": [
@@ -259,9 +267,8 @@
       "Exact scan/name prototypes and rejected experiments remain documented. HTML runtime paths were not edited. Lane is isolated, not integrated or verified."
     ],
     "remaining": [
-      "BCL latency target still fails: geomean 1.8788x, feed-small 3.1657x, entity-medium 2.4942x, SOAP 2.3916x, XHTML 2.2692x and deep 2.1227x. Business timing is slower in the selected window; investigate representation/GC/namespace and attribute costs with balanced and default-context evidence. Do not infer CPU percentages from code inspection.",
-      "Do not mark implemented/verified or unlock dependents until the latency criterion passes.",
-      "Controlled release/cross-platform performance evidence has not been run."
+      "Fresh final-source ten-fixture DOM timing/allocation/retention qualification; original A2 still not proven.",
+      "Final integrated API/memory/coverage/package/corpus checks under revised M9 gate."
     ],
     "requests": [
       "Public source-location/provenance switches require an owning contract follow-up; none added.",

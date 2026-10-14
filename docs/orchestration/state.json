@@ -3,7 +3,7 @@
   "coordinator_chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
   "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "previous_coordinator_chat_id": "01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "coordinator_write_status": "Fresh M9 completion worker sole primary/main/state writer upon containing commit and explicit ACTIVATE; former coordinator relinquished, main returns read-only.",
+  "coordinator_write_status": "Resumed by direct human request01a138d7-56ed-7031-b22d-1d538995b10f; sole main/state writer. Optimizer terminal and relinquished.",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
@@ -12,19 +12,16 @@
   "active_assignments": [
     {
       "task_id": "M9-xml-performance",
-      "chat_id": "01a1361b-a82b-7f52-8c53-9988c0c55811",
-      "host_id": "local",
-      "branch": "codex/xml-performance",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/xml-performance/xemele",
-      "base_revision": "b44a2d24feab66ec7f11f56703d48983cc525c2d",
-      "status": "Existing active claim preserved; collecting bounded terminal handoff"
+      "chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
+      "branch": "codex/m9-xml-completion",
+      "worktree_path": "/private/tmp/xemele-m9-xml-completion",
+      "base_revision": "18831839a502dcc9b8c53c555cc9cec26a67414b"
     }
   ],
   "integration_queue": [],
   "next_actions": [
-    "Preserve existing active optimization lane; await its owned final handoff without duplicate measurements/source edits.",
-    "Review current memory controls against separately accepted approximately0.90xBCL budget, keeping old0.687meter issue/history explicit.",
-    "After eligible terminal handoff, integrate serially and run affected correctness/API/corpus/coverage/package/memory checks for final revised M9 gate."
+    "Complete actual final-source ten-fixture DOM comparison and controlled retained-memory evidence; preserve prior failures.",
+    "Verify revised performance and final release gate with affected source/package/API/coverage/corpus checks."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -155,9 +152,7 @@
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
   "milestone_progress": "10/13 M9 tasks verified. Revised robustness verified; human also defers dedicated timing and accepts local timing as informational. Active XML-performance integration/correctness and retained-memory result need assessment before remaining performance/gate verification.",
-  "blockers": [
-    "Existing active M9-xml-performance owns remaining XML optimization/latency acceptance and has not supplied terminal implementation handoff. No competing work or premature integration."
-  ],
+  "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
   "completed_assignments": [
@@ -2256,5 +2251,18 @@
       "Remaining active XML performance lane"
     ],
     "distributionConditionResolved": true
+  },
+  "optimizer_terminal_handoff": {
+    "sourceRevision": "778b3a37f67c57e64154b5ee62c3327b7515beff",
+    "integrationRevision": "18831839a502dcc9b8c53c555cc9cec26a67414b",
+    "integratedTests": {
+      "units": 11215,
+      "conformance": 920,
+      "differential": 618,
+      "allPassed": true
+    },
+    "jobs": 0,
+    "sourceWritesRelinquished": true,
+    "gap": "No final-source qualified ten-fixture DOM/allocation/retention rerun; A2 not passed."
   }
 }
