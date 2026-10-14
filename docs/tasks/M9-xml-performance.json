@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Improve XML parsing throughput and allocations against BCL and native references",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-xml-completion",
   "base_revision": "18831839a502dcc9b8c53c555cc9cec26a67414b",
-  "integration_revision": null,
+  "integration_revision": "517b1af0c28f3ffd049e4965531d08629866a591",
   "depends_on": [
     "M9-dom-memory"
   ],
@@ -53,7 +53,8 @@
         "checkpoint-native",
         "final-dom-qualification",
         "final-correctness-api",
-        "final-owned-source-review"
+        "final-owned-source-review",
+        "final-integrated-source-binding"
       ]
     },
     {
@@ -64,7 +65,8 @@
         "checkpoint-parity",
         "final-dom-qualification",
         "final-correctness-api",
-        "final-owned-source-review"
+        "final-owned-source-review",
+        "final-integrated-source-binding"
       ]
     },
     {
@@ -82,7 +84,8 @@
         "affine-streaming-checks",
         "final-dom-qualification",
         "final-correctness-api",
-        "final-owned-source-review"
+        "final-owned-source-review",
+        "final-integrated-source-binding"
       ]
     },
     {
@@ -98,7 +101,8 @@
         "affine-measurement-review",
         "final-dom-qualification",
         "final-correctness-api",
-        "final-owned-source-review"
+        "final-owned-source-review",
+        "final-integrated-source-binding"
       ]
     }
   ],
@@ -295,6 +299,15 @@
       "result": "passed",
       "summary": "Direct human integrated optimizer result and completion instruction governs expanded existing task ownership. Generalstream/async paths retain streamingparser; whole-buffer fastpaths validate before results/events and fallback without duplicated callbacks. Bounds/pools/location/quota controls and new cancellation regression reviewed. Source review makes no campaign/dedicated timing claim.",
       "artifact": "docs/reports/M9-xml-performance/completion.md"
+    },
+    {
+      "id": "final-integrated-source-binding",
+      "kind": "integration",
+      "revision": "517b1af0c28f3ffd049e4965531d08629866a591",
+      "command": "Exact fullruntime/test/fixture/corpus/reference/API/build source comparison against passing880b08d21; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated source equals actual12754ordinary passing checks,API1430/preview222/20migration. DOMqualification unaffected by Load-only EOFcancellationfix; tests confirm fix. Original failed observations retained, no unrun release evidence credited.",
+      "artifact": "docs/reports/M9-xml-performance/completion-checks.json"
     }
   ],
   "blockers": [],

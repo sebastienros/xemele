@@ -7,21 +7,13 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
-  "last_verified_task": "M9-robustness",
-  "last_integrated_revision": "cb7d5fc2e62354961a704d119586b9a94c933007",
-  "active_assignments": [
-    {
-      "task_id": "M9-xml-performance",
-      "chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
-      "branch": "codex/m9-xml-completion",
-      "worktree_path": "/private/tmp/xemele-m9-xml-completion",
-      "base_revision": "18831839a502dcc9b8c53c555cc9cec26a67414b"
-    }
-  ],
+  "last_verified_task": "M9-xml-performance",
+  "last_integrated_revision": "517b1af0c28f3ffd049e4965531d08629866a591",
+  "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Complete actual final-source ten-fixture DOM comparison and controlled retained-memory evidence; preserve prior failures.",
-    "Verify revised performance and final release gate with affected source/package/API/coverage/corpus checks."
+    "Verify final performance allocation/live memory under recorded human decisions.",
+    "Run final affected coverage/corpus/package/API/platform gate checks; no campaigns/publication."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -2162,20 +2154,14 @@
     "originalStatus": "Retained as history; GetTotalMemory meter validity being assessed against owner new SOH/LOH controls"
   },
   "active_xml_checkpoint": {
-    "branch": "codex/xml-performance",
-    "reportedSourceRevision": "e158264925539ab53b1683b3f8d145a979bd09c7",
-    "committedReportRevision": "08a7ba712",
-    "taskStatus": "in_progress",
-    "acceptanceA2": "failed: local latency1.8788xBCL; owner explicitly retains lane in_progress until target passes",
-    "otherAcceptance": "Owner reports A1/A3/A4passed; not coordinator integrated verification",
-    "correctnessReported": {
-      "units": 10803,
-      "conformance": 920,
-      "differential": 618
-    },
-    "retainedRatioReported": 0.9015108,
-    "sourceIntegrated": false,
-    "scopeOfHumanTimingDeferral": "Dedicated release timing only; no broader XML optimization acceptance change inferred"
+    "status": "verified",
+    "integrationRevision": "517b1af0c28f3ffd049e4965531d08629866a591",
+    "tests": 12754,
+    "DOMLatencyRatio": 0.5367209152475795,
+    "DOMAllocationRatio": 0.7875363399513807,
+    "retainedRatio": 0.8277402660892974,
+    "SAXTiming": "reported1.127UTF8/1.279UTF16BCL; informationaldeficits retained",
+    "optimizerTerminal": true
   },
   "human_memory_revision": {
     "id": "M9-human-current-retained-memory-budget",
