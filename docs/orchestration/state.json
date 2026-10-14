@@ -6,22 +6,14 @@
   "coordinator_write_status": "Resumed by direct human request01a138d7-56ed-7031-b22d-1d538995b10f; sole main/state writer. Optimizer terminal and relinquished.",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
-  "last_verified_checkpoint": "M8-gate",
-  "last_verified_task": "M9-distribution",
-  "last_integrated_revision": "b380dd064363686ea64b80846d843b886e2e80f6",
-  "active_assignments": [
-    {
-      "task_id": "M9-gate",
-      "chat_id": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
-      "branch": "codex/m9-final-gate",
-      "worktree_path": "/private/tmp/xemele-m9-final-gate",
-      "base_revision": "6db97882b9868429f91ab3bd1ce5d7c80c6db30e"
-    }
-  ],
+  "last_verified_checkpoint": "M9-gate",
+  "last_verified_task": "M9-gate",
+  "last_integrated_revision": "20f3551b2652e1eeee5f891af24664044d118c04",
+  "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Reclaim finalgate afterverifiedcurrentdistribution; audit allrequiredrevised criteria and source-equivalentactualchecks.",
-    "Preserveunpublishedpackages anddurablesummaries; remove onlyfinishedmergedassistantcheckouts; terminalmainhandoffvia directcollection."
+    "Clean onlyfinishedmergedassistant checkouts afterdurableevidence/package preservation; humancampaigncheckout/processes untouched.",
+    "TerminalACTIVATE MAIN handoffvia directcollection; messagingtoolpermissionblockdoesnotstall verifiedcompletion."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -151,7 +143,7 @@
   },
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
-  "milestone_progress": "12/13M9verified; revised final performance verified. Final gate still requires current core coverage, original XSD/corpora and exact-package/platform evidence.",
+  "milestone_progress": "13/13M9verified on revisedreleasegate; allcurrentrequiredcode/corpus/API/coverage/resource/package/platformchecks pass. Originalcampaign/dedicatedtiming/0.75retainedrequirements remainexplicit nonpasses/deferred underhuman decisions. Unpublished localcandidate.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -2294,5 +2286,21 @@
     "annotationPassed": true,
     "macOSPackageConsumers": "actual managed/trim/NativeAOT/tool anddeterministic2packs;18commands pass",
     "unpublishedCheckpoint": "artifacts/M9-gate/checkpoint-d4402f04"
+  },
+  "m9_checkpoint": {
+    "task": "M9-gate",
+    "integration_revision": "20f3551b2652e1eeee5f891af24664044d118c04",
+    "ordinaryTests": 12754,
+    "API": 1430,
+    "preview": 222,
+    "earlierPopulation": 12279,
+    "coreCovered": 4798,
+    "coreTotal": 5189,
+    "originalXSDNonpasses": 155,
+    "approvedOSRun": 38522581339,
+    "reportedRetainedRatio": 0.8277402660892974,
+    "unpublishedPackageCheckpoint": "artifacts/M9-gate/checkpoint-d4402f04",
+    "report": "docs/reports/M9-gate/summary.json",
+    "originalFullReleaseEvidenceClaimed": false
   }
 }
