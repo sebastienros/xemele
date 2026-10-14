@@ -42,19 +42,19 @@ internal static class OptimisticSax
         if (options.Recover || input.IsEmpty) return false;
         if (input.Length > (limits.DocumentCharacters ?? long.MaxValue) || input.Length > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
         return input.Contains((byte)'\r')
-            ? RunNormalized(input, handler, limits, cancellationToken, charInput: false)
-            : new SaxParser(input, handler, limits, cancellationToken, charInput: false).Run();
+            ? RunNormalized(input, handler, options, cancellationToken, charInput: false)
+            : new SaxParser(input, handler, options, cancellationToken, charInput: false).Run();
     }
 
     // CR and CRLF input is parsed from an LF-normalized copy; line and column numbers are unchanged and byte offsets are mapped back.
-    private static bool RunNormalized(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlResourceLimits limits, CancellationToken cancellationToken, bool charInput)
+    private static bool RunNormalized(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken, bool charInput)
     {
         byte[] buffer = FastLineBreaks.Rent(input.Length, out bool pooled);
         int[]? dropped = null;
         try
         {
             int length = FastLineBreaks.Normalize(input, buffer, !charInput, ref dropped, out int droppedCount);
-            var parser = new SaxParser(buffer.AsSpan(0, length), handler, limits, cancellationToken, charInput, input.Length, dropped, droppedCount);
+            var parser = new SaxParser(buffer.AsSpan(0, length), handler, options, cancellationToken, charInput, input.Length, dropped, droppedCount, normalized: true);
             return parser.Run();
         }
         finally { FastLineBreaks.Release(buffer, pooled, dropped); }
@@ -74,8 +74,8 @@ internal static class OptimisticSax
             if (byteCount > (limits.DocumentCharacters ?? long.MaxValue) || byteCount > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
             var bytes = rented.AsSpan(0, byteCount);
             return bytes.Contains((byte)'\r')
-                ? RunNormalized(bytes, handler, limits, cancellationToken, charInput: true)
-                : new SaxParser(bytes, handler, limits, cancellationToken, charInput: true).Run();
+                ? RunNormalized(bytes, handler, options, cancellationToken, charInput: true)
+                : new SaxParser(bytes, handler, options, cancellationToken, charInput: true).Run();
         }
         finally { if (pooled) ArrayPool<byte>.Shared.Return(rented); }
     }
@@ -128,6 +128,12 @@ internal static class OptimisticSax
         private int i, line, lineStart, cont;
         private int depth, scope, scopeCounter, internCount;
         private bool rootSeen;
+        private readonly XmlParseOptions options;
+        private readonly bool normalized, innerReferencesAllowed;
+        private bool doctypeSeen;
+        private long nameBase;
+        // Read by the first pass and reused by the delivery pass.
+        private OptimisticDoctype? doctype;
         private Frame[] frames;
         private SaxName?[] table;
         private int tableCount;
@@ -143,8 +149,10 @@ internal static class OptimisticSax
         private List<string>? declared;
         private int declaredIndex;
 
-        internal SaxParser(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlResourceLimits limits, CancellationToken cancellation, bool charInput, int rawLength = -1, int[]? dropped = null, int droppedCount = 0)
+        internal SaxParser(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellation, bool charInput, int rawLength = -1, int[]? dropped = null, int droppedCount = 0, bool normalized = false)
         {
+            var limits = options.Limits;
+            this.options = options; this.normalized = normalized; innerReferencesAllowed = (limits.EntityDepth ?? int.MaxValue) >= 2;
             this.handler = handler; this.charInput = charInput; s = input; n = input.Length; this.cancellation = cancellation;
             maxDepth = limits.Depth ?? int.MaxValue;
             maxMembers = Math.Min(MaxMembers, limits.AttributesPerElement ?? int.MaxValue);
@@ -177,7 +185,7 @@ internal static class OptimisticSax
         {
             emit = deliver;
             i = 0; line = 1; lineStart = 0; cont = 0; depth = 0; scope = 0; bindingCount = 0; rootSeen = false;
-            referenceBudget = referenceLimit; declaredIndex = 0;
+            referenceBudget = referenceLimit; declaredIndex = 0; doctypeSeen = false; nameBase = 0;
             frames[0] = default;
             if (deliver) { handler.StartDocument(); cancellation.ThrowIfCancellationRequested(); }
             if (n >= 3 && s[0] == 0xEF && s[1] == 0xBB && s[2] == 0xBF) { i = 3; lineStart = 3; }
@@ -380,9 +388,62 @@ internal static class OptimisticSax
                 if (!Misc()) return false;
                 if ((uint)i >= (uint)n || s[i] != '<' || i + 1 >= n) return false;
                 byte next = s[i + 1];
-                if (next == '!') { if (!Comment()) return false; }
+                if (next == '!') { if (!(i + 2 < n && s[i + 2] == 'D' ? Doctype() : Comment())) return false; }
                 else if (next == '?') { if (!ProcessingInstruction()) return false; }
                 else return true;
+            }
+        }
+
+        private bool Doctype()
+        {
+            if (doctypeSeen || normalized) return false;
+            doctypeSeen = true;
+            if (!emit)
+            {
+                if (!OptimisticDoctype.TryRead(s, i, line, Column(i), charInput, options, cancellation, out doctype)) return false;
+            }
+            var read = doctype!;
+            referenceBudget -= read.Expanded;
+            if (referenceBudget < 0) return false;
+            if (emit) read.Deliver(handler, cancellation);
+            TrackLines(i, read.End, !Ascii.IsValid(s[i..read.End]));
+            i = read.End;
+            nameBase = read.Names;
+            return true;
+        }
+
+        // 1: a declared entity (charged against the expansion budget), 0: not an entity reference (predefined, numeric or no DTD,
+        // left to Reference), -1: unknown, undeclared or unsupported, so the streaming parser decides.
+        private int EntityAt(int at, out OptimisticEntity? entity, out int referenceLength)
+        {
+            entity = null; referenceLength = 0;
+            if (doctype is null || !doctypeSeen || at + 2 >= n || (FlagTable[s[at + 1]] & 2) == 0) return 0;
+            int p = at + 2, limit = Math.Min(n, at + 130);
+            while (p < limit && (FlagTable[s[p]] & 1) != 0 && s[p] != ':') p++;
+            if (p >= n || s[p] != ';') return 0;
+            var name = s[(at + 1)..p];
+            if (name.SequenceEqual("lt"u8) || name.SequenceEqual("gt"u8) || name.SequenceEqual("amp"u8) || name.SequenceEqual("apos"u8) || name.SequenceEqual("quot"u8)) return 0;
+            if (!doctype.TryFind(name, out entity) || entity is null) return -1;
+            if (entity.InnerRefs != 0 && !innerReferencesAllowed) return -1;
+            referenceBudget -= entity.Length + entity.InnerRefs;
+            if (referenceBudget < 0) return -1;
+            referenceLength = p + 1 - at;
+            return 1;
+        }
+
+        // Appends replacement text to the scratch buffer, delivering a chunk whenever it fills (never inside a surrogate pair).
+        private void AppendEntity(string text, ref int length)
+        {
+            var buffer = Scratch(TextChunk + 8);
+            int taken = 0;
+            while (taken < text.Length)
+            {
+                int room = TextChunk - length;
+                if (room < 2) { handler.Text(buffer.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; room = TextChunk; }
+                int count = Math.Min(room, text.Length - taken);
+                if (taken + count < text.Length && char.IsHighSurrogate(text[taken + count - 1])) count--;
+                text.CopyTo(taken, buffer, length, count);
+                length += count; taken += count;
             }
         }
 
@@ -485,6 +546,7 @@ internal static class OptimisticSax
         private bool TextWithReferences(int start)
         {
             int length = 0, segment = start, at = start;
+            long extra = 0;
             while (true)
             {
                 int found = s[at..].IndexOfAny(TextStops);
@@ -497,18 +559,28 @@ internal static class OptimisticSax
                     at = end + 1; continue;
                 }
                 if (stop != '<' && stop != '&') return false;
-                if (!emit && (end - start >= tokenLimit || !Scan(segment, end, false))) return false;
+                if (!emit && (end - start + extra >= tokenLimit || !Scan(segment, end, false))) return false;
                 if (emit) AppendSegment(segment, end, ref length);
                 if (stop == '<')
                 {
                     if (emit && length > 0) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); }
                     i = end; return true;
                 }
-                if (!Reference(end, out int value, out int referenceLength)) return false;
-                if (emit)
+                int kind = EntityAt(end, out var entity, out int referenceLength);
+                if (kind < 0) return false;
+                if (kind > 0)
                 {
-                    if (length + 2 > TextChunk) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; }
-                    length = Append(scratch!, length, value);
+                    extra += entity!.Length;
+                    if (emit) AppendEntity(entity.Content, ref length);
+                }
+                else
+                {
+                    if (!Reference(end, out int value, out referenceLength)) return false;
+                    if (emit)
+                    {
+                        if (length + 2 > TextChunk) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; }
+                        length = Append(scratch!, length, value);
+                    }
                 }
                 i = segment = at = end + referenceLength;
             }
@@ -656,7 +728,7 @@ internal static class OptimisticSax
                 handler.ProcessingInstruction(buffer.AsSpan(0, targetLength), buffer.AsSpan(targetLength, written));
                 cancellation.ThrowIfCancellationRequested();
             }
-            else if (++internCount + 8 > nameLimit) return false;
+            else if (++internCount + nameBase + 8 > nameLimit) return false;
             i = p;
             return true;
         }
@@ -707,7 +779,7 @@ internal static class OptimisticSax
             if (colon == 0 || colon == key.Length - 1) return null;
             if (colon > 0 && (FlagTable[key[colon + 1]] & 2) == 0) return null;
             internCount += 2;
-            if (internCount + 8 > nameLimit) return null;
+            if (internCount + nameBase + 8 > nameLimit) return null;
             var entry = new SaxName { Key = key.ToArray(), Hash = hash };
             string prefix = colon < 0 ? "" : Latin(key[..colon]);
             string local = colon < 0 ? Latin(key) : Latin(key[(colon + 1)..]);
@@ -898,7 +970,7 @@ internal static class OptimisticSax
                 {
                     var value = attributeChars.AsSpan(declaration.ValueStart, declaration.ValueLength);
                     if (value.SequenceEqual(XmlnsNamespace) || value.SequenceEqual(XmlNamespace) || (prefix.Length != 0 && value.IsEmpty)) return false;
-                    if (++internCount + 8 > nameLimit) return false;
+                    if (++internCount + nameBase + 8 > nameLimit) return false;
                     uri = InternUri(value);
                     (declared ??= []).Add(uri);
                 }
@@ -968,6 +1040,7 @@ internal static class OptimisticSax
         private bool ComplexAttributeValue(byte quote, int start, int p, out int valueStart, out int valueLength)
         {
             valueStart = attributeLength; valueLength = 0;
+            long extra = 0;
             EnsureAttributeChars(attributeLength + (p - start) + 16);
             for (int k = start; k < p; k++) attributeChars![attributeLength++] = (char)s[k];
             while (true)
@@ -979,8 +1052,20 @@ internal static class OptimisticSax
                 if (b == quote) break;
                 if (b == '&')
                 {
-                    if (!Reference(p, out int value, out int referenceLength)) return false;
-                    attributeLength = Append(buffer, attributeLength, value); p += referenceLength;
+                    int kind = EntityAt(p, out var entity, out int referenceLength);
+                    if (kind < 0) return false;
+                    if (kind > 0)
+                    {
+                        string text = entity!.Attribute;
+                        EnsureAttributeChars(attributeLength + text.Length + 3);
+                        text.CopyTo(0, attributeChars!, attributeLength, text.Length);
+                        attributeLength += text.Length; extra += entity.Length; p += referenceLength;
+                    }
+                    else
+                    {
+                        if (!Reference(p, out int value, out referenceLength)) return false;
+                        attributeLength = Append(buffer, attributeLength, value); p += referenceLength;
+                    }
                 }
                 else if (b == '\t') { buffer[attributeLength++] = ' '; p++; }
                 else if (b == '\n') { buffer[attributeLength++] = ' '; p++; line++; lineStart = p; cont = 0; }
@@ -993,7 +1078,7 @@ internal static class OptimisticSax
                     cont += consumed - 1; p += consumed;
                 }
             }
-            if (p - start >= tokenLimit) return false;
+            if (p - start + extra >= tokenLimit) return false;
             i = p + 1;
             valueLength = attributeLength - valueStart;
             return true;

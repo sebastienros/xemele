@@ -106,6 +106,239 @@ public sealed class OptimisticSaxTests
         Assert.Equal(slow.Normalized(), publicRecorder.Normalized());
     }
 
+    private static readonly string[] DoctypeXml =
+    [
+        "<!DOCTYPE a><a/>",
+        "<!DOCTYPE a [<!ENTITY e 'v'>]><a>&e;</a>",
+        "<!DOCTYPE book [<!ENTITY e \"entity value &amp; safe data\">]><book><part id=\"1\">&e; &#945; &e; text</part></book>",
+        "<?xml version='1.0'?>\n<!-- c -->\n<!DOCTYPE a [\n  <!ENTITY e 'v'>\n  <!ENTITY f 'é😀 &lt;x&gt; &apos;q&quot;'>\n]>\n<a b='&e;' c=\"&f;\">&f;&e;x</a>\n",
+        "<!DOCTYPE a [<!ENTITY e ''>]><a>&e;</a>", "<!DOCTYPE a [<!ENTITY e ''>]><a>&e;foo</a>", "<!DOCTYPE a [<!ENTITY e ''>]><a>x&e;y</a>",
+        "<!DOCTYPE a [<!ENTITY e ''>]><a>x<b/>&e;&e;<c/>&e;</a>", "<!DOCTYPE a [<!ENTITY e ''>]><a b='&e;'>&e;&amp;&e;</a>",
+        "<!DOCTYPE a [<!ENTITY e 'a\tb\nc'>]><a b='&e;'>&e;</a>", "<!DOCTYPE a [<!ENTITY e 'x'>]><a><b>&e;</b>&e;<!--c-->&e;</a>",
+        "<!DOCTYPE a [<!ENTITY e 'x'><!ENTITY e 'y'>]><a>&e;</a>", "<!DOCTYPE a [<!ENTITY e 'x'>]>\n\n<a>\n&e;\n&e;</a>",
+        "\uFEFF<!DOCTYPE a [<!ENTITY e 'é'>]><a>é&e;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a>&e;&lt;&#65;&e;</a>",
+        "<!DOCTYPE a [<!ENTITY e '&#65;&#x1F600;&#10;'>]><a b='&e;'>&e;</a>", "<!DOCTYPE a [<!ENTITY e '<'>]><a/>",
+        "<!DOCTYPE a [<!-- c --><?pi x?><!ENTITY e 'v'>]><a>&e;</a>",
+        "<!DOCTYPE a [<!ENTITY e 'a &amp; b'>]><a x='&e;'>&e;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a xmlns:p='u'><p:b p:c='&e;'/></a>",
+        "<!DOCTYPE a [<!ENTITY e 'v'>]><a>]&e;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a>&e;]&e;</a>",
+        "<!DOCTYPE a [<!ENTITY e 'v'>]><a xmlns='u'><b c='&e;' xmlns:p='&e;'/></a>",
+    ];
+
+    private static readonly string[] DoctypeBail =
+    [
+        "<!DOCTYPE a SYSTEM 'x.dtd'><a/>", "<!DOCTYPE a PUBLIC 'p' 'x.dtd'><a/>", "<!DOCTYPE a [<!ELEMENT a (#PCDATA)>]><a/>",
+        "<!DOCTYPE a [<!ATTLIST a b CDATA 'd'>]><a/>", "<!DOCTYPE a [<!NOTATION n SYSTEM 'x'>]><a/>", "<!DOCTYPE a [<!ENTITY % p 'v'>]><a/>",
+        "<!DOCTYPE a [<!ENTITY e SYSTEM 'x.ent'>]><a>&e;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a>&u;</a>", "<!DOCTYPE a><a>&e;</a>",
+        "<!DOCTYPE é [<!ENTITY ü 'v'>]><é>&ü;</é>", "<!DOCTYPE a [<!ENTITY f 'v'><!ENTITY e '&f;'>]><a>&e;</a>",
+        "<!DOCTYPE a [<!ENTITY e '&#60;b/>'>]><a>&e;</a>", "<!DOCTYPE a [<!ENTITY e '<b/>'>]><a>&e;</a>", "<!DOCTYPE a [<!ENTITY e ']]'>]><a>&e;&gt;</a>",
+        "<!DOCTYPE a [<!ENTITY e '>'>]><a>&e;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a>&e;</a><!DOCTYPE b>", "<!DOCTYPE a [<!ENTITY e 'v'>]><!DOCTYPE b><a/>",
+        "<!DOCTYPE a [<!ENTITY e 'v'>]><a>&e</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a b='&e'/>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a b='&u;'/>",
+        "<!DOCTYPE a [<!ENTITY e 'x\r\ny'>]><a>&e;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a>\r\n&e;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]>\r\n<a/>",
+        "<!DOCTYPE a [<!ENTITY e 'v'>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a b='<&e;'/>", "<!DOCTYPE>", "<!DOCTYPE a [",
+        "<!DOCTYPE a [<!ENTITY e 'v'>]><a b='&e;&e;' b='x'/>", "<!DOCTYPE a [<!ENTITY e 'v'>]>x<a/>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a/>&e;",
+        "<!DOCTYPE a [<!ENTITY e 'v'>]><b/>&e;", "<!doctype a><a/>", "<!DOCTYPE a [<!ENTITY e 'v'>]]><a/>",
+        "<!DOCTYPE a [<!ENTITY lt 'v'>]><a>&lt;</a>", "<!DOCTYPE a [<!ENTITY e 'v'>]><a>&e;&#13;</a>",
+    ];
+
+    private static readonly XmlParseOptions DtdOptions = new() { DtdProcessing = XmlDtdProcessing.Parse };
+
+    public static TheoryData<string> DoctypeAccepted()
+    {
+        var data = new TheoryData<string>();
+        foreach (string xml in DoctypeXml) data.Add(xml);
+        return data;
+    }
+
+    public static TheoryData<string> DoctypeBailing()
+    {
+        var data = new TheoryData<string>();
+        foreach (string xml in DoctypeBail) data.Add(xml);
+        return data;
+    }
+
+    private static Recorder SlowBytes(byte[] data, XmlParseOptions options)
+    {
+        var recorder = new Recorder();
+        XmlSaxParser.Parse(new MemoryStream(data), recorder, options, Ct);
+        return recorder;
+    }
+
+    [Theory, MemberData(nameof(DoctypeAccepted))]
+    public void DoctypeInputDeliversTheSameEventsAsTheStreamingParser(string xml)
+    {
+        byte[] data = Encoding.UTF8.GetBytes(xml);
+        var fast = new Recorder();
+        Assert.True(OptimisticSax.TryParse(data, fast, DtdOptions, Ct));
+        Assert.Equal(SlowBytes(data, DtdOptions).Normalized(), fast.Normalized());
+
+        var publicBytes = new Recorder();
+        XmlSaxParser.Parse(data, publicBytes, DtdOptions, Ct);
+        Assert.Equal(fast.Normalized(), publicBytes.Normalized());
+
+        var chars = new Recorder();
+        if (xml.StartsWith('\uFEFF'))
+        {
+            Assert.False(OptimisticSax.TryParse(xml.AsSpan(), chars, DtdOptions, Ct));
+            Assert.Empty(chars.Events);
+            return;
+        }
+        Assert.True(OptimisticSax.TryParse(xml.AsSpan(), chars, DtdOptions, Ct));
+        Assert.Equal(SlowCharacters(xml, DtdOptions).Normalized(), chars.Normalized());
+        var publicChars = new Recorder();
+        XmlSaxParser.Parse(xml, publicChars, DtdOptions, Ct);
+        Assert.Equal(chars.Normalized(), publicChars.Normalized());
+    }
+
+    [Theory, MemberData(nameof(DoctypeAccepted))]
+    public void DoctypeInputIsRefusedWhenDtdProcessingIsProhibited(string xml)
+    {
+        var fast = new Recorder();
+        Assert.False(OptimisticSax.TryParse(Encoding.UTF8.GetBytes(xml), fast, new XmlParseOptions(), Ct));
+        Assert.Empty(fast.Events);
+    }
+
+    [Theory, MemberData(nameof(DoctypeBailing))]
+    public void UnsupportedDoctypeInputBailsWithoutDeliveringAnything(string xml)
+    {
+        byte[] data = Encoding.UTF8.GetBytes(xml);
+        var fast = new Recorder();
+        Assert.False(OptimisticSax.TryParse(data, fast, DtdOptions, Ct));
+        Assert.Empty(fast.Events);
+        var chars = new Recorder();
+        Assert.False(OptimisticSax.TryParse(xml.AsSpan(), chars, DtdOptions, Ct));
+        Assert.Empty(chars.Events);
+
+        var slow = new Recorder();
+        Exception? slowError = Record.Exception(() => XmlSaxParser.Parse(new MemoryStream(data), slow, DtdOptions, Ct));
+        var publicRecorder = new Recorder();
+        Exception? publicError = Record.Exception(() => XmlSaxParser.Parse(data, publicRecorder, DtdOptions, Ct));
+        Assert.Equal(slowError?.GetType(), publicError?.GetType());
+        Assert.Equal(slow.Normalized(), publicRecorder.Normalized());
+    }
+
+    [Fact]
+    public void EntityLimitsMatchTheStreamingParserAtEveryEdge()
+    {
+        string[] documents =
+        [
+            "<!DOCTYPE a [<!ENTITY e 'abcdef'>]><a b='&e;&e;'>&e;&e;&e;</a>",
+            "<!DOCTYPE a [<!ENTITY e 'a &amp; b'>]><a b='&e;'>&e;&e;</a>",
+            "<!DOCTYPE a [<!ENTITY e ''>]><a b='&e;'>&e;x&e;</a>",
+            "<!DOCTYPE a [<!ENTITY e 'é😀'><!ENTITY f 'long long value'>]><a><b c='&f;'>&e;&f;</b>&amp;&f;</a>",
+        ];
+        int accepted = 0, rejected = 0;
+        foreach (string xml in documents)
+            for (int value = 1; value <= 140; value++)
+                foreach (int which in new[] { 0, 1, 2, 3, 4, 5, 6, 7 })
+                {
+                    var limits = new XmlResourceLimits();
+                    switch (which)
+                    {
+                        case 0: limits = limits with { ExpandedCharacters = value }; break;
+                        case 1: limits = limits with { TokenCharacters = value }; break;
+                        case 2: limits = limits with { EntityDepth = value % 4 + 1 }; break;
+                        case 3: limits = limits with { InternedNames = value % 12 + 1 }; break;
+                        case 4: limits = limits with { DocumentCharacters = value }; break;
+                        case 5: limits = limits with { Depth = value % 4 + 1 }; break;
+                        case 6: limits = limits with { ExpandedCharacters = value, TokenCharacters = value / 2 + 1 }; break;
+                        default: limits = limits with { EntityDepth = 1, ExpandedCharacters = value + 40 }; break;
+                    }
+                    var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse, Limits = limits };
+                    byte[] data = Encoding.UTF8.GetBytes(xml);
+                    var slow = new Recorder();
+                    Exception? slowError = Record.Exception(() => XmlSaxParser.Parse(new MemoryStream(data), slow, options, Ct));
+                    if (slowError is ArgumentException) continue;
+                    var fast = new Recorder();
+                    bool fastAccepted;
+                    try { fastAccepted = OptimisticSax.TryParse(data, fast, options, Ct); }
+                    catch (ArgumentException) { continue; }
+                    if (fastAccepted)
+                    {
+                        Assert.Null(slowError);
+                        Assert.Equal(slow.Normalized(), fast.Normalized());
+                        accepted++;
+                    }
+                    else
+                    {
+                        Assert.Empty(fast.Events);
+                        rejected++;
+                    }
+                    var publicRecorder = new Recorder();
+                    Exception? publicError = Record.Exception(() => XmlSaxParser.Parse(data, publicRecorder, options, Ct));
+                    Assert.Equal(slowError?.GetType(), publicError?.GetType());
+                    Assert.Equal(slow.Normalized(), publicRecorder.Normalized());
+                }
+        Assert.True(accepted > 100 && rejected > 100, $"{accepted}/{rejected}");
+    }
+
+    [Fact]
+    public void LargeDoctypeDocumentsMatchTheStreamingParser()
+    {
+        var builder = new StringBuilder("<!DOCTYPE r [<!ENTITY e 'entity value &amp; safe data'><!ENTITY n ''><!ENTITY big '");
+        builder.Append('x', 20000).Append("😀").Append('y', 9000).Append("'>]>\n<r>\n");
+        for (int row = 0; row < 3000; row++)
+            builder.Append("<p id=\"").Append(row).Append("\" t='&e;'>&e; &#945; &n;&e; text é</p>\n");
+        builder.Append("<big a='&big;'>&big;&e;&big;</big></r>");
+        string xml = builder.ToString();
+        byte[] data = Encoding.UTF8.GetBytes(xml);
+        var fast = new Recorder();
+        Assert.True(OptimisticSax.TryParse(data, fast, DtdOptions, Ct));
+        Assert.Equal(SlowBytes(data, DtdOptions).Normalized(), fast.Normalized());
+        var chars = new Recorder();
+        Assert.True(OptimisticSax.TryParse(xml.AsSpan(), chars, DtdOptions, Ct));
+        Assert.Equal(SlowCharacters(xml, DtdOptions).Normalized(), chars.Normalized());
+    }
+
+    [Fact]
+    public void MutatedDoctypeInputNeverDivergesFromTheStreamingParser()
+    {
+        var random = new Random(777);
+        string[] tokens = ["<", ">", "&", "&e;", "&f;", "&amp;", "&#65;", "]]>", "]", "<!ENTITY g 'x'>", "<!ENTITY e 'y'>", "<!DOCTYPE", "[", "]>", "'", "\"", " ", "\n", "\r", "é", "😀", "%", "&u;", "<a>", "</a>"];
+        int accepted = 0;
+        for (int round = 0; round < 60; round++)
+            foreach (string seed in DoctypeXml)
+            {
+                var bytes = new List<byte>(Encoding.UTF8.GetBytes(seed));
+                for (int edit = random.Next(1, 4); edit > 0; edit--)
+                {
+                    int at = random.Next(bytes.Count + 1);
+                    if (random.Next(2) == 0 && at < bytes.Count) bytes.RemoveAt(at);
+                    else bytes.InsertRange(at, Encoding.UTF8.GetBytes(tokens[random.Next(tokens.Length)]));
+                }
+                byte[] data = [.. bytes];
+                var fast = new Recorder();
+                if (!OptimisticSax.TryParse(data, fast, DtdOptions, Ct)) { Assert.Empty(fast.Events); continue; }
+                accepted++;
+                Assert.Equal(SlowBytes(data, DtdOptions).Normalized(), fast.Normalized());
+            }
+        Assert.True(accepted > 50);
+    }
+
+    [Theory]
+    [InlineData("StartDtd")]
+    [InlineData("DtdDeclaration")]
+    [InlineData("EndDtd")]
+    [InlineData("StartElement")]
+    [InlineData("Text")]
+    public void CancellationInsideDtdAndEntityCallbacksStopsDeliveryLikeTheStreamingParser(string cancelIn)
+    {
+        const string xml = "<!DOCTYPE a [<!ENTITY e 'v'><!ENTITY f 'w'>]><a x='&e;'>&e;&f;</a>";
+        foreach (int mode in new[] { 0, 1, 2 })
+        {
+            using var source = new CancellationTokenSource();
+            var handler = new CancelingHandler(source, cancelIn);
+            Action parse = mode switch
+            {
+                0 => () => XmlSaxParser.Parse(xml, handler, DtdOptions, source.Token),
+                1 => () => XmlSaxParser.Parse(Encoding.UTF8.GetBytes(xml), handler, DtdOptions, source.Token),
+                _ => () => XmlSaxParser.Parse(new MemoryStream(Encoding.UTF8.GetBytes(xml)), handler, DtdOptions, source.Token),
+            };
+            Assert.Throws<OperationCanceledException>(parse);
+            Assert.True(handler.Canceled);
+            if (mode != 2) Assert.Equal(cancelIn, handler.Delivered[^1]);
+        }
+    }
+
     [Fact]
     public void LoneSurrogatesAreDeclinedForCharacterInput()
     {
@@ -293,6 +526,9 @@ public sealed class OptimisticSaxTests
         public override void Text(ReadOnlySpan<char> text) => Hit("Text");
         public override void StartCData() => Hit("StartCData");
         public override void EndCData() => Hit("EndCData");
+        public override void StartDtd(XmlDocumentTypeView documentType) => Hit("StartDtd");
+        public override void DtdDeclaration(XmlDtdDeclaration declaration) => Hit("DtdDeclaration");
+        public override void EndDtd() => Hit("EndDtd");
     }
 
     private static Recorder SlowCharacters(string xml, XmlParseOptions options)
@@ -343,8 +579,8 @@ public sealed class OptimisticSaxTests
         public void StartCData() => Events.Add("CD");
         public void EndCData() => Events.Add("/CD");
         public void Declaration(XmlDeclaration d) => Events.Add($"D:{d.Version.ToString()}|{d.EncodingName.ToString()}|{d.Standalone}|{Where(d.Location)}");
-        public void StartDtd(XmlDocumentTypeView d) => Events.Add("DTD");
-        public void DtdDeclaration(XmlDtdDeclaration d) => Events.Add("DTDD");
+        public void StartDtd(XmlDocumentTypeView d) => Events.Add($"DTD:{d.Name.ToString()}|{d.PublicId.ToString()}|{d.SystemId.ToString()}|{d.HasPublicId}|{d.HasSystemId}|{Where(d.Location)}");
+        public void DtdDeclaration(XmlDtdDeclaration d) => Events.Add($"DTDD:{d.Kind}|{d.Name.ToString()}|{d.ElementName.ToString()}|{d.ContentModel.ToString()}|{d.AttributeType.ToString()}|{d.DefaultKind}|{d.Value.ToString()}|{d.HasValue}|{d.SystemId.ToString()}|{d.HasSystemId}|{d.PublicId.ToString()}|{d.HasPublicId}|{d.NotationName.ToString()}|{d.IsParameter}|{d.IsExternal}|{Where(d.Location)}");
         public void EndDtd() => Events.Add("/DTD");
         public void SkippedEntity(XmlSkippedEntity e) => Events.Add("SKIP");
         public void IncompleteAttributeDefault(XmlIncompleteAttributeDefault d) => Events.Add("INC");

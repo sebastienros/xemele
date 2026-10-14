@@ -96,14 +96,6 @@ public sealed partial class XmlDocument
         internal int Slot, First, Last, Count, NameStart, NameLength, SavedScope, BindingStart;
     }
 
-    // A declared internal general entity reduced to what the fast path can reproduce exactly: replacement text made of plain
-    // characters and the five predefined references. Length is the replacement text in UTF-16 units (an upper bound on both the
-    // scalars and the spelled characters the streaming parser charges) and InnerRefs the predefined references inside it.
-    private sealed class OptimisticEntity
-    {
-        internal string Content = "", Attribute = "";
-        internal int Length, InnerRefs;
-    }
 
     private struct OptimisticMember
     {
@@ -156,7 +148,7 @@ public sealed partial class XmlDocument
         private readonly bool normalized, innerReferencesAllowed;
         private readonly int maxDepth, maxMembers, tokenLimit, nameLimit;
         private long referenceBudget, nameBase;
-        private Dictionary<string, OptimisticEntity?>? entities;
+        private OptimisticDoctype? doctype;
         private bool doctypeSeen;
         private int i, line, lineStart, cont;
         private int nodeCount, memberCount, depth, scope, scopeCounter, qnameCount;
@@ -429,61 +421,19 @@ public sealed partial class XmlDocument
         // quotas and locations come from the same code. Only subsets that merely declare internal general entities are kept.
         private bool Doctype()
         {
-            if (doctypeSeen || normalized || options.DtdProcessing != XmlDtdProcessing.Parse) return false;
+            if (doctypeSeen || normalized) return false;
             doctypeSeen = true;
-            if (!Xemele.Parsing.Syntax.XmlParserCore.TryScanDoctype(s, i, line, Column(i), charInput, options, cancellation, out var scan)) return false;
-            var model = scan.Model;
-            if (scan.Declaration.PublicId is not null || scan.Declaration.SystemId is not null ||
-                model.Elements.Count != 0 || model.Attributes.Count != 0 || model.Notations.Count != 0 || model.ParameterEntities.Count != 0 ||
-                model.DeclarationValidityDiagnostic is not null || model.UnreadParameterLocation is not null) return false;
-            referenceBudget -= scan.Expanded;
+            if (!OptimisticDoctype.TryRead(s, i, line, Column(i), charInput, options, cancellation, out var read)) return false;
+            referenceBudget -= read!.Expanded;
             if (referenceBudget < 0) return false;
-            nameBase = scan.Names;
-            var table = new Dictionary<string, OptimisticEntity?>(model.GeneralEntities.Count, StringComparer.Ordinal);
-            foreach (var declaration in model.GeneralEntities) table.TryAdd(declaration.Name, Analyze(declaration));
-            bool high = !Ascii.IsValid(s[i..scan.End]);
-            if (high && HasNonCharacter(s[i..scan.End])) return false;
-            TrackLines(i, scan.End, high);
-            i = scan.End;
-            entities = table;
-            doc.SetDtdMetadata(scan.Declaration, model);
+            bool high = !Ascii.IsValid(s[i..read.End]);
+            TrackLines(i, read.End, high);
+            i = read.End;
+            nameBase = read.Names;
+            doctype = read;
+            doc.SetDtdMetadata(read.Declaration, read.Model);
             PresizeArenas(i);
             return true;
-        }
-
-        private static OptimisticEntity? Analyze(DtdEntityDeclaration declaration)
-        {
-            if (declaration.IsParameter || declaration.IsExternal || declaration.ReplacementText is not { } text ||
-                declaration.SystemId is not null || declaration.PublicId is not null || declaration.NotationName is not null) return null;
-            var content = new StringBuilder(text.Length);
-            var attribute = new StringBuilder(text.Length);
-            int references = 0;
-            for (int k = 0; k < text.Length; k++)
-            {
-                char c = text[k];
-                if (c == '&')
-                {
-                    var rest = text.AsSpan(k);
-                    char value; int length;
-                    if (rest.StartsWith("&lt;")) { value = '<'; length = 4; }
-                    else if (rest.StartsWith("&gt;")) { value = '>'; length = 4; }
-                    else if (rest.StartsWith("&amp;")) { value = '&'; length = 5; }
-                    else if (rest.StartsWith("&apos;")) { value = '\''; length = 6; }
-                    else if (rest.StartsWith("&quot;")) { value = '"'; length = 6; }
-                    else return null;
-                    content.Append(value); attribute.Append(value);
-                    k += length - 1; references++;
-                }
-                else if (c is '<' or ']' or '>' or '\r' or '\uFFFE' or '\uFFFF' || (c < ' ' && c is not ('\t' or '\n'))) return null;
-                else if (char.IsHighSurrogate(c))
-                {
-                    if (k + 1 >= text.Length || !char.IsLowSurrogate(text[k + 1])) return null;
-                    content.Append(c).Append(text[k + 1]); attribute.Append(c).Append(text[k + 1]); k++;
-                }
-                else if (char.IsLowSurrogate(c)) return null;
-                else { content.Append(c); attribute.Append(c is '\t' or '\n' ? ' ' : c); }
-            }
-            return new() { Content = content.ToString(), Attribute = attribute.ToString(), Length = text.Length, InnerRefs = references };
         }
 
         // 1: a declared entity (charged against the expansion budget), 0: not an entity reference (predefined, numeric or no DTD,
@@ -491,15 +441,13 @@ public sealed partial class XmlDocument
         private int EntityAt(int at, out OptimisticEntity? entity, out int referenceLength)
         {
             entity = null; referenceLength = 0;
-            if (entities is null || at + 2 >= n || (FlagTable[s[at + 1]] & 2) == 0) return 0;
+            if (doctype is null || at + 2 >= n || (FlagTable[s[at + 1]] & 2) == 0) return 0;
             int p = at + 2, limit = Math.Min(n, at + 130);
             while (p < limit && (FlagTable[s[p]] & 1) != 0 && s[p] != ':') p++;
             if (p >= n || s[p] != ';') return 0;
             var name = s[(at + 1)..p];
             if (name.SequenceEqual("lt"u8) || name.SequenceEqual("gt"u8) || name.SequenceEqual("amp"u8) || name.SequenceEqual("apos"u8) || name.SequenceEqual("quot"u8)) return 0;
-            Span<char> chars = stackalloc char[name.Length];
-            for (int k = 0; k < chars.Length; k++) chars[k] = (char)name[k];
-            if (!entities.GetAlternateLookup<ReadOnlySpan<char>>().TryGetValue(chars, out entity) || entity is null) return -1;
+            if (!doctype.TryFind(name, out entity) || entity is null) return -1;
             if (entity.InnerRefs != 0 && !innerReferencesAllowed) return -1;
             referenceBudget -= entity.Length + entity.InnerRefs;
             if (referenceBudget < 0) return -1;

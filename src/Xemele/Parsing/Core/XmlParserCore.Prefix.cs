@@ -8,13 +8,14 @@ namespace Xemele.Parsing.Syntax;
 
 internal sealed partial class XmlParserCore
 {
-    internal readonly record struct DoctypeScan(int End, XmlDocumentType Declaration, DtdModel Model, long Expanded, long Names);
+    internal readonly record struct DoctypeScan(int End, XmlDocumentType Declaration, DtdModel Model, long Expanded, long Names, XmlLocation Location);
 
     // Captures the DOCTYPE and stops the core immediately after its closing '>'.
     private sealed class DoctypeProbe : IXmlEventSink, IXmlDtdSink
     {
         internal XmlDocumentType? Doctype;
         internal DtdModel? Model;
+        internal XmlLocation Location;
         public bool StartDocument(XmlLocation location) => true;
         public bool Declaration(XmlDeclarationView declaration) => true;
         public bool StartElement(XmlNameView name, bool isEmptyElement, XmlLocation location) => true;
@@ -27,7 +28,7 @@ internal sealed partial class XmlParserCore
         public bool EndDocument(XmlLocation location) => true;
         public bool DocumentType(XmlDocumentType declaration, DtdModel model, XmlLocation location)
         {
-            Doctype = declaration; Model = model;
+            Doctype = declaration; Model = model; Location = location;
             return false;
         }
     }
@@ -67,7 +68,7 @@ internal sealed partial class XmlParserCore
                     core.subsetHasParameterReferences || core.incompleteDefaults is { Count: > 0 }) return false;
                 int end = result.Consumed < count ? (int)offsets[result.Consumed] : at;
                 if (end <= start || input[end - 1] != (byte)'>') return false;
-                scan = new(end, probe.Doctype, probe.Model, core.budget.Count(Quota.ExpandedCharacters), core.budget.Count(Quota.InternedNames));
+                scan = new(end, probe.Doctype, probe.Model, core.budget.Count(Quota.ExpandedCharacters), core.budget.Count(Quota.InternedNames), probe.Location);
                 return true;
             }
         }
