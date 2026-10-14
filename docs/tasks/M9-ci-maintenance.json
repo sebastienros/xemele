@@ -59,7 +59,8 @@
       "evidence": [
         "local-ci-checks",
         "portable-reference-checks",
-        "path-portability-controls"
+        "path-portability-controls",
+        "cancellation-scheduling-controls"
       ]
     },
     {
@@ -76,7 +77,8 @@
     "docs/reports/M0-api-wiring/verify.py: real compiled join controls",
     "docs/reports/M0-tests-mtp/check_runner.py: serial full suite and controlled exits",
     "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj: exact missing dependency",
-    "tests/Xemele.Conformance.Tests/Schematron/UpstreamTests.cs and Differential RelaxNg.ReferenceTests.cs: native/portable corpus paths only, all assertions retained"
+    "tests/Xemele.Conformance.Tests/Schematron/UpstreamTests.cs and Differential RelaxNg.ReferenceTests.cs: native/portable corpus paths only, all assertions retained",
+    "tests/Xemele.Tests/M4-compile/ReferenceTests.cs: original cancellation assertions with dedicated thread/high-resolution interval"
   ],
   "evidence": [
     {
@@ -114,6 +116,15 @@
       "result": "passed",
       "summary": "54 affected tests pass/0skip, complete root build0warnings/errors. Exact50Schematroncases/51variants retained; both actual RNG engines preserve original byte/oracle/containment controls. Third hosted Windows12741/12744failure retained; Linux/macOSfullworkflowpassed. Fourth fixed revision pending.",
       "artifact": "docs/reports/M9-ci-maintenance/summary.json"
+    },
+    {
+      "id": "cancellation-scheduling-controls",
+      "kind": "check",
+      "revision": "f9024e5b8a690b032301b79a2618f769e6ad768a",
+      "command": "Build Xemele.Tests Release; prepare_runtime.py;12fresh pinned-runtime process runs of original CancellationDuringLongLexicalWorkReturnsSuppliedToken; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "12/12fresh-process tests pass (36original lexical-shape cancellation/token checks);3original expressions, full compilercall and10sbound retained. Fourth hosted Windows sole race failure preserved; full differential/conformance andLinux/macOSworkflow passed. Fifth coherent matrix pending.",
+      "artifact": "docs/reports/M9-ci-maintenance/summary.json"
     }
   ],
   "blockers": [],
@@ -123,7 +134,7 @@
       "Local CI equivalents passed; original and intermediate failures retained."
     ],
     "remaining": [
-      "Fourth coherent fixed-revision matrix pending after exact Windows path normalization; prior three attempts retained."
+      "Fifth coherent fixed-revision matrix pending after demonstrated cancellation scheduling fix; four prior attempts retained."
     ],
     "requests": [
       "Coordinator grants exact aggregate benchmark project repair for demonstrated CS0103 XxHash3 missing dependency; existing M9-benchmark-build prerequisite verified. Preserve benchmark source/algorithm and historical measurements.",

@@ -20,7 +20,8 @@
     "Build Jing/libxml2 from frozen revisions, record actual binary/class hashes, restore canonical XML reference package; environment overrides for identity/Java paths preserve all original RNG assertions.",
     "Use exact observed MSVC static archive libxml2s.lib when computing archive hash; retain single-file assertion and original engine/binary/hash/oracle checks.",
     "Normalize RNG Corpus root with canonical Path.GetFullPath of separate path components; strict traversal/symlink/ordinal containment checks unchanged.",
-    "Normalize Schematron discovered relative paths to inventory slash form; exact50cases/51variants and all original case/hash/report assertions retained."
+    "Normalize Schematron discovered relative paths to inventory slash form; exact50cases/51variants and all original case/hash/report assertions retained.",
+    "Retain full XPathCompiler call,3longlexical shapes,supplied-token equality and10sbound; dedicated LongRunning compile thread and high-resolution1ms spin replace threadpool/coarse-timer scheduling assumptions. No runtime polling edits or retry/filter/suppression inside the test."
   ],
   "local_failures": [
     {
@@ -80,6 +81,15 @@
       "passed": 54,
       "failed": 0,
       "skipped": 0
+    },
+    "cancellation_scheduling": {
+      "revision": "f9024e5b8a690b032301b79a2618f769e6ad768a",
+      "fresh_process_runs": 12,
+      "lexical_shapes_per_run": 3,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "build": "zero warnings/errors"
     }
   },
   "hosted_attempts": [
@@ -114,6 +124,17 @@
         "ubuntu-latest": "Full workflow passed;12744 MTP/0skip,1430 compiled API.",
         "macos-latest": "Full workflow passed;12744 MTP/0skip,1430 compiled API.",
         "windows-latest": "12744 MTP outcomes:12741 passed/3 failed/0skip. Schematron discovery compared backslashes against inventory slashes; both RNG engine tests rejected inside-corpus paths because Corpus root used mixed separators. Build/API/runtime/reference setup and11206unit tests passed; subsequent corpus/pack steps not run."
+      }
+    },
+    {
+      "run": 38587727076,
+      "url": "https://github.com/sebastienros/xemele/actions/runs/38587727076",
+      "revision": "412c99fdf688949968019568a840bb2d82c90b27",
+      "conclusion": "failure",
+      "jobs": {
+        "ubuntu-latest": "Full workflow passed.",
+        "macos-latest": "Full workflow passed.",
+        "windows-latest": "12744 MTP outcomes:12743 passed/1 failed/0skip. Both entire differential and conformance suites passed. Sole unit failure was CancellationDuringLongLexicalWorkReturnsSuppliedToken: Task.Delay(1) resumed after scan finished; 1ms timer/threadpool race. Subsequent controlled-failure/corpus/pack steps not run."
       }
     }
   ],
