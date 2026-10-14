@@ -57,7 +57,8 @@
       "status": "passed",
       "evidence": [
         "local-ci-checks",
-        "portable-reference-checks"
+        "portable-reference-checks",
+        "path-portability-controls"
       ]
     },
     {
@@ -73,7 +74,8 @@
     ".github/workflows/build.yml: deliberate triggers, byte-preserving checkout, deterministic tests",
     "docs/reports/M0-api-wiring/verify.py: real compiled join controls",
     "docs/reports/M0-tests-mtp/check_runner.py: serial full suite and controlled exits",
-    "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj: exact missing dependency"
+    "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj: exact missing dependency",
+    "tests/Xemele.Conformance.Tests/Schematron/UpstreamTests.cs and Differential RelaxNg.ReferenceTests.cs: native/portable corpus paths only, all assertions retained"
   ],
   "evidence": [
     {
@@ -102,6 +104,15 @@
       "result": "failed",
       "summary": "Linux and macOS complete workflow passed. Windows native builds passed, then archive hash metadata lookup failed on exact filename discrepancy xml2.lib vs actual libxml2s.lib; later Windows steps not run. Single-line owning repair committed; no failure suppression or product change.",
       "artifact": "docs/reports/M9-ci-maintenance/summary.json"
+    },
+    {
+      "id": "path-portability-controls",
+      "kind": "check",
+      "revision": "f5577a9c4baec48899c7ce632c33412a456ee9cc",
+      "command": "Full solution Release build; pinned-runtime native RelaxNg.ReferenceTests and Schematron.UpstreamTests with prepared references; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "54 affected tests pass/0skip, complete root build0warnings/errors. Exact50Schematroncases/51variants retained; both actual RNG engines preserve original byte/oracle/containment controls. Third hosted Windows12741/12744failure retained; Linux/macOSfullworkflowpassed. Fourth fixed revision pending.",
+      "artifact": "docs/reports/M9-ci-maintenance/summary.json"
     }
   ],
   "blockers": [],
@@ -111,7 +122,7 @@
       "Local CI equivalents passed; original and intermediate failures retained."
     ],
     "remaining": [
-      "Third coherent fixed revision matrix required after verified exact Windows archive-name correction; previous two failures retained."
+      "Fourth coherent fixed-revision matrix pending after exact Windows path normalization; prior three attempts retained."
     ],
     "requests": [
       "Coordinator grants exact aggregate benchmark project repair for demonstrated CS0103 XxHash3 missing dependency; existing M9-benchmark-build prerequisite verified. Preserve benchmark source/algorithm and historical measurements.",

@@ -18,7 +18,9 @@
     "Explicit UTF-8 driver decode/report output and job-wide Python UTF-8 mode.",
     "Install actual runtime10.0.11 and pin generated application runtimeconfigs with rollForward Disable.",
     "Build Jing/libxml2 from frozen revisions, record actual binary/class hashes, restore canonical XML reference package; environment overrides for identity/Java paths preserve all original RNG assertions.",
-    "Use exact observed MSVC static archive libxml2s.lib when computing archive hash; retain single-file assertion and original engine/binary/hash/oracle checks."
+    "Use exact observed MSVC static archive libxml2s.lib when computing archive hash; retain single-file assertion and original engine/binary/hash/oracle checks.",
+    "Normalize RNG Corpus root with canonical Path.GetFullPath of separate path components; strict traversal/symlink/ordinal containment checks unchanged.",
+    "Normalize Schematron discovered relative paths to inventory slash form; exact50cases/51variants and all original case/hash/report assertions retained."
   ],
   "local_failures": [
     {
@@ -69,6 +71,15 @@
       "utf8_multilingual_discovery": "strict UTF-8 decoding passed on 1083496-character actual test list",
       "engines": "Jing20241231/a6bc0041035988325dfbfe7823ef2c098fc56597 and libxml2 2.15.4/96498992efa48d52b0e8b83058bd88dbdaf153c1 rebuilt; original runner source hashes and full engine/oracle assertions pass",
       "canonical_audit": "Exact original test-only 10.0.11 reference retained. Five NU1902/NU1903 advisories remain visible as warnings in isolated generated restore project; audits enabled; no runtime package dependency."
+    },
+    "path_controls": {
+      "revision": "f5577a9c4baec48899c7ce632c33412a456ee9cc",
+      "solution_build": "zero warnings/errors",
+      "rng_engine_tests": 2,
+      "schematron_upstream_tests": 52,
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0
     }
   },
   "hosted_attempts": [
@@ -92,6 +103,17 @@
         "ubuntu-latest": "Full workflow passed.",
         "macos-latest": "Full workflow passed.",
         "windows-latest": "Build/API/runtime11 install/Jing and libxml2 native builds passed; helper archive hash lookup expected xml2.lib but actual MSVC Release output is libxml2s.lib. Ordinary MTP/corpus/pack steps not run."
+      }
+    },
+    {
+      "run": 38584646658,
+      "url": "https://github.com/sebastienros/xemele/actions/runs/38584646658",
+      "revision": "cb1f7b14c7a471e50b7851207f274ac45bebf76d",
+      "conclusion": "failure",
+      "jobs": {
+        "ubuntu-latest": "Full workflow passed;12744 MTP/0skip,1430 compiled API.",
+        "macos-latest": "Full workflow passed;12744 MTP/0skip,1430 compiled API.",
+        "windows-latest": "12744 MTP outcomes:12741 passed/3 failed/0skip. Schematron discovery compared backslashes against inventory slashes; both RNG engine tests rejected inside-corpus paths because Corpus root used mixed separators. Build/API/runtime/reference setup and11206unit tests passed; subsequent corpus/pack steps not run."
       }
     }
   ],
