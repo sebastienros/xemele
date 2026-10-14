@@ -1,9 +1,9 @@
 {
   "objective": "Execute M9 only through integrated verified M9-gate and terminal cleanup/handoff to main.",
-  "coordinator_chat_id": "01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "coordinator_chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
   "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
-  "previous_coordinator_chat_id": "01a1350e-adc0-7b21-9368-3f67534dec0c",
-  "coordinator_write_status": "M9 sole primary/main/state writes transferred at containing commit and explicit ACTIVATE; main read-only until terminal M9 handoff.",
+  "previous_coordinator_chat_id": "01a13526-d4ff-7dc0-86d1-505ef7f29975",
+  "coordinator_write_status": "Fresh M9 completion worker sole primary/main/state writer upon containing commit and explicit ACTIVATE; former coordinator relinquished, main returns read-only.",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
@@ -12,8 +12,9 @@
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Preserve the verified source-bound distribution matrix and unpublished package checkpoints.",
-    "Complete eligible remaining performance work/evidence and explicitly deferred robustness requirements before M9-gate; no further runner budget or fuzz resumption inferred."
+    "Fresh M9 worker records narrow human offline-execution revision in owning robustness/gate criteria, retaining unrun evidence and historical requirements.",
+    "Finish revised robustness and remaining release requirements; collect active Xemele XML-performance handoff without duplicate work.",
+    "Main remains read-only until M9 terminal handoff; no automated campaign/harness execution."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -41,13 +42,12 @@
   "handoff_destination_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "milestone_handoff": {
     "from_milestone": "main orchestration",
-    "to_milestone": "M9",
+    "to_milestone": "M9 continuation",
     "from_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
-    "thread_id": "01a13526-d4ff-7dc0-86d1-505ef7f29975",
+    "thread_id": "01a13810-0096-7491-abf5-382065b22b4c",
     "host_id": "local",
     "status": "Created read-only; explicit ACTIVATE follows containing commit",
-    "verified_gate_revision": "6657e8e0ab0f34602a5040a04ee0d8fa197f70b1",
-    "M8_terminal_transfer_revision": "6a91706a1c03f0535ea11f02df5581cf33b642e9",
+    "merged_user_harness_revision": "9cd5c5ce529b6715dbbe7b547b0b9bf0b1f09318",
     "activation_sent": false
   },
   "benchmark_policy": "Allocation-only: no isolation, PARK, ACK or exclusivity workflow per direct human instruction. Keep preparation identities, correctness, controls, actual counters and bounded cleanup. Genuine throughput/timing requirements unchanged; foreign communication/synchronization prohibited.",
@@ -145,8 +145,7 @@
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
   "milestone_progress": "Required OS distribution matrix verified with all three OS 10,754-unit passes and actual managed/trim/NativeAOT/tool execution. API and local compatible repairs remain verified. Dedicated comparative timing, active XML performance work and deferred sustained fuzz requirements still prevent M9-gate completion.",
   "blockers": [
-    "Required dedicated-machine x64/arm64 comparative timing evidence unavailable.",
-    "Required24hourcoverage-guided campaigns/crash-positive qualification remain explicitly deferred; ordinaryXMLcore branch coverage nowpasses91.9753%."
+    "Required dedicated-machine x64/arm64 comparative timing evidence unavailable."
   ],
   "pending_decisions": [],
   "timing_queue": [],
@@ -2157,5 +2156,29 @@
       "runConclusion": "failure",
       "retryBudgetConsumed": true
     }
-  ]
+  ],
+  "user_campaign_handoff": {
+    "human_instruction": "Skip the requirement that the harness needs to run to unblock; user will do it offline",
+    "scope": "Campaign/harness execution is nonblocking for M9 in Codex; sustained duration and crash-positive harness qualification are offline, not execution passes",
+    "merge": {
+      "branch": "codex/m9-user-run-xml-fuzz",
+      "revision": "9cd5c5ce529b6715dbbe7b547b0b9bf0b1f09318",
+      "method": "fast-forward",
+      "changed_files": 36,
+      "all_bytes_exact": true,
+      "checks": [
+        "Python AST syntax",
+        "project XML parse",
+        "208-task validation",
+        "git diff --check"
+      ],
+      "campaign_execution": "NOT RUN"
+    },
+    "preserve": [
+      "User processes/campaigns/bundles/findings untouched",
+      "Historical criteria/evidence retained",
+      "Known concrete product bugs remain assessable",
+      "Unrelated dedicated timing requirements unchanged"
+    ]
+  }
 }
