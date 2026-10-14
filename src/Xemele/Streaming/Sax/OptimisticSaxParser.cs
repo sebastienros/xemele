@@ -73,6 +73,8 @@ internal static class OptimisticSax
     {
         private const uint Seed = 2166136261, Prime = 16777619;
         private const int MaxMembers = 32;
+        // Bounds linear probing so crafted colliding names cannot degrade the name table; the streaming parser then decides.
+        private const int MaxProbes = 256;
         private const int ScopeAny = -2;
         private const int TextChunk = 8192;
         private const string XmlNamespace = "http://www.w3.org/XML/1998/namespace";
@@ -329,11 +331,12 @@ internal static class OptimisticSax
         }
 
         // Whitespace between prolog and epilog markup is delivered as text, like any other character data.
-        private void Misc()
+        private bool Misc()
         {
             int start = i;
             SkipWhitespace();
-            if (!emit || i == start) return;
+            if (!emit && i - start >= tokenLimit) return false;
+            if (!emit || i == start) return true;
             var buffer = Scratch(TextChunk);
             for (int at = start; at < i; )
             {
@@ -342,13 +345,14 @@ internal static class OptimisticSax
                 handler.Text(buffer.AsSpan(0, count));
                 at += count;
             }
+            return true;
         }
 
         private bool Prolog()
         {
             while (true)
             {
-                Misc();
+                if (!Misc()) return false;
                 if ((uint)i >= (uint)n || s[i] != '<' || i + 1 >= n) return false;
                 byte next = s[i + 1];
                 if (next == '!') { if (!Comment()) return false; }
@@ -361,7 +365,7 @@ internal static class OptimisticSax
         {
             while (true)
             {
-                Misc();
+                if (!Misc()) return false;
                 if (i >= n) return true;
                 if (s[i] != '<' || i + 1 >= n) return false;
                 byte next = s[i + 1];
@@ -652,9 +656,11 @@ internal static class OptimisticSax
             var key = s.Slice(start, length);
             uint mask = (uint)table.Length - 1;
             uint slot = (hash ^ (hash >> 15)) & mask;
+            int probes = 0;
             while (table[slot] is { } entry)
             {
                 if (entry.Hash == hash && entry.Key.AsSpan().SequenceEqual(key)) return entry;
+                if (++probes > MaxProbes) return null;
                 slot = (slot + 1) & mask;
             }
             return CreateName(key, hash, slot);

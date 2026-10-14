@@ -12,6 +12,7 @@ HOST = Path("/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dot
 parser = argparse.ArgumentParser()
 parser.add_argument("--before-dll", type=Path, required=True)
 parser.add_argument("--out", type=Path, default=ROOT / "artifacts/M9-xml-performance")
+parser.add_argument("--reverse", action="store_true", help="run the after suite before the before suite")
 args = parser.parse_args()
 baseline = args.before_dll.resolve(strict=True)
 out = args.out.resolve()
@@ -46,8 +47,9 @@ run(build + [original / "XmlPerformanceRunner.csproj"], out / "after-affine-runn
     "revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
     "settings": {k: env[k] for k in ("DOTNET_TieredCompilation", "DOTNET_TieredPGO", "DOTNET_ReadyToRun")}
 }, indent=2))
-for label, runner in [("affine-before-default", project / ("bin/Release/net10.0/" + project_name + ".dll")),
-        ("affine-after-default", original / "bin/Release/net10.0/XmlPerformanceRunner.dll")]:
+suites = [("affine-before-default", project / ("bin/Release/net10.0/" + project_name + ".dll")),
+        ("affine-after-default", original / "bin/Release/net10.0/XmlPerformanceRunner.dll")]
+for label, runner in (suites[::-1] if args.reverse else suites):
     run([HOST, "--fx-version", "10.0.11", runner, "bdn", "--iterationTime", "250",
         "--artifacts", out / label], out / (label + ".log"))
     result = out / label / "results/DomComparison-report.csv"

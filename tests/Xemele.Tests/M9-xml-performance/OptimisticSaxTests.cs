@@ -161,6 +161,9 @@ public sealed class OptimisticSaxTests
     [InlineData("<a><?abcdefghijklmnop?></a>", 0, 0, 8, 0)]
     [InlineData("<a><?abcdefghijklmnop x?></a>", 0, 0, 8, 0)]
     [InlineData("<a></a                >", 0, 0, 8, 0)]
+    [InlineData("<a/>                    ", 0, 0, 8, 0)]
+    [InlineData("                    <a/>", 0, 0, 8, 0)]
+    [InlineData("<a/>  <!--x-->                    <?p?>", 0, 0, 8, 0)]
     public void LimitedInputBehavesLikeTheStreamingParser(string xml, int depth, int attributes, int tokens, int names)
     {
         var limits = new XmlResourceLimits();
@@ -178,6 +181,16 @@ public sealed class OptimisticSaxTests
         Assert.Equal(slowError?.GetType(), publicError?.GetType());
         Assert.NotNull(slowError);
         Assert.Equal(slow.Normalized(), publicRecorder.Normalized());
+    }
+
+    [Fact]
+    public void ManyDistinctNamesStayOnTheFastPath()
+    {
+        string xml = "<r>" + string.Concat(Enumerable.Range(0, 20_000).Select(n => $"<n{n} a{n}='1'/>")) + "</r>";
+        var options = new XmlParseOptions { Limits = new() { InternedNames = null } };
+        var recorder = new Recorder();
+        Assert.True(OptimisticSax.TryParse(Encoding.UTF8.GetBytes(xml), recorder, options, Ct));
+        Assert.NotEmpty(recorder.Events);
     }
 
     [Fact]

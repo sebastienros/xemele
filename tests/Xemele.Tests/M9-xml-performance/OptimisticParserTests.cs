@@ -195,6 +195,9 @@ public sealed class OptimisticParserTests
     [InlineData("<a><?abcdefghijklmnop?></a>")]
     [InlineData("<a><?abcdefghijklmnop x?></a>")]
     [InlineData("<a></a                >")]
+    [InlineData("<a/>                    ")]
+    [InlineData("                    <a/>")]
+    [InlineData("<a/>  <!--x-->                    <?p?>")]
     public void TokenLimitMatchesTheStreamingParserForTargetsAndCloseTags(string xml)
     {
         byte[] data = Encoding.UTF8.GetBytes(xml);

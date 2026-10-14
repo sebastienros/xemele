@@ -91,6 +91,8 @@ public sealed partial class XmlDocument
     {
         private const uint Seed = 2166136261, Prime = 16777619;
         private const int MaxMembers = 32;
+        // Bounds linear probing so crafted colliding names cannot degrade the name table; the streaming parser then decides.
+        private const int MaxProbes = 256;
         private const int ScopeAny = -2;
         private const string XmlNamespace = "http://www.w3.org/XML/1998/namespace";
         private const string XmlnsNamespace = "http://www.w3.org/2000/xmlns/";
@@ -371,8 +373,8 @@ public sealed partial class XmlDocument
         {
             while (true)
             {
-                SkipWhitespace();
-                if ((uint)i >= (uint)n || s[i] != '<' || i + 1 >= n) return false;
+                int run = i; SkipWhitespace();
+                if (i - run >= tokenLimit || (uint)i >= (uint)n || s[i] != '<' || i + 1 >= n) return false;
                 byte next = s[i + 1];
                 if (next == '!') { if (!Comment()) return false; }
                 else if (next == '?') { if (!ProcessingInstruction()) return false; }
@@ -384,7 +386,8 @@ public sealed partial class XmlDocument
         {
             while (true)
             {
-                SkipWhitespace();
+                int run = i; SkipWhitespace();
+                if (i - run >= tokenLimit) return false;
                 if (i >= n) return true;
                 if (s[i] != '<' || i + 1 >= n) return false;
                 byte next = s[i + 1];
@@ -666,9 +669,11 @@ public sealed partial class XmlDocument
             var key = s.Slice(start, length);
             uint mask = (uint)table.Length - 1;
             uint slot = (hash ^ (hash >> 15)) & mask;
+            int probes = 0;
             while (table[slot] is { } entry)
             {
                 if (entry.Hash == hash && entry.Key.AsSpan().SequenceEqual(key)) return entry;
+                if (++probes > MaxProbes) return null;
                 slot = (slot + 1) & mask;
             }
             return CreateName(key, hash, slot);
