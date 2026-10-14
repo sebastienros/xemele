@@ -1,4 +1,5 @@
 using System.Text;
+using System.Buffers;
 using System.Threading;
 using Xemele.Internal.Operations;
 using Xemele.Parsing.Entities;
@@ -13,9 +14,18 @@ namespace Xemele.Parsing.Syntax;
 // only tags/declarations/references/PI targets require bounded lexical scratch.
 internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
 {
+    // Only bounded printable ASCII runs enter these paths. All delimiter,
+    // normalization, Unicode and entity-origin cases retain the scalar parser.
+    private static readonly SearchValues<char> TextStops = SearchValues.Create("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000a\u000b\u000c\u000d\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f<&]\ufffe\uffff");
+    private static readonly SearchValues<char> DoubleQuotedStops = SearchValues.Create("\"&<\t\n\r");
+    private static readonly SearchValues<char> SingleQuotedStops = SearchValues.Create("'&<\t\n\r");
+    private static readonly SearchValues<char> AsciiNameUnits = SearchValues.Create("-.:0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz");
+    private static readonly SearchValues<char> PrintableTagUnits = SearchValues.Create(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
+    private static readonly SearchValues<char> AsciiReference = SearchValues.Create(" !\"#$%&'()*+,-./0123456789:<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
+    private static readonly SearchValues<char> AsciiTag = SearchValues.Create(" !#$%&()*+,-./0123456789:;<=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
     private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference, Doctype, DtdSubset, DtdClose }
     private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, IncompleteDefaults, UnresolvedReference, EndDocument }
-    private readonly record struct Name(string Local, string Uri, string Prefix)
+    internal readonly record struct Name(string Local, string Uri, string Prefix)
     {
         internal XmlNameView View => new(Local, Uri, Prefix);
     }
@@ -29,17 +39,56 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         internal string? OwnedName, OwnedValue;
         internal AttributeInterpretation? Incomplete;
     }
+    internal readonly ref struct DomAttributeView(bool ns, Name name, string prefix, string uri, ReadOnlySpan<char> value, string? ownedValue, XmlLocation location, bool defaulted)
+    {
+        internal readonly bool Namespace = ns, IsDefaulted = defaulted;
+        internal readonly Name Name = name;
+        internal readonly string Prefix = prefix, Uri = uri;
+        internal readonly ReadOnlySpan<char> Value = value;
+        internal readonly string? OwnedValue = ownedValue;
+        internal readonly XmlLocation Location = location;
+    }
+    internal readonly ref struct DomTagView(XmlParserCore core)
+    {
+        internal int Count => core.attributeCount;
+        internal DomAttributeView this[int index]
+        {
+            get
+            {
+                ref var a = ref core.attributes[index];
+                return new(a.Namespace, a.Name, a.Prefix, a.Uri, core.AttributeValue(a), a.OwnedValue, a.Location, a.IsDefaulted);
+            }
+        }
+    }
     private readonly record struct Frame(Name Name, int BindingsStart, bool StandaloneWhitespaceDependency, DtdElementDeclaration? ValidationDeclaration);
     private readonly record struct Binding(string Prefix, string Uri);
     private const string XmlUri = "http://www.w3.org/XML/1998/namespace";
     private const string XmlnsUri = "http://www.w3.org/2000/xmlns/";
     private readonly OperationBudget budget;
     private readonly ScalarLocation position;
+    private readonly bool trustedByteMappings;
     private Dictionary<string, string> names = new(StringComparer.Ordinal);
+    private string?[]? recentInterns;
     private readonly List<Binding> bindings = [];
     private readonly List<Frame> frames = [];
     private char[] token = new char[128];
     private XmlLocation[] tokenLocations = new XmlLocation[128];
+    private readonly record struct TokenLocationRun(int Start, int Length, XmlLocation Location, long ByteStride);
+    private List<TokenLocationRun>? tokenLocationRuns;
+    private XmlLocation TokenLocation(int index)
+    {
+        if (tokenLocationRuns is not null) for (int i = tokenLocationRuns.Count - 1; i >= 0; i--)
+        {
+            var run = tokenLocationRuns[i];
+            if (index < run.Start) continue;
+            int delta = index - run.Start;
+            if (delta < run.Length)
+                return new(run.Location.SourceUri, run.Location.LineNumber, run.Location.LinePosition + delta,
+                    run.Location.ByteOffset is long offset ? offset + delta * run.ByteStride : null);
+            break;
+        }
+        return tokenLocations[index];
+    }
     private readonly StringBuilder physicalTag = new();
     private int[] physicalStarts = new int[128];
     private int physicalScalar;
@@ -80,11 +129,12 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     private Name deliveredName;
 
     public XmlParserCore(XmlParseOptions options, Uri? sourceUri = null, bool asyncResources = false,
-        OperationBudget? operationBudget = null)
+        OperationBudget? operationBudget = null, bool trustedByteMappings = false)
     {
         ArgumentNullException.ThrowIfNull(options);
         if (sourceUri is { IsAbsoluteUri: false }) throw new ArgumentException("Source URI must be absolute.", nameof(sourceUri));
         this.asyncResources = asyncResources;
+        this.trustedByteMappings = trustedByteMappings;
         // Composition supplies one sequential budget; its immutable options are
         // authoritative. Existing callers retain independent operation state.
         budget = operationBudget ?? new(options, default);
@@ -93,6 +143,20 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
 
     public ScanResult Append<TSink>(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets,
         bool isFinalBlock, TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
+        => AppendCore(input, byteOffsets, isFinalBlock, sink, cancellationToken);
+
+    // Only the owned byte decoder can prove one original byte per UTF-16 unit.
+    internal ScanResult AppendAscii<TSink>(ReadOnlySpan<char> input, long firstByteOffset,
+        TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
+    {
+        if (!trustedByteMappings) throw new InvalidOperationException("Affine mappings require the owned byte decoder.");
+        ArgumentOutOfRangeException.ThrowIfNegative(firstByteOffset);
+        if (input.Length != 0 && firstByteOffset > long.MaxValue - (input.Length - 1L)) throw new ArgumentOutOfRangeException(nameof(firstByteOffset));
+        return AppendCore(input, [], false, sink, cancellationToken, firstByteOffset);
+    }
+
+    private ScanResult AppendCore<TSink>(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets,
+        bool isFinalBlock, TSink sink, CancellationToken cancellationToken, long affine = -1) where TSink : class, IXmlEventSink
     {
         if (Interlocked.CompareExchange(ref gate, 1, 0) != 0) throw new InvalidOperationException("Concurrent or reentrant core use.");
         int consumed = 0;
@@ -102,9 +166,11 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             ArgumentNullException.ThrowIfNull(sink);
             if (sinkIdentity is not null && !ReferenceEquals(sinkIdentity, sink)) throw new InvalidOperationException("Resume with the same sink.");
             if (finalSeen && !isFinalBlock) throw new InvalidOperationException("Final flag is sticky.");
-            try { ValidateOffsets(input, byteOffsets, cancellationToken); }
+            bool firstInput = sourceMode == 0 && !input.IsEmpty;
+            try { ValidateOffsets(input, byteOffsets, cancellationToken, affine); }
             catch (OperationCanceledException) { faulted = true; AbortOrDeferEntities(); throw; }
             if (isFinalBlock && sourceMode == 2 && byteLength is null) throw new InvalidOperationException("CompleteByteSource must precede final byte input.");
+            if (firstInput && sink is IXmlBulkTextSink bulkSink) bulkSink.PrepareInput(input);
             sinkIdentity = sink;
             finalSeen |= isFinalBlock;
             // Exceptions from callbacks and cancellation fault the operation and
@@ -126,6 +192,15 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                     if (!Drain(sink, cancellationToken)) return new(consumed, ScanStep.Paused);
                     if (endDocumentDelivered) { terminal = true; return new(consumed, ScanStep.Completed); }
                     if (asyncResources && DrainAsyncDtd()) continue;
+                    if (sink is IXmlBulkTextSink)
+                    {
+                        var entityRun = DrainInternalEntityRun(out var entityAt);
+                        if (!entityRun.IsEmpty)
+                        {
+                            if (!sink.TextFragment(entityRun, false, entityAt)) return new(consumed, ScanStep.Paused);
+                            continue;
+                        }
+                    }
                     if (DrainEntityScalar()) continue;
                     if (consumed == input.Length)
                     {
@@ -134,9 +209,68 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         continue;
                     }
                     cancellationToken.ThrowIfCancellationRequested();
+                    var inputOffsets = sourceMode == 2 && affine < 0 ? byteOffsets[consumed..] : default;
+                    long inputBase = affine < 0 ? -1 : affine + consumed;
+                    if (high == 0)
+                    {
+                        if (state == State.Data && !textActive && input[consumed] == '<' && sink is IXmlDomBatchSink)
+                        {
+                            int completeTag = ConsumeWholeAsciiTag(input[consumed..], inputOffsets, hasOpening: true, affine: inputBase);
+                            if (completeTag != 0) { consumed += completeTag; continue; }
+                        }
+                        if (state == State.Data && !textActive && frames.Count != 0 && sink is IXmlDomBatchSink && !RecoveryEnabled &&
+                            input[consumed] is not ('<' or '&'))
+                        {
+                            var start = position.Current(sourceMode == 2 ? ByteOffset(byteOffsets, consumed, affine) : null);
+                            ResetToken(); BeginText(XmlTextKind.Text, "", start); declarationAllowed = false;
+                            textStarted = true; delivery = Delivery.None;
+                            if (!sink.StartText(XmlTextKind.Text, "", start)) return new(consumed, ScanStep.Paused);
+                        }
+                        if (state == State.Less && sink is IXmlBulkTextSink)
+                        {
+                            int wholeTag = ConsumeWholeAsciiTag(input[consumed..], inputOffsets, affine: inputBase);
+                            if (wholeTag != 0) { consumed += wholeTag; continue; }
+                        }
+                        if (state == State.Data && sink is IXmlDomBatchSink textBatch)
+                        {
+                            int normalizedRun = ConsumeNormalizedTextRun(input[consumed..], inputOffsets, out int references, out var normalizedAt, inputBase);
+                            if (normalizedRun != 0)
+                            {
+                                var raw = input.Slice(consumed, normalizedRun); consumed += normalizedRun;
+                                bool ended = consumed < input.Length && input[consumed] == '<';
+                                if (ended) { textActive = false; textStarted = false; budget.Reset(Quota.TokenCharacters); }
+                                bool keepGoing = references == 0 ? sink.TextFragment(raw, ended, normalizedAt) : textBatch.NormalizedTextRun(raw, ended, normalizedAt);
+                                if (!keepGoing) return new(consumed, ScanStep.Paused);
+                                continue;
+                            }
+                        }
+                        if (input[consumed] == '&' && sink is IXmlBulkTextSink)
+                        {
+                            int reference = ConsumeScalarReference(input[consumed..], inputOffsets, out var referenceAt, out char value, inputBase);
+                            if (reference != 0)
+                            {
+                                consumed += reference; fragment[0] = value;
+                                if (!sink.TextFragment(fragment.AsSpan(0, 1), false, referenceAt)) return new(consumed, ScanStep.Paused);
+                                continue;
+                            }
+                        }
+                        int run = ConsumePlainRun(input[consumed..], inputOffsets, sink is IXmlBulkTextSink, out var runLocation, inputBase);
+                        if (run != 0)
+                        {
+                            var borrowed = input.Slice(consumed, run);
+                            consumed += run;
+                            if (state == State.Data)
+                            {
+                                bool ended = sink is IXmlDomBatchSink && consumed < input.Length && input[consumed] == '<';
+                                if (ended) { textActive = false; textStarted = false; budget.Reset(Quota.TokenCharacters); }
+                                if (!sink.TextFragment(borrowed, ended, runLocation)) return new(consumed, ScanStep.Paused);
+                            }
+                            continue;
+                        }
+                    }
                     char c = input[consumed];
-                    long? offset = sourceMode == 2 ? byteOffsets[consumed] : null;
-                    if (offset is long original) ValidateMapping(original, c, nameof(byteOffsets));
+                    long? offset = sourceMode == 2 ? ByteOffset(byteOffsets, consumed, affine) : null;
+                    if (!trustedByteMappings && offset is long original) ValidateMapping(original, c, nameof(byteOffsets));
                     var location = high != 0 ? highLocation : position.Current(offset);
                     if (high != 0)
                     {
@@ -181,7 +315,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         try
         {
             if (disposed) return;
-            disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; physicalStarts = []; attributePhysicalLocations = []; attributePhysicalOrigins = []; attributePhysicalIdentities = []; attributePhysicalIdentity = null; attributePhysicalSpelling = null; physicalTag.Clear(); attributes = [];
+            disposed = true; ClearUnresolvedReference(); tokenLocationRuns = null; token = []; tokenLocations = []; physicalStarts = []; attributePhysicalLocations = []; attributePhysicalOrigins = []; attributePhysicalIdentities = []; attributePhysicalIdentity = null; attributePhysicalSpelling = null; physicalTag.Clear(); attributes = [];
             try { DisposeResourcesSynchronously(); }
             finally
             {
@@ -197,15 +331,18 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         ObjectDisposedException.ThrowIf(disposed, this);
         if (faulted || terminal) throw new InvalidOperationException("Core operation is terminal or faulted.");
     }
-    private void ValidateOffsets(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, CancellationToken cancellation)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static long ByteOffset(ReadOnlySpan<long> offsets, int index, long affine)
+        => affine >= 0 ? affine + index : offsets[index];
+    private void ValidateOffsets(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, CancellationToken cancellation, long affine)
     {
         if (!offsets.IsEmpty && offsets.Length != input.Length) throw new ArgumentException("Parallel mappings must match input length.", nameof(offsets));
-        int mode = offsets.IsEmpty ? 1 : 2;
+        int mode = affine >= 0 || !offsets.IsEmpty ? 2 : 1;
         if (!input.IsEmpty && sourceMode != 0 && sourceMode != mode) throw new ArgumentException("Source mode cannot change.", nameof(offsets));
         cancellation.ThrowIfCancellationRequested();
         // At most one preflight unit, even if a pending callback pauses before
         // consuming input. The tail is caller-owned and can change on a resume.
-        if (!offsets.IsEmpty) ValidateMapping(offsets[0], input[0], nameof(offsets));
+        if (mode == 2 && !input.IsEmpty) ValidateMapping(ByteOffset(offsets, 0, affine), input[0], nameof(offsets));
         if (!input.IsEmpty && sourceMode == 0) sourceMode = mode;
     }
     private void ValidateMapping(long current, char unit, string parameter)
@@ -217,6 +354,331 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             throw new ArgumentException("Invalid original-byte mapping.", parameter);
         if (high != 0 && char.IsLowSurrogate(unit) && current != highLocation.ByteOffset)
             throw new ArgumentException("Surrogate mappings differ.", parameter);
+    }
+    private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, bool hasOpening = false, long affine = -1)
+    {
+        int leading = hasOpening ? 1 : 0;
+        var units = input[leading..];
+        var mappings = sourceMode == 2 && affine < 0 ? offsets[leading..] : default;
+        long mappingBase = affine < 0 ? -1 : affine + leading;
+        if (units.IsEmpty) return 0;
+        if (RecoveryEnabled || sourceMode == 2 && !trustedByteMappings || units[0] is '?' or '!') return 0;
+        if (units[0] != '/' && units[0] is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' or ':')) return 0;
+        // A complete primary tag can reset its token scope only after all
+        // preflight succeeds. Partial/malformed/boundary input keeps the scalar
+        // path and its exact first-excess location and callback sequencing.
+        long tokenCapacity = budget.Remaining(Quota.TokenCharacters);
+        if (hasOpening) tokenCapacity += budget.Count(Quota.TokenCharacters);
+        int capacity = Math.Min(4096 - leading, Math.Min(units.Length, position.ColumnCapacity - leading));
+        capacity = (int)Math.Min(capacity, Math.Min(budget.Remaining(Quota.DocumentCharacters) - leading, tokenCapacity - 1));
+        if (capacity < 2) return 0;
+        var candidate = units[..capacity];
+        int end = 0; char delimiter = '\0';
+        bool closing = candidate[0] == '/';
+        if (closing)
+        {
+            int found = candidate.IndexOf('>');
+            if (found < 0) return 0;
+            end = found + 1;
+        }
+        while (!closing && end < candidate.Length)
+        {
+            int stop = delimiter == 0 ? candidate[end..].IndexOfAny('>', '\'', '"') : candidate[end..].IndexOf(delimiter);
+            if (stop < 0) return 0;
+            end += stop;
+            char c = candidate[end++];
+            if (delimiter != 0) delimiter = '\0';
+            else if (c == '>') break;
+            else delimiter = c;
+        }
+        if (end == 0 || candidate[end - 1] != '>' || delimiter != 0 || candidate[..end].IndexOfAnyExcept(PrintableTagUnits) >= 0) return 0;
+        if (hasOpening)
+        {
+            opening = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
+            ResetToken();
+            physicalScalar = '<'; attributePhysicalLocation = opening; attributePhysicalOrigin = false;
+            attributePhysicalSpelling = null; attributePhysicalIdentity = null;
+        }
+        bool close = candidate[0] == '/';
+        int start = close ? 1 : 0, length = end - start - 1;
+        if (length > token.Length)
+        {
+            int size = Math.Max(length, token.Length * 2);
+            Array.Resize(ref token, size); Array.Resize(ref tokenLocations, size);
+        }
+        candidate.Slice(start, length).CopyTo(token);
+        var current = position.Current(sourceMode == 2 ? ByteOffset(mappings, start, mappingBase) : null);
+        var location = new XmlLocation(current.SourceUri, current.LineNumber, current.LinePosition + leading, current.ByteOffset);
+        tokenLocationRuns?.Clear();
+        if (length != 0)
+        {
+            long stride = sourceMode == 2 ? ByteOffset(mappings, 1, mappingBase) - ByteOffset(mappings, 0, mappingBase) : 0;
+            (tokenLocationRuns ??= new(8)).Add(new(0, length, new(location.SourceUri, location.LineNumber, location.LinePosition + start, location.ByteOffset), stride));
+        }
+        if (!close && entities is not null)
+        {
+            // These are primary-source ASCII scalars, so physical spelling and
+            // coordinates are exact even when DTD interpretation needs them.
+            if (length > physicalStarts.Length) Array.Resize(ref physicalStarts, token.Length);
+            if (length > attributePhysicalLocations.Length)
+            {
+                Array.Resize(ref attributePhysicalLocations, token.Length); Array.Resize(ref attributePhysicalOrigins, token.Length);
+                Array.Resize(ref attributePhysicalIdentities, token.Length);
+            }
+            physicalTag.Append(candidate.Slice(start, length));
+            for (int i = 0; i < length; i++)
+            {
+                var at = new XmlLocation(location.SourceUri, location.LineNumber, location.LinePosition + start + i,
+                    sourceMode == 2 ? ByteOffset(mappings, start + i, mappingBase) : null);
+                tokenLocations[i] = attributePhysicalLocations[i] = at;
+                physicalStarts[i] = i; attributePhysicalOrigins[i] = false; attributePhysicalIdentities[i] = null;
+            }
+        }
+        tokenLength = length; declarationAllowed = false; quote = '\0';
+        budget.TryCharge(Quota.DocumentCharacters, end + leading); budget.TryCharge(Quota.TokenCharacters, end + 1);
+        position.AdvanceColumns(end + leading); normalizedCr = false;
+        if (sourceMode == 2) lastOffset = ByteOffset(mappings, end - 1, mappingBase);
+        state = close ? State.Close : State.Tag;
+        if (close) ParseClose(); else ParseTag();
+        state = State.Data;
+        return end + leading;
+    }
+    private ReadOnlySpan<char> DrainInternalEntityRun(out XmlLocation at)
+    {
+        at = default;
+        if (state != State.Data || !textActive || !textStarted || frames.Count == 0 ||
+            frames[^1].StandaloneWhitespaceDependency || entitySources is not { Count: > 0 }) return [];
+        var source = entitySources[^1];
+        if (source.External is not null || source.Declaration.ReplacementText is not { } text || source.Index == text.Length) return [];
+        int length = Math.Min(4096, text.Length - source.Index);
+        length = (int)Math.Min(length, Math.Min(budget.Remaining(Quota.TokenCharacters), budget.Remaining(Quota.ExpandedCharacters)));
+        var run = text.AsSpan(source.Index, length);
+        if (!run.IsEmpty && run[0] == '&')
+        {
+            int reference = PredefinedReferenceLength(run, out char value);
+            if (reference != 0 && budget.Remaining(Quota.ExpandedCharacters) >= reference + 1 && budget.Remaining(Quota.EntityDepth) >= 1)
+            {
+                // Replacement-source spelling charges each consumed scalar,
+                // plus the resolved scalar. Primary document/byte coordinates
+                // do not advance. Near any quota boundary, retain scalar error
+                // ordering and exact locations through the original path.
+                at = source.Reference;
+                budget.TryCharge(Quota.TokenCharacters, reference);
+                budget.TryCharge(Quota.ExpandedCharacters, reference + 1);
+                source.Index += reference; entitySources[^1] = source;
+                RetainValidationReference(false, at);
+                referenceLocation = at; tokenLength = 0; brackets = 0;
+                fragment[0] = value;
+                return fragment.AsSpan(0, 1);
+            }
+        }
+        int stop = run.IndexOfAny(TextStops);
+        if (stop >= 0) run = run[..stop];
+        int surrogate = run.IndexOfAnyInRange('\ud800', '\udfff');
+        if (surrogate >= 0) run = run[..surrogate];
+        if (run.Length < 2 || brackets >= 2 && run[0] == '>') return [];
+        // Internal declarations already normalized their physical newlines.
+        // Replacement literals keep the original reference coordinates and do
+        // not advance the primary source or its document-character quota.
+        at = source.Reference;
+        budget.TryCharge(Quota.TokenCharacters, run.Length); budget.TryCharge(Quota.ExpandedCharacters, run.Length);
+        source.Index += run.Length; entitySources[^1] = source; brackets = 0;
+        return run;
+    }
+    private int ConsumeNormalizedTextRun(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out int references, out XmlLocation at, long affine = -1)
+    {
+        references = 0; at = default;
+        if (entities is not null || !textActive || !textStarted || frames.Count == 0 || RecoveryEnabled ||
+            sourceMode == 2 && !trustedByteMappings || brackets >= 2 && input[0] == '>') return 0;
+        if (input[0] is '<' or ']' or '\r' or '\n') return 0;
+        int capacity = Math.Min(4096, Math.Min(input.Length, position.ColumnCapacity));
+        capacity = (int)Math.Min(capacity, Math.Min(budget.Remaining(Quota.DocumentCharacters), budget.Remaining(Quota.TokenCharacters)));
+        if (capacity == 0) return 0;
+        var candidate = input[..capacity]; int length = 0, pairs = 0;
+        long expandedCapacity = budget.Remaining(Quota.ExpandedCharacters);
+        while (length < candidate.Length)
+        {
+            var remaining = candidate[length..]; int ordinary = remaining.IndexOfAny(TextStops);
+            if (ordinary < 0) ordinary = remaining.Length;
+            int valid = ordinary;
+            for (int start = 0; start < ordinary;)
+            {
+                int surrogate = remaining.Slice(start, ordinary - start).IndexOfAnyInRange('\ud800', '\udfff');
+                if (surrogate < 0) break;
+                surrogate += start;
+                if (!char.IsHighSurrogate(remaining[surrogate]) || surrogate + 1 == ordinary || !char.IsLowSurrogate(remaining[surrogate + 1]))
+                { valid = surrogate; break; }
+                pairs++; start = surrogate + 2;
+            }
+            length += valid;
+            if (valid != ordinary || length == candidate.Length || candidate[length] != '&' || references >= expandedCapacity) break;
+            int reference = PredefinedReferenceLength(candidate[length..], out _);
+            if (reference == 0 || budget.Remaining(Quota.EntityDepth) < 1) break;
+            length += reference; references++;
+        }
+        if (length == 0) return 0;
+        at = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
+        budget.TryCharge(Quota.DocumentCharacters, length - pairs); budget.TryCharge(Quota.TokenCharacters, length - pairs);
+        budget.TryCharge(Quota.ExpandedCharacters, references); position.AdvanceColumns(length - pairs);
+        if (sourceMode == 2) lastOffset = ByteOffset(offsets, length - 1, affine);
+        normalizedCr = false; brackets = 0;
+        return length;
+    }
+    private static int PredefinedReferenceLength(ReadOnlySpan<char> input, out char value)
+    {
+        if (input.StartsWith("&amp;")) { value = '&'; return 5; }
+        if (input.StartsWith("&lt;")) { value = '<'; return 4; }
+        if (input.StartsWith("&gt;")) { value = '>'; return 4; }
+        if (input.StartsWith("&apos;")) { value = '\''; return 6; }
+        if (input.StartsWith("&quot;")) { value = '"'; return 6; }
+        value = '\0'; return 0;
+    }
+    private static int BmpNumericReferenceLength(ReadOnlySpan<char> input, out char value)
+    {
+        value = '\0';
+        if (!input.StartsWith("&#")) return 0;
+        int index = 2, radix = 10, scalar = 0;
+        if (index < input.Length && input[index] == 'x') { radix = 16; index++; }
+        int beginning = index, maximum = Math.Min(input.Length, 16);
+        for (; index < maximum; index++)
+        {
+            int unit = input[index];
+            if (unit == ';')
+            {
+                if (index == beginning || !XmlScalar(scalar)) return 0;
+                value = (char)scalar; return index + 1;
+            }
+            int digit = unit is >= '0' and <= '9' ? unit - '0' : unit is >= 'a' and <= 'f' ? unit - 'a' + 10 : unit is >= 'A' and <= 'F' ? unit - 'A' + 10 : -1;
+            if (digit < 0 || digit >= radix || scalar > (0xFFFF - digit) / radix) return 0;
+            scalar = scalar * radix + digit;
+        }
+        // Supplementary, long, incomplete and invalid forms keep the complete
+        // scalar parser; this candidate never changes state on failure.
+        return 0;
+    }
+    private int ConsumeScalarReference(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out XmlLocation at, out char value, long affine = -1)
+    {
+        at = default; value = '\0';
+        if (state != State.Data || !textActive || !textStarted || frames.Count == 0) return 0;
+        int length = PredefinedReferenceLength(input, out value);
+        bool numeric = false;
+        if (length == 0) { length = BmpNumericReferenceLength(input, out value); numeric = length != 0; }
+        if (length == 0) return 0;
+        // Fall back before accepting anything near any boundary so the original
+        // scalar path reports the exact first excess unit/reference location.
+        if (length > position.ColumnCapacity || length > budget.Remaining(Quota.DocumentCharacters) ||
+            length > budget.Remaining(Quota.TokenCharacters) || budget.Remaining(Quota.EntityDepth) < 1 ||
+            budget.Remaining(Quota.ExpandedCharacters) < 1) return 0;
+        at = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
+        if (sourceMode == 2)
+        {
+            if (!trustedByteMappings) for (int i = 0; i < length; i++)
+            { ValidateMapping(offsets[i], input[i], nameof(offsets)); lastOffset = offsets[i]; }
+            else lastOffset = ByteOffset(offsets, length - 1, affine);
+        }
+        budget.TryCharge(Quota.DocumentCharacters, length); budget.TryCharge(Quota.TokenCharacters, length);
+        budget.TryCharge(Quota.ExpandedCharacters, 1);
+        RetainValidationReference(false, at);
+        if (numeric && White(value)) RetainValidationReference(true, at);
+        position.AdvanceColumns(length); normalizedCr = false; brackets = 0; tokenLength = 0;
+        return length;
+    }
+    private int ConsumePlainRun(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, bool bulkText, out XmlLocation at, long affine = -1)
+    {
+        at = default;
+        bool data = state == State.Data;
+        if (data)
+        {
+            // Dense markup/reference boundaries are cheaper as direct scalar
+            // dispatch than as repeated multi-set searches (parser study E01).
+            if (input[0] is '<' or '&' or ']' or '\r' or '\n') return 0;
+            if (!bulkText || !textActive || !textStarted || frames.Count == 0 || frames[^1].StandaloneWhitespaceDependency ||
+                brackets >= 2 && input[0] == '>' || entitySources is { Count: > 0 }) return 0;
+        }
+        else if (state is not (State.Tag or State.Close or State.Reference)) return 0;
+        int length = Math.Min(input.Length, 4096);
+        length = Math.Min(length, position.ColumnCapacity);
+        length = (int)Math.Min(length, Math.Min(budget.Remaining(Quota.DocumentCharacters), budget.Remaining(Quota.TokenCharacters)));
+        if (length == 0) return 0;
+        var candidate = input[..length];
+        int stop = data ? candidate.IndexOfAny(TextStops) : candidate.IndexOfAnyExcept(state == State.Reference ? AsciiReference : AsciiTag);
+        if (stop >= 0) length = stop;
+        int pairs = 0;
+        if (data) for (int start = 0; start < length;)
+        {
+            int next = candidate.Slice(start, length - start).IndexOfAnyInRange('\ud800', '\udfff');
+            if (next < 0) break;
+            next += start;
+            if (!char.IsHighSurrogate(candidate[next]) || next + 1 == length || !char.IsLowSurrogate(candidate[next + 1]))
+            { length = next; break; }
+            if (sourceMode == 2 && ByteOffset(offsets, next, affine) != ByteOffset(offsets, next + 1, affine))
+            {
+                // Let the scalar path reject this caller-owned mapping exactly
+                // when it reaches the pair, respecting any earlier pause.
+                length = next; break;
+            }
+            pairs++; start = next + 2;
+        }
+        if (length < 2) return 0;
+        at = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
+        if (!data)
+        {
+            if (length > Array.MaxLength - tokenLength) return 0;
+            int required = tokenLength + length;
+            if (required > token.Length)
+            {
+                int capacity = (int)Math.Min(Array.MaxLength, Math.Max((long)required, (long)token.Length * 2));
+                Array.Resize(ref token, capacity); Array.Resize(ref tokenLocations, capacity);
+            }
+            input[..length].CopyTo(token.AsSpan(tokenLength));
+        }
+        if (state == State.Tag && entities is not null)
+        {
+            int required = tokenLength + length;
+            if (required > physicalStarts.Length) Array.Resize(ref physicalStarts, token.Length);
+            if (required > attributePhysicalLocations.Length)
+            {
+                Array.Resize(ref attributePhysicalLocations, token.Length); Array.Resize(ref attributePhysicalOrigins, token.Length);
+                Array.Resize(ref attributePhysicalIdentities, token.Length);
+            }
+            if (length > int.MaxValue - physicalTag.Length) return 0;
+            int physicalStart = physicalTag.Length;
+            for (int i = 0; i < length; i++)
+            {
+                physicalStarts[tokenLength + i] = physicalStart + i;
+                attributePhysicalLocations[tokenLength + i] = new(at.SourceUri, at.LineNumber, at.LinePosition + i, sourceMode == 2 ? ByteOffset(offsets, i, affine) : null);
+                attributePhysicalOrigins[tokenLength + i] = false; attributePhysicalIdentities[tokenLength + i] = null;
+            }
+            physicalTag.Append(input[..length]);
+        }
+        bool compressedLocations = !data && (sourceMode != 2 || trustedByteMappings);
+        if (compressedLocations)
+        {
+            // A validated ASCII run cannot contain a newline or surrogate. Its
+            // coordinates are affine; reconstruct only locations actually used
+            // by grammar/diagnostics instead of writing a 32-byte record/unit.
+            if (tokenLength == 0) tokenLocationRuns?.Clear();
+            long stride = sourceMode == 2 ? ByteOffset(offsets, 1, affine) - ByteOffset(offsets, 0, affine) : 0;
+            (tokenLocationRuns ??= new(8)).Add(new(tokenLength, length, at, stride));
+        }
+        if (sourceMode == 2 && !trustedByteMappings) for (int i = 0; i < length; i++)
+        {
+            long offset = offsets[i]; ValidateMapping(offset, input[i], nameof(offsets)); lastOffset = offset;
+            if (!data && !compressedLocations) tokenLocations[tokenLength + i] = new(at.SourceUri, at.LineNumber, at.LinePosition + i, offset);
+        }
+        else if (!data && !compressedLocations) for (int i = 0; i < length; i++)
+        {
+            long? offset = sourceMode == 2 ? ByteOffset(offsets, i, affine) : null;
+            tokenLocations[tokenLength + i] = new(at.SourceUri, at.LineNumber, at.LinePosition + i, offset);
+        }
+        if (trustedByteMappings && sourceMode == 2) lastOffset = ByteOffset(offsets, length - 1, affine);
+        budget.TryCharge(Quota.DocumentCharacters, length - pairs);
+        budget.TryCharge(Quota.TokenCharacters, length - pairs);
+        position.AdvanceColumns(length - pairs);
+        normalizedCr = false;
+        if (data) brackets = 0;
+        else tokenLength += length;
+        return length;
     }
     private static bool XmlScalar(int c) => c is 9 or 10 or 13 || c is >= 0x20 and <= 0xD7FF || c is >= 0xE000 and <= 0xFFFD || c is >= 0x10000 and <= 0x10FFFF;
     private void AcceptScalar(int scalar, XmlLocation location)
@@ -250,6 +712,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     private bool Store(int scalar, XmlLocation location)
     {
         if (!Charge(Quota.TokenCharacters, 1, location)) return false;
+        if (tokenLength == 0) tokenLocationRuns?.Clear();
         int width = scalar > 0xFFFF ? 2 : 1;
         if (tokenLength > int.MaxValue - width) { Reject("XML.ResourceLimit", "Token capacity exceeded.", location); return false; }
         if (tokenLength + width > token.Length)
@@ -279,7 +742,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         }
         return true;
     }
-    private void ResetToken() { physicalTag.Clear(); if (attributePhysicalIdentities.Length != 0) Array.Clear(attributePhysicalIdentities); tokenLength = 0; budget.Reset(Quota.TokenCharacters); }
+    private void ResetToken() { tokenLocationRuns?.Clear(); physicalTag.Clear(); if (attributePhysicalIdentities.Length != 0) Array.Clear(attributePhysicalIdentities); tokenLength = 0; budget.Reset(Quota.TokenCharacters); }
     private void BeginText(XmlTextKind kind, string piTarget, XmlLocation location)
     {
         textActive = true; textStarted = false; textKind = kind; target = piTarget; textLocation = location;
@@ -506,6 +969,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     private void ClearUnresolvedReference()
     {
         if (unresolvedNameLength != 0) Array.Clear(token, 0, unresolvedNameLength + 2);
+        if (disposed) { tokenLocationRuns = null; recentInterns = null; } else tokenLocationRuns?.Clear();
         unresolvedPending = false; unresolvedNameLength = 0; tokenLength = 0;
         budget.Reset(Quota.TokenCharacters);
     }
@@ -518,6 +982,11 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (state != State.Data || frames.Count != 0 || !rootSeen) { Reject("XML.Syntax", "Incomplete XML document.", eof); return; }
         if (textActive) { EndText(eof); return; }
         opening = eof; delivery = Delivery.EndDocument;
+    }
+    private bool CompleteTag()
+    {
+        for (int i = 0; i < attributeCount; i++) if (attributes[i].Incomplete is not null) return false;
+        return true;
     }
     private bool Drain(IXmlEventSink sink, CancellationToken cancellation)
     {
@@ -543,7 +1012,20 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                     else { delivery = Delivery.None; continue; }
                     break;
                 case Delivery.Tag:
-                    if (deliveryIndex == 0) { deliveryIndex++; keepGoing = sink.StartElement(deliveredName.View, emptyTag, opening); }
+                    if (deliveryIndex == 0 && sink is IXmlDomBatchSink batch && CompleteTag())
+                    {
+                        delivery = emptyTag ? Delivery.Close : Delivery.None;
+                        deliveryIndex = 2 * attributeCount + 1;
+                        keepGoing = batch.CompleteTag(deliveredName, new(this), emptyTag, opening);
+                        Array.Clear(attributes, 0, attributeCount);
+                    }
+                    else if (deliveryIndex == 0)
+                    {
+                        deliveryIndex++;
+                        keepGoing = sink is IXmlOwnedNameSink owned
+                            ? owned.StartOwnedElement(deliveredName.Local, deliveredName.Uri, deliveredName.Prefix, emptyTag, opening)
+                            : sink.StartElement(deliveredName.View, emptyTag, opening);
+                    }
                     else if (deliveryIndex <= attributeCount)
                     {
                         ref var a = ref attributes[deliveryIndex++ - 1];
@@ -557,7 +1039,9 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         keepGoing = a.Incomplete is { } incomplete
                             ? ((IXmlIncompleteAttributeSink)sink).IncompleteAttribute(new(a.Name.View, incomplete.LexicalValue,
                                 incomplete.IsTokenized, incomplete.ValueLocation, incomplete.Parts, incomplete.DefaultSequence, a.IsDefaulted))
-                            : sink.Attribute(new(a.Name.View, AttributeValue(a), a.Location, a.IsDefaulted));
+                            : sink is IXmlOwnedNameSink owned
+                                ? owned.OwnedAttribute(a.Name.Local, a.Name.Uri, a.Name.Prefix, AttributeValue(a), a.OwnedValue, a.Location, a.IsDefaulted)
+                                : sink.Attribute(new(a.Name.View, AttributeValue(a), a.Location, a.IsDefaulted));
                     }
                     else
                     {
@@ -625,7 +1109,19 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     {
         if (name.IsEmpty) return false;
         int colons = 0, work = 0; bool first = true;
-        foreach (var rune in name.EnumerateRunes())
+        // ASCII names dominate XML. Avoid Rune enumeration while retaining the
+        // full XML Name production for non-ASCII and supplementary scalars.
+        int ascii = 0;
+        for (; ascii < name.Length && name[ascii] < 0x80; ascii++)
+        {
+            Work(work++); int c = name[ascii];
+            bool valid = c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' or ':' ||
+                !first && c is >= '0' and <= '9' or '-' or '.';
+            if (!valid) return false;
+            if (c == ':') { if (!qname || first || ++colons > 1) return false; first = true; }
+            else first = false;
+        }
+        foreach (var rune in name[ascii..].EnumerateRunes())
         {
             Work(work++); int c = rune.Value;
             if ((first ? !NameStart(c) : !NameChar(c))) return false;
@@ -638,12 +1134,23 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     {
         if (value.IsEmpty) return "";
         activeCancellation.ThrowIfCancellationRequested();
+        // One bounded probe for short repeated symbols. Collisions only evict
+        // this accelerator: full ordinal equality is mandatory, and the actual
+        // intern table retains randomized hashing and quota enforcement.
+        int bucket = value.Length <= 64 ? (value.Length * 17 + value[0]) & 63 : -1;
+        if (bucket >= 0 && recentInterns?[bucket] is { } cached && value.SequenceEqual(cached)) return cached;
         // Ordinal's alternate lookup hashes borrowed UTF-16 directly and uses
         // the runtime dictionary collision defense. Only a miss owns a string.
         var lookup = names.GetAlternateLookup<ReadOnlySpan<char>>();
-        if (lookup.TryGetValue(value, out string? existing)) return existing;
+        if (lookup.TryGetValue(value, out string? existing))
+        {
+            if (bucket >= 0) (recentInterns ??= new string?[64])[bucket] = existing;
+            return existing;
+        }
         if (!Charge(Quota.InternedNames, 1, location)) return "";
-        string owned = new(value); names.Add(owned, owned); return owned;
+        string owned = new(value); names.Add(owned, owned);
+        if (bucket >= 0) (recentInterns ??= new string?[64])[bucket] = owned;
+        return owned;
     }
     private int Colon(ReadOnlySpan<char> value)
     {
@@ -690,33 +1197,98 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         }
         return new(Intern(local, location), uri, Intern(prefix, location));
     }
-    private int ReadName(ref int i)
+    private int ReadName(ref int i, out bool valid)
     {
-        int start = i;
-        while (i < tokenLength && !White(token[i]) && token[i] is not '=' and not '/' and not '?' ) { Work(i); i++; }
-        return i - start;
+        int start = i, colons = 0; bool first = true, ascii = true;
+        valid = true;
+        activeCancellation.ThrowIfCancellationRequested();
+        var candidate = token.AsSpan(i, Math.Min(4096, tokenLength - i));
+        int stop = candidate.IndexOfAnyExcept(AsciiNameUnits);
+        int asciiLength = stop < 0 ? candidate.Length : stop;
+        // Only return when this is also the original lexical boundary. Invalid
+        // punctuation or Unicode uses the complete name/scalar fallback below.
+        if (asciiLength != 0 && (i + asciiLength == tokenLength || White(token[i + asciiLength]) || token[i + asciiLength] is '=' or '/' or '?'))
+        {
+            var name = candidate[..asciiLength];
+            bool initial = name[0] is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_';
+            int colon = name.IndexOf(':');
+            valid = initial && (colon < 0 || colon + 1 < name.Length &&
+                name[colon + 1] is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' &&
+                name[(colon + 1)..].IndexOf(':') < 0);
+            i += asciiLength; return asciiLength;
+        }
+        while (i < tokenLength && !White(token[i]) && token[i] is not '=' and not '/' and not '?')
+        {
+            Work(i); char c = token[i++];
+            if (c >= 0x80) { ascii = false; continue; }
+            if (!(c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' or ':' || !first && c is >= '0' and <= '9' or '-' or '.')) valid = false;
+            if (c == ':') { if (first || ++colons > 1) valid = false; first = true; }
+            else first = false;
+        }
+        int length = i - start;
+        valid = ascii ? valid && !first && length != 0 : ValidName(token.AsSpan(start, length), true);
+        return length;
     }
     private void SkipWhite(ref int i) { while (i < tokenLength && White(token[i])) { Work(i); i++; } }
+    private bool ReadPlainDtdAttribute(ref int index, ref AttributeToken attribute, char delimiter)
+    {
+        // Only primary literal values with no expansion/normalization trigger
+        // need this path. General entity values and unknown provenance retain
+        // the full interpretation/parts graph.
+        if (entitySources is { Count: > 0 }) return false;
+        int start = index, end = start;
+        while (end < tokenLength)
+        {
+            activeCancellation.ThrowIfCancellationRequested();
+            var block = token.AsSpan(end, Math.Min(4096, tokenLength - end));
+            int stop = block.IndexOfAny(delimiter == '"' ? DoubleQuotedStops : SingleQuotedStops);
+            if (stop < 0) { end += block.Length; continue; }
+            end += stop;
+            if (token[end] != delimiter) return false;
+            attribute.ValueLength = end - start;
+            var declaration = AttributeDeclaration(AttributeName(attribute));
+            if (declaration is not null && declaration.Type != DtdAttributeType.CData)
+                attribute.OwnedValue = NormalizeKnownAttribute(new string(token.AsSpan(start, attribute.ValueLength)), declaration,
+                    attribute.ValueLength == 0 ? TokenLocation(end) : TokenLocation(start));
+            index = end + 1;
+            return true;
+        }
+        return false;
+    }
     private bool ReadAttribute(ref int i, out AttributeToken a, bool declaration = false)
     {
-        a = default; a.NameStart = i; a.Location = i < tokenLength ? tokenLocations[i] : opening;
-        a.NameLength = ReadName(ref i);
-        if (!ValidName(token.AsSpan(a.NameStart, a.NameLength), true)) { Reject("XML.Syntax", "Invalid attribute name.", a.Location); return false; }
+        a = default; a.NameStart = i; a.Location = i < tokenLength ? TokenLocation(i) : opening;
+        a.NameLength = ReadName(ref i, out bool validName);
+        if (!validName) { Reject("XML.Syntax", "Invalid attribute name.", a.Location); return false; }
         SkipWhite(ref i);
         if (i >= tokenLength || token[i++] != '=') { Reject("XML.Syntax", "Expected attribute equals.", a.Location); return false; }
         SkipWhite(ref i);
         if (i >= tokenLength || token[i] is not ('\'' or '"')) { Reject("XML.Syntax", "Expected quoted attribute value.", a.Location); return false; }
         char delimiter = token[i++]; a.ValueStart = i;
-        if (!declaration && entities is not null) return ReadDtdAttribute(ref i, ref a, delimiter);
+        if (!declaration && entities is not null)
+        {
+            if (ReadPlainDtdAttribute(ref i, ref a, delimiter)) return diagnostic is null;
+            return ReadDtdAttribute(ref i, ref a, delimiter);
+        }
         int write = i;
         while (i < tokenLength && token[i] != delimiter)
         {
-            Work(i); char c = token[i];
-            if (c == '<') { Reject("XML.Syntax", "Literal less-than in attribute.", tokenLocations[i]); return false; }
+            activeCancellation.ThrowIfCancellationRequested();
+            var remaining = token.AsSpan(i, Math.Min(4096, tokenLength - i));
+            int ordinary = remaining.IndexOfAny(delimiter == '"' ? DoubleQuotedStops : SingleQuotedStops);
+            if (ordinary < 0) ordinary = remaining.Length;
+            if (ordinary != 0)
+            {
+                if (write != i) remaining[..ordinary].CopyTo(token.AsSpan(write));
+                i += ordinary; write += ordinary;
+                continue;
+            }
+            char c = token[i];
+            if (c == '<') { Reject("XML.Syntax", "Literal less-than in attribute.", TokenLocation(i)); return false; }
             if (c == '&')
             {
-                if (declaration) { Reject("XML.Syntax", "References in declaration.", tokenLocations[i]); return false; }
-                var refLocation = tokenLocations[i++]; int start = i;
+                if (declaration) { Reject("XML.Syntax", "References in declaration.", TokenLocation(i)); return false; }
+                var refLocation = TokenLocation(i++); int start = i;
                 while (i < tokenLength && token[i] != ';' && token[i] != delimiter) { Work(i); i++; }
                 if (i >= tokenLength || token[i] != ';') { Reject("XML.Syntax", "Unfinished reference.", refLocation); return false; }
                 int scalar = Reference(token.AsSpan(start, i++ - start), refLocation);
@@ -734,8 +1306,8 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     {
         PrepareRecoveryTag();
         if (rootClosed && !RecoveryEnabled) { Reject("XML.Syntax", "Multiple root elements.", opening); return; }
-        int i = 0; int nameLength = ReadName(ref i);
-        if (!ValidName(token.AsSpan(0, nameLength), true)) { Reject("XML.Syntax", "Invalid element name.", opening); return; }
+        int i = 0; int nameLength = ReadName(ref i, out bool validName);
+        if (!validName) { Reject("XML.Syntax", "Invalid element name.", opening); return; }
         dtdAttributes = entities?.GetAttributes(token.AsSpan(0, nameLength));
         attributeCount = 0; emptyTag = false; budget.Reset(Quota.AttributesPerElement);
         while (i < tokenLength)
@@ -743,8 +1315,8 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             bool space = White(token[i]); SkipWhite(ref i);
             if (i == tokenLength) break;
             if (token[i] == '/' && i + 1 == tokenLength) { emptyTag = true; i++; break; }
-            if (!space) { Reject("XML.Syntax", "Attributes require separating whitespace.", tokenLocations[i]); return; }
-            if (!Charge(Quota.AttributesPerElement, 1, tokenLocations[i]) || !ReadAttribute(ref i, out var a)) return;
+            if (!space) { Reject("XML.Syntax", "Attributes require separating whitespace.", TokenLocation(i)); return; }
+            if (!Charge(Quota.AttributesPerElement, 1, TokenLocation(i)) || !ReadAttribute(ref i, out var a)) return;
             if (attributeCount == attributes.Length)
             {
                 if (attributeCount == int.MaxValue) { Reject("XML.ResourceLimit", "Attribute capacity exceeded.", a.Location); return; }
@@ -795,16 +1367,19 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     }
     private void ParseClose()
     {
-        int i = 0; int length = ReadName(ref i); SkipWhite(ref i);
-        if (i != tokenLength || !ValidName(token.AsSpan(0, length), true))
+        int i = 0; int length = ReadName(ref i, out bool validName); SkipWhite(ref i);
+        if (i != tokenLength || !validName)
         { Reject("XML.Syntax", "Invalid end tag.", opening); return; }
         if (entitySources is { Count: > 0 } && frames.Count <= entitySources[^1].ElementDepth)
         { Reject("XML.Syntax", "Entity cannot close an element from its parent source.", opening); return; }
         if (RecoverClosingTag(length)) return;
         if (frames.Count == 0) { Reject("XML.Syntax", "Invalid end tag.", opening); return; }
-        var expected = frames[^1].Name; var q = token.AsSpan(0, length); int colon = Colon(q);
-        var prefix = colon < 0 ? ReadOnlySpan<char>.Empty : q[..colon]; var local = colon < 0 ? q : q[(colon + 1)..];
-        if (!Equal(prefix, expected.Prefix) || !Equal(local, expected.Local)) { Reject("XML.Syntax", "Mismatched end tag.", opening); return; }
+        var expected = frames[^1].Name; var q = token.AsSpan(0, length);
+        int prefixLength = expected.Prefix.Length;
+        bool equal = prefixLength == 0 ? Equal(q, expected.Local) :
+            q.Length == prefixLength + 1 + expected.Local.Length && q[prefixLength] == ':' &&
+            Equal(q[..prefixLength], expected.Prefix) && Equal(q[(prefixLength + 1)..], expected.Local);
+        if (!equal) { Reject("XML.Syntax", "Mismatched end tag.", opening); return; }
         deliveredName = expected; delivery = Delivery.Close;
     }
     private void PopFrame()
@@ -884,4 +1459,25 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         foreach (char c in value) { Work(work++); if (!(c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9' or '.' or '_' or '-')) return false; }
         return true;
     }
+}
+
+// Opt-in only: these sinks consume a borrowed text run before returning and do
+// not rely on the scalar parser's fixed-size fragment/callback boundaries.
+// This private boundary passes immutable parser-owned names without copying
+// them back through borrowed views. General callbacks retain their contract.
+// Only the private DOM builder can use this non-pausing complete-tag boundary.
+// Attributes borrow parser scratch until this synchronous call returns.
+internal interface IXmlDomBatchSink : IXmlBulkTextSink
+{
+    bool CompleteTag(XmlParserCore.Name name, XmlParserCore.DomTagView attributes, bool empty, XmlLocation location);
+    bool NormalizedTextRun(ReadOnlySpan<char> raw, bool ended, XmlLocation location);
+}
+internal interface IXmlOwnedNameSink
+{
+    bool StartOwnedElement(string local, string uri, string prefix, bool empty, XmlLocation location);
+    bool OwnedAttribute(string local, string uri, string prefix, ReadOnlySpan<char> value, string? ownedValue, XmlLocation location, bool defaulted);
+}
+internal interface IXmlBulkTextSink : IXmlEventSink
+{
+    void PrepareInput(ReadOnlySpan<char> input) { }
 }

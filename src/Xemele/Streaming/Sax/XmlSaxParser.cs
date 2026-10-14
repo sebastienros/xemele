@@ -10,6 +10,7 @@ public static partial class XmlSaxParser
         RejectRecovery(options);
         ArgumentNullException.ThrowIfNull(xml);
         ArgumentNullException.ThrowIfNull(handler);
+        if (TryFast(xml, handler, options, cancellationToken)) return;
         using var operation = new SaxOperation(handler, options, cancellationToken, characterInput: true);
         try
         {
@@ -24,6 +25,7 @@ public static partial class XmlSaxParser
     {
         ArgumentNullException.ThrowIfNull(xml);
         ArgumentNullException.ThrowIfNull(handler);
+        if (TryFast(xml, handler, options, cancellationToken)) return CompleteResult();
         using var operation = new SaxOperation(handler, options, cancellationToken, characterInput: true);
         try
         {
@@ -38,6 +40,7 @@ public static partial class XmlSaxParser
     {
         RejectRecovery(options);
         ArgumentNullException.ThrowIfNull(handler);
+        if (TryFast(xml, handler, options, cancellationToken)) return;
         using var operation = new SaxOperation(handler, options, cancellationToken, characterInput: false);
         try
         {
@@ -61,6 +64,7 @@ public static partial class XmlSaxParser
     public static XmlParseResult<XmlSaxCompletion> ParseWithDiagnostics(ReadOnlySpan<byte> xml, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(handler);
+        if (TryFast(xml, handler, options, cancellationToken)) return CompleteResult();
         using var operation = new SaxOperation(handler, options, cancellationToken, characterInput: false);
         try
         {
@@ -123,6 +127,31 @@ public static partial class XmlSaxParser
         }
         catch { operation.Failed = true; throw; }
     }
+
+    // In-memory strict input first goes through the whole-buffer parser, which declines (delivering nothing)
+    // whenever the streaming parser must decide. Options are validated in the same order SaxOperation does.
+    private static bool TryFast(string xml, IXmlSaxHandler handler, XmlParseOptions? options, CancellationToken cancellationToken)
+    {
+        options = ValidateForFast(options, cancellationToken);
+        return OptimisticSax.TryParse(xml.AsSpan(), handler, options, cancellationToken);
+    }
+
+    private static bool TryFast(ReadOnlySpan<byte> xml, IXmlSaxHandler handler, XmlParseOptions? options, CancellationToken cancellationToken)
+    {
+        options = ValidateForFast(options, cancellationToken);
+        return OptimisticSax.TryParse(xml, handler, options, cancellationToken);
+    }
+
+    private static XmlParseOptions ValidateForFast(XmlParseOptions? options, CancellationToken cancellationToken)
+    {
+        options ??= new();
+        ArgumentNullException.ThrowIfNull(options.Limits);
+        options.Limits.Validate();
+        cancellationToken.ThrowIfCancellationRequested();
+        return options;
+    }
+
+    private static XmlParseResult<XmlSaxCompletion> CompleteResult() => new(new XmlSaxCompletion(), true, true, []);
 
     private static void RejectRecovery(XmlParseOptions? options)
     {

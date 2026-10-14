@@ -21,6 +21,7 @@ internal interface IXmlInputDecoder : IDisposable
 // No caller input/output view is retained. Raw units and location scalars differ.
 internal sealed class XmlInputDecoder : IXmlInputDecoder
 {
+    private static readonly SearchValues<byte> PrintableAscii = SearchValues.Create(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"u8);
     [InlineArray(4)] private struct Carry { private byte first; }
     private Carry carry;
     private int count;
@@ -94,6 +95,52 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
             while (count != 0 || consumed < input.Length)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                if (count == 0 && encoding is XmlInputEncoding.Utf8 or XmlInputEncoding.Ascii or XmlInputEncoding.Latin1 or XmlInputEncoding.Windows1252)
+                {
+                    int run = Math.Min(input.Length - consumed, output.Length - written);
+                    run = Math.Min(run, location.ColumnCapacity);
+                    run = (int)Math.Min(run, long.MaxValue - acceptedBytes);
+                    var source = input.Slice(consumed, run);
+                    int stop = source.IndexOfAnyExcept(PrintableAscii);
+                    if (stop >= 0) run = stop;
+                    if (run >= 2)
+                    {
+                        Ascii.ToUtf16(source[..run], output.Slice(written, run), out _);
+                        for (int i = 0; i < run; i++) byteOffsets[written + i] = acceptedBytes + i;
+                        location.AdvanceColumns(run); acceptedBytes += run;
+                        written += run; consumed += run; carryOffset = acceptedBytes;
+                        continue;
+                    }
+                }
+                if (count == 0 && encoding == XmlInputEncoding.Utf8)
+                {
+                    int candidateBytes = Math.Min(4096, input.Length - consumed);
+                    candidateBytes = Math.Min(candidateBytes, location.ColumnCapacity);
+                    candidateBytes = (int)Math.Min(candidateBytes, long.MaxValue - acceptedBytes);
+                    var source = input.Slice(consumed, candidateBytes);
+                    int newline = source.IndexOfAny((byte)'\r', (byte)'\n');
+                    if (newline >= 0) source = source[..newline];
+                    System.Text.Unicode.Utf8.ToUtf16(source, output[written..], out int read, out int convertedUnits,
+                        replaceInvalidSequences: false, isFinalBlock: false);
+                    if (read != 0)
+                    {
+                        int unit = written, scalars = 0;
+                        bool nonAscii = false;
+                        for (int i = 0; i < read;)
+                        {
+                            byte lead = source[i];
+                            int width = lead < 0x80 ? 1 : lead < 0xe0 ? 2 : lead < 0xf0 ? 3 : 4;
+                            byteOffsets[unit++] = acceptedBytes + i;
+                            if (width == 4) byteOffsets[unit++] = acceptedBytes + i;
+                            nonAscii |= width != 1;
+                            i += width; scalars++;
+                        }
+                        if (!declarationValidated && !signatureSelected && nonAscii) provisionalNonAscii = true;
+                        location.AdvanceColumns(scalars); acceptedBytes += read;
+                        written += convertedUnits; consumed += read; carryOffset = acceptedBytes;
+                        continue;
+                    }
+                }
                 int available = count + Math.Min(4 - count, input.Length - consumed);
                 ((ReadOnlySpan<byte>)carry)[..count].CopyTo(candidate);
                 input.Slice(consumed, available - count).CopyTo(candidate[count..]);
@@ -134,6 +181,44 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
             }
             if (final) { completed = true; return new(consumed, written, DecodeStep.Completed, null); }
             return new(consumed, written, DecodeStep.NeedInput, null);
+        }
+        catch { faulted = true; throw; }
+        finally { Volatile.Write(ref active, 0); }
+    }
+    // Private DOM producer: ASCII, including CR/LF, has an affine byte mapping.
+    // Keep the regular decoder's explicit mapping contract for all other callers.
+    internal int DecodeAscii(ReadOnlySpan<byte> input, Span<char> output, out long firstByteOffset, CancellationToken cancellationToken)
+    {
+        firstByteOffset = acceptedBytes;
+        ObjectDisposedException.ThrowIf(disposed, this);
+        if (completed || rejected || faulted || final) throw new InvalidOperationException("Decoder is terminal.");
+        if (Interlocked.Exchange(ref active, 1) != 0) throw new InvalidOperationException("Concurrent decoder use.");
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!declarationValidated || count != 0 || encoding is not (XmlInputEncoding.Utf8 or XmlInputEncoding.Ascii or XmlInputEncoding.Latin1 or XmlInputEncoding.Windows1252)) return 0;
+            int length = (int)Math.Min(Math.Min(input.Length, output.Length), long.MaxValue - acceptedBytes);
+            var source = input[..length];
+            int stop = source.IndexOfAnyInRange((byte)0x80, byte.MaxValue);
+            if (stop >= 0) source = source[..stop];
+            if (source.Length < 2) return 0;
+            int used = 0;
+            while (used < source.Length)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var remaining = source[used..];
+                int newline = remaining.IndexOfAny((byte)'\r', (byte)'\n');
+                int plain = newline < 0 ? remaining.Length : newline;
+                int accepted = Math.Min(plain, location.ColumnCapacity);
+                location.AdvanceColumns(accepted); used += accepted;
+                if (accepted != plain || used == source.Length) break;
+                if (!location.TryAdvance(new Rune(source[used]))) break;
+                used++;
+            }
+            if (used == 0) return 0;
+            Ascii.ToUtf16(source[..used], output, out _);
+            acceptedBytes += used; carryOffset = acceptedBytes;
+            return used;
         }
         catch { faulted = true; throw; }
         finally { Volatile.Write(ref active, 0); }

@@ -39,37 +39,235 @@
     {
       "id": "M9-xml-performance-A1",
       "description": "On all ten frozen XML fixtures, establish semantic-equivalent byte-DOM comparisons with current BCL, pinned libxml2 and xmloxide; record unmodified baseline, allocation/retention controls, native lifecycle differences, versions and raw local evidence outside tracked reports.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "checkpoint-memory",
+        "checkpoint-native"
+      ]
     },
     {
       "id": "M9-xml-performance-A2",
       "description": "Improve raw throughput and allocations toward BCL parity: target geometric-mean latency and allocated-byte ratios <=1.10 and no per-fixture ratio >1.25 for the agreed equivalent default-feature profile; report every deficit honestly and do not relax semantics or exclude fixtures to claim parity.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "checkpoint-parity"
+      ]
     },
     {
       "id": "M9-xml-performance-A3",
       "description": "Preserve default parsing, normalization, source mappings/locations, callbacks/pause/chunk boundaries, cancellation, quotas, DTD/entity provenance and recovery; pass focused and relevant cumulative tests plus task validation, with explicit allocation evidence for new borrowed primitives.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "checkpoint-tests",
+        "checkpoint-scans",
+        "checkpoint-task-validation",
+        "final-Xemele.Conformance.Tests",
+        "final-Xemele.Differential.Tests",
+        "final-api-surface",
+        "text-ownership-benchmark",
+        "affine-streaming-checks"
+      ]
     },
     {
       "id": "M9-xml-performance-A4",
       "description": "Inspect faster native/Rust implementations and quantify representative feature costs; document techniques to adopt and any proposed pay-for-play/default contract changes without dropping existing features silently.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "feature-review",
+        "borrowed-name-checks",
+        "borrowed-name-benchmarks",
+        "coarse-components",
+        "exact-parser-scans",
+        "affine-measurement-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "XmlParserCore: bounded Unicode/text/reference/ASCII-tag runs, scoped private DOM batches, owned-name handoff and bounded intern accelerator.",
+    "XmlInputDecoder/ByteDomAdapter: validated batch conversion, exact byte maps, operation scratch pool lifetime.",
+    "SlotArena/Document.SourceLocations: segmented owned storage, lossless compact common coordinates and sparse full-width/URI exceptions.",
+    "Document/DomSink/OperationBudget: bounded canonical cache, fused private builder, conditional DTD literal interpretation and cached quota ceilings.",
+    "docs/reports/M9-xml-performance/progress.md: working source/research/native comparison and measurement controls.",
+    "XmlParserCore.ConsumeWholeAsciiTag: preflight bounded complete primary tags including opening delimiter; exact quota/source-location fallback preserved.",
+    "XmlParserCore reference runs: predefined references in internal replacement charge source spelling plus resolved scalar; guarded <=16-unit BMP numeric primary references preserve Unicode/quota/provenance fallback.",
+    "DomSink: direct final ownership for complete single fragments, scoped internal parent access; private core accepts valid one-unit ordinary text runs."
+  ],
+  "evidence": [
+    {
+      "id": "checkpoint-tests",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "pinned .NET 10.0.11 Release build and execution of tests/Xemele.Tests/Xemele.Tests.csproj; -parallelMode none -culture invariant -noColor -result-xml artifacts/M9-xml-performance/lean-final-Xemele.Tests-tests.xml",
+      "result": "passed",
+      "summary": "10803 cases passed; zero errors, failures, skips or not-run. Includes 0 B warmed affine decoding and dispatch, CRLF/coordinate-limit equivalence, and byte anchors after Unicode across decoder pages.",
+      "artifact": "artifacts/M9-xml-performance/lean-final-Xemele.Tests-tests.log"
+    },
+    {
+      "id": "checkpoint-memory",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "pinned Release build of MemoryWorker/XmlPerformanceMemory.csproj, followed by python3 docs/reports/M9-xml-performance/memory.py",
+      "result": "passed",
+      "summary": "All ten managed digests in three held/released cycles, compacted-heap 32 KiB/9 MiB controls, rooted layouts and native payload/release controls passed. Summed graphEstimate is 72935800 / 80903968 bytes = 0.9015108x BCL. No forensic GetTotalMemory ratio or RSS equivalence claimed.",
+      "artifact": "artifacts/M9-xml-performance/memory-current/report.json"
+    },
+    {
+      "id": "checkpoint-native",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "python3 docs/reports/M9-xml-performance/reference.py --phase baseline2",
+      "result": "passed",
+      "summary": "20 pinned native/Rust semantic qualifications passed on all ten fixtures; seven-round parse and parse/free/drop lifecycle measurements preserved. Native failure/coordinate contracts differ and timings are local informational.",
+      "artifact": "artifacts/M9-xml-performance/references-baseline2/report.json"
+    },
+    {
+      "id": "checkpoint-scans",
+      "kind": "check",
+      "revision": "9fca5c136da2e46d317bec017d9e7bae4d85a391",
+      "command": "pinned dotnet --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll scans --iterationTime 250 --artifacts artifacts/M9-xml-performance/scans-bdn",
+      "result": "passed",
+      "summary": "24 ShortRun benchmarks completed, all 0 B steady state. Cached attribute stop scans take about 110 ns versus 1.89-1.91 us for scalar 4096-unit miss/end/multilingual runs; very short dense cases have overlapping uncertainty.",
+      "artifact": "artifacts/M9-xml-performance/scans-bdn/results/Xemele.XmlPerformance.AttributeScans-report-github.md"
+    },
+    {
+      "id": "checkpoint-parity",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "DOTNET_TieredCompilation=0 DOTNET_TieredPGO=0 DOTNET_ReadyToRun=0; pinned .NET 10.0.11 XmlPerformanceRunner.dll bdn --iterationTime 250 --artifacts artifacts/M9-xml-performance/lean-qualified-bdn (DOTNET_ROOT/PATH and XEMELE_PERF_ROOT set as in affine-mappings.md)",
+      "result": "failed",
+      "summary": "20 full ShortRun cases completed: geomean latency 1.8788x BCL, allocated bytes 0.8758x, maximum time 3.1657x and allocation 1.2239x. Latency fails. Separate default-context before/after suites give 0.9665x raw and 0.9753x BCL-normalized latency against the preserved pre-change DLL, with mixed fixture results. Earlier asymmetric-context screening gains are not headline evidence. Intermediate anomalous text run and explicit repeat preserved; final complete matrix includes all ten fixtures.",
+      "artifact": "artifacts/M9-xml-performance/lean-qualified-bdn/results/DomComparison-report-github.md"
+    },
+    {
+      "id": "checkpoint-task-validation",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 207 tasks after the selected affine checkpoint and current evidence updates.",
+      "artifact": "docs/reports/M9-xml-performance/progress.md"
+    },
+    {
+      "id": "final-Xemele.Conformance.Tests",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "pinned .NET 10.0.11 Release build and execution of tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj; -parallelMode none -culture invariant -noColor",
+      "result": "passed",
+      "summary": "920 cases passed; zero errors, failures, skips or not-run at the selected lean affine implementation.",
+      "artifact": "artifacts/M9-xml-performance/lean-final-Xemele.Conformance.Tests-tests.log"
+    },
+    {
+      "id": "final-Xemele.Differential.Tests",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "pinned .NET 10.0.11 Release build and execution of tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj; -parallelMode none -culture invariant -noColor",
+      "result": "passed",
+      "summary": "618 cases passed; zero errors, failures, skips or not-run at the selected lean affine implementation.",
+      "artifact": "artifacts/M9-xml-performance/lean-final-Xemele.Differential.Tests-tests.log"
+    },
+    {
+      "id": "final-api-surface",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "pinned .NET 10.0.11 ApiCheck.dll emit src/Xemele/bin/Release/net10.0/Xemele.dll artifacts/M9-xml-performance/api-lean-qualified.txt; byte comparison with api-before.txt",
+      "result": "passed",
+      "summary": "1430 extracted public members remain byte-identical (SHA-256 afd84a4e070ffffa0b2e31db5c089cd57ed87dfb6900dfc9556ac00514d566d9). Rechecked standard pipeline still fails on header-only M8-datatypes.txt. No standard-pipeline pass claimed.",
+      "artifact": "artifacts/M9-xml-performance/api-lean-qualified.txt"
+    },
+    {
+      "id": "feature-review",
+      "kind": "review",
+      "revision": "412ea52687d45e7ba5104ea177f32370da67d79e",
+      "command": null,
+      "result": "passed",
+      "summary": "Read user-referenced parser study and pinned BCL/libxml2/xmloxide source; applied conditional cached scans, direct reference matching, owned-name boundary and batching. Artifact-only coordinate experiment measures 5-12% structural time and 9-14% allocation costs; no feature disabled in default implementation. Conditional NodeMembers experiment rejected after 0 B prepared-capacity regressions. The user-proposed HTML literal/packed/hash lookup prototypes are measured; the XML hybrid was reverted after negligible end-to-end speed change and higher small-fixture allocations. Coarse instrumentation qualifies all ten fixtures and points to significant work outside tag parsing/persistence.",
+      "artifact": "docs/reports/M9-xml-performance/feature-costs.md"
+    },
+    {
+      "id": "borrowed-name-checks",
+      "kind": "check",
+      "revision": "412ea52687d45e7ba5104ea177f32370da67d79e",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll name-check",
+      "result": "passed",
+      "summary": "Exact full-name checks passed on equal-but-distinct inputs for HTML, XML suffixes, common prefixes, Unicode and long names; known literals preserve reference identity and reject uppercase/suffix/accent variants.",
+      "artifact": "docs/reports/M9-xml-performance/name-lookups.md"
+    },
+    {
+      "id": "borrowed-name-benchmarks",
+      "kind": "check",
+      "revision": "412ea52687d45e7ba5104ea177f32370da67d79e",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll symbols --iterationTime 250 --artifacts artifacts/M9-xml-performance/hybrid-names-bdn",
+      "result": "passed",
+      "summary": "30 ShortRun cases completed with prepared input; all warmed cache/matcher methods allocate 0 B. Common HTML fixed matcher 2.85 ns/name; allocating each name 6.10 ns and approximately 32 B/name. Setup-only exact-name guards were strengthened afterward; measured method bodies unchanged. Informational primitive results, not HTML runtime integration.",
+      "artifact": "artifacts/M9-xml-performance/hybrid-names-bdn/results/Xemele.XmlPerformance.BorrowedNames-report-github.md"
+    },
+    {
+      "id": "coarse-components",
+      "kind": "check",
+      "revision": "dbc3617e0b00b1b6bcb512df3b98caf813dec764",
+      "command": "python3 docs/reports/M9-xml-performance/component_costs.py",
+      "result": "passed",
+      "summary": "Artifact-only source snapshot at dbc3617e0 (runtime 6e534cdc1), coarse timers; all ten instrumented semantic/XPath/serialization qualifications passed. Verification XPath aggregate-character ceiling raised only for the oracle; XML parsing options unchanged. No parity credit for instrumented timing.",
+      "artifact": "artifacts/M9-xml-performance/component-costs-v2/metadata.json"
+    },
+    {
+      "id": "text-ownership-benchmark",
+      "kind": "check",
+      "revision": "3b8fc94142105bd282e4286aa97d3b2b7253685d",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M9-xml-performance/Runner/bin/Release/net10.0/XmlPerformanceRunner.dll ownership --iterationTime 250 --artifacts artifacts/M9-xml-performance/ownership-bdn",
+      "result": "passed",
+      "summary": "16 ShortRun cases completed, ASCII/multilingual lengths 1/8/128/4096. Direct owned string takes 66-80% of scratch-copy time with identical final owned-string bytes; initialized scratch excluded. Not a 0 B ownership claim.",
+      "artifact": "artifacts/M9-xml-performance/ownership-bdn/results/Xemele.XmlPerformance.TextOwnership-report-github.md"
+    },
+    {
+      "id": "exact-parser-scans",
+      "kind": "check",
+      "revision": "f3fe62e9def6c4874309893cadd0440180ee5883",
+      "command": "pinned .NET 10.0.11 XmlPerformanceRunner.dll parser-scans --iterationTime 250 --artifacts artifacts/M9-xml-performance/parser-scans-bdn (same tiering/PGO/ReadyToRun settings as checkpoint-parity)",
+      "result": "passed",
+      "summary": "108 ShortRun cases completed; all timed scans 0 B. Exact XML text/name sets plus tag delimiters; setup exhaustively compares 65,536 UTF-16 code units and prepared miss/early/end/multilingual inputs. Long miss scalar/cached times: text 2723/161 ns, names 1412/162 ns, tags 1369/228 ns. Tiny candidates favor scalar code. Temporary tiny-name runtime guard passed 10792 unit cases, then seven alternating document rounds measured 1.0037x prior latency; reverted. No new runtime or parity credit. Full source patch hash and all limitations are in scan-strategies.md.",
+      "artifact": "docs/reports/M9-xml-performance/scan-strategies.md"
+    },
+    {
+      "id": "affine-streaming-checks",
+      "kind": "check",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": "pinned Release build of StreamingMemoryRunner; run sax, sax-async, pull, pull-async and push with 1073741824 bytes; negative with 8192 bytes; fuzz-control",
+      "result": "passed",
+      "summary": "Five fresh 1 GiB modes passed semantics/early callbacks/compacted live heap, peaks 133120-150008 bytes below 8 MiB. Negative control correctly reports 9514120 bytes and withinLimit=false; the runner intentionally exits 0 on expected negative detection. Initial orchestration expected exit 1; corrected and only control rerun. Mutation control: 97 operations, zero failures. Raw failed orchestration remains; no parser failure is concealed.",
+      "artifact": "docs/reports/M9-xml-performance/affine-mappings.md"
+    },
+    {
+      "id": "affine-measurement-review",
+      "kind": "review",
+      "revision": "e158264925539ab53b1683b3f8d145a979bd09c7",
+      "command": null,
+      "result": "passed",
+      "summary": "Owned ASCII decoder eliminates per-character mapping writes and combines conversion/newline runs; exact byte coordinates remain. Replaced mapping-wrapper prototype after character-DOM regressions with ordinary spans plus an affine base. Corrected comparison-context imbalance, fingerprinted baseline, added standalone reproduction and balanced quick harness. Full-window benefit is small and fixture-dependent; no 10-14% headline or CPU attribution claimed.",
+      "artifact": "docs/reports/M9-xml-performance/affine-mappings.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "User-authorized performance lane after the measured current-main XML/BCL deficit; coordinator creates an explicitly owned repair task because no ready task existed.",
-    "checks": [],
-    "remaining": [
-      "Implement and measure default-compatible hot paths in isolated worktree."
+    "summary": "Selected lean affine mapping checkpoint: 10803/920/618 cases, fresh memory/streaming controls and API equivalence pass. Latest full local BDN is 1.88x BCL latency, 0.88x allocation, 0.90x retained heap. Gains are modest and mixed across fixtures. Latency criterion fails, so the lane stays isolated and in_progress.",
+    "checks": [
+      "10803 unit, 920 conformance and 618 differential cases passed at selected source e1582649; new ASCII decoder and mapped dispatch each measure 0 B warmed allocation.",
+      "Latest full 20-case local BDN: 1.8788x BCL latency, 0.8758x allocation. Latency target fails; all ten fixtures retained. Context imbalance in the old screening was corrected and standalone runs are primary evidence.",
+      "Current managed digests, rooted layouts, compacted-heap controls and native payload/release controls pass. Retained heap sum 0.9015108x BCL; native timing binaries/corpus unchanged from earlier qualifications.",
+      "Five fresh 1 GiB streaming modes pass at e1582649, whole-heap peaks 133120-150008 bytes. Expected negative-control detection passes after correcting orchestration exit-code assumption. 97 streaming mutation controls pass.",
+      "1430 extracted public API members are identical. Standard pipeline still rejects the pre-existing header-only M8-datatypes fragment; no pipeline pass claimed. Task validation passes 207 tasks.",
+      "Exact scan/name prototypes and rejected experiments remain documented. HTML runtime paths were not edited. Lane is isolated, not integrated or verified."
     ],
-    "requests": []
+    "remaining": [
+      "BCL latency target still fails: geomean 1.8788x, feed-small 3.1657x, entity-medium 2.4942x, SOAP 2.3916x, XHTML 2.2692x and deep 2.1227x. Business timing is slower in the selected window; investigate representation/GC/namespace and attribute costs with balanced and default-context evidence. Do not infer CPU percentages from code inspection.",
+      "Do not mark implemented/verified or unlock dependents until the latency criterion passes.",
+      "Controlled release/cross-platform performance evidence has not been run."
+    ],
+    "requests": [
+      "Public source-location/provenance switches require an owning contract follow-up; none added.",
+      "API baseline owner must repair pre-existing header-only docs/api/M8-datatypes.txt before standard comparison can run.",
+      "A conditional member arena follow-up must preserve warmed prepared-capacity 0 B allocation contracts; allocating per-node payload classes failed those contracts.",
+      "HTML tokenizer owner: replace per-token name.ToString()/attrName.ToString() with verified known-literal span matching plus bounded exact custom-name cache; preserve quotas, ASCII folding, foreign-name adjustment, chunk boundaries and owned callback tokens. Prototype and evidence: docs/reports/M9-xml-performance/name-lookups.md. No HTML runtime paths edited in this XML task."
+    ]
   }
 }

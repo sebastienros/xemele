@@ -1,0 +1,323 @@
+# BCL parity: optimistic whole-buffer UTF-8 DOM fast path
+
+Branch `codex/xml-performance-bcl-parity`, based on `codex/xml-performance`.
+
+## Change
+
+`XmlDocument.Load(Stream)` and `Parse(ReadOnlySpan<byte>)` first try
+`OptimisticDomParser`, a single-pass parser over the whole UTF-8 buffer that
+writes the node, attribute, namespace and location arenas directly. It is
+deliberately narrow: anything unusual or erroneous makes it return `false`
+and the unchanged streaming parser runs from the start, so diagnostics,
+locations and limits stay authoritative.
+
+Accepted by the fast path:
+
+- ASCII names with at most one colon; LF line breaks; optional UTF-8 BOM; a
+  strict UTF-8 XML declaration.
+- Predefined and numeric character references (control characters, surrogates,
+  noncharacters and values above 10FFFF bail).
+- Comments, processing instructions, CDATA, namespaces, attributes.
+
+Bails out to the streaming parser:
+
+- DOCTYPE with internal general entities (see the DOCTYPE follow-up below), CR/CRLF, non-ASCII names, `Recover`, any
+  error. UTF-16 input, async load and SAX are not routed through it.
+
+Techniques: vectorized `IndexOfAny` scanning for text, quote and name ends;
+single-pass UTF-8 to UTF-16 text decoding with line tracking; presized arenas;
+an ASCII short-value cache and name table; no per-scalar state machine.
+
+`Load(Stream)` uses it only for seekable streams without a source URI.
+`MemoryStream` buffers are used zero-copy; others are read into a pooled
+buffer. Cancellation is checked per read, and the stream is rewound on
+fallback.
+
+## Validation
+
+- Differential harness comparing the fast-path tree with the streaming
+  parser's tree (nodes, attributes, namespaces, locations, validation
+  metadata, revisions, quota counters) over about 194k generated and mutated
+  inputs: 0 divergences.
+- Permanent tests: `tests/Xemele.Tests/M9-xml-performance/OptimisticParserTests.cs`
+  (accepted-input differential, rejected-input fallback, mutation fuzz, limits,
+  stream behavior).
+- `Xemele.Tests`: all pass except `PreparedAffineAsciiDispatchAllocatesZero`
+  and `PreparedBorrowedTextDispatchAllocatesZero`, which fail on the baseline
+  too. Conformance 920/920, differential 618/618.
+
+## Results
+
+UTF-8 DOM, µs per parse, median of 7 alternating-order rounds
+(`Runner paired`, before = saved baseline DLL, default-context isolation).
+Ratios are candidate / BCL.
+
+| Fixture | Baseline | Now | BCL | Base/BCL | Now/BCL | Alloc now/BCL |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| feed-small | 54 | 17 | 17 | 3.2 | 1.01 | 0.81 |
+| svg-small | 203 | 61 | 107 | 1.9 | 0.57 | 0.59 |
+| deep-medium | 566 | 149 | 255 | 2.2 | 0.59 | 1.00 |
+| entity-medium | 4675 | 4663 | 1726 | 2.7 | 2.70 | 0.71 |
+| xhtml-medium | 3064 | 745 | 1371 | 2.2 | 0.54 | 0.92 |
+| build-medium | 3573 | 1158 | 2529 | 1.4 | 0.46 | 0.58 |
+| soap-large | 13144 | 2961 | 5565 | 2.4 | 0.53 | 1.14 |
+| configuration-large | 17882 | 5779 | 14441 | 1.2 | 0.40 | 0.62 |
+| business-large | 65039 | 25265 | 44626 | 1.5 | 0.57 | 0.80 |
+| text-large | 19958 | 7970 | 17678 | 1.1 | 0.45 | 1.00 |
+| **Geomean** | | | | **1.81** | **0.64** | |
+
+Now/baseline geomean is 0.34 (about 2.9x faster). The ratio versus BCL
+reproduced in an independent `quick` run (0.64) with the order reversed.
+
+Retained DOM memory (compacted held minus released heap, `MemoryWorker`) is
+unchanged versus the baseline on every fixture. Xemele/BCL geomean is 0.87;
+soap-large is 1.14, matching its allocation ratio, so that gap is the DOM's
+node and member representation size, not parser transients.
+
+## Other input paths (unchanged by this work)
+
+| Path | Geomean Xemele/BCL |
+| --- | ---: |
+| UTF-8 DOM (fast path) | 0.64 |
+| UTF-16 / char DOM | 1.73 (text-large 0.63) |
+| UTF-8 SAX vs BCL `XmlReader` | 16.8 |
+
+## Known gaps
+
+1. DOCTYPE and entity documents: now handled for internal-subset general entities
+   (see the DOCTYPE follow-up); external DTDs, parameter entities and declarations
+   other than general entities still use the streaming parser.
+2. CR/CRLF input (needs byte-offset remapping) and non-ASCII names.
+3. Async load and stream-based SAX still use the streaming parser.
+4. SAX over in-memory input is now about 1.3-2.9x the BCL reader (see the SAX follow-up).
+5. soap-large allocation and retention at 1.14x BCL.
+6. BenchmarkDotNet ShortRun via `default_context.py` has not been run for
+   this revision; numbers above come from the in-process runner.
+
+## Follow-up: UTF-16 (char) DOM fast path
+
+`XmlDocument.TryParse(ReadOnlySpan<char>)` now tries the optimistic parser first. The input is validated and
+transcoded to UTF-8 (`Utf8.FromUtf16` with `replaceInvalidSequences: false`, so lone surrogates bail to the
+streaming parser), then parsed by the same fast path with byte offsets recorded as absent. Inputs starting with
+U+FEFF and `Recover` mode bail.
+
+Paired result (char DOM, ratio vs BCL, geomean): 1.73 -> 0.69. Entity-medium is unchanged (2.61); text-large is
+0.74-0.82 (was 0.63) because of the transcode cost. Differential harness: 0 divergences over 388k inputs.
+
+## Follow-up: SAX fast path (`XmlSaxParser.Parse(string | ReadOnlySpan<byte>)`)
+
+`OptimisticSax` (`src/Xemele/Streaming/Sax/OptimisticSaxParser.cs`) handles in-memory input for the same well-formed
+subset as the DOM fast path, in two passes over one buffer:
+
+1. A validating pass delivers nothing. It checks the grammar, namespace bindings, attribute uniqueness, characters
+   and the token/name/depth/reference limits. A document it declines is handed, untouched, to the streaming parser,
+   so errors, diagnostics, recovery and every unusual construct keep their authoritative behavior.
+2. A delivery pass re-walks the buffer and calls the handler. It cannot fail (a failure is an
+   `InvalidOperationException`, never duplicated events). Attribute values are decoded into a pooled `char[]` and
+   exposed through a second backing of `XmlAttributeView`; text is delivered in bounded chunks.
+
+Public API is unchanged. `Parse(Stream)` and the async entry points stay on the streaming parser, because the
+design requires that SAX over a stream not retain the whole input. `Parse(string)` transcodes to a UTF-8 buffer
+(as the char DOM path does) and `Parse(ReadOnlySpan<byte>)` reads the caller's span directly; both are borrowed,
+already-in-memory inputs, so no memory contract changes.
+
+Event equivalence, including locations, empty-element and CDATA handling, whitespace outside the root, and
+declaration data, is checked against the streaming parser with text callbacks coalesced (text callback boundaries
+are not a contract). Differential harness: 0 divergences over 518k inputs (149k accepted by both) for UTF-8 and
+UTF-16 under default, tight and quota-edge limits. `OptimisticSaxTests` adds 90 permanent tests.
+
+| Fixture | before us | UTF-8 after us | UTF-16 after us | BCL reader us | after/BCL | alloc after | alloc BCL |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| feed-small | 159 | 11 | 12 | 8 | 1.38 | 3,904 | 20,376 |
+| svg-small | 435 | 62 | 61 | 25 | 2.46 | 4,384 | 15,728 |
+| deep-medium | 2,651 | 139 | 141 | 105 | 1.33 | 12,832 | 134,472 |
+| entity-medium | 13,997 | 13,925 | 13,764 | 1,203 | 11.57 | 534,522 | 1,263,241 |
+| xhtml-medium | 9,527 | 923 | 990 | 544 | 1.70 | 4,384 | 315,848 |
+| build-medium | 9,597 | 1,452 | 1,486 | 515 | 2.82 | 3,921 | 34,424 |
+| soap-large | 33,416 | 3,066 | 3,182 | 2,204 | 1.39 | 4,673 | 1,043,970 |
+| configuration-large | 42,948 | 6,212 | 6,480 | 2,405 | 2.58 | 4,194 | 57,994 |
+| business-large | 184,484 | 16,268 | 16,638 | 8,886 | 1.83 | 4,038 | 4,925,991 |
+| text-large | 392,530 | 12,959 | 16,627 | 15,881 | 0.82 | 3,189 | 14,714,028 |
+
+Geomean vs the BCL `XmlReader` drops from about 17x to 2.05x (1.7x without entity-medium, which still takes the
+streaming path). Allocation is roughly 4 KB per parse regardless of document size, below the BCL reader on every
+fixture. The speedups (7-30x) are far outside the same-DLL control noise, so no reversed-order repeat was needed.
+Splitting the cost: the validation pass alone runs at about BCL-reader speed, so the remaining gap is the delivery
+pass. Taping pass-1 tokens would remove most of the repeated scanning and hashing; this was done in the later
+"SAX token tape" follow-up (the table above is the pre-tape state).
+
+## Follow-up: review fixes, line breaks, and repeatability
+
+### Review fixes
+- **Token limits.** PI targets, closing-tag whitespace and whitespace runs outside the root are charged against
+  `TokenCharacters` exactly as the streaming parser does (tight limits of 5/8/11/14/20 are part of the harnesses).
+- **Bounded stack.** PI target length no longer controls an unbounded `stackalloc`.
+- **Name-table probing** is bounded (`MaxProbes = 256`); pathological collisions bail to the streaming parser.
+- **Cancellation.** A seekable stream's final read honors the token. In SAX, the token is checked after every
+  delivery callback (`StartDocument`, declaration, text, comment, PI, CDATA, start/end element), so cancelling from a
+  handler stops delivery like the streaming parser. It is deliberately not checked after `EndDocument`: the streaming
+  parser completes successfully in that case, and a test documents it.
+
+### CR and CRLF
+Input containing CR is rewritten to LF in a pooled buffer (`FastLineBreaks`), recording the output index of every LF
+whose CR was folded. Line/column are identical after normalization (CR, LF and CRLF are each one break); byte offsets
+are mapped back as `index + (folded CRLFs before it)`. Quota prechecks and the reference budget use the raw length.
+`&#13;` references still bail to the streaming parser. Pretty-printed (CRLF) copies of the fixtures keep the same
+ratios as the LF versions: DOM geomean 0.67x BCL, SAX 2.04x BCL reader.
+
+### Repeatability
+Same-DLL control noise aside, BenchmarkDotNet runs in normal and `--reverse` (after-first) order agree:
+
+| | normal | reversed |
+|---|---:|---:|
+| geomean after/BCL | 0.662 | 0.669 |
+| geomean before/BCL | 1.84 | 1.80 |
+| geomean after/before | 0.35 | 0.35 |
+
+Per-fixture after/BCL agrees within about 0.05 (build 0.47, business 0.56, configuration 0.40, deep 0.58,
+entity-medium 2.55, feed-small 1.02, soap 0.54, svg 0.58, text-large 0.66, xhtml 0.51).
+
+### Validation
+DOM harness: 1.04M inputs, SAX harness: 1.17M inputs (including CR/CRLF/mixed variants), 0 divergences. Full
+`Xemele.Tests` run: only the two pre-existing failures (`PreparedAffineAsciiDispatchAllocatesZero`,
+`PreparedBorrowedTextDispatchAllocatesZero`), which also fail on the base commit.
+
+### Not done
+- Non-ASCII element/attribute names bail to the streaming parser.
+- ~~SAX token tape~~ was implemented later; see "Follow-up: SAX token tape" below.
+- Retained-memory (`memory.py`) was not re-run for this revision.
+
+## Follow-up: internal-subset DOCTYPE and general entities (DOM UTF-8/UTF-16 and SAX)
+
+### Design
+The DOCTYPE is not re-implemented. `XmlParserCore.TryScanDoctype` (`Parsing/Core/XmlParserCore.Prefix.cs`) runs the real
+streaming core over just the DOCTYPE (seeded with the DOCTYPE's line/column; UTF-8 offsets are mapped through the same
+byte-offset table, so entity declaration locations are exact) against a probe sink that captures the
+`XmlDocumentType`/`DtdModel` and pauses the core right after the closing `>`. DTD syntax, entity declaration rules
+(first declaration wins, character references resolved in the replacement text), diagnostics and the
+`ExpandedCharacters`/`InternedNames` charged by the DOCTYPE come from that code. The probe has no resolver, so external
+subsets cannot be loaded, and any exception or `ArgumentException` from limit validation simply bails.
+
+`OptimisticDoctype` (`Internal/Operations`) accepts the scan only when the DOCTYPE is nothing but internal general
+entities (no public/system id, no ELEMENT/ATTLIST/NOTATION, no parameter entities, no validity diagnostic). Each entity
+is reduced to its content-text and attribute-text (tab/LF become a space in attribute values) form, or marked
+unusable; using an unusable entity bails.
+
+Both fast paths then expand `&name;` inline with the streaming parser's accounting: the reference budget is charged
+`ReplacementText.Length + inner predefined references` (inner references need `EntityDepth >= 2`), the DOCTYPE's own
+expanded characters and interned names are subtracted/added up front (`nameBase`), and the token check counts
+`raw length + sum(entity length)` per text token / attribute value. DOM text nodes keep the slow path's location rules
+(the first contributing scalar; an empty entity followed by text locates the text after the entity; a purely empty
+entity makes no node). The DOM sets the DTD metadata (no DOCTYPE node exists in the tree). SAX is two-pass: pass 1 reads
+the DOCTYPE and validates, pass 2 reuses the result and delivers `StartDtd`, one `DtdDeclaration` per general entity and
+`EndDtd` with the pump's cancellation checkpoints (before each callback and after the last).
+
+### Still bails
+External identifiers / DTD loading; ELEMENT, ATTLIST, NOTATION and parameter-entity declarations or references;
+`DtdProcessing` other than `Parse`; a redeclared predefined entity; undeclared or malformed references; entity text
+containing `<`, `>`, `]`, CR, control characters, or any reference other than the five predefined ones (nested
+entities and `&#13;`); a second DOCTYPE or one outside the prolog; CR/CRLF input with a DOCTYPE (the internal subset
+keeps the raw CR); non-ASCII DOCTYPE/entity names; EntityDepth 1 with inner references; anything over a limit.
+
+### Validation
+- `OptimisticParserTests` (DOM) and `OptimisticSaxTests`: accepted/bail theories (UTF-8 and UTF-16, public entry
+  points), limit sweeps over `ExpandedCharacters`, `TokenCharacters`, `EntityDepth`, `InternedNames`,
+  `DocumentCharacters`, `Depth` at every value, large documents (3000 rows, 29 KB entity), a mutation fuzzer,
+  `DtdProcessing = Prohibit`, and (SAX) cancellation inside `StartDtd`/`DtdDeclaration`/`EndDtd`/entity text.
+- Differential harnesses extended with DOCTYPE/entity seeds, fuzz tokens and tight limit sets (EntityDepth 1/2,
+  InternedNames 3/6, ExpandedCharacters 40/70/110, DocumentCharacters 90, token/expanded combinations) and DTD/entity
+  comparison: DOM 6.39M inputs (586k accepted by the fast path, 3,237 DOCTYPE documents), SAX 8.37M inputs (895k accepted,
+  4,931 DOCTYPE documents), 0 divergences.
+- Full `Xemele.Tests`: only the two known failures (plus the known flaky allocation test, which passes in isolation);
+  `Xemele.Conformance.Tests` 920/920 and `Xemele.Differential.Tests` 618/618 pass.
+
+### Results (in-process paired runner, minimum of runs, microseconds; before = original streaming path)
+| fixture / mode | before | after | BCL | after/BCL |
+| --- | ---: | ---: | ---: | ---: |
+| entity-medium DOM UTF-8 | 5609 | 578 | 1748 | 0.33 |
+| entity-medium DOM UTF-16 | 4586 | 586 | 1656 | 0.35 |
+| entity-medium SAX UTF-8 | 13404 | 775 | 1219 | 0.64 |
+| entity-medium SAX UTF-16 | 13347 | 788 | 1214 | 0.65 |
+| feed-small DOM / SAX | 54 / 148 | 17 / 12 | 17 / 8 | 0.98 / 1.43 |
+| xhtml-medium DOM / SAX | 3142 / 8863 | 733 / 958 | 1364 / 555 | 0.54 / 1.72 |
+| build-medium DOM / SAX | 3478 / 9504 | 1140 / 1534 | 2530 / 528 | 0.45 / 2.91 |
+
+The other fixtures are unchanged within noise; entity-medium goes from 3.2x slower than the BCL to 0.33x in DOM and
+from 11x to 0.64x in SAX.
+
+## Follow-up: SAX token tape
+
+### Design
+Pass 1 still validates the whole document with nothing delivered, but it now also records a compact tape of what it
+decided. Pass 2 (`Replay`) walks the tape and calls the handler; it does not re-scan bytes, re-hash names or re-parse
+attributes.
+
+- **Tape.** A pooled `int[]` (ArrayPool). Every record starts with a kind word: declaration, misc (whitespace outside
+  the root), text, comment, CDATA, PI, DOCTYPE, rich text (text with references; a list of span / char / entity /
+  end parts), start element and end element. Offsets index the LF-normalised input. Locations are stored as line,
+  column and the already-mapped raw byte offset, so CR/CRLF documents replay with the same `Loc()` results.
+- **Start record.** A head word (`kind | empty | attrCount | declCount`), name id, namespace-URI id, line, column,
+  offset, then 7 ints per attribute and 5 per namespace declaration.
+- **Ids instead of strings.** Names, namespace URIs and DOCTYPE entities are ids into per-parse tables
+  (`nameById`, `uriList`, `OptimisticEntity.TapeId`), so replay resolves prefixes and URIs once, in pass 1. Namespace
+  bindings are resolved in pass 1; attribute `FastAttribute` carries its `SaxName` and URI id.
+- **Attribute arena.** Decoded attribute values go into one pooled `char[]` during pass 1; the tape stores arena
+  offsets and replay only slices them (same `XmlAttributeView` backing as before).
+- **Caps and overflow policy.** The tape is capped at 8M ints (32 MiB) and the arena at 8M chars (16 MiB); the
+  initial tape is `Clamp(n/4, 256, 1M)` ints and grows by doubling. If either cap would be exceeded, recording stops,
+  the pooled buffers are returned, and delivery falls back to the original re-scanning pass 2 (`emit=true`). That is
+  the safe option: identical events, no bail after validation, memory bounded. The tape cap check is exact (replays iff
+  `cap >= recorded size`); the arena check can be fuzzy by a few chars because ArrayPool buckets are rounded up and
+  complex attribute values reserve slack.
+- **Pooled-buffer safety.** The tape, scratch and arena are all rented through `Rent`/`Return` and returned in
+  `Run()`'s `finally`, so declined documents, handler exceptions and cancellation all return them.
+- **Cancellation.** Replay checks the token after every callback except `EndDocument`, which matches the re-scan and
+  the streaming parser (and covers polling: every record produces a callback). Pass 1 polls every 1024 content
+  iterations, so a canceled token still stops a large document before anything is delivered.
+
+### Validation
+- `OptimisticSaxTests` gains tests that (a) compare the tape, the re-scan (zero caps) and the streaming parser on
+  plain, namespace, attribute, CRLF and DOCTYPE/entity documents; (b) start the tape at tiny initial sizes to exercise
+  growth; (c) sweep the tape cap to the exact recorded size (replays iff cap >= size) and the arena cap (single
+  false->true transition, identical events); (d) assert `Rented == Returned` for declined documents, handlers that
+  throw at every callback, and cancellation after every callback; (e) large documents, a 460k-element document beyond
+  the default cap (re-scan fallback), a canceled token on large inputs, and a mutation fuzzer.
+- sdiff harness (tight limits, CRLF, DOCTYPE/entities): 2,625,280 inputs, 298,818 accepted by both,
+  `divergences=0`.
+- Full `Xemele.Tests`: 11,215 tests, only the two known failures (`PreparedAffineAsciiDispatchAllocatesZero`,
+  `PreparedBorrowedTextDispatchAllocatesZero`). `Xemele.Conformance.Tests` 920/920, `Xemele.Differential.Tests` 618/618.
+  The DOM harness was not rerun: DOM code is untouched apart from the new `TapeId` field.
+
+### Results
+In-process paired runner, minimum of runs, microseconds. "before" is the previous commit (two-pass re-scan); a second
+run of the "after" build reproduced every row within 3% (geomean 1.127 vs 1.136 of BCL).
+
+| fixture | UTF-8 before | UTF-8 after | UTF-8 after/BCL | UTF-16 before | UTF-16 after | UTF-16 after/BCL | BCL us | alloc before B | alloc after B |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| feed-small | 12 | 9 | 1.09 | 12 | 10 | 1.19 | 8 | 3,904 | 4,472 |
+| svg-small | 63 | 41 | 1.63 | 65 | 42 | 1.65 | 26 | 4,384 | 4,952 |
+| deep-medium | 144 | 100 | 0.94 | 146 | 117 | 1.13 | 106 | 12,832 | 15,392 |
+| entity-medium | 777 | 568 | 0.48 | 775 | 577 | 0.48 | 1,187 | 49,351 | 49,928 |
+| xhtml-medium | 935 | 700 | 1.29 | 1,052 | 790 | 1.55 | 546 | 4,384 | 4,952 |
+| build-medium | 1,499 | 926 | 1.81 | 1,529 | 949 | 1.83 | 512 | 3,921 | 4,488 |
+| soap-large | 3,175 | 2,329 | 1.03 | 3,250 | 2,890 | 1.30 | 2,224 | 4,673 | 5,241 |
+| configuration-large | 6,507 | 4,024 | 1.68 | 6,633 | 4,226 | 1.79 | 2,397 | 4,195 | 4,794 |
+| business-large | 16,735 | 11,571 | 1.31 | 17,158 | 12,866 | 1.44 | 8,855 | 4,039 | 4,620 |
+| text-large | 13,811 | 12,338 | 0.79 | 17,331 | 16,027 | 1.15 | 15,690 | 3,189 | 3,677 |
+| **geomean vs BCL** | | | **1.587 -> 1.127** | | | **1.702 -> 1.279** | | | |
+
+Geomean after/before is 0.71 (UTF-8) and 0.75 (UTF-16). Managed allocation per parse rises by ~0.5 KB (name/URI/entity
+tables); the tape itself is pooled and adds no GC allocation. The 1-10 MB UTF-16 allocations of the large fixtures are
+the pre-existing transcode buffers. UTF-16 gains less on large inputs because the transcode is a fixed cost.
+
+### Decision
+Kept: 25-38% off the delivery-heavy fixtures (build-medium 1.60x faster, configuration-large 1.62x, svg-small 1.54x,
+xhtml-medium 1.34x, business-large 1.45x), far above same-DLL noise and reproduced by a second run.
+
+### Remaining gaps (not done)
+- svg-small (1.63x), build-medium (1.81x) and configuration-large (1.68x) are still slower than the BCL reader.
+  Pass 1 itself runs at roughly BCL speed, so the remainder is recording plus replay. Ideas: hold simple ASCII attribute
+  values as byte spans instead of copying them into the char arena, skip arena writes for `xmlns` values, and let
+  `XmlAttributeView` read the tape directly.
+- Documents beyond the tape caps use the old re-scan (correct, slower).
+- Non-ASCII names still bail; retained memory (`memory.py`) was not re-run.

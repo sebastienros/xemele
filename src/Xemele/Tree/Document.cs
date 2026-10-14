@@ -53,6 +53,31 @@ public sealed partial class XmlDocument
     internal readonly SlotArena<MemberData> AttributeSlots = new(), NamespaceSlots = new();
     private readonly Dictionary<string, string> names = new(StringComparer.Ordinal);
     private Dictionary<(string Local, string Uri, string Prefix), NameData>? nameTriples;
+    private NameData?[]? recentNames;
+    private int recentNameCursor;
+    private NameData? FindNameTriple(string local, string uri, string prefix)
+    {
+        // A bounded front cache avoids hashing repeated long namespace strings.
+        // Misses keep the ordinal randomized dictionary and its existing bounds.
+        if (recentNames is not null) foreach (var name in recentNames)
+            if (name is not null && ReferenceEquals(name.Local, local) && ReferenceEquals(name.Uri, uri) && ReferenceEquals(name.Prefix, prefix)) return name;
+        if (nameTriples is not null && nameTriples.TryGetValue((local, uri, prefix), out var found))
+        { RememberName(found); return found; }
+        return null;
+    }
+    private void RememberName(NameData name)
+    {
+        (recentNames ??= new NameData?[8])[recentNameCursor] = name;
+        recentNameCursor = (recentNameCursor + 1) & 7;
+    }
+    internal bool HasNameTriple(string local, string uri, string prefix) => FindNameTriple(local, uri, prefix) is not null;
+    private string InternOwned(string value)
+    {
+        if (value.Length == 0) return "";
+        if (names.TryGetValue(value, out string? found)) return found;
+        // The immutable string is already owned by the caller, never a view.
+        names.Add(value, value); return value;
+    }
     private readonly OperationBudget budget;
     private readonly XmlResourceLimits limits;
     internal long MutationVersion { get; private set; }
@@ -96,11 +121,42 @@ public sealed partial class XmlDocument
         if (local.Length == 0 && uri.Length == 0 && prefix.Length == 0) return null;
         // Probe before persistence: the tuple is a value and no temporary lookup
         // strings are allocated. Entries are bounded by created named slots.
-        var key = (local, uri, prefix);
-        if (nameTriples is not null && nameTriples.TryGetValue(key, out var found)) return found;
-        var name = new NameData(Intern(local), Intern(uri), Intern(prefix));
-        if (cache) (nameTriples ??= new()).Add((name.Local, name.Uri, name.Prefix), name);
+        if (FindNameTriple(local, uri, prefix) is { } found) return found;
+        var name = new NameData(InternOwned(local), InternOwned(uri), InternOwned(prefix));
+        if (cache)
+        {
+            (nameTriples ??= new()).Add((name.Local, name.Uri, name.Prefix), name);
+            RememberName(name);
+        }
         return name;
+    }
+    internal sealed partial class DomBuilder
+    {
+        // Syntax owns immutable validated fields. Creation and attachment are
+        // one exclusive operation, so the freshly-created leaf cannot be
+        // replaced, moved or acquire members between these two steps.
+        internal XmlNode AppendParsedNode(XmlNode parent, XmlNodeKind kind, string local, string uri, string prefix, string value, CancellationToken cancellation)
+        {
+            cancellation.ThrowIfCancellationRequested();
+            CheckState(); int p = Container(parent, false);
+            ArgumentNullException.ThrowIfNull(local); ArgumentNullException.ThrowIfNull(uri);
+            ArgumentNullException.ThrowIfNull(prefix); ArgumentNullException.ThrowIfNull(value);
+            bool shape = kind switch
+            {
+                XmlNodeKind.Element => local.Length != 0 && value.Length == 0,
+                XmlNodeKind.ProcessingInstruction => local.Length != 0 && uri.Length == 0 && prefix.Length == 0,
+                XmlNodeKind.Text or XmlNodeKind.CData or XmlNodeKind.Comment => local.Length == 0 && uri.Length == 0 && prefix.Length == 0,
+                _ => false
+            };
+            if (!shape) throw new ArgumentException("Unsupported syntax node shape.", nameof(kind));
+            bool isRoot = p == 0 && kind == XmlNodeKind.Element;
+            if (p == 0 && (kind is not (XmlNodeKind.Element or XmlNodeKind.Comment or XmlNodeKind.ProcessingInstruction) || isRoot && root))
+                throw new ArgumentException("Illegal document child or second root.", nameof(kind));
+            var child = document.Create(kind, local, uri, prefix, value);
+            document.Link(p, child.Slot, -1);
+            ChildChecks++; nodes++; version = document.MutationVersion; root |= isRoot;
+            return child;
+        }
     }
     private static void CheckCapacity<T>(SlotArena<T> slots) where T : struct
     {
@@ -109,8 +165,15 @@ public sealed partial class XmlDocument
     private static void Capacity<T>(SlotArena<T> slots) where T : struct => slots.EnsureCapacity(checked(slots.Count + 1));
     private XmlNode Create(XmlNodeKind kind, string local, string uri, string prefix, string value)
     {
-        CheckCapacity(Nodes); PreflightNames(local, uri, prefix); Capacity(Nodes);
-        var data = new NodeData(kind, GetName(local, uri, prefix), value);
+        CheckCapacity(Nodes);
+        NameData? name = null;
+        if (local.Length != 0 || uri.Length != 0 || prefix.Length != 0)
+        {
+            name = FindNameTriple(local, uri, prefix);
+            if (name is null) { PreflightNames(local, uri, prefix); name = GetName(local, uri, prefix); }
+        }
+        Capacity(Nodes);
+        var data = new NodeData(kind, name, value);
         int slot = Nodes.Count; Nodes.Add(data); return new(this, slot);
     }
     public XmlNode CreateElement(string localName, string? namespaceUri = null, string? prefix = null)
@@ -253,7 +316,7 @@ public sealed partial class XmlDocument
             PreflightNames(ns ? value : prefix);
             bool changedPrefix = !ns && prefix != existing.Prefix;
             if (changedPrefix) existing.Name = GetName(existing.Local, existing.Uri, prefix, cache: false);
-            existing.Value = ns ? Intern(value) : value;
+            existing.Value = ns ? InternOwned(value) : value;
             if (changedPrefix) MemberNotify(element, found, false, XmlTreeMutationKind.Name);
             MemberNotify(element, found, ns, XmlTreeMutationKind.Value); return found;
         }
@@ -265,8 +328,12 @@ public sealed partial class XmlDocument
     {
         var slots = ns ? NamespaceSlots : AttributeSlots;
         EnsureVersions(1); CheckCapacity(slots);
-        PreflightNames(ns ? prefix : local, ns ? value : uri, ns ? "" : prefix); Capacity(slots);
-        var member = new MemberData(element, GetName(local, uri, prefix), ns ? Intern(value) : value);
+        NameData? name = FindNameTriple(local, uri, prefix);
+        if (ns) PreflightNames(prefix, value);
+        else if (name is null) PreflightNames(local, uri, prefix);
+        Capacity(slots);
+        name ??= GetName(local, uri, prefix);
+        var member = new MemberData(element, name, ns ? InternOwned(value) : value);
         int slot = slots.Count; ref var e = ref Nodes[element];
         int last = ns ? e.LastNamespace : e.LastAttribute;
         member.Previous = last; slots.Add(member); AdvanceVersion();
