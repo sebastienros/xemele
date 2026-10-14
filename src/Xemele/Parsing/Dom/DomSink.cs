@@ -291,6 +291,16 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
             if (entry is not null && value.SequenceEqual(entry)) return entry;
             return entry = owned ?? value.ToString();
         }
+        internal string OwnAscii(ReadOnlySpan<byte> value)
+        {
+            if (value.IsEmpty) return string.Empty;
+            if (value.Length > 32) return Encoding.Latin1.GetString(value);
+            uint key = unchecked((uint)(value.Length * 397 ^ value[0] * 31 ^ value[value.Length / 2] * 17 ^ value[^1]));
+            key ^= key >> 6;
+            ref string? entry = ref entries[(int)(key & 63)];
+            if (entry is not null && System.Text.Ascii.Equals(value, entry)) return entry;
+            return entry = Encoding.Latin1.GetString(value);
+        }
     }
     public void ValidationProvenance(XmlDiagnostic diagnostic, Xemele.Parsing.Dtd.DtdElementDeclaration declaration)
     {

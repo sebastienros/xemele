@@ -76,6 +76,12 @@ public sealed partial class XmlDocument
     {
         RejectStrictRecovery(options);
         var snapshot = new OperationBudget(options, cancellationToken).Options;
+        if (TryParseUtf8Optimistic(input, snapshot, cancellationToken, out var fast))
+        {
+            document = fast;
+            diagnostics = Array.Empty<XmlDiagnostic>();
+            return true;
+        }
         using var adapter = new ByteDomAdapter(snapshot, cancellationToken);
         adapter.Append(input);
         if (adapter.Diagnostic is null) adapter.Complete();
