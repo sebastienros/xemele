@@ -522,7 +522,7 @@ public sealed partial class XmlDocument
                 }
             }
             if (digits == 0 || p >= n || s[p] != ';') return false;
-            if (code < 0x20 || code > 0x10FFFF || code is >= 0xD800 and <= 0xDFFF or 0xFFFE or 0xFFFF) return false;
+            if ((code < 0x20 && code is not (9 or 10)) || code > 0x10FFFF || code is >= 0xD800 and <= 0xDFFF or 0xFFFE or 0xFFFF) return false;
             value = (int)code; length = p + 1 - at;
             return true;
         }

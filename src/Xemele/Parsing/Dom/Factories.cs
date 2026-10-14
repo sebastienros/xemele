@@ -42,6 +42,7 @@ public sealed partial class XmlDocument
         RejectStrictRecovery(options);
         ArgumentNullException.ThrowIfNull(input);
         var snapshot = new OperationBudget(options, cancellationToken).Options;
+        if (sourceUri is null && TryLoadOptimistic(input, snapshot, cancellationToken) is { } fast) return fast;
         using var adapter = new ByteDomAdapter(snapshot, cancellationToken, sourceUri: sourceUri);
         byte[] buffer = new byte[4096];
         while (adapter.Diagnostic is null)
@@ -53,6 +54,49 @@ public sealed partial class XmlDocument
         }
         if (adapter.Diagnostic is { } diagnostic) throw new XmlParseException([diagnostic]);
         return adapter.Document;
+    }
+
+    private const long OptimisticStreamLimit = 64L << 20;
+
+    // Seekable streams of bounded size are read whole so the optimistic parser can run; on any
+    // bail-out the stream is rewound and the streaming parser re-reads it, so behavior is unchanged.
+    private static XmlDocument? TryLoadOptimistic(Stream input, XmlParseOptions snapshot, CancellationToken cancellationToken)
+    {
+        if (!input.CanSeek || !input.CanRead) return null;
+        long start = input.Position, remaining = input.Length - start;
+        if (remaining <= 0 || remaining > OptimisticStreamLimit) return null;
+        byte[]? rented = null;
+        try
+        {
+            ReadOnlySpan<byte> bytes;
+            if (input is MemoryStream memory && memory.TryGetBuffer(out var segment) && start <= int.MaxValue)
+                bytes = segment.AsSpan((int)start, (int)remaining);
+            else
+            {
+                rented = System.Buffers.ArrayPool<byte>.Shared.Rent((int)remaining);
+                int total = 0;
+                while (total < remaining)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    int read = input.Read(rented.AsSpan(total, (int)remaining - total));
+                    if (read == 0) break;
+                    total += read;
+                }
+                if (total != remaining || input.ReadByte() >= 0) { input.Position = start; return null; }
+                bytes = rented.AsSpan(0, total);
+            }
+            if (!TryParseUtf8Optimistic(bytes, snapshot, cancellationToken, out var fast))
+            {
+                input.Position = start;
+                return null;
+            }
+            input.Position = start + remaining;
+            return fast;
+        }
+        finally
+        {
+            if (rented is not null) System.Buffers.ArrayPool<byte>.Shared.Return(rented);
+        }
     }
 
     public static bool TryParse(string input, out XmlDocument? document, out IReadOnlyList<XmlDiagnostic> diagnostics, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
