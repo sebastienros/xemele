@@ -631,7 +631,7 @@ internal static class OptimisticSax
         {
             if (depth == 0) return false;
             ref var frame = ref frames[depth];
-            int tagStart = i, closeLine = line, closeColumn = Column(i);
+            int tagStart = i, closeLine = emit ? line : 0, closeColumn = emit ? Column(i) : 0;
             int p = i + 2;
             var open = s.Slice(frame.NameStart, frame.NameLength);
             if (n - p < open.Length || !s.Slice(p, open.Length).SequenceEqual(open)) return false;
@@ -736,7 +736,7 @@ internal static class OptimisticSax
 
         private bool OpenTag()
         {
-            int tagStart = i, tagLine = line, tagColumn = Column(i);
+            int tagStart = i, tagLine = emit ? line : 0, tagColumn = emit ? Column(i) : 0;
             if (depth >= maxDepth - 1 || (depth == 0 && rootSeen)) return false;
             uint hash = Seed; int p = i + 1, nameStart = p;
             while ((uint)p < (uint)n) { byte b = s[p]; if ((FlagTable[b] & 1) == 0) break; hash = (hash ^ b) * Prime; p++; }
@@ -758,7 +758,7 @@ internal static class OptimisticSax
                     return false;
                 }
                 if (i == mark || attributeCount + declarationCount >= maxMembers) return false;
-                int attributeStart = i, attributeLine = line, attributeColumn = Column(i);
+                int attributeStart = i, attributeLine = emit ? line : 0, attributeColumn = emit ? Column(i) : 0;
                 uint h = Seed; p = i;
                 while ((uint)p < (uint)n) { byte b = s[p]; if ((FlagTable[b] & 1) == 0) break; h = (h ^ b) * Prime; p++; }
                 if (p == i) return false;
@@ -777,14 +777,14 @@ internal static class OptimisticSax
                     if (attributeCount == attributes.Length) Array.Resize(ref attributes, attributes.Length * 2);
                     ref var attribute = ref attributes[attributeCount++];
                     attribute.Name = key; attribute.ValueStart = valueStart; attribute.ValueLength = valueLength;
-                    attribute.Location = Loc(attributeLine, attributeColumn, attributeStart);
+                    if (emit) attribute.Location = Loc(attributeLine, attributeColumn, attributeStart);
                 }
                 else
                 {
                     if (declarationCount == declarations.Length) Array.Resize(ref declarations, declarations.Length * 2);
                     ref var declaration = ref declarations[declarationCount++];
                     declaration.Name = key; declaration.ValueStart = valueStart; declaration.ValueLength = valueLength;
-                    declaration.Location = Loc(attributeLine, attributeColumn, attributeStart);
+                    if (emit) declaration.Location = Loc(attributeLine, attributeColumn, attributeStart);
                 }
             }
             if (i - tagStart >= tokenLimit) return false;
@@ -801,7 +801,7 @@ internal static class OptimisticSax
                 if (uri is null) return false;
                 attribute.NamespaceUri = uri; attribute.LocalName = attribute.Name.Local; attribute.Prefix = attribute.Name.Prefix;
             }
-            if (attributeCount > 1 && !AttributesAreUnique()) return false;
+            if (!emit && attributeCount > 1 && !AttributesAreUnique()) return false;
 
             if (emit)
             {
@@ -848,7 +848,7 @@ internal static class OptimisticSax
             for (int d = 0; d < declarationCount; d++)
             {
                 ref var declaration = ref declarations[d];
-                for (int e = 0; e < d; e++) if (ReferenceEquals(declarations[e].Name, declaration.Name)) return false;
+                if (!emit) for (int e = 0; e < d; e++) if (ReferenceEquals(declarations[e].Name, declaration.Name)) return false;
                 string prefix = declaration.Name.Kind == 1 ? "" : declaration.Name.Local;
                 string uri;
                 if (emit) uri = declared![declaredIndex++];

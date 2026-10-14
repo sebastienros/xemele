@@ -89,8 +89,8 @@ node and member representation size, not parser transients.
    `EntityDepth` and `InternedNames` accounting. It was judged too risky for
    this change.
 2. CR/CRLF input (needs byte-offset remapping) and non-ASCII names.
-3. `Parse(string)` / char input and async load still use the streaming parser.
-4. SAX consumption is 10-20x slower than the BCL reader.
+3. Async load and stream-based SAX still use the streaming parser.
+4. SAX over in-memory input is now about 1.3-2.9x the BCL reader (see the SAX follow-up).
 5. soap-large allocation and retention at 1.14x BCL.
 6. BenchmarkDotNet ShortRun via `default_context.py` has not been run for
    this revision; numbers above come from the in-process runner.
@@ -104,3 +104,44 @@ U+FEFF and `Recover` mode bail.
 
 Paired result (char DOM, ratio vs BCL, geomean): 1.73 -> 0.69. Entity-medium is unchanged (2.61); text-large is
 0.74-0.82 (was 0.63) because of the transcode cost. Differential harness: 0 divergences over 388k inputs.
+
+## Follow-up: SAX fast path (`XmlSaxParser.Parse(string | ReadOnlySpan<byte>)`)
+
+`OptimisticSax` (`src/Xemele/Streaming/Sax/OptimisticSaxParser.cs`) handles in-memory input for the same well-formed
+subset as the DOM fast path, in two passes over one buffer:
+
+1. A validating pass delivers nothing. It checks the grammar, namespace bindings, attribute uniqueness, characters
+   and the token/name/depth/reference limits. A document it declines is handed, untouched, to the streaming parser,
+   so errors, diagnostics, recovery and every unusual construct keep their authoritative behavior.
+2. A delivery pass re-walks the buffer and calls the handler. It cannot fail (a failure is an
+   `InvalidOperationException`, never duplicated events). Attribute values are decoded into a pooled `char[]` and
+   exposed through a second backing of `XmlAttributeView`; text is delivered in bounded chunks.
+
+Public API is unchanged. `Parse(Stream)` and the async entry points stay on the streaming parser, because the
+design requires that SAX over a stream not retain the whole input. `Parse(string)` transcodes to a UTF-8 buffer
+(as the char DOM path does) and `Parse(ReadOnlySpan<byte>)` reads the caller's span directly; both are borrowed,
+already-in-memory inputs, so no memory contract changes.
+
+Event equivalence, including locations, empty-element and CDATA handling, whitespace outside the root, and
+declaration data, is checked against the streaming parser with text callbacks coalesced (text callback boundaries
+are not a contract). Differential harness: 0 divergences over 518k inputs (149k accepted by both) for UTF-8 and
+UTF-16 under default, tight and quota-edge limits. `OptimisticSaxTests` adds 90 permanent tests.
+
+| Fixture | before us | UTF-8 after us | UTF-16 after us | BCL reader us | after/BCL | alloc after | alloc BCL |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| feed-small | 159 | 11 | 12 | 8 | 1.38 | 3,904 | 20,376 |
+| svg-small | 435 | 62 | 61 | 25 | 2.46 | 4,384 | 15,728 |
+| deep-medium | 2,651 | 139 | 141 | 105 | 1.33 | 12,832 | 134,472 |
+| entity-medium | 13,997 | 13,925 | 13,764 | 1,203 | 11.57 | 534,522 | 1,263,241 |
+| xhtml-medium | 9,527 | 923 | 990 | 544 | 1.70 | 4,384 | 315,848 |
+| build-medium | 9,597 | 1,452 | 1,486 | 515 | 2.82 | 3,921 | 34,424 |
+| soap-large | 33,416 | 3,066 | 3,182 | 2,204 | 1.39 | 4,673 | 1,043,970 |
+| configuration-large | 42,948 | 6,212 | 6,480 | 2,405 | 2.58 | 4,194 | 57,994 |
+| business-large | 184,484 | 16,268 | 16,638 | 8,886 | 1.83 | 4,038 | 4,925,991 |
+| text-large | 392,530 | 12,959 | 16,627 | 15,881 | 0.82 | 3,189 | 14,714,028 |
+
+Geomean vs the BCL `XmlReader` drops from about 17x to 2.05x (1.7x without entity-medium, which still takes the
+streaming path). Allocation is roughly 4 KB per parse regardless of document size, below the BCL reader on every
+fixture. The speedups (7-30x) are far outside the same-DLL control noise, so no reversed-order repeat was needed.
+Splitting the cost: the validation pass alone runs at about BCL-reader speed, so the remaining gap is the delivery
+pass. Taping pass-1 tokens would remove most of the repeated scanning and hashing; it was left out for complexity.
