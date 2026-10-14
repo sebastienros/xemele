@@ -143,18 +143,20 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
 
     public ScanResult Append<TSink>(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets,
         bool isFinalBlock, TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
-        => AppendCore(input, new ByteMappings(byteOffsets), isFinalBlock, sink, cancellationToken);
+        => AppendCore(input, byteOffsets, isFinalBlock, sink, cancellationToken);
 
     // Only the owned byte decoder can prove one original byte per UTF-16 unit.
     internal ScanResult AppendAscii<TSink>(ReadOnlySpan<char> input, long firstByteOffset,
         TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
     {
         if (!trustedByteMappings) throw new InvalidOperationException("Affine mappings require the owned byte decoder.");
-        return AppendCore(input, new ByteMappings(firstByteOffset, input.Length), false, sink, cancellationToken);
+        ArgumentOutOfRangeException.ThrowIfNegative(firstByteOffset);
+        if (input.Length != 0 && firstByteOffset > long.MaxValue - (input.Length - 1L)) throw new ArgumentOutOfRangeException(nameof(firstByteOffset));
+        return AppendCore(input, [], false, sink, cancellationToken, firstByteOffset);
     }
 
-    private ScanResult AppendCore<TSink>(ReadOnlySpan<char> input, ByteMappings byteOffsets,
-        bool isFinalBlock, TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
+    private ScanResult AppendCore<TSink>(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets,
+        bool isFinalBlock, TSink sink, CancellationToken cancellationToken, long affine = -1) where TSink : class, IXmlEventSink
     {
         if (Interlocked.CompareExchange(ref gate, 1, 0) != 0) throw new InvalidOperationException("Concurrent or reentrant core use.");
         int consumed = 0;
@@ -165,7 +167,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             if (sinkIdentity is not null && !ReferenceEquals(sinkIdentity, sink)) throw new InvalidOperationException("Resume with the same sink.");
             if (finalSeen && !isFinalBlock) throw new InvalidOperationException("Final flag is sticky.");
             bool firstInput = sourceMode == 0 && !input.IsEmpty;
-            try { ValidateOffsets(input, byteOffsets, cancellationToken); }
+            try { ValidateOffsets(input, byteOffsets, cancellationToken, affine); }
             catch (OperationCanceledException) { faulted = true; AbortOrDeferEntities(); throw; }
             if (isFinalBlock && sourceMode == 2 && byteLength is null) throw new InvalidOperationException("CompleteByteSource must precede final byte input.");
             if (firstInput && sink is IXmlBulkTextSink bulkSink) bulkSink.PrepareInput(input);
@@ -207,29 +209,31 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         continue;
                     }
                     cancellationToken.ThrowIfCancellationRequested();
+                    var inputOffsets = sourceMode == 2 && affine < 0 ? byteOffsets[consumed..] : default;
+                    long inputBase = affine < 0 ? -1 : affine + consumed;
                     if (high == 0)
                     {
                         if (state == State.Data && !textActive && input[consumed] == '<' && sink is IXmlDomBatchSink)
                         {
-                            int completeTag = ConsumeWholeAsciiTag(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, hasOpening: true);
+                            int completeTag = ConsumeWholeAsciiTag(input[consumed..], inputOffsets, hasOpening: true, affine: inputBase);
                             if (completeTag != 0) { consumed += completeTag; continue; }
                         }
                         if (state == State.Data && !textActive && frames.Count != 0 && sink is IXmlDomBatchSink && !RecoveryEnabled &&
                             input[consumed] is not ('<' or '&'))
                         {
-                            var start = position.Current(sourceMode == 2 ? byteOffsets[consumed] : null);
+                            var start = position.Current(sourceMode == 2 ? ByteOffset(byteOffsets, consumed, affine) : null);
                             ResetToken(); BeginText(XmlTextKind.Text, "", start); declarationAllowed = false;
                             textStarted = true; delivery = Delivery.None;
                             if (!sink.StartText(XmlTextKind.Text, "", start)) return new(consumed, ScanStep.Paused);
                         }
                         if (state == State.Less && sink is IXmlBulkTextSink)
                         {
-                            int wholeTag = ConsumeWholeAsciiTag(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default);
+                            int wholeTag = ConsumeWholeAsciiTag(input[consumed..], inputOffsets, affine: inputBase);
                             if (wholeTag != 0) { consumed += wholeTag; continue; }
                         }
                         if (state == State.Data && sink is IXmlDomBatchSink textBatch)
                         {
-                            int normalizedRun = ConsumeNormalizedTextRun(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, out int references, out var normalizedAt);
+                            int normalizedRun = ConsumeNormalizedTextRun(input[consumed..], inputOffsets, out int references, out var normalizedAt, inputBase);
                             if (normalizedRun != 0)
                             {
                                 var raw = input.Slice(consumed, normalizedRun); consumed += normalizedRun;
@@ -242,7 +246,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         }
                         if (input[consumed] == '&' && sink is IXmlBulkTextSink)
                         {
-                            int reference = ConsumeScalarReference(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, out var referenceAt, out char value);
+                            int reference = ConsumeScalarReference(input[consumed..], inputOffsets, out var referenceAt, out char value, inputBase);
                             if (reference != 0)
                             {
                                 consumed += reference; fragment[0] = value;
@@ -250,7 +254,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                                 continue;
                             }
                         }
-                        int run = ConsumePlainRun(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, sink is IXmlBulkTextSink, out var runLocation);
+                        int run = ConsumePlainRun(input[consumed..], inputOffsets, sink is IXmlBulkTextSink, out var runLocation, inputBase);
                         if (run != 0)
                         {
                             var borrowed = input.Slice(consumed, run);
@@ -265,7 +269,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         }
                     }
                     char c = input[consumed];
-                    long? offset = sourceMode == 2 ? byteOffsets[consumed] : null;
+                    long? offset = sourceMode == 2 ? ByteOffset(byteOffsets, consumed, affine) : null;
                     if (!trustedByteMappings && offset is long original) ValidateMapping(original, c, nameof(byteOffsets));
                     var location = high != 0 ? highLocation : position.Current(offset);
                     if (high != 0)
@@ -327,56 +331,18 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         ObjectDisposedException.ThrowIf(disposed, this);
         if (faulted || terminal) throw new InvalidOperationException("Core operation is terminal or faulted.");
     }
-    // Borrowed explicit mappings or a proven one-byte ASCII run. Neither view
-    // survives AppendCore; persisted token locations copy coordinates by value.
-    private readonly ref struct ByteMappings
-    {
-        private readonly ReadOnlySpan<long> values;
-        private readonly long first;
-        public int Length { get; }
-        public bool IsEmpty => Length == 0;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ByteMappings(ReadOnlySpan<long> values) { this.values = values; first = 0; Length = values.Length; }
-        public ByteMappings(long first, int length)
-        {
-            ArgumentOutOfRangeException.ThrowIfNegative(first);
-            ArgumentOutOfRangeException.ThrowIfNegative(length);
-            if (length != 0 && first > long.MaxValue - (length - 1L)) throw new ArgumentOutOfRangeException(nameof(first));
-            values = default; this.first = first; Length = length;
-        }
-        // A bounded nonempty slice inherits its parent's overflow proof.
-        private ByteMappings(long first, int length, bool validated)
-        { values = default; this.first = first; Length = length; }
-        public long this[int index]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                if (!values.IsEmpty) return values[index];
-                if ((uint)index >= (uint)Length) throw new ArgumentOutOfRangeException(nameof(index));
-                return first + index;
-            }
-        }
-        public ByteMappings this[Range range]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                var (start, length) = range.GetOffsetAndLength(Length);
-                if (length == 0) return default;
-                return values.IsEmpty ? new(first + start, length, true) : new(values.Slice(start, length));
-            }
-        }
-    }
-    private void ValidateOffsets(ReadOnlySpan<char> input, ByteMappings offsets, CancellationToken cancellation)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static long ByteOffset(ReadOnlySpan<long> offsets, int index, long affine)
+        => affine >= 0 ? affine + index : offsets[index];
+    private void ValidateOffsets(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, CancellationToken cancellation, long affine)
     {
         if (!offsets.IsEmpty && offsets.Length != input.Length) throw new ArgumentException("Parallel mappings must match input length.", nameof(offsets));
-        int mode = offsets.IsEmpty ? 1 : 2;
+        int mode = affine >= 0 || !offsets.IsEmpty ? 2 : 1;
         if (!input.IsEmpty && sourceMode != 0 && sourceMode != mode) throw new ArgumentException("Source mode cannot change.", nameof(offsets));
         cancellation.ThrowIfCancellationRequested();
         // At most one preflight unit, even if a pending callback pauses before
         // consuming input. The tail is caller-owned and can change on a resume.
-        if (!offsets.IsEmpty) ValidateMapping(offsets[0], input[0], nameof(offsets));
+        if (mode == 2 && !input.IsEmpty) ValidateMapping(ByteOffset(offsets, 0, affine), input[0], nameof(offsets));
         if (!input.IsEmpty && sourceMode == 0) sourceMode = mode;
     }
     private void ValidateMapping(long current, char unit, string parameter)
@@ -389,11 +355,12 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (high != 0 && char.IsLowSurrogate(unit) && current != highLocation.ByteOffset)
             throw new ArgumentException("Surrogate mappings differ.", parameter);
     }
-    private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ByteMappings offsets, bool hasOpening = false)
+    private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, bool hasOpening = false, long affine = -1)
     {
         int leading = hasOpening ? 1 : 0;
         var units = input[leading..];
-        var mappings = sourceMode == 2 ? offsets[leading..] : default;
+        var mappings = sourceMode == 2 && affine < 0 ? offsets[leading..] : default;
+        long mappingBase = affine < 0 ? -1 : affine + leading;
         if (units.IsEmpty) return 0;
         if (RecoveryEnabled || sourceMode == 2 && !trustedByteMappings || units[0] is '?' or '!') return 0;
         if (units[0] != '/' && units[0] is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_' or ':')) return 0;
@@ -427,7 +394,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (end == 0 || candidate[end - 1] != '>' || delimiter != 0 || candidate[..end].IndexOfAnyExcept(PrintableTagUnits) >= 0) return 0;
         if (hasOpening)
         {
-            opening = position.Current(sourceMode == 2 ? offsets[0] : null);
+            opening = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
             ResetToken();
             physicalScalar = '<'; attributePhysicalLocation = opening; attributePhysicalOrigin = false;
             attributePhysicalSpelling = null; attributePhysicalIdentity = null;
@@ -440,12 +407,12 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             Array.Resize(ref token, size); Array.Resize(ref tokenLocations, size);
         }
         candidate.Slice(start, length).CopyTo(token);
-        var current = position.Current(sourceMode == 2 ? mappings[start] : null);
+        var current = position.Current(sourceMode == 2 ? ByteOffset(mappings, start, mappingBase) : null);
         var location = new XmlLocation(current.SourceUri, current.LineNumber, current.LinePosition + leading, current.ByteOffset);
         tokenLocationRuns?.Clear();
         if (length != 0)
         {
-            long stride = sourceMode == 2 ? mappings[1] - mappings[0] : 0;
+            long stride = sourceMode == 2 ? ByteOffset(mappings, 1, mappingBase) - ByteOffset(mappings, 0, mappingBase) : 0;
             (tokenLocationRuns ??= new(8)).Add(new(0, length, new(location.SourceUri, location.LineNumber, location.LinePosition + start, location.ByteOffset), stride));
         }
         if (!close && entities is not null)
@@ -462,7 +429,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             for (int i = 0; i < length; i++)
             {
                 var at = new XmlLocation(location.SourceUri, location.LineNumber, location.LinePosition + start + i,
-                    sourceMode == 2 ? mappings[start + i] : null);
+                    sourceMode == 2 ? ByteOffset(mappings, start + i, mappingBase) : null);
                 tokenLocations[i] = attributePhysicalLocations[i] = at;
                 physicalStarts[i] = i; attributePhysicalOrigins[i] = false; attributePhysicalIdentities[i] = null;
             }
@@ -470,7 +437,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         tokenLength = length; declarationAllowed = false; quote = '\0';
         budget.TryCharge(Quota.DocumentCharacters, end + leading); budget.TryCharge(Quota.TokenCharacters, end + 1);
         position.AdvanceColumns(end + leading); normalizedCr = false;
-        if (sourceMode == 2) lastOffset = mappings[end - 1];
+        if (sourceMode == 2) lastOffset = ByteOffset(mappings, end - 1, mappingBase);
         state = close ? State.Close : State.Tag;
         if (close) ParseClose(); else ParseTag();
         state = State.Data;
@@ -518,7 +485,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         source.Index += run.Length; entitySources[^1] = source; brackets = 0;
         return run;
     }
-    private int ConsumeNormalizedTextRun(ReadOnlySpan<char> input, ByteMappings offsets, out int references, out XmlLocation at)
+    private int ConsumeNormalizedTextRun(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out int references, out XmlLocation at, long affine = -1)
     {
         references = 0; at = default;
         if (entities is not null || !textActive || !textStarted || frames.Count == 0 || RecoveryEnabled ||
@@ -550,10 +517,10 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             length += reference; references++;
         }
         if (length == 0) return 0;
-        at = position.Current(sourceMode == 2 ? offsets[0] : null);
+        at = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
         budget.TryCharge(Quota.DocumentCharacters, length - pairs); budget.TryCharge(Quota.TokenCharacters, length - pairs);
         budget.TryCharge(Quota.ExpandedCharacters, references); position.AdvanceColumns(length - pairs);
-        if (sourceMode == 2) lastOffset = offsets[length - 1];
+        if (sourceMode == 2) lastOffset = ByteOffset(offsets, length - 1, affine);
         normalizedCr = false; brackets = 0;
         return length;
     }
@@ -589,7 +556,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         // scalar parser; this candidate never changes state on failure.
         return 0;
     }
-    private int ConsumeScalarReference(ReadOnlySpan<char> input, ByteMappings offsets, out XmlLocation at, out char value)
+    private int ConsumeScalarReference(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out XmlLocation at, out char value, long affine = -1)
     {
         at = default; value = '\0';
         if (state != State.Data || !textActive || !textStarted || frames.Count == 0) return 0;
@@ -602,12 +569,12 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (length > position.ColumnCapacity || length > budget.Remaining(Quota.DocumentCharacters) ||
             length > budget.Remaining(Quota.TokenCharacters) || budget.Remaining(Quota.EntityDepth) < 1 ||
             budget.Remaining(Quota.ExpandedCharacters) < 1) return 0;
-        at = position.Current(sourceMode == 2 ? offsets[0] : null);
+        at = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
         if (sourceMode == 2)
         {
             if (!trustedByteMappings) for (int i = 0; i < length; i++)
             { ValidateMapping(offsets[i], input[i], nameof(offsets)); lastOffset = offsets[i]; }
-            else lastOffset = offsets[length - 1];
+            else lastOffset = ByteOffset(offsets, length - 1, affine);
         }
         budget.TryCharge(Quota.DocumentCharacters, length); budget.TryCharge(Quota.TokenCharacters, length);
         budget.TryCharge(Quota.ExpandedCharacters, 1);
@@ -616,7 +583,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         position.AdvanceColumns(length); normalizedCr = false; brackets = 0; tokenLength = 0;
         return length;
     }
-    private int ConsumePlainRun(ReadOnlySpan<char> input, ByteMappings offsets, bool bulkText, out XmlLocation at)
+    private int ConsumePlainRun(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, bool bulkText, out XmlLocation at, long affine = -1)
     {
         at = default;
         bool data = state == State.Data;
@@ -644,7 +611,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             next += start;
             if (!char.IsHighSurrogate(candidate[next]) || next + 1 == length || !char.IsLowSurrogate(candidate[next + 1]))
             { length = next; break; }
-            if (sourceMode == 2 && offsets[next] != offsets[next + 1])
+            if (sourceMode == 2 && ByteOffset(offsets, next, affine) != ByteOffset(offsets, next + 1, affine))
             {
                 // Let the scalar path reject this caller-owned mapping exactly
                 // when it reaches the pair, respecting any earlier pause.
@@ -653,7 +620,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             pairs++; start = next + 2;
         }
         if (length < 2) return 0;
-        at = position.Current(sourceMode == 2 ? offsets[0] : null);
+        at = position.Current(sourceMode == 2 ? ByteOffset(offsets, 0, affine) : null);
         if (!data)
         {
             if (length > Array.MaxLength - tokenLength) return 0;
@@ -679,7 +646,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             for (int i = 0; i < length; i++)
             {
                 physicalStarts[tokenLength + i] = physicalStart + i;
-                attributePhysicalLocations[tokenLength + i] = new(at.SourceUri, at.LineNumber, at.LinePosition + i, sourceMode == 2 ? offsets[i] : null);
+                attributePhysicalLocations[tokenLength + i] = new(at.SourceUri, at.LineNumber, at.LinePosition + i, sourceMode == 2 ? ByteOffset(offsets, i, affine) : null);
                 attributePhysicalOrigins[tokenLength + i] = false; attributePhysicalIdentities[tokenLength + i] = null;
             }
             physicalTag.Append(input[..length]);
@@ -691,16 +658,20 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             // coordinates are affine; reconstruct only locations actually used
             // by grammar/diagnostics instead of writing a 32-byte record/unit.
             if (tokenLength == 0) tokenLocationRuns?.Clear();
-            long stride = sourceMode == 2 ? offsets[1] - offsets[0] : 0;
+            long stride = sourceMode == 2 ? ByteOffset(offsets, 1, affine) - ByteOffset(offsets, 0, affine) : 0;
             (tokenLocationRuns ??= new(8)).Add(new(tokenLength, length, at, stride));
         }
-        if (!data && !compressedLocations || sourceMode == 2 && !trustedByteMappings) for (int i = 0; i < length; i++)
+        if (sourceMode == 2 && !trustedByteMappings) for (int i = 0; i < length; i++)
         {
-            long? offset = sourceMode == 2 ? offsets[i] : null;
-            if (!trustedByteMappings && offset is long original) { ValidateMapping(original, input[i], nameof(offsets)); lastOffset = original; }
+            long offset = offsets[i]; ValidateMapping(offset, input[i], nameof(offsets)); lastOffset = offset;
             if (!data && !compressedLocations) tokenLocations[tokenLength + i] = new(at.SourceUri, at.LineNumber, at.LinePosition + i, offset);
         }
-        if (trustedByteMappings && sourceMode == 2) lastOffset = offsets[length - 1];
+        else if (!data && !compressedLocations) for (int i = 0; i < length; i++)
+        {
+            long? offset = sourceMode == 2 ? ByteOffset(offsets, i, affine) : null;
+            tokenLocations[tokenLength + i] = new(at.SourceUri, at.LineNumber, at.LinePosition + i, offset);
+        }
+        if (trustedByteMappings && sourceMode == 2) lastOffset = ByteOffset(offsets, length - 1, affine);
         budget.TryCharge(Quota.DocumentCharacters, length - pairs);
         budget.TryCharge(Quota.TokenCharacters, length - pairs);
         position.AdvanceColumns(length - pairs);

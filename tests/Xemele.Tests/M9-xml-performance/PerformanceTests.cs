@@ -322,11 +322,26 @@ public sealed class PerformanceTests
         core.CompleteByteSource(offset + 4);
         Assert.Equal(ScanStep.Completed, core.Append([], [], true, sink, cancel).Step);
     }
+    [Fact]
+    public void PreparedAffineAsciiDecodingAllocatesZero()
+    {
+        var cancel = TestContext.Current.CancellationToken;
+        using var decoder = new XmlInputDecoder(new());
+        var chars = new char[4096]; var mappings = new long[4096];
+        Assert.Equal(4, decoder.Decode("<r>!"u8, chars, mappings, false, cancel).ConsumedBytes);
+        Assert.Null(decoder.ValidateDeclaration([], new(null, 1, 1, 0)));
+        byte[] run = Encoding.ASCII.GetBytes(string.Concat(Enumerable.Repeat("abc\r\n", 819)));
+        for (int i = 0; i < 20; i++) decoder.DecodeAscii(run, chars, out _, cancel);
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1000; i++)
+            if (decoder.DecodeAscii(run, chars, out _, cancel) != run.Length) throw new InvalidOperationException("Incomplete ASCII decode.");
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+    }
     [Theory]
     [InlineData(0)] [InlineData(1)] [InlineData(4095)] [InlineData(4096)]
     public void AffineAsciiDomPreservesByteAnchorsAcrossNewlineAndUnicodeTransitions(int padding)
     {
-        string xml = "<r>" + new string('x', padding) + "\r\n<n a='v'>α😀</n>\r<t/>\n</r>";
+        string xml = "<r>α😀" + new string('x', padding) + "\r\n<n a='v'>α😀</n>\r<t/>\n</r>";
         byte[] input = Encoding.UTF8.GetBytes(xml);
         var actual = XmlDocument.Parse(input.AsSpan(), cancellationToken: TestContext.Current.CancellationToken);
         var n = actual.RootElement.FirstChild.NextSibling;

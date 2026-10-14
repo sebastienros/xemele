@@ -8,6 +8,18 @@ using System.Text.Json;
 using Xemele.Streaming;
 using Candidate=Xemele.XmlDocument;
 using Bcl=System.Xml.XmlDocument;
+if(args[0]=="fingerprint") {
+ foreach(string path in args.Skip(1)) {
+  var context=new VariantContext(Path.GetFullPath(path));
+  var assembly=context.LoadFromAssemblyPath(Path.GetFullPath(path));
+  var type=assembly.GetType("Xemele.Parsing.Syntax.XmlParserCore")!;
+  Console.WriteLine(path+" "+assembly.GetCustomAttributesData().First(a=>a.AttributeType==typeof(System.Reflection.AssemblyInformationalVersionAttribute)).ConstructorArguments[0].Value);
+  foreach(string name in new[]{"Append","AppendCore","ParseClose","ReadName","ConsumeNormalizedTextRun"}) {
+   var method=type.GetMethod(name,System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic);
+   Console.WriteLine(name+" "+(method?.GetMethodBody()?.GetILAsByteArray()?.Length.ToString()??"absent"));
+  }
+ } return;
+}
 if(args[0]=="name-check") { foreach(var shape in new[]{"html","xml","prefix","unicode","long"}) { new BorrowedNames{Shape=shape}.Setup(); Console.WriteLine("PASS exact names "+shape); } return; }
 if(args[0]=="ownership") { BenchmarkRunner.Run<TextOwnership>(args:args.Skip(1).ToArray()); return; }
 if(args[0]=="symbols") { BenchmarkRunner.Run<BorrowedNames>(args:args.Skip(1).ToArray()); return; }
@@ -33,8 +45,15 @@ if(args[0]=="paired") {
   var type=assembly.GetType("Workload")!;
   var target=Activator.CreateInstance(type,fixture)!;
   var previous=type.GetMethod("Run")!.CreateDelegate<Func<string,object>>(target);
+  // Give both variants the same loading model. Default-context BDN remains
+  // the primary evidence; the original asymmetric screening overstated gains.
+  var afterContext=new VariantContext(typeof(Candidate).Assembly.Location);
+  var afterAssembly=afterContext.LoadFromAssemblyPath(typeof(Workload).Assembly.Location);
+  var afterType=afterAssembly.GetType("Workload")!;
+  var afterTarget=Activator.CreateInstance(afterType,fixture)!;
+  var after=afterType.GetMethod("Run")!.CreateDelegate<Func<string,object>>(afterTarget);
   var current=new Workload(fixture);
-  var methods=new Dictionary<string,Func<object>>{{"before",()=>previous(candidateMethod)},{"after",()=>current.Run(candidateMethod)},{"bcl",()=>current.Run(baselineMethod)}};
+  var methods=new Dictionary<string,Func<object>>{{"before",()=>previous(candidateMethod)},{"after",()=>after(candidateMethod)},{"bcl",()=>current.Run(baselineMethod)}};
   foreach(var method in methods.Values)for(int i=0;i<5;i++)GC.KeepAlive(method());
   var rows=methods.Keys.ToDictionary(k=>k,k=>new List<object>());
   for(int round=0;round<7;round++)foreach(var key in round%2==0?methods.Keys:methods.Keys.Reverse()){
@@ -43,7 +62,7 @@ if(args[0]=="paired") {
    do{GC.KeepAlive(method());count++;}while(timer.Elapsed.TotalMilliseconds<200);
    timer.Stop();rows[key].Add(new{round,count,us=timer.Elapsed.TotalMicroseconds/count,bytes=(double)(GC.GetAllocatedBytesForCurrentThread()-allocated)/count});
   }
-  all.Add(new{fixture,rows});Console.WriteLine(fixture);
+  all.Add(new{fixture,candidateMethod,contexts="balanced",rows});Console.WriteLine(fixture);
  }
  File.WriteAllText(args[2],JsonSerializer.Serialize(all,new JsonSerializerOptions{WriteIndented=true}));return;
 }
