@@ -7,6 +7,57 @@ namespace Xemele.Tests.XmlPerformance;
 
 public sealed class PerformanceTests
 {
+    [Fact]
+    public void ShortValueCacheRequiresExactEqualityAndOwnsInput()
+    {
+        var cache = new Xemele.Parsing.Dom.DomSink.ShortValueCache();
+        char[] input = "axcze".ToCharArray();
+        string first = cache.Own(input);
+        Assert.Same(first, cache.Own("axcze"));
+        // Same length and sampled characters, different unsampled character.
+        string collision = cache.Own("aycze");
+        Assert.Equal("aycze", collision); Assert.NotSame(first, collision);
+        input.AsSpan().Fill('!'); Assert.Equal("axcze", first);
+        Assert.Equal("axcze", cache.Own("axcze"));
+        string unicode = cache.Own("α日本語😀");
+        Assert.Same(unicode, cache.Own("α日本語😀"));
+        string owned = new('x', 32);
+        Assert.Same(owned, cache.Own(owned, owned));
+        Assert.Same(owned, cache.Own(new string('x', 32)));
+        string longOwned = new('x', 33);
+        Assert.Same(longOwned, cache.Own(longOwned, longOwned));
+        Assert.NotSame(cache.Own(longOwned), cache.Own(longOwned));
+        Assert.Same(string.Empty, cache.Own([]));
+    }
+    [Fact]
+    public void RepeatedDomValuesRemainOwnedAndQuotasCountEveryOccurrence()
+    {
+        string xml = "<r>" + string.Concat(Enumerable.Repeat("<n a='USD'>USD</n>", 20)) + "</r>";
+        byte[] input = Encoding.UTF8.GetBytes(xml);
+        var document = XmlDocument.Parse(input, cancellationToken: TestContext.Current.CancellationToken);
+        input.AsSpan().Fill((byte)'!');
+        var first = document.RootElement.Children[0];
+        var last = document.RootElement.Children[19];
+        Assert.Same(first.GetAttribute("a"), last.GetAttribute("a"));
+        Assert.Equal("USD", last.GetAttribute("a"));
+        Assert.Equal("USD", last.GetTextContent());
+        var separate = XmlDocument.Parse(xml, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotSame(first.GetAttribute("a"), separate.RootElement.Children[0].GetAttribute("a"));
+        Assert.False(XmlDocument.TryParse(xml, out _, out var diagnostics,
+            new() { Limits = new() { DocumentCharacters = xml.Length - 1 } }, TestContext.Current.CancellationToken));
+        Assert.Equal("XML.ResourceLimit", diagnostics[0].Code);
+    }
+    [Fact]
+    public void WarmShortValueCacheHitsAllocateZero()
+    {
+        var cache = new Xemele.Parsing.Dom.DomSink.ShortValueCache();
+        string owned = cache.Own("USD");
+        for (int i = 0; i < 100; i++) cache.Own("USD");
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1000; i++)
+            if (!ReferenceEquals(owned, cache.Own("USD"))) throw new InvalidOperationException();
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+    }
     [Theory]
     [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(4095)] [InlineData(4096)] [InlineData(8193)]
     public void BulkTextPreservesUnicodeNormalizationAcrossDecoderPages(int length)

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using Xemele.Internal.Operations;
 using Xemele.Parsing.Input;
 using Xemele.Parsing.Syntax;
@@ -20,6 +21,7 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
     private string target = "";
     private readonly StringBuilder text = new();
     private bool prepared;
+    private ShortValueCache shortValues;
     private static readonly SearchValues<char> CapacityMarkers = SearchValues.Create("<>='\"");
     private static readonly SearchValues<byte> CapacityByteMarkers = SearchValues.Create("<>='\""u8);
     internal XmlDocument Document { get; }
@@ -175,7 +177,7 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
     {
         cancellation.ThrowIfCancellationRequested();
         if (!Document.HasNameTriple(local, uri, prefix) && !Names(local, uri, prefix, location)) return false;
-        var stored = builder.AppendSyntaxValidatedAttribute(parent, local, ownedValue ?? value.ToString(), uri, prefix, cancellation);
+        var stored = builder.AppendSyntaxValidatedAttribute(parent, local, shortValues.Own(value, ownedValue), uri, prefix, cancellation);
         Document.RecordSourceLocation(stored, location);
         return true;
     }
@@ -192,7 +194,7 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
         cancellation.ThrowIfCancellationRequested();
         var name = attribute.Name;
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, attribute.Location)) return false;
-        var stored = builder.AppendSyntaxValidatedAttribute(parent, OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix), cancellation);
+        var stored = builder.AppendSyntaxValidatedAttribute(parent, OwnName(name.LocalName), shortValues.Own(attribute.Value), OwnName(name.NamespaceUri), OwnName(name.Prefix), cancellation);
         Document.RecordSourceLocation(stored, attribute.Location);
         return true;
     }
@@ -258,7 +260,7 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
         // A complete single borrowed fragment needs just its final owned
         // string. Fragmented/normalized tokens retain accumulated scratch.
         string value;
-        if (text.Length == 0) value = fragment.ToString();
+        if (text.Length == 0) value = shortValues.Own(fragment);
         else { text.Append(fragment); value = text.ToString(); }
         XmlNodeKind kind = textKind switch
         {
@@ -271,6 +273,24 @@ internal sealed partial class DomSink : IXmlDomBatchSink, IXmlOwnedNameSink, IXm
         Document.RecordSourceLocation(node, textLocation);
         text.Clear();
         return true;
+    }
+    // Only immutable owned strings survive this operation-local, fixed-size
+    // accelerator. Sampling chooses a slot; full ordinal equality proves hits.
+    internal struct ShortValueCache
+    {
+        [InlineArray(64)]
+        private struct Entries { private string? first; }
+        private Entries entries;
+        internal string Own(ReadOnlySpan<char> value, string? owned = null)
+        {
+            if (value.IsEmpty) return string.Empty;
+            if (value.Length > 32) return owned ?? value.ToString();
+            uint key = unchecked((uint)(value.Length * 397 ^ value[0] * 31 ^ value[value.Length / 2] * 17 ^ value[^1]));
+            key ^= key >> 6;
+            ref string? entry = ref entries[(int)(key & 63)];
+            if (entry is not null && value.SequenceEqual(entry)) return entry;
+            return entry = owned ?? value.ToString();
+        }
     }
     public void ValidationProvenance(XmlDiagnostic diagnostic, Xemele.Parsing.Dtd.DtdElementDeclaration declaration)
     {
