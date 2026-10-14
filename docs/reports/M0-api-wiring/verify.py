@@ -151,7 +151,7 @@ def main():
     for stage in ['M1', 'M2', 'ApiProbe']:
         run('dotnet', CHECKER, 'compare', assembly(stage), GOLDENS / (stage + '.golden.txt'))
     fixture_checks()
-    run(sys.executable, '-B', ROOT / 'tools/ApiBaseline/compare.py', '--bootstrap-empty-api',
+    run(sys.executable, '-B', ROOT / 'tools/ApiBaseline/compare.py',
         '--report', ROOT / 'artifacts/M0-api-wiring/runtime-api.json')
     run(sys.executable, '-B', ROOT / 'tools/planning/tasks.py', 'validate')
     assert all(hashlib.sha256(path.read_bytes()).hexdigest() == digest for path, digest in frozen_hashes.items())

@@ -41,6 +41,16 @@ class CompositionTests(unittest.TestCase):
             with self.assertRaisesRegex(DiscoveryError, reason + ' API member'):
                 compose(self.root)
 
+    def test_join_fragment_keeps_provenance_and_nonempty_comparison(self):
+        self.fragment('member', 'original', 'T:A')
+        join = self.root / 'docs/api/join.txt'
+        join.write_text('xemele-api-v1\n')
+        canonical, report = compose(self.root)
+        self.assertEqual(len(canonical.splitlines()), 2)
+        self.assertEqual(report['inventory']['apiDeclarations'], 1)
+        self.assertEqual(report['provenance'][0]['source'], 'docs/api/member.txt')
+        self.assertIn('docs/api/join.txt', report['inventory']['apiFragments'])
+
     def test_empty_requires_explicit_inventory_bootstrap(self):
         project = self.root / 'src/Xemele/Xemele.csproj'
         project.parent.mkdir(parents=True)

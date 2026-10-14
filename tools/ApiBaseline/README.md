@@ -13,7 +13,8 @@ literal `xemele-api-v1`. Every subsequent line is a JSON object with exactly
 without JSON whitespace. Use Python's `json.dumps(entry, ensure_ascii=False,
 sort_keys=True, separators=(',', ':'))` to produce canonical lines. All fields
 are nonempty single-line strings. Entries are sorted lexicographically by `id`.
-Each fragment must contain at least one real declaration.
+Header-only join fragments are allowed alongside a nonempty validated union.
+An aggregate with no declarations fails, including with the bootstrap flag.
 
 `id` is a stable entry identifier. `member` is the canonical fully qualified
 member identity shared by every fragment producer: use XML documentation member
@@ -26,10 +27,11 @@ IDs. Unknown headers/fields, duplicate JSON fields and noncanonical lines fail.
 The discovery tool treats declarations as contract text; it does not parse C#.
 
 No baseline is shipped for the empty M0 runtime. Missing fragments fail by
-default. CI uses `--bootstrap-empty-api`, which permits zero fragments only if
+default. The historical `--bootstrap-empty-api` option permits zero fragments only if
 `src/Xemele/Xemele.csproj` exists and the runtime has no `.cs` sources outside
 `bin`/`obj`. As soon as runtime sources exist, actual baselines are mandatory.
-This flag does not exempt invalid or empty existing fragments.
+This flag does not exempt invalid or empty aggregate fragments. Current CI
+requires the complete runtime baseline without this option.
 
 Discovery validates declaration inventory, not compiled API compatibility.
 M0-contracts must define declaration extraction/normalization and compare the
@@ -75,7 +77,7 @@ records its actual host and does not imply the other platforms ran.
 
 Build the approved `docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj` and
 `src/Xemele/Xemele.csproj` in Release, then run
-`python -B tools/ApiBaseline/compare.py --bootstrap-empty-api --report artifacts/M0-api-wiring/runtime-api.json`.
+`python -B tools/ApiBaseline/compare.py --report artifacts/M0-api-wiring/runtime-api.json`.
 Comparison validates discovery first, composes member/declaration pairs in memory,
 and sends one temporary canonical fragment to the unchanged approved extractor.
 Original inventory IDs and source/line provenance remain in the JSON report; the

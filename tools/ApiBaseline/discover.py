@@ -45,8 +45,6 @@ def discover(root, bootstrap_empty_api=False):
         lines = path.read_text(encoding='utf-8').splitlines()
         if not lines or lines[0] != 'xemele-api-v1':
             raise DiscoveryError(f"{path}: unsupported baseline format; expected xemele-api-v1")
-        if len(lines) < 2:
-            raise DiscoveryError(f"{path}: empty API fragment")
         previous = None
         for number, line in enumerate(lines[1:], 2):
             location = f"{path}:{number}"
@@ -74,6 +72,10 @@ def discover(root, bootstrap_empty_api=False):
             declarations[identity] = entry['declaration']
             previous = identity
         api.append(path.relative_to(root).as_posix())
+    # Join tasks may own header-only fragments; the aggregate must still
+    # describe a real surface, with every nonempty fragment validated above.
+    if api_files and not declarations:
+        raise DiscoveryError('empty API fragment aggregate: expected at least one declaration')
     if not api_files:
         runtime = root / 'src/Xemele'
         sources = [path for path in runtime.rglob('*.cs') if not {'bin', 'obj'}.intersection(path.relative_to(runtime).parts)]

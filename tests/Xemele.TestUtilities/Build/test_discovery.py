@@ -71,6 +71,18 @@ class DiscoveryTests(unittest.TestCase):
             self.baseline([dict(id='a', member='T:Example.Other', declaration=declaration)], 'two')
             self.rejects(reason + ' API id')
 
+    def test_header_only_join_requires_nonempty_valid_union(self):
+        self.baseline([], 'join')
+        inventory = discovery.discover(self.root)
+        self.assertEqual(inventory['apiDeclarations'], 1)
+        self.assertEqual(inventory['apiFragments'], ['docs/api/join.txt', 'docs/api/one.txt'])
+        self.assertFalse(inventory['bootstrapEmptyApi'])
+        self.baseline([])
+        self.rejects('empty API fragment aggregate')
+        self.rejects('empty API fragment aggregate', bootstrap=True)
+        self.write('docs/api/one.txt', 'xemele-api-v1\nmalformed\n')
+        self.rejects('invalid JSON')
+
     def test_distinct_ids_cannot_conflict_on_member(self):
         for declaration, reason in [('public class One', 'duplicate'), ('internal class One', 'conflicting')]:
             self.baseline([dict(id='b', member='T:Example.One', declaration=declaration)], 'two')
