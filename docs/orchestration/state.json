@@ -155,7 +155,18 @@
   "blockers": [
     "Current Windows/Linux renewal budget or explicit gate revision; all current local mandatory checks passed."
   ],
-  "pending_decisions": [],
+  "pending_decisions": [
+    {
+      "scope": "Current Windows/Linux source-bound release validation",
+      "preparedBranch": "codex/m9-final-os-validation",
+      "preparedRevision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
+      "maximumJobs": 2,
+      "maximumMinutesPerJob": 20,
+      "maximumRunnerMinutes": 40,
+      "status": "Explicit approval requested; no remote push/run started",
+      "alternative": "Only an explicit human revision can defer current Windows/Linux, preserving historical results separately from current macOS evidence."
+    }
+  ],
   "timing_queue": [],
   "completed_assignments": [
     {
@@ -2069,15 +2080,11 @@
     "retryBudgetConsumed": true
   },
   "goal_blocked_audit": {
-    "goalStatus": "active",
-    "previousGoalTurn": "progress: revised robustness integrated and human timing/memory decisions recorded",
-    "currentTurn": "verified wait: wait_threads confirms existing XML optimizer chat active/inProgress with current tool activity",
+    "goalStatusNote": "Prior pause revoked by direct human resume; goal tool exposes no active/resume mutation. Work resumed and progressed.",
+    "previousGoalTurn": "verified wait before explicit human pause",
+    "currentTurn": "progress: integrated and verified XML/performance, fixed EOFcancellationbug, all current local gate checks pass; prepared minimal OSproposal",
     "consecutiveNoProgressTurns": 0,
-    "condition": "Await owner completed optimization handoff; do not collide or integrate active branch",
-    "liveThread": "01a1361b-a82b-7f52-8c53-9988c0c55811",
-    "latestObservedCursor": "d2be9da7-6b5a-4cac-a317-f4db5715ae70:8",
-    "latestObservedAction": "Owner testing bounded repeated-value cache with full ordinal matches",
-    "earlierExternalConditions": "Hosted distribution resolved; campaigns offline/nonblocking and dedicated timing deferred by human; current approximately0.90memory budget separately accepted",
+    "condition": "Await explicit remaining currentOSbudget/gatedecision",
     "gateCompletionProven": false
   },
   "hosted_validation_candidate_history": [
@@ -2260,5 +2267,28 @@
     "jobs": 0,
     "sourceWritesRelinquished": true,
     "gap": "No final-source qualified ten-fixture DOM/allocation/retention rerun; A2 not passed."
+  },
+  "routine_main_update_delivery": {
+    "status": "rejected by automatic approval review",
+    "reason": "Review did not recognize explicit authorization for routine follow-up to main chat",
+    "action": "No retry or workaround; updates provided in this chat. Terminal handoff authorization will be assessed separately."
+  },
+  "current_local_gate": {
+    "sourceRevision": "d4402f04dd04e9240e3ee323c4744dcfe1a58a50",
+    "tests": 12754,
+    "API": 1430,
+    "preview": 222,
+    "migrationChecks": 20,
+    "coverage": {
+      "covered": 4798,
+      "total": 5189,
+      "coreFiles": 16,
+      "coreExclusions": 0
+    },
+    "XSDRows": 83472,
+    "originalNonpasses": 155,
+    "annotationPassed": true,
+    "macOSPackageConsumers": "actual managed/trim/NativeAOT/tool anddeterministic2packs;18commands pass",
+    "unpublishedCheckpoint": "artifacts/M9-gate/checkpoint-d4402f04"
   }
 }
