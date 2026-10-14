@@ -92,6 +92,15 @@
       "result": "passed",
       "summary": "14 affected differential tests pass/0skip with rebuilt pinned engines, actual source/binary/class hashes and original oracle controls. Runtime11 config pinning verified; exact canonical11 package restored with five audit warnings visible in test-only project. Earlier full12744 MTP/3 controlled exit2 checks reused for unchanged cases. First hosted failure retained; next matrix pending.",
       "artifact": "docs/reports/M9-ci-maintenance/summary.json"
+    },
+    {
+      "id": "hosted-attempt-2",
+      "kind": "check",
+      "revision": "1913148b91d71a8c3aac2653e3f0dd77db9f3c7d",
+      "command": "GitHub Build and validate run38582930113, capped20min/job,max3parallel; inspect actual job logs and upstream MSVC static-library naming",
+      "result": "failed",
+      "summary": "Linux and macOS complete workflow passed. Windows native builds passed, then archive hash metadata lookup failed on exact filename discrepancy xml2.lib vs actual libxml2s.lib; later Windows steps not run. Single-line owning repair committed; no failure suppression or product change.",
+      "artifact": "docs/reports/M9-ci-maintenance/summary.json"
     }
   ],
   "blockers": [],
@@ -101,7 +110,7 @@
       "Local CI equivalents passed; original and intermediate failures retained."
     ],
     "remaining": [
-      "First hosted attempt failed on demonstrated encoding/runtime/reference prerequisites; second fixed revision matrix pending."
+      "Third coherent fixed revision matrix required after verified exact Windows archive-name correction; previous two failures retained."
     ],
     "requests": [
       "Coordinator grants exact aggregate benchmark project repair for demonstrated CS0103 XxHash3 missing dependency; existing M9-benchmark-build prerequisite verified. Preserve benchmark source/algorithm and historical measurements.",

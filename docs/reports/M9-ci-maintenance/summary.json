@@ -17,7 +17,8 @@
     "Full MTP driver uses release-equivalent JIT/GC settings, serial collections/modules and invariant culture.",
     "Explicit UTF-8 driver decode/report output and job-wide Python UTF-8 mode.",
     "Install actual runtime10.0.11 and pin generated application runtimeconfigs with rollForward Disable.",
-    "Build Jing/libxml2 from frozen revisions, record actual binary/class hashes, restore canonical XML reference package; environment overrides for identity/Java paths preserve all original RNG assertions."
+    "Build Jing/libxml2 from frozen revisions, record actual binary/class hashes, restore canonical XML reference package; environment overrides for identity/Java paths preserve all original RNG assertions.",
+    "Use exact observed MSVC static archive libxml2s.lib when computing archive hash; retain single-file assertion and original engine/binary/hash/oracle checks."
   ],
   "local_failures": [
     {
@@ -81,6 +82,17 @@
         "macos-latest": "12744 MTP outcomes: 12572 pass/172 fail/0skip; 166 pinned-runtime mismatches (10.0.13 vs10.0.11), 2 missing RNG engines, 4 missing canonical XML reference package.",
         "ubuntu-latest": "Same 172 failure categories as macOS; build/API passed."
       }
+    },
+    {
+      "run": 38582930113,
+      "url": "https://github.com/sebastienros/xemele/actions/runs/38582930113",
+      "revision": "1913148b91d71a8c3aac2653e3f0dd77db9f3c7d",
+      "conclusion": "failure",
+      "jobs": {
+        "ubuntu-latest": "Full workflow passed.",
+        "macos-latest": "Full workflow passed.",
+        "windows-latest": "Build/API/runtime11 install/Jing and libxml2 native builds passed; helper archive hash lookup expected xml2.lib but actual MSVC Release output is libxml2s.lib. Ordinary MTP/corpus/pack steps not run."
+      }
     }
   ],
   "scope": "Runtime source and API/corpus/release inputs preserved; only reference-test identity/Java paths made portable. Original standalone gate evidence retained separately. No fuzz campaign, release duplicate, remote main/tag or publication.",
@@ -89,5 +101,6 @@
     "Preserved libxml2.git cache lacked HEAD/config; official pinned upstream fetched into owned outputs instead.",
     "Preserved CMake lacked modules; task-local CMake3.31.6 installed instead.",
     "Frozen test-reference packages triggered warning-as-error audit failures; only NU1902/NU1903 kept as visible warnings in isolated generated reference restore project."
-  ]
+  ],
+  "windows_archive_repair_revision": "257ecf3485b7539264f4aa8513d1c89d43ad4349"
 }
