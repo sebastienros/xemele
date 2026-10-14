@@ -143,6 +143,18 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
 
     public ScanResult Append<TSink>(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets,
         bool isFinalBlock, TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
+        => AppendCore(input, new ByteMappings(byteOffsets), isFinalBlock, sink, cancellationToken);
+
+    // Only the owned byte decoder can prove one original byte per UTF-16 unit.
+    internal ScanResult AppendAscii<TSink>(ReadOnlySpan<char> input, long firstByteOffset,
+        TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
+    {
+        if (!trustedByteMappings) throw new InvalidOperationException("Affine mappings require the owned byte decoder.");
+        return AppendCore(input, new ByteMappings(firstByteOffset, input.Length), false, sink, cancellationToken);
+    }
+
+    private ScanResult AppendCore<TSink>(ReadOnlySpan<char> input, ByteMappings byteOffsets,
+        bool isFinalBlock, TSink sink, CancellationToken cancellationToken) where TSink : class, IXmlEventSink
     {
         if (Interlocked.CompareExchange(ref gate, 1, 0) != 0) throw new InvalidOperationException("Concurrent or reentrant core use.");
         int consumed = 0;
@@ -199,7 +211,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                     {
                         if (state == State.Data && !textActive && input[consumed] == '<' && sink is IXmlDomBatchSink)
                         {
-                            int completeTag = ConsumeWholeAsciiTag(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : [], hasOpening: true);
+                            int completeTag = ConsumeWholeAsciiTag(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, hasOpening: true);
                             if (completeTag != 0) { consumed += completeTag; continue; }
                         }
                         if (state == State.Data && !textActive && frames.Count != 0 && sink is IXmlDomBatchSink && !RecoveryEnabled &&
@@ -212,12 +224,12 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         }
                         if (state == State.Less && sink is IXmlBulkTextSink)
                         {
-                            int wholeTag = ConsumeWholeAsciiTag(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : []);
+                            int wholeTag = ConsumeWholeAsciiTag(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default);
                             if (wholeTag != 0) { consumed += wholeTag; continue; }
                         }
                         if (state == State.Data && sink is IXmlDomBatchSink textBatch)
                         {
-                            int normalizedRun = ConsumeNormalizedTextRun(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : [], out int references, out var normalizedAt);
+                            int normalizedRun = ConsumeNormalizedTextRun(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, out int references, out var normalizedAt);
                             if (normalizedRun != 0)
                             {
                                 var raw = input.Slice(consumed, normalizedRun); consumed += normalizedRun;
@@ -230,7 +242,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                         }
                         if (input[consumed] == '&' && sink is IXmlBulkTextSink)
                         {
-                            int reference = ConsumeScalarReference(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : [], out var referenceAt, out char value);
+                            int reference = ConsumeScalarReference(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, out var referenceAt, out char value);
                             if (reference != 0)
                             {
                                 consumed += reference; fragment[0] = value;
@@ -238,7 +250,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                                 continue;
                             }
                         }
-                        int run = ConsumePlainRun(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : [], sink is IXmlBulkTextSink, out var runLocation);
+                        int run = ConsumePlainRun(input[consumed..], sourceMode == 2 ? byteOffsets[consumed..] : default, sink is IXmlBulkTextSink, out var runLocation);
                         if (run != 0)
                         {
                             var borrowed = input.Slice(consumed, run);
@@ -315,7 +327,48 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         ObjectDisposedException.ThrowIf(disposed, this);
         if (faulted || terminal) throw new InvalidOperationException("Core operation is terminal or faulted.");
     }
-    private void ValidateOffsets(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, CancellationToken cancellation)
+    // Borrowed explicit mappings or a proven one-byte ASCII run. Neither view
+    // survives AppendCore; persisted token locations copy coordinates by value.
+    private readonly ref struct ByteMappings
+    {
+        private readonly ReadOnlySpan<long> values;
+        private readonly long first;
+        public int Length { get; }
+        public bool IsEmpty => Length == 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ByteMappings(ReadOnlySpan<long> values) { this.values = values; first = 0; Length = values.Length; }
+        public ByteMappings(long first, int length)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(first);
+            ArgumentOutOfRangeException.ThrowIfNegative(length);
+            if (length != 0 && first > long.MaxValue - (length - 1L)) throw new ArgumentOutOfRangeException(nameof(first));
+            values = default; this.first = first; Length = length;
+        }
+        // A bounded nonempty slice inherits its parent's overflow proof.
+        private ByteMappings(long first, int length, bool validated)
+        { values = default; this.first = first; Length = length; }
+        public long this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                if (!values.IsEmpty) return values[index];
+                if ((uint)index >= (uint)Length) throw new ArgumentOutOfRangeException(nameof(index));
+                return first + index;
+            }
+        }
+        public ByteMappings this[Range range]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                var (start, length) = range.GetOffsetAndLength(Length);
+                if (length == 0) return default;
+                return values.IsEmpty ? new(first + start, length, true) : new(values.Slice(start, length));
+            }
+        }
+    }
+    private void ValidateOffsets(ReadOnlySpan<char> input, ByteMappings offsets, CancellationToken cancellation)
     {
         if (!offsets.IsEmpty && offsets.Length != input.Length) throw new ArgumentException("Parallel mappings must match input length.", nameof(offsets));
         int mode = offsets.IsEmpty ? 1 : 2;
@@ -336,7 +389,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         if (high != 0 && char.IsLowSurrogate(unit) && current != highLocation.ByteOffset)
             throw new ArgumentException("Surrogate mappings differ.", parameter);
     }
-    private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, bool hasOpening = false)
+    private int ConsumeWholeAsciiTag(ReadOnlySpan<char> input, ByteMappings offsets, bool hasOpening = false)
     {
         int leading = hasOpening ? 1 : 0;
         var units = input[leading..];
@@ -465,7 +518,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         source.Index += run.Length; entitySources[^1] = source; brackets = 0;
         return run;
     }
-    private int ConsumeNormalizedTextRun(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out int references, out XmlLocation at)
+    private int ConsumeNormalizedTextRun(ReadOnlySpan<char> input, ByteMappings offsets, out int references, out XmlLocation at)
     {
         references = 0; at = default;
         if (entities is not null || !textActive || !textStarted || frames.Count == 0 || RecoveryEnabled ||
@@ -536,7 +589,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         // scalar parser; this candidate never changes state on failure.
         return 0;
     }
-    private int ConsumeScalarReference(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, out XmlLocation at, out char value)
+    private int ConsumeScalarReference(ReadOnlySpan<char> input, ByteMappings offsets, out XmlLocation at, out char value)
     {
         at = default; value = '\0';
         if (state != State.Data || !textActive || !textStarted || frames.Count == 0) return 0;
@@ -563,7 +616,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         position.AdvanceColumns(length); normalizedCr = false; brackets = 0; tokenLength = 0;
         return length;
     }
-    private int ConsumePlainRun(ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, bool bulkText, out XmlLocation at)
+    private int ConsumePlainRun(ReadOnlySpan<char> input, ByteMappings offsets, bool bulkText, out XmlLocation at)
     {
         at = default;
         bool data = state == State.Data;

@@ -1,5 +1,6 @@
 using System.Text;
 using Xemele.Parsing.Syntax;
+using Xemele.Parsing.Input;
 using Xunit;
 
 namespace Xemele.Tests.XmlPerformance;
@@ -259,6 +260,80 @@ public sealed class PerformanceTests
         var actual = XmlDocument.Parse(Encoding.UTF8.GetBytes(xml).AsSpan(), cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(reference.DocumentElement!.InnerText, actual.RootElement.GetTextContent());
         Assert.Equal(new XmlLocation(null, 1, 4, 3), actual.OriginalLocation(actual.RootElement.FirstChild));
+    }
+    [Theory]
+    [InlineData("abc\r\ndef\rghi\nj", 1, 1)]
+    [InlineData("a\r\nb", 2147483646, 2147483646)]
+    [InlineData("ab", 1, 2147483646)]
+    [InlineData("\r\nx", 2147483646, 1)]
+    [InlineData("\n\n", 2147483647, 1)]
+    public void AffineAsciiDecoderPreservesNewlinesAndLocationLimits(string body, int line, int column)
+    {
+        var cancel = TestContext.Current.CancellationToken;
+        using var ordinary = new XmlInputDecoder(new());
+        using var affine = new XmlInputDecoder(new());
+        var chars = new char[32]; var mappings = new long[32];
+        foreach (var decoder in new[] { ordinary, affine })
+        {
+            Assert.Equal(4, decoder.Decode("<r>!"u8, chars, mappings, false, cancel).ConsumedBytes);
+            Assert.Null(decoder.ValidateDeclaration([], new(null, 1, 1, 0)));
+            var location = typeof(XmlInputDecoder).GetField("location", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(decoder)!;
+            var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+            location.GetType().GetField("line", flags)!.SetValue(location, line);
+            location.GetType().GetField("column", flags)!.SetValue(location, column);
+        }
+        byte[] bytes = Encoding.ASCII.GetBytes(body);
+        var expected = ordinary.Decode(bytes, chars, mappings, false, cancel);
+        string expectedText = new(chars, 0, expected.WrittenCharacters);
+        int firstCount = affine.DecodeAscii(bytes, chars, out long first, cancel);
+        Assert.Equal(4, first);
+        string actualText = new(chars, 0, firstCount);
+        DecodeResult tail = default;
+        if (firstCount < bytes.Length)
+        {
+            tail = affine.Decode(bytes.AsSpan(firstCount), chars, mappings, false, cancel);
+            actualText += new string(chars, 0, tail.WrittenCharacters);
+        }
+        Assert.Equal(expectedText, actualText);
+        Assert.Equal(expected.ConsumedBytes, firstCount + tail.ConsumedBytes);
+        Assert.Equal(expected.Diagnostic, tail.Diagnostic);
+        if (expected.Step != DecodeStep.InvalidInput)
+        {
+            Assert.Equal(ordinary.Decode([0xff], chars, mappings, false, cancel).Diagnostic,
+                affine.Decode([0xff], chars, mappings, false, cancel).Diagnostic);
+        }
+    }
+    [Fact]
+    public void PreparedAffineAsciiDispatchAllocatesZero()
+    {
+        using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } }, trustedByteMappings: true);
+        var sink = new BulkSink(); var cancel = TestContext.Current.CancellationToken;
+        core.AppendAscii("<r>", 0, sink, cancel);
+        string run = new('x', 4096); long offset = 3;
+        for (int i = 0; i < 20; i++) { core.AppendAscii(run, offset, sink, cancel); offset += run.Length; }
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1000; i++)
+        {
+            var result = core.AppendAscii(run, offset, sink, cancel); offset += run.Length;
+            if (result.Step != ScanStep.NeedInput || result.Consumed != run.Length) throw new InvalidOperationException("Incomplete affine run.");
+        }
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+        core.AppendAscii("</r>", offset, sink, cancel);
+        core.CompleteByteSource(offset + 4);
+        Assert.Equal(ScanStep.Completed, core.Append([], [], true, sink, cancel).Step);
+    }
+    [Theory]
+    [InlineData(0)] [InlineData(1)] [InlineData(4095)] [InlineData(4096)]
+    public void AffineAsciiDomPreservesByteAnchorsAcrossNewlineAndUnicodeTransitions(int padding)
+    {
+        string xml = "<r>" + new string('x', padding) + "\r\n<n a='v'>α😀</n>\r<t/>\n</r>";
+        byte[] input = Encoding.UTF8.GetBytes(xml);
+        var actual = XmlDocument.Parse(input.AsSpan(), cancellationToken: TestContext.Current.CancellationToken);
+        var n = actual.RootElement.FirstChild.NextSibling;
+        int start = xml.IndexOf("<n", StringComparison.Ordinal);
+        Assert.Equal(new XmlLocation(null, 2, 1, Encoding.UTF8.GetByteCount(xml.AsSpan(0, start))), actual.OriginalLocation(n));
+        Assert.Equal("α😀", n.GetTextContent());
+        Assert.Equal(new XmlLocation(null, 2, 4, Encoding.UTF8.GetByteCount(xml.AsSpan(0, start + 3))), actual.OriginalLocation(n.Attributes[0]));
     }
     private sealed class TextCapture : Xemele.Streaming.XmlSaxHandler
     {

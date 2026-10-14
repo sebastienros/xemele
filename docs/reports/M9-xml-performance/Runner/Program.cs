@@ -23,15 +23,18 @@ if(args[0]=="check") {
  }return;
 }
 if(args[0]=="paired") {
+ string candidateMethod=args.Length>3?args[3]:"xb";
+ string baselineMethod=candidateMethod switch{"xb"=>"bb","xc"=>"bc","xs"=>"bs","xsc"=>"bsc",_=>throw new ArgumentException("paired method must be xb, xc, xs or xsc")};
  var all=new List<object>();
- foreach(var fixture in new[]{"feed-small","svg-small","deep-medium","entity-medium","xhtml-medium","build-medium","soap-large","configuration-large","business-large","text-large"}) {
+ var fixtures=args.Length>4?args.Skip(4).ToArray():new[]{"feed-small","svg-small","deep-medium","entity-medium","xhtml-medium","build-medium","soap-large","configuration-large","business-large","text-large"};
+ foreach(var fixture in fixtures) {
   var context=new VariantContext(Path.GetFullPath(args[1]));
   var assembly=context.LoadFromAssemblyPath(typeof(Workload).Assembly.Location);
   var type=assembly.GetType("Workload")!;
   var target=Activator.CreateInstance(type,fixture)!;
   var previous=type.GetMethod("Run")!.CreateDelegate<Func<string,object>>(target);
   var current=new Workload(fixture);
-  var methods=new Dictionary<string,Func<object>>{{"before",()=>previous("xb")},{"after",()=>current.Run("xb")},{"bcl",()=>current.Run("bb")}};
+  var methods=new Dictionary<string,Func<object>>{{"before",()=>previous(candidateMethod)},{"after",()=>current.Run(candidateMethod)},{"bcl",()=>current.Run(baselineMethod)}};
   foreach(var method in methods.Values)for(int i=0;i<5;i++)GC.KeepAlive(method());
   var rows=methods.Keys.ToDictionary(k=>k,k=>new List<object>());
   for(int round=0;round<7;round++)foreach(var key in round%2==0?methods.Keys:methods.Keys.Reverse()){

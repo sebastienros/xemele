@@ -50,6 +50,18 @@ internal sealed partial class ByteDomAdapter : IDisposable
         while (!input.IsEmpty && Diagnostic is null)
         {
             cancellation.ThrowIfCancellationRequested();
+            if (prefixDecided && sink.DeclarationValidated)
+            {
+                int ascii = decoder.DecodeAscii(input, characters.AsSpan(0, 4096), out long firstByteOffset, cancellation);
+                if (ascii != 0)
+                {
+                    byteLength = checked(byteLength + ascii);
+                    input = input[ascii..];
+                    var asciiResult = core.AppendAscii(characters.AsSpan(0, ascii), firstByteOffset, sink, cancellation);
+                    Diagnostic = sink.Diagnostic ?? asciiResult.Diagnostic;
+                    continue;
+                }
+            }
             var submitted = sink.DeclarationValidated ? input : input[..1];
             // Two units during framing drain detection carry before another
             // original byte; a scalar pair always fits without being split.
