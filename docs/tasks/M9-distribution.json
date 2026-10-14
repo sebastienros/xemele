@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-final-os-validation",
   "base_revision": "cdb27d5993bc3b03653142168e2de9384c07bfa6",
-  "integration_revision": "f065b4f5b9c63cd955fc86c8eda0b5213617d5de",
+  "integration_revision": "b380dd064363686ea64b80846d843b886e2e80f6",
   "depends_on": [
     "M9-contracts",
     "M9-build-compatibility",
@@ -46,7 +46,8 @@
         "hosted-windows-consumers-pass",
         "required-os-matrix-source-bound",
         "required-os-distribution-integrated",
-        "final-current-platform-matrix"
+        "final-current-platform-matrix",
+        "final-current-matrix-integrated"
       ]
     },
     {
@@ -61,7 +62,8 @@
         "hosted-windows-consumers-pass",
         "required-os-matrix-source-bound",
         "required-os-distribution-integrated",
-        "final-current-platform-matrix"
+        "final-current-platform-matrix",
+        "final-current-matrix-integrated"
       ]
     },
     {
@@ -75,7 +77,8 @@
         "hosted-windows-consumers-pass",
         "required-os-matrix-source-bound",
         "required-os-distribution-integrated",
-        "final-current-platform-matrix"
+        "final-current-platform-matrix",
+        "final-current-matrix-integrated"
       ]
     }
   ],
@@ -270,6 +273,15 @@
       "command": "One explicitly approved validation-branch push; actual run38522581339 two20mincap Windows/Linuxjobs; exact downloaded summaries; source-bound current macOSlocal checks; planning/diff checks",
       "result": "passed",
       "summary": "Current11216unit checks/package/freshmanaged/trim/NativeAOT/tool pass onWindowsx64/Linuxx64 plusactualsource-equivalentmacOSarm64. Bothapprovedjobs pass317/499sec. Extra legacyCI3jobs107sec failed knownfragmentdiscovery before runtime checks; cancellation foundterminal, no releasecredit/rerun. Exact originalsuccesses/failures retained; no publication.",
+      "artifact": "docs/reports/M9-distribution/final-matrix.json"
+    },
+    {
+      "id": "final-current-matrix-integrated",
+      "kind": "integration",
+      "revision": "b380dd064363686ea64b80846d843b886e2e80f6",
+      "command": "Exact currentruntime/unit/fixture/consumer/package/build/workflow source comparison to approved47529a699; planning/diff checks",
+      "result": "passed",
+      "summary": "Integrated inputs equal actual successfulWindows/Linux source; currentmacOSsource bound withinmatrixreport. No repeatedjobs or sourcechanged tests. All3OS/botharchitectures current11216unit/package/trim/AOT/tool execution verified; collaterallegacyfailures retained separately.",
       "artifact": "docs/reports/M9-distribution/final-matrix.json"
     }
   ],

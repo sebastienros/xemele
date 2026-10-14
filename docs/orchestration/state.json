@@ -7,22 +7,13 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M8-gate",
-  "last_verified_task": "M9-performance",
-  "last_integrated_revision": "982746f370cd432847c902a99aed775a62fe89f3",
-  "active_assignments": [
-    {
-      "task_id": "M9-distribution",
-      "chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
-      "branch": "codex/m9-final-os-validation",
-      "worktree_path": "/private/tmp/xemele-m9-final-os-validation",
-      "base_revision": "cdb27d5993bc3b03653142168e2de9384c07bfa6"
-    }
-  ],
+  "last_verified_task": "M9-distribution",
+  "last_integrated_revision": "b380dd064363686ea64b80846d843b886e2e80f6",
+  "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Collect actual approvedWindows/Linux run38522581339 results; no further push/dispatch/retry.",
-    "Preserve collateral legacy CI failures/107seconds separately; do not count them as release validation.",
-    "Finalize verified revisedM9 gate/checkpoint/cleanup if required matrix passes; main can collect terminalhandoff directly."
+    "Reclaim finalgate afterverifiedcurrentdistribution; audit allrequiredrevised criteria and source-equivalentactualchecks.",
+    "Preserveunpublishedpackages anddurablesummaries; remove onlyfinishedmergedassistantcheckouts; terminalmainhandoffvia directcollection."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -2050,7 +2041,7 @@
     "revision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
     "run": 38522581339,
     "runUrl": "https://github.com/sebastienros/xemele/actions/runs/38522581339",
-    "runStatus": "in_progress",
+    "runStatus": "completed",
     "jobs": [
       "linux-x64",
       "win-x64"
@@ -2079,7 +2070,10 @@
       "noRerun": true
     },
     "publication": false,
-    "remoteMainOrTagsChanged": false
+    "remoteMainOrTagsChanged": false,
+    "runConclusion": "success",
+    "actualRunnerSeconds": 816,
+    "authorizedBudgetConsumed": true
   },
   "goal_blocked_audit": {
     "goalStatusNote": "Prior pause revoked by direct human resume; goal tool exposes no active/resume mutation. Work resumed and progressed.",
