@@ -1,9 +1,9 @@
 {
   "objective": "Execute M9 only through integrated verified M9-gate and terminal cleanup/handoff to main.",
-  "coordinator_chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
+  "coordinator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
-  "previous_coordinator_chat_id": "01a13526-d4ff-7dc0-86d1-505ef7f29975",
-  "coordinator_write_status": "Resumed by direct human request01a138d7-56ed-7031-b22d-1d538995b10f; sole main/state writer. Optimizer terminal and relinquished.",
+  "previous_coordinator_chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
+  "coordinator_write_status": "ACTIVATE MAIN terminalM9handoff atcontainingcommit; completionchat relinquishes allsource/main/statewrites; main directcollection",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M9-gate",
@@ -12,8 +12,7 @@
   "active_assignments": [],
   "integration_queue": [],
   "next_actions": [
-    "Clean onlyfinishedmergedassistant checkouts afterdurableevidence/package preservation; humancampaigncheckout/processes untouched.",
-    "TerminalACTIVATE MAIN handoffvia directcollection; messagingtoolpermissionblockdoesnotstall verifiedcompletion."
+    "Main collect docs/orchestration/terminal-M9-handoff.json andverifiedM9gate; no sourcewrite/remoteaction needed bycompletionchat."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -2076,12 +2075,10 @@
     "authorizedBudgetConsumed": true
   },
   "goal_blocked_audit": {
-    "goalStatusNote": "Prior pause revoked by direct human resume; goal tool exposes no active/resume mutation. Work resumed and progressed.",
-    "previousGoalTurn": "verified wait before explicit human pause",
-    "currentTurn": "progress: integrated and verified XML/performance, fixed EOFcancellationbug, all current local gate checks pass; prepared minimal OSproposal",
+    "goalStatus": "complete-pending-goal-tool-confirmation",
+    "currentTurn": "progress:13/13M9and208/208alltasksverified; currentactualrequiredrevisedchecks pass; packages preserved;6finishedassistantcheckouts removed; terminalhandoff ready",
     "consecutiveNoProgressTurns": 0,
-    "condition": "Await explicit remaining currentOSbudget/gatedecision",
-    "gateCompletionProven": false
+    "gateCompletionProven": true
   },
   "hosted_validation_candidate_history": [
     {
@@ -2301,6 +2298,8 @@
     "reportedRetainedRatio": 0.8277402660892974,
     "unpublishedPackageCheckpoint": "artifacts/M9-gate/checkpoint-d4402f04",
     "report": "docs/reports/M9-gate/summary.json",
-    "originalFullReleaseEvidenceClaimed": false
+    "originalFullReleaseEvidenceClaimed": false,
+    "cleanup": "docs/orchestration/cleanup-M9-gate.json",
+    "terminalHandoff": "docs/orchestration/terminal-M9-handoff.json"
   }
 }
