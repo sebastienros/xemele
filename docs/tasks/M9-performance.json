@@ -4,11 +4,11 @@
   "milestone": "M9",
   "title": "Reproducible performance acceptance",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-final-performance",
   "base_revision": "fbcd4ff300c85582615867461a7743addec7a69d",
-  "integration_revision": "9d14c99c6ca63207af86da2c36819fc34541bbb7",
+  "integration_revision": "982746f370cd432847c902a99aed775a62fe89f3",
   "depends_on": [
     "M9-contracts",
     "M9-dom-memory",
@@ -39,7 +39,8 @@
         "current-repaired-stream-memory",
         "human-informational-timing-revision",
         "human-current-memory-budget",
-        "final-revised-performance"
+        "final-revised-performance",
+        "final-performance-integrated"
       ]
     },
     {
@@ -53,7 +54,8 @@
         "managed-benchmark-oracles",
         "human-informational-timing-revision",
         "human-current-memory-budget",
-        "final-revised-performance"
+        "final-revised-performance",
+        "final-performance-integrated"
       ]
     },
     {
@@ -62,7 +64,8 @@
       "status": "passed",
       "evidence": [
         "honest-accounting",
-        "final-revised-performance"
+        "final-revised-performance",
+        "final-performance-integrated"
       ]
     }
   ],
@@ -216,6 +219,15 @@
       "command": "python3 -B docs/reports/M9-performance/memory-current.py --dotnet pinned10.0.400host; source-bind final XML DOM qualification and12754ordinary checks; tasks.py validate; git diff --check",
       "result": "passed",
       "summary": "Five current1GiBmodes pass all fixed byte/event/text/earlyEOF oracles and65samples; max297832wholemanagedlivebytes<8MiB;9MiBcontrol9653656refuseslimit.9commands exit0,reaped,groupabsent,logclosed. Current controlled retained0.827740<=acceptedapprox0.90; DOMlatGM0.536721/allocGM0.787536,max1.013942/1.139822. Dedicatedtimingunrun, SAXdeficitsinformational, old0.687meter no current credit.",
+      "artifact": "docs/reports/M9-performance/final-performance.json"
+    },
+    {
+      "id": "final-performance-integrated",
+      "kind": "integration",
+      "revision": "982746f370cd432847c902a99aed775a62fe89f3",
+      "command": "Exact measured runtime/runner/profile/build source closure comparison against7dea17c7c; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated final source equals actual five passing1GiBprofiles andcontrol, current12754checks and span-DOM qualification. No repeated workloads, no originaldedicatedtiming/campaign/0.75retainedpass credit.",
       "artifact": "docs/reports/M9-performance/final-performance.json"
     }
   ],
