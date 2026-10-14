@@ -110,6 +110,12 @@ public sealed partial class XmlDocument
     {
         RejectStrictRecovery(options);
         var snapshot = new OperationBudget(options, cancellationToken).Options;
+        if (TryParseUtf16Optimistic(input, snapshot, cancellationToken, out var fast))
+        {
+            document = fast;
+            diagnostics = Array.Empty<XmlDiagnostic>();
+            return true;
+        }
         using var core = new XmlParserCore(snapshot);
         var sink = new DomSink(snapshot, cancellationToken: cancellationToken);
         var result = core.Append(input, [], true, sink, cancellationToken);

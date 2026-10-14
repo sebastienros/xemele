@@ -94,3 +94,13 @@ node and member representation size, not parser transients.
 5. soap-large allocation and retention at 1.14x BCL.
 6. BenchmarkDotNet ShortRun via `default_context.py` has not been run for
    this revision; numbers above come from the in-process runner.
+
+## Follow-up: UTF-16 (char) DOM fast path
+
+`XmlDocument.TryParse(ReadOnlySpan<char>)` now tries the optimistic parser first. The input is validated and
+transcoded to UTF-8 (`Utf8.FromUtf16` with `replaceInvalidSequences: false`, so lone surrogates bail to the
+streaming parser), then parsed by the same fast path with byte offsets recorded as absent. Inputs starting with
+U+FEFF and `Recover` mode bail.
+
+Paired result (char DOM, ratio vs BCL, geomean): 1.73 -> 0.69. Entity-medium is unchanged (2.61); text-large is
+0.74-0.82 (was 0.63) because of the transcode cost. Differential harness: 0 divergences over 388k inputs.

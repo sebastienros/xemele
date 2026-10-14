@@ -32,6 +32,33 @@ public sealed partial class XmlDocument
         return true;
     }
 
+    // Character input is transcoded once to UTF-8 and parsed by the same fast path with byte offsets
+    // suppressed. Invalid UTF-16 and a leading U+FEFF are left to the streaming parser.
+    internal static bool TryParseUtf16Optimistic(ReadOnlySpan<char> input, XmlParseOptions options,
+        CancellationToken cancellationToken, out XmlDocument? document)
+    {
+        document = null;
+        var limits = options.Limits;
+        if (options.Recover || input.IsEmpty || input[0] == '\uFEFF') return false;
+        if (input.Length > (limits.DocumentCharacters ?? long.MaxValue) || input.Length > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
+        int byteCount = Encoding.UTF8.GetByteCount(input);
+        // Beyond the shared pool's 1 MiB bucket limit a fresh, unzeroed array avoids a pool miss plus a memset.
+        bool pooled = byteCount <= 1 << 20;
+        byte[] rented = pooled ? ArrayPool<byte>.Shared.Rent(byteCount) : GC.AllocateUninitializedArray<byte>(byteCount);
+        try
+        {
+            if (Utf8.FromUtf16(input, rented, out _, out int written, replaceInvalidSequences: false) != OperationStatus.Done || written != byteCount) return false;
+            ReadOnlySpan<byte> bytes = rented.AsSpan(0, byteCount);
+            if (byteCount > (limits.DocumentCharacters ?? long.MaxValue) || byteCount > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
+            var candidate = new XmlDocument(limits);
+            var parser = new OptimisticParser(candidate, bytes, limits, cancellationToken, charInput: true);
+            if (!parser.Run()) return false;
+            document = candidate;
+            return true;
+        }
+        finally { if (pooled) ArrayPool<byte>.Shared.Return(rented); }
+    }
+
     private sealed class OptimisticName
     {
         internal byte[] Key = [];
@@ -89,6 +116,8 @@ public sealed partial class XmlDocument
         private readonly XmlDocument doc;
         private readonly ReadOnlySpan<byte> s;
         private readonly int n;
+        private readonly bool charInput;
+        private uint Off(int offset) => charInput ? uint.MaxValue : (uint)offset;
         private readonly CancellationToken cancellation;
         private readonly int maxDepth, maxMembers, tokenLimit, nameLimit;
         private long referenceBudget;
@@ -105,9 +134,9 @@ public sealed partial class XmlDocument
         private OptimisticMembers attributes, declarations;
         private int attributeCount, declarationCount;
 
-        internal OptimisticParser(XmlDocument doc, ReadOnlySpan<byte> input, XmlResourceLimits limits, CancellationToken cancellation)
+        internal OptimisticParser(XmlDocument doc, ReadOnlySpan<byte> input, XmlResourceLimits limits, CancellationToken cancellation, bool charInput = false)
         {
-            this.doc = doc; s = input; n = input.Length; this.cancellation = cancellation;
+            this.doc = doc; this.charInput = charInput; s = input; n = input.Length; this.cancellation = cancellation;
             maxDepth = limits.Depth ?? int.MaxValue;
             maxMembers = Math.Min(MaxMembers, limits.AttributesPerElement ?? int.MaxValue);
             tokenLimit = limits.TokenCharacters ?? int.MaxValue;
@@ -129,7 +158,7 @@ public sealed partial class XmlDocument
         private bool Parse()
         {
             PresizeArenas();
-            doc.RecordSourceOrigin(new(null, 1, 1, 0));
+            doc.RecordSourceOrigin(new(null, 1, 1, charInput ? null : 0));
             if (n >= 3 && s[0] == 0xEF && s[1] == 0xBB && s[2] == 0xBF) { i = 3; lineStart = 3; }
             var head = s[i..];
             if (head.Length >= 6 && head.StartsWith("<?xml"u8) && head[5] is (byte)' ' or (byte)'\t' or (byte)'\n' or (byte)'\r')
@@ -322,7 +351,7 @@ public sealed partial class XmlDocument
             if (!(i + 1 < n && s[i] == '?' && s[i + 1] == '>')) return false;
             i += 2;
             if (i - declarationOffset + 8 >= tokenLimit) return false;
-            doc.SetValidationDeclaration(standalone, new(null, 1, 1, declarationOffset));
+            doc.SetValidationDeclaration(standalone, new(null, 1, 1, charInput ? null : declarationOffset));
             return true;
         }
 
@@ -402,7 +431,7 @@ public sealed partial class XmlDocument
             int slot = doc.Nodes.Count;
             doc.Nodes.Add(new(kind, name, value));
             Link(ref frames[depth], slot);
-            doc.nodeLocations!.Add(new() { Line = (uint)atLine | LocationPresent, Position = (uint)atColumn, Offset = (uint)atOffset });
+            doc.nodeLocations!.Add(new() { Line = (uint)atLine | LocationPresent, Position = (uint)atColumn, Offset = Off(atOffset) });
         }
 
         private bool Text()
@@ -768,7 +797,7 @@ public sealed partial class XmlDocument
             int slot = doc.Nodes.Count;
             doc.Nodes.Add(new(XmlNodeKind.Element, elementName, ""));
             Link(ref frames[depth], slot);
-            doc.nodeLocations!.Add(new() { Line = (uint)tagLine | LocationPresent, Position = (uint)tagColumn, Offset = (uint)tagStart });
+            doc.nodeLocations!.Add(new() { Line = (uint)tagLine | LocationPresent, Position = (uint)tagColumn, Offset = Off(tagStart) });
 
             ref var element = ref doc.Nodes[slot];
             if (declarationCount > 0) WriteDeclarations(slot, ref element);
@@ -833,7 +862,7 @@ public sealed partial class XmlDocument
                 ref var declaration = ref declarations[d];
                 int at = first + d;
                 slots.Add(new MemberData(slot, declaration.Name.DeclName, declaration.Value) { Previous = d == 0 ? -1 : at - 1, Next = d == declarationCount - 1 ? -1 : at + 1 });
-                locations.Add(new() { Line = (uint)declaration.Line | LocationPresent, Position = (uint)declaration.Column, Offset = (uint)declaration.Offset });
+                locations.Add(new() { Line = (uint)declaration.Line | LocationPresent, Position = (uint)declaration.Column, Offset = Off(declaration.Offset) });
             }
             element.FirstNamespace = first; element.LastNamespace = first + declarationCount - 1; element.NamespaceCount = declarationCount;
             memberCount += declarationCount;
@@ -851,7 +880,7 @@ public sealed partial class XmlDocument
                 if (attributeName is null) return false;
                 int at = first + a;
                 slots.Add(new MemberData(slot, attributeName, attribute.Value) { Previous = a == 0 ? -1 : at - 1, Next = a == attributeCount - 1 ? -1 : at + 1 });
-                locations.Add(new() { Line = (uint)attribute.Line | LocationPresent, Position = (uint)attribute.Column, Offset = (uint)attribute.Offset });
+                locations.Add(new() { Line = (uint)attribute.Line | LocationPresent, Position = (uint)attribute.Column, Offset = Off(attribute.Offset) });
             }
             ref var element = ref doc.Nodes[slot];
             element.FirstAttribute = first; element.LastAttribute = first + attributeCount - 1; element.AttributeCount = attributeCount;

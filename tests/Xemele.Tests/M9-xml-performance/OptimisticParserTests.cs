@@ -45,6 +45,33 @@ public sealed class OptimisticParserTests
         AssertSame(fast!, Slow(data));
     }
 
+    [Theory, MemberData(nameof(Accepted))]
+    public void CharacterInputBuildsTheSameDocumentAsTheStreamingParser(string xml)
+    {
+        if (xml.StartsWith('\uFEFF'))
+        {
+            Assert.False(XmlDocument.TryParseUtf16Optimistic(xml, Snapshot(), Ct, out _));
+            return;
+        }
+        Assert.True(XmlDocument.TryParseUtf16Optimistic(xml, Snapshot(), Ct, out var fast));
+        using var core = new Xemele.Parsing.Syntax.XmlParserCore(Snapshot());
+        var sink = new DomSink(Snapshot(), cancellationToken: Ct);
+        var result = core.Append(xml.AsSpan(), [], true, sink, Ct);
+        Assert.Null(sink.Diagnostic ?? result.Diagnostic);
+        AssertSame(fast!, sink.Document);
+    }
+
+    [Fact]
+    public void LoneSurrogatesAreRejectedForCharacterInput()
+    {
+        // Attribute metadata cannot carry lone surrogates, so the inputs are built at run time.
+        foreach (string xml in new[] { "<a>" + (char)0xD800 + "</a>", "<a>" + (char)0xDC00 + "x</a>", "<a b='" + (char)0xD83D + "'/>" })
+        {
+            Assert.False(XmlDocument.TryParseUtf16Optimistic(xml, Snapshot(), Ct, out _));
+            Assert.Throws<XmlParseException>(() => XmlDocument.Parse(xml, cancellationToken: Ct));
+        }
+    }
+
     [Theory, MemberData(nameof(Rejected))]
     public void RejectedInputFallsBackToTheStreamingParser(string xml)
     {
