@@ -1,0 +1,39 @@
+{
+  "status": "prepared-not-pushed-not-run",
+  "branch": "codex/m9-final-os-validation",
+  "repository": "sebastienros/xemele",
+  "visibility": "private per existing approved distribution records",
+  "jobs": [
+    {
+      "os": "ubuntu-latest",
+      "rid": "linux-x64",
+      "maxMinutes": 20
+    },
+    {
+      "os": "windows-latest",
+      "rid": "win-x64",
+      "maxMinutes": 20
+    }
+  ],
+  "maximumRunnerMinutes": 40,
+  "trigger": "One push to prepared validation branch; no additional dispatch or retry authorization",
+  "scope": "11216unit checks, deterministic package, fresh managed/trim/NativeAOT/tool consumers on current runtime; no fuzz/publication/tags/main push",
+  "currentMacOS": {
+    "report": "docs/reports/M9-gate/local-package.json",
+    "sourceRevision": "d4402f04dd04e9240e3ee323c4744dcfe1a58a50",
+    "packageRuntimeFixtureConsumerBuildSourcesEquivalent": true,
+    "actualUnitTests": 11216
+  },
+  "localChanges": [
+    "tools/Packaging/verify.py expected count10754->11216, actual source-bound count",
+    "release.yml only new validation-branch trigger plus exactly2x64OSjobs, cap20min/job"
+  ],
+  "authorization": "New explicit human approval required; prior budgets consumed.",
+  "checks": [
+    "Python AST parse",
+    "exact two-job/20min/contents-read static policy check",
+    "macOS consumer/runtime/build source equivalence",
+    "208task validation",
+    "git diff --check"
+  ]
+}

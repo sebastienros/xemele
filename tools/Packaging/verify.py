@@ -20,7 +20,7 @@ WORK = OUT / 'work'
 VERSION = '0.9.0-rc.1'
 # Current verified integrated test population, including the narrow M9 repairs.
 # This count is evidence-bound; unrun hosted jobs still receive no matrix credit.
-EXPECTED_UNIT_TESTS = 10754
+EXPECTED_UNIT_TESTS = 11216
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()

@@ -2,7 +2,7 @@ name: Local release evidence (no publication)
 on:
   workflow_dispatch:
   push:
-    branches: [codex/m9-os-validation]
+    branches: [codex/m9-final-os-validation]
 permissions:
   contents: read
 concurrency:
@@ -13,10 +13,12 @@ jobs:
     timeout-minutes: 20
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         include:
-          # Linux/macOS passed; only Windows consumption remains.
+          # Current macOS arm64 is locally verified; renew both changed-source x64 platforms.
+          - os: ubuntu-latest
+            rid: linux-x64
           - os: windows-latest
             rid: win-x64
     runs-on: ${{ matrix.os }}
