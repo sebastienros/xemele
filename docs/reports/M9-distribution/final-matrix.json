@@ -1,0 +1,176 @@
+{
+  "result": "passed-current-source-matrix",
+  "requiredOS": [
+    "Linux",
+    "Windows",
+    "macOS"
+  ],
+  "actualRIDs": [
+    "linux-x64",
+    "win-x64",
+    "osx-arm64"
+  ],
+  "cells": [
+    {
+      "result": "passed",
+      "rid": "linux-x64",
+      "revision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
+      "runtime": "10.0.11",
+      "sdk": "10.0.400",
+      "unitCorrectness": {
+        "total": 11216,
+        "passed": 11216,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "not-run": 0
+      },
+      "packages": [
+        {
+          "name": "Xemele.0.9.0-rc.1.nupkg",
+          "sha256": "8a1364915690e47b7e8bdbad0ac0c04c6f3735bd955227ff75d2b1788cfe95df",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        },
+        {
+          "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+          "sha256": "031218177da3834ff2c18d1a135370ae7c3aaa08adcbe9fdeb10c693034d20e8",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        }
+      ],
+      "consumers": {
+        "managed": true,
+        "freshCache": true,
+        "packageReferenceOnly": true,
+        "trim": true,
+        "aot": true,
+        "toolInstall": true
+      },
+      "sourceLink": {
+        "embedded": true,
+        "mappings": {
+          "/_/*": "https://raw.githubusercontent.com/sebastienros/xemele/47529a699addf6be8bfc6b880b7e44d302f558dc/*"
+        },
+        "remoteFetchVerified": false
+      },
+      "published": false,
+      "commands": 21,
+      "allCommandsExitZeroReapedLogsClosed": true,
+      "groupAbsence": "Actual receipts only: Unix groups absent; Windows whole-process-group absence not asserted."
+    },
+    {
+      "result": "passed",
+      "rid": "win-x64",
+      "revision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
+      "runtime": "10.0.11",
+      "sdk": "10.0.400",
+      "unitCorrectness": {
+        "total": 11216,
+        "passed": 11216,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "not-run": 0
+      },
+      "packages": [
+        {
+          "name": "Xemele.0.9.0-rc.1.nupkg",
+          "sha256": "cc4bd17261e25e94bba314e12d6025223dfe6c8c451449885c1da481c9f7ca59",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        },
+        {
+          "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+          "sha256": "3d7514dc1583c248426923f6699a670c4d5c22baf61e809260104453061d5e2f",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        }
+      ],
+      "consumers": {
+        "managed": true,
+        "freshCache": true,
+        "packageReferenceOnly": true,
+        "trim": true,
+        "aot": true,
+        "toolInstall": true
+      },
+      "sourceLink": {
+        "embedded": true,
+        "mappings": {
+          "/_/*": "https://raw.githubusercontent.com/sebastienros/xemele/47529a699addf6be8bfc6b880b7e44d302f558dc/*"
+        },
+        "remoteFetchVerified": false
+      },
+      "published": false,
+      "commands": 23,
+      "allCommandsExitZeroReapedLogsClosed": true,
+      "groupAbsence": "Actual receipts only: Unix groups absent; Windows whole-process-group absence not asserted."
+    },
+    {
+      "rid": "osx-arm64",
+      "revision": "d4402f04dd04e9240e3ee323c4744dcfe1a58a50",
+      "unitCorrectness": {
+        "total": 11216,
+        "passed": 11216
+      },
+      "packages": [
+        {
+          "name": "Xemele.0.9.0-rc.1.nupkg",
+          "sha256": "5ec50c02cf0cc57ebc024b37ca44da0fbe4ccb86c090be18848b06096abae315",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        },
+        {
+          "name": "Xemele.Tool.0.9.0-rc.1.nupkg",
+          "sha256": "db5ce7c2580218bbd6e3ccc30665cfb5af97168c42798e1f7026d2e23a391819",
+          "byteIdenticalCleanRebuild": true,
+          "noticesDocsMetadata": true
+        }
+      ],
+      "consumers": {
+        "managed": true,
+        "freshCache": true,
+        "packageReferenceOnly": true,
+        "trim": true,
+        "aot": true,
+        "toolInstall": true
+      },
+      "report": "docs/reports/M9-gate/local-package.json",
+      "currentSourceEquivalent": true
+    }
+  ],
+  "approvedRun": {
+    "id": 38522581339,
+    "url": "https://github.com/sebastienros/xemele/actions/runs/38522581339",
+    "revision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
+    "jobs": 2,
+    "conclusion": "success",
+    "jobSeconds": [
+      317,
+      499
+    ],
+    "observedRunnerSeconds": 816,
+    "maximumApprovedRunnerSeconds": 2400
+  },
+  "collateralLegacyRun": {
+    "id": 38522581382,
+    "jobs": 3,
+    "jobSeconds": [
+      16,
+      66,
+      25
+    ],
+    "totalSeconds": 107,
+    "conclusion": "failure",
+    "cause": "Existing build workflow exclusion only covered older validation branch; new approvedpush also triggered it. Failed known header-only fragment discovery before runtime checks. Cancel attempt after discovery found all jobs already terminal. No rerun.",
+    "releaseCredit": 0
+  },
+  "historicalOSFailuresAndSuccesses": "Retained unchanged; current success adds evidence without deleting earlier failures.",
+  "limitations": [
+    "Deterministic archive identity within each OS/source revision, not claimed across revisions/platforms.",
+    "Embedded SourceLink exactcommit verified; remote source-fetch not independently tested.",
+    "Generic legacy Buildandvalidate failure preserved separately; canonicalAPI1430/preview222 and approvedrelease checks pass.",
+    "No publication, remote main/tag change, campaign run or dedicated timing credit."
+  ]
+}
