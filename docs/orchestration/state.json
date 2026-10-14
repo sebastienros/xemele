@@ -9,12 +9,30 @@
   "last_verified_checkpoint": "M8-gate",
   "last_verified_task": "M9-robustness",
   "last_integrated_revision": "cb7d5fc2e62354961a704d119586b9a94c933007",
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M9-xml-performance",
+      "chat_id": "01a1361b-a82b-7f52-8c53-9988c0c55811",
+      "host_id": "local",
+      "branch": "codex/xml-performance",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/xml-performance/xemele",
+      "base_revision": "b44a2d24feab66ec7f11f56703d48983cc525c2d",
+      "status": "Existing active claim preserved; collecting bounded terminal handoff"
+    },
+    {
+      "task_id": "M9-performance",
+      "chat_id": "01a13810-0096-7491-abf5-382065b22b4c",
+      "branch": "codex/m9-informational-performance",
+      "worktree_path": "/private/tmp/xemele-m9-informational-performance",
+      "base_revision": "21fba3b8c8d0ebf10631ed1431628e2474640ed2",
+      "scope": "Record direct human dedicated-timing deferral; preserve allocation/live-memory requirements and honest informational outcomes"
+    }
+  ],
   "integration_queue": [],
   "next_actions": [
-    "Collect active M9-xml-performance final owned handoff; do not duplicate its measurements or alter its branch.",
-    "Integrate accepted XML changes, then rerun affected ordinary correctness/corpus/coverage/API/package/memory checks only where sources changed.",
-    "M9-performance needs eligible dedicated x64/arm64 timing evidence or explicit narrow human decision; M9-gate cannot be verified while this requirement remains open."
+    "Record human timing revision in owning performance task/report and downstream gate.",
+    "Collect bounded XML-performance final handoff, including retained-memory method/profile reconciliation and current ratios.",
+    "Integrate accepted source changes and rerun only affected ordinary release checks; campaigns stay offline/unrun."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -144,17 +162,11 @@
   },
   "current_milestone": "M9",
   "milestone_completion_scope": "Existing mandatory release tasks only; no publication or successor milestone.",
-  "milestone_progress": "10/13 M9 tasks verified. Revised robustness verified on integrated unchanged ordinary sources under human offline campaign decision; sustained campaigns/crash qualification remain unrun/offline with zero execution credit. Dedicated comparative timing and active XML-performance task remain before planned M9-gate.",
+  "milestone_progress": "10/13 M9 tasks verified. Revised robustness verified; human also defers dedicated timing and accepts local timing as informational. Active XML-performance integration/correctness and retained-memory result need assessment before remaining performance/gate verification.",
   "blockers": [
-    "Required dedicated x64/arm64 comparative timing evidence remains unavailable; human offline waiver does not revise performance thresholds."
+    "Active XML-performance result/handoff and same-profile retained-memory reconciliation remain; unchanged0.75target is not waived."
   ],
-  "pending_decisions": [
-    {
-      "scope": "M9-performance only",
-      "decision": "Supply eligible dedicated x64/arm64 comparative timing reports/hardware or explicitly revise this remaining release evidence gate; no timing pass can be inferred from local shared measurements.",
-      "status": "Outstanding independent of offline campaign waiver"
-    }
-  ],
+  "pending_decisions": [],
   "timing_queue": [],
   "completed_assignments": [
     {
@@ -2187,5 +2199,11 @@
     ],
     "owning_decision": "docs/reports/M9-robustness/offline-decision.json",
     "robustnessIntegrationRevision": "cb7d5fc2e62354961a704d119586b9a94c933007"
+  },
+  "human_timing_revision": {
+    "instruction": "Defer dedicated timing; use local results as informational evidence",
+    "source": "Direct human response in this M9 chat to timing-gate question",
+    "scope": "Dedicated comparative timing deferred from revised M9 Codex gate; local results informational, original thresholds/history retained without target passes",
+    "memoryAllocationRequirementsUnchanged": true
   }
 }
