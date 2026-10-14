@@ -1,0 +1,62 @@
+{
+  "source_revision": "960e90ccfd6846477042bade6345448f14874ad3",
+  "original_release_checkpoint": "258317278bd6e814eb59aa45b8f0801af16a10ab",
+  "original_failure": {
+    "run": 38522581382,
+    "url": "https://github.com/sebastienros/xemele/actions/runs/38522581382",
+    "revision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
+    "jobs_failed": 3,
+    "failure": "Discover API and corpus fragments rejected header-only M8-datatypes.txt; builds/tests skipped."
+  },
+  "repairs": [
+    "Header-only join fragments require nonempty fully validated aggregate; actual compiled comparison unchanged.",
+    "Provision ignored XML fixture bytes through existing bounded hash-pinned hosted_corpus helper; discovery still validates all physical bytes.",
+    "Disable checkout newline conversion before checkout.",
+    "Exclude both release validation branches from generic CI.",
+    "Pin missing System.IO.Hashing 10.0.11 in aggregate benchmark project; source/algorithm unchanged.",
+    "Full MTP driver uses release-equivalent JIT/GC settings, serial collections/modules and invariant culture."
+  ],
+  "local_failures": [
+    {
+      "source_revision": "3e0fd196093bf7ddf7757f98ffbf5fb8578c6b88",
+      "failure": "Clean checkout missing ignored XML bytes (provisioned without changing discovery controls); root build CS0103 XxHash3 dependency missing."
+    },
+    {
+      "source_revision": "8a07acf941173a431a4ad32ac43e7d39e5f3c59a",
+      "failure": "Default JIT full MTP: 2 allocation assertions allocated 96000 bytes; 12742/12744 passed."
+    },
+    {
+      "source_revision": "8a07acf941173a431a4ad32ac43e7d39e5f3c59a",
+      "failure": "Deterministic JIT but parallel MTP: 1 cancellation scheduling failure; 12743/12744 passed."
+    }
+  ],
+  "local_checks": {
+    "discovery_tests": 18,
+    "api_fragments": 55,
+    "compiled_members": 1430,
+    "corpus_manifests": 2,
+    "fixture_checksums": 3388,
+    "pinned_xml_files": 3386,
+    "foundation": "3 actual assemblies and joins; missing/added/changed mismatch exits, 9 signature mutations, invalid bootstrap controls passed",
+    "solution_build": "zero warnings/errors",
+    "mtp": {
+      "total": 12744,
+      "passed": 12744,
+      "failed": 0,
+      "skipped": 0,
+      "infrastructure": 54,
+      "product": 12690,
+      "controlled_failures": 3,
+      "controlled_failure_exit": 2
+    },
+    "corpus_infrastructure": {
+      "passed": 24,
+      "skipped": 0,
+      "cli_checks": 20
+    },
+    "bootstrap": "2 checksum/independent expectation checks passed",
+    "runtime_pack": "created; unpublished"
+  },
+  "hosted_attempts": [],
+  "scope": "No runtime/test source changed; original 12754 standalone gate evidence retained separately. No fuzz campaign, release duplicate, remote main/tag or publication."
+}

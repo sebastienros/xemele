@@ -44,14 +44,18 @@
     {
       "id": "M9-ci-maintenance-A1",
       "description": "Allow header-only join fragments only alongside a nonempty fully validated API union; reject malformed/duplicate/empty aggregate APIs and preserve actual compiled comparison/negative controls.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "local-ci-checks"
+      ]
     },
     {
       "id": "M9-ci-maintenance-A2",
       "description": "Update only stale bootstrap/portable test workflow guards as demonstrated; retain ordinary tests/foundation/corpus checks and exclude release-validation pushes from unrelated generic CI.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "local-ci-checks"
+      ]
     },
     {
       "id": "M9-ci-maintenance-A3",
@@ -60,14 +64,33 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/ApiBaseline/discover.py: nonempty union validation",
+    "tools/ApiBaseline/prepare_corpus.py: reuse pinned byte provisioner",
+    ".github/workflows/build.yml: deliberate triggers, byte-preserving checkout, deterministic tests",
+    "docs/reports/M0-api-wiring/verify.py: real compiled join controls",
+    "docs/reports/M0-tests-mtp/check_runner.py: serial full suite and controlled exits",
+    "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj: exact missing dependency"
+  ],
+  "evidence": [
+    {
+      "id": "local-ci-checks",
+      "kind": "check",
+      "revision": "960e90ccfd6846477042bade6345448f14874ad3",
+      "command": "Full solution restore/build; 18 discovery tests; discover.py; M0-api-wiring/verify.py; M0-tests-mtp/check_runner.py with release-equivalent environment; M0-corpora-wiring/check_cli.py; verify_bootstrap.py; runtime pack; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "12744 MTP tests pass/0skip; 3 controlled exit2 failures; 1430 actual compiled API members and foundation mutation/mismatch controls; 55 fragments/3388 checksum fixtures; 24 corpus tests/20 CLI checks; source-equivalent final build and pack pass. Original failure and local intermediate failures retained. Hosted checks pending.",
+      "artifact": "docs/reports/M9-ci-maintenance/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
     "summary": "Direct human authorization: fix and retry until workflows succeed; dedicated private validation branch only, no publication.",
-    "checks": [],
+    "checks": [
+      "Local CI equivalents passed; original and intermediate failures retained."
+    ],
     "remaining": [
-      "Read originalfailure, implement minimalowningrepair, locallyverify thenrunone3OSmatrix"
+      "Fixed revision hosted three-OS Build and validate matrix pending."
     ],
     "requests": [
       "Coordinator grants exact aggregate benchmark project repair for demonstrated CS0103 XxHash3 missing dependency; existing M9-benchmark-build prerequisite verified. Preserve benchmark source/algorithm and historical measurements."
