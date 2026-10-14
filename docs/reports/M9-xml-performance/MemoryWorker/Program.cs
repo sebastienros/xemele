@@ -125,7 +125,7 @@ static string Verify(string engine, object value, string expected, string expres
     if (engine == "xemele")
     {
         var document = (Candidate)value; digest = Semantic.Candidate(document.RootElement);
-        var context = new XPathContext { Limits = new() { MaxInputItems = 1000000, MaxNodeSetItems = 1000000, MaxOperations = 100000000, MaxInputCharacters = 16777216, MaxStringCharacters = 16777216 } };
+        var context = new XPathContext { Limits = new() { MaxInputItems = 1000000, MaxNodeSetItems = 1000000, MaxOperations = 100000000, MaxInputCharacters = 134217728, MaxStringCharacters = 16777216 } };
         if (XPathExpression.Compile(expression).Evaluate(document.DocumentNode, context).AsNumber() != expectedXPath) throw new InvalidDataException("Candidate XPath oracle differs.");
         using var bytes = new MemoryStream(); document.Save(bytes);
         if (Semantic.Candidate(Candidate.Parse(bytes.ToArray(), new() { DtdProcessing = Xemele.XmlDtdProcessing.Parse })) != expected)

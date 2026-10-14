@@ -84,6 +84,7 @@ public sealed partial class XmlDocument
                 }
                 cancellationToken.ThrowIfCancellationRequested();
                 if (total != remaining || input.ReadByte() >= 0) { input.Position = start; return null; }
+                cancellationToken.ThrowIfCancellationRequested();
                 bytes = rented.AsSpan(0, total);
             }
             if (!TryParseUtf8Optimistic(bytes, snapshot, cancellationToken, out var fast))

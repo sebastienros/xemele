@@ -410,6 +410,14 @@ public sealed class OptimisticParserTests
         Assert.Throws<OperationCanceledException>(() => XmlDocument.Load(new CancelingStream(data, other, seekable: false), cancellationToken: other.Token));
     }
 
+    [Fact]
+    public void CancellationDuringSeekableEndOfStreamProbeIsHonored()
+    {
+        using var source = new CancellationTokenSource();
+        using var stream = new CancelingStream(Encoding.UTF8.GetBytes("<a><b/></a>"), source, seekable: true, cancelAtEof: true);
+        Assert.Throws<OperationCanceledException>(() => XmlDocument.Load(stream, cancellationToken: source.Token));
+    }
+
     private sealed class ForwardOnlyStream(byte[] data) : Stream
     {
         private readonly MemoryStream inner = new(data, writable: false);
@@ -425,7 +433,7 @@ public sealed class OptimisticParserTests
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
-    private sealed class CancelingStream(byte[] data, CancellationTokenSource source, bool seekable) : Stream
+    private sealed class CancelingStream(byte[] data, CancellationTokenSource source, bool seekable, bool cancelAtEof = false) : Stream
     {
         private readonly MemoryStream inner = new(data, writable: false);
         public override bool CanRead => true;
@@ -437,7 +445,7 @@ public sealed class OptimisticParserTests
         public override int Read(byte[] buffer, int offset, int count)
         {
             int read = inner.Read(buffer, offset, count);
-            if (inner.Position == inner.Length) source.Cancel();
+            if (inner.Position == inner.Length && (!cancelAtEof || read == 0)) source.Cancel();
             return read;
         }
         public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
