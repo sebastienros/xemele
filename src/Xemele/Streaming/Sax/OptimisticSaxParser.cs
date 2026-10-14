@@ -564,7 +564,7 @@ internal static class OptimisticSax
                 TrackLines(bodyStart, bodyEnd, high);
                 handler.Comment(scratch.AsSpan(0, length));
             }
-            else if (bodyEnd - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
+            else if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
             i = bodyEnd + 3;
             return true;
         }
@@ -583,7 +583,7 @@ internal static class OptimisticSax
                 EmitRun(bodyStart, bodyEnd);
                 handler.EndCData();
             }
-            else if (bodyEnd - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
+            else if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
             i = bodyEnd + 3;
             return true;
         }
@@ -611,8 +611,9 @@ internal static class OptimisticSax
                 int close = s[bodyStart..].IndexOf("?>"u8);
                 if (close < 0) return false;
                 bodyEnd = bodyStart + close; p = bodyEnd + 2;
-                if (!emit && (bodyEnd - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true))) return false;
+                if (!emit && (bodyEnd + 2 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true))) return false;
             }
+            if (!emit && p - open >= tokenLimit) return false;
             if (emit)
             {
                 int targetLength = target.Length;
@@ -639,6 +640,7 @@ internal static class OptimisticSax
             i = p; SkipWhitespace();
             if ((uint)i >= (uint)n || s[i] != '>') return false;
             i++;
+            if (!emit && i - tagStart >= tokenLimit) return false;
             scope = frame.SavedScope; bindingCount = frame.BindingStart;
             if (emit) handler.EndElement(new XmlEndElement(frame.Name.Local, frame.Name.Prefix, frame.Uri, Loc(closeLine, closeColumn, tagStart)));
             depth--;

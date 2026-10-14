@@ -191,6 +191,75 @@ public sealed class OptimisticParserTests
         }
     }
 
+    [Theory]
+    [InlineData("<a><?abcdefghijklmnop?></a>")]
+    [InlineData("<a><?abcdefghijklmnop x?></a>")]
+    [InlineData("<a></a                >")]
+    public void TokenLimitMatchesTheStreamingParserForTargetsAndCloseTags(string xml)
+    {
+        byte[] data = Encoding.UTF8.GetBytes(xml);
+        var options = new XmlParseOptions { Limits = new() { TokenCharacters = 8 } };
+        var slow = Record.Exception(() => XmlDocument.Load(new ForwardOnlyStream(data), options, cancellationToken: Ct));
+        Assert.NotNull(slow);
+        Assert.Equal(slow.GetType(), Record.Exception(() => XmlDocument.Parse(data, options, cancellationToken: Ct))?.GetType());
+        Assert.False(XmlDocument.TryParse(data, out _, out _, options, Ct));
+    }
+
+    [Fact]
+    public void LongProcessingInstructionTargetsParse()
+    {
+        string target = new('t', 200_000);
+        string xml = "<a><?" + target + " body?></a>";
+        var options = new XmlParseOptions { Limits = new() { TokenCharacters = null, InternedNames = null } };
+        var document = XmlDocument.Parse(Encoding.UTF8.GetBytes(xml), options, cancellationToken: Ct);
+        Assert.Contains(target, document.ToXmlString(cancellationToken: Ct));
+    }
+
+    [Fact]
+    public void CancellationDuringTheFinalReadOfASeekableStreamIsHonored()
+    {
+        using var source = new CancellationTokenSource();
+        byte[] data = Encoding.UTF8.GetBytes("<a><b/></a>");
+        Assert.Throws<OperationCanceledException>(() => XmlDocument.Load(new CancelingStream(data, source, seekable: true), cancellationToken: source.Token));
+        using var other = new CancellationTokenSource();
+        Assert.Throws<OperationCanceledException>(() => XmlDocument.Load(new CancelingStream(data, other, seekable: false), cancellationToken: other.Token));
+    }
+
+    private sealed class ForwardOnlyStream(byte[] data) : Stream
+    {
+        private readonly MemoryStream inner = new(data, writable: false);
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+
+    private sealed class CancelingStream(byte[] data, CancellationTokenSource source, bool seekable) : Stream
+    {
+        private readonly MemoryStream inner = new(data, writable: false);
+        public override bool CanRead => true;
+        public override bool CanSeek => seekable;
+        public override bool CanWrite => false;
+        public override long Length => seekable ? inner.Length : throw new NotSupportedException();
+        public override long Position { get => inner.Position; set => inner.Position = value; }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            int read = inner.Read(buffer, offset, count);
+            if (inner.Position == inner.Length) source.Cancel();
+            return read;
+        }
+        public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+
     private sealed class NonExposingStream(byte[] data) : Stream
     {
         private readonly MemoryStream inner = new(data, writable: false);

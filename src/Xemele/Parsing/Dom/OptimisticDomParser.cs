@@ -576,7 +576,7 @@ public sealed partial class XmlDocument
             if (dash < 0) return false;
             int bodyEnd = bodyStart + dash;
             if (bodyEnd + 2 >= n || s[bodyEnd + 2] != '>') return false;
-            if (bodyEnd - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
+            if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
             AddLeaf(XmlNodeKind.Comment, null, Own(ref values, s[bodyStart..bodyEnd]), startLine, startColumn, open);
             i = bodyEnd + 3;
             return true;
@@ -591,7 +591,7 @@ public sealed partial class XmlDocument
             int close = s[bodyStart..].IndexOf("]]>"u8);
             if (close < 0) return false;
             int bodyEnd = bodyStart + close;
-            if (bodyEnd - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
+            if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
             AddLeaf(XmlNodeKind.CData, null, Own(ref values, s[bodyStart..bodyEnd]), startLine, startColumn, open);
             i = bodyEnd + 3;
             return true;
@@ -620,8 +620,9 @@ public sealed partial class XmlDocument
                 int close = s[bodyStart..].IndexOf("?>"u8);
                 if (close < 0) return false;
                 bodyEnd = bodyStart + close; p = bodyEnd + 2;
-                if (bodyEnd - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
+                if (bodyEnd + 2 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
             }
+            if (p - open >= tokenLimit) return false;
             string name = TargetName(target);
             if (doc.names.Count + qnameCount + 8 > nameLimit) return false;
             var data = doc.GetName(name, "", "");
@@ -632,22 +633,27 @@ public sealed partial class XmlDocument
 
         private string TargetName(ReadOnlySpan<byte> target)
         {
-            Span<char> chars = stackalloc char[target.Length];
-            Ascii.ToUtf16(target, chars, out _);
-            return doc.FindInternedName(chars) ?? new string(chars);
+            if (target.Length <= 256)
+            {
+                Span<char> chars = stackalloc char[target.Length];
+                Ascii.ToUtf16(target, chars, out _);
+                return doc.FindInternedName(chars) ?? new string(chars);
+            }
+            return Latin(target);
         }
 
         private bool CloseTag()
         {
             ref var frame = ref frames[depth];
             if (depth == 0) return false;
-            int p = i + 2;
+            int tagStart = i, p = i + 2;
             var open = s.Slice(frame.NameStart, frame.NameLength);
             if (n - p < open.Length || !s.Slice(p, open.Length).SequenceEqual(open)) return false;
             p += open.Length;
             i = p; SkipWhitespace();
             if ((uint)i >= (uint)n || s[i] != '>') return false;
             i++;
+            if (i - tagStart >= tokenLimit) return false;
             ref var element = ref doc.Nodes[frame.Slot];
             element.First = frame.First; element.Last = frame.Last; element.Count = frame.Count;
             scope = frame.SavedScope; bindingCount = frame.BindingStart;

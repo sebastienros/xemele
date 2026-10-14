@@ -158,6 +158,9 @@ public sealed class OptimisticSaxTests
     [InlineData("<a b='1' c='2' d='3'/>", 0, 2, 0, 0)]
     [InlineData("<a>0123456789012345678901234567890</a>", 0, 0, 20, 0)]
     [InlineData("<a><b/><c/><d/></a>", 0, 0, 0, 3)]
+    [InlineData("<a><?abcdefghijklmnop?></a>", 0, 0, 8, 0)]
+    [InlineData("<a><?abcdefghijklmnop x?></a>", 0, 0, 8, 0)]
+    [InlineData("<a></a                >", 0, 0, 8, 0)]
     public void LimitedInputBehavesLikeTheStreamingParser(string xml, int depth, int attributes, int tokens, int names)
     {
         var limits = new XmlResourceLimits();

@@ -82,6 +82,7 @@ public sealed partial class XmlDocument
                     if (read == 0) break;
                     total += read;
                 }
+                cancellationToken.ThrowIfCancellationRequested();
                 if (total != remaining || input.ReadByte() >= 0) { input.Position = start; return null; }
                 bytes = rented.AsSpan(0, total);
             }
