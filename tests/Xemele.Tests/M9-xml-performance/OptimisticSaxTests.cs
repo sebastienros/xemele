@@ -505,6 +505,356 @@ public sealed class OptimisticSaxTests
         }
     }
 
+    // ---- Token tape: pass 1 records, the delivery pass replays (or re-scans when a cap is reached) ----
+
+    private static readonly string[] TapeDocuments = [.. AcceptedXml, .. DoctypeXml];
+
+    private const string DoctypeSample = "<?xml version='1.0'?>\n<!DOCTYPE a [<!ENTITY e 'v&#65;'>]>\n<!--c--><a xmlns:p='u' x='&e;1' p:y='&#65;é'>t&e;&amp;u<![CDATA[c]]><?pi d?><p:b/>\n<c k=\"l\"/></a>\n<!--z-->";
+    private const string CrLfSample = "<?xml version='1.0'?>\r\n<!--c--><a xmlns:p='u' x='1\r\n2' p:y='é'>t\r\n&amp;u<![CDATA[c\r\n]]><?pi d\r\n?><p:b/>\r\n<c/></a>\r\n";
+    private const string AttributeSample = "<r xmlns:q='urn:q'><e a='hello world' b='x&amp;y' q:c='é€'/><e a='1'/><f xmlns='urn:f' g='long attribute value with several words'/></r>";
+
+    private static bool ParseWithProbe(string xml, bool characters, SaxTapeProbe probe, IXmlSaxHandler handler)
+        => characters
+            ? OptimisticSax.TryParse(xml.AsSpan(), handler, DtdOptions, Ct, probe)
+            : OptimisticSax.TryParse(Encoding.UTF8.GetBytes(xml), handler, DtdOptions, Ct, probe);
+
+    private static IEnumerable<SaxTapeProbe> ProbeVariants()
+    {
+        yield return new();
+        yield return new() { MaxTapeInts = 0 };
+        yield return new() { InitialTapeInts = 1 };
+        yield return new() { InitialTapeInts = 1, MaxTapeInts = 40 };
+        yield return new() { MaxArenaChars = 3 };
+        yield return new() { InitialTapeInts = 3, MaxArenaChars = 20 };
+    }
+
+    [Fact]
+    public void TheTapeDeliversTheSameEventsAsTheRescanningPassAndTheStreamingParser()
+    {
+        int accepted = 0;
+        foreach (string xml in TapeDocuments)
+            foreach (bool characters in new[] { false, true })
+            {
+                if (characters && xml.StartsWith('\uFEFF')) continue;
+                var taped = new Recorder(); var tapeProbe = new SaxTapeProbe();
+                var rescanned = new Recorder(); var rescanProbe = new SaxTapeProbe { MaxTapeInts = 0 };
+                bool a = ParseWithProbe(xml, characters, tapeProbe, taped), b = ParseWithProbe(xml, characters, rescanProbe, rescanned);
+                Assert.Equal(a, b);
+                Assert.Equal(tapeProbe.Rented, tapeProbe.Returned);
+                Assert.Equal(rescanProbe.Rented, rescanProbe.Returned);
+                Assert.False(rescanProbe.Replayed);
+                if (!a) { Assert.Empty(taped.Events); Assert.Empty(rescanned.Events); Assert.False(tapeProbe.Replayed); continue; }
+                accepted++;
+                Assert.True(tapeProbe.Replayed);
+                Assert.Equal(rescanned.Events, taped.Events);
+                var slow = characters ? SlowCharacters(xml, DtdOptions) : SlowBytes(Encoding.UTF8.GetBytes(xml), DtdOptions);
+                Assert.Equal(slow.Normalized(), taped.Normalized());
+            }
+        Assert.True(accepted > 60, accepted.ToString());
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(7)]
+    [InlineData(33)]
+    public void TheTapeGrowsFromTinyInitialSizes(int initial)
+    {
+        var xml = new StringBuilder("<!DOCTYPE r [<!ENTITY e 'ev'>]><r xmlns:p='u'>");
+        for (int row = 0; row < 400; row++) xml.Append($"<p:i n='{row}' m='&e;é'>text &e; &#65; {row}<!--c--><![CDATA[d]]><?p x?><j/></p:i>\n");
+        xml.Append("</r>");
+        var reference = new Recorder();
+        var referenceProbe = new SaxTapeProbe();
+        Assert.True(ParseWithProbe(xml.ToString(), false, referenceProbe, reference));
+        Assert.True(referenceProbe.Replayed);
+        var grown = new Recorder();
+        var probe = new SaxTapeProbe { InitialTapeInts = initial };
+        Assert.True(ParseWithProbe(xml.ToString(), false, probe, grown));
+        Assert.True(probe.Replayed);
+        Assert.Equal(referenceProbe.TapeInts, probe.TapeInts);
+        Assert.True(probe.TapeInts > initial * 100);
+        Assert.Equal(probe.Rented, probe.Returned);
+        Assert.Equal(reference.Events, grown.Events);
+    }
+
+    [Theory]
+    [InlineData(DoctypeSample)]
+    [InlineData(CrLfSample)]
+    [InlineData(AttributeSample)]
+    public void TheTapeCapSwitchesToTheRescanAtExactlyTheRecordedSize(string xml)
+    {
+        foreach (bool characters in new[] { false, true })
+        {
+            var reference = new Recorder(); var recorded = new SaxTapeProbe();
+            Assert.True(ParseWithProbe(xml, characters, recorded, reference));
+            int size = recorded.TapeInts;
+            Assert.True(size > 10 && recorded.Replayed);
+            for (int cap = 0; cap <= size + 2; cap++)
+                foreach (int initial in new[] { 0, 1 })
+                {
+                    var events = new Recorder(); var probe = new SaxTapeProbe { MaxTapeInts = cap, InitialTapeInts = initial };
+                    Assert.True(ParseWithProbe(xml, characters, probe, events));
+                    Assert.Equal(cap >= size, probe.Replayed);
+                    Assert.Equal(probe.Rented, probe.Returned);
+                    Assert.Equal(reference.Events, events.Events);
+                }
+        }
+    }
+
+    [Theory]
+    [InlineData(DoctypeSample)]
+    [InlineData(AttributeSample)]
+    [InlineData("<r>" + "<e a='hello' b='x&amp;y&#10;z' xmlns:p='u' p:c='é'/>" + "</r>")]
+    public void TheAttributeArenaCapSwitchesToTheRescanAndNeverChangesTheEvents(string xml)
+    {
+        var reference = new Recorder(); var recorded = new SaxTapeProbe();
+        Assert.True(ParseWithProbe(xml, false, recorded, reference));
+        Assert.True(recorded.ArenaChars > 5);
+        bool previous = false; int switches = 0;
+        for (int cap = 0; cap <= recorded.ArenaChars + 40; cap++)
+        {
+            var events = new Recorder(); var probe = new SaxTapeProbe { MaxArenaChars = cap };
+            Assert.True(ParseWithProbe(xml, false, probe, events));
+            Assert.Equal(probe.Rented, probe.Returned);
+            Assert.Equal(reference.Events, events.Events);
+            if (probe.Replayed != previous) { switches++; previous = probe.Replayed; }
+        }
+        Assert.Equal(1, switches);
+        Assert.True(previous);
+    }
+
+    [Fact]
+    public void ZeroCapsAlwaysRescan()
+    {
+        foreach (string xml in TapeDocuments)
+        {
+            var probe = new SaxTapeProbe { MaxTapeInts = 0, MaxArenaChars = 0 };
+            var events = new Recorder();
+            if (!ParseWithProbe(xml, false, probe, events)) continue;
+            Assert.False(probe.Replayed);
+            Assert.Equal(0, probe.TapeInts);
+            Assert.Equal(probe.Rented, probe.Returned);
+        }
+    }
+
+    [Fact]
+    public void DeclinedDocumentsReturnEveryPooledBufferAndDeliverNothing()
+    {
+        string[] documents =
+        [
+            "<a>" + string.Concat(Enumerable.Repeat("<b x='1' y='é&amp;'>t&#65;</b>", 500)) + "</c>",
+            "<a>" + string.Concat(Enumerable.Repeat("<b x='1'/>", 500)) + "<c x='1' x='2'/></a>",
+            "<a>" + string.Concat(Enumerable.Repeat("<b x='1'/>", 500)) + "&unknown;</a>",
+            "<a>" + string.Concat(Enumerable.Repeat("<b x='1'/>", 500)),
+            "<a>" + string.Concat(Enumerable.Repeat("<b x='1'/>", 500)) + "</a><b/>",
+        ];
+        foreach (string xml in documents)
+            foreach (var probe in ProbeVariants())
+            {
+                var events = new Recorder();
+                Assert.False(ParseWithProbe(xml, false, probe, events));
+                Assert.Empty(events.Events);
+                Assert.False(probe.Replayed);
+                Assert.Equal(probe.Rented, probe.Returned);
+                Assert.True(probe.Rented > 0);
+            }
+    }
+
+    [Theory]
+    [InlineData(DoctypeSample)]
+    [InlineData(CrLfSample)]
+    [InlineData(AttributeSample)]
+    public void AHandlerThatThrowsAtAnyCallbackStopsDeliveryAndReturnsEveryPooledBuffer(string xml)
+    {
+        foreach (bool characters in new[] { false, true })
+            foreach (var template in ProbeVariants())
+            {
+                var counter = new FaultingHandler(int.MaxValue, null);
+                Assert.True(ParseWithProbe(xml, characters, new SaxTapeProbe { MaxTapeInts = template.MaxTapeInts, InitialTapeInts = template.InitialTapeInts, MaxArenaChars = template.MaxArenaChars }, counter));
+                int total = counter.Count;
+                Assert.True(total > 5);
+                for (int failAt = 0; failAt < total; failAt++)
+                {
+                    var probe = new SaxTapeProbe { MaxTapeInts = template.MaxTapeInts, InitialTapeInts = template.InitialTapeInts, MaxArenaChars = template.MaxArenaChars };
+                    var handler = new FaultingHandler(failAt, null);
+                    Assert.Throws<InvalidOperationException>(() => ParseWithProbe(xml, characters, probe, handler));
+                    Assert.Equal(failAt + 1, handler.Count);
+                    Assert.Equal(probe.Rented, probe.Returned);
+                }
+            }
+    }
+
+    [Theory]
+    [InlineData(DoctypeSample)]
+    [InlineData(CrLfSample)]
+    [InlineData(AttributeSample)]
+    public void CancellationAfterAnyCallbackStopsTheTapeAndTheRescanAlike(string xml)
+    {
+        foreach (bool characters in new[] { false, true })
+            foreach (var template in ProbeVariants())
+            {
+                SaxTapeProbe Fresh() => new() { MaxTapeInts = template.MaxTapeInts, InitialTapeInts = template.InitialTapeInts, MaxArenaChars = template.MaxArenaChars };
+                var counter = new FaultingHandler(int.MaxValue, null);
+                Assert.True(ParseWithProbe(xml, characters, Fresh(), counter));
+                int total = counter.Count;
+                for (int cancelAt = 0; cancelAt < total; cancelAt++)
+                {
+                    using var source = new CancellationTokenSource();
+                    var probe = Fresh();
+                    var handler = new FaultingHandler(-1, source) { CancelAt = cancelAt };
+                    var parse = () => characters
+                        ? OptimisticSax.TryParse(xml.AsSpan(), handler, DtdOptions, source.Token, probe)
+                        : OptimisticSax.TryParse(Encoding.UTF8.GetBytes(xml), handler, DtdOptions, source.Token, probe);
+                    // Cancellation inside the last callback (EndDocument) never fails a completed parse.
+                    if (cancelAt == total - 1) Assert.True(parse());
+                    else Assert.Throws<OperationCanceledException>(() => parse());
+                    Assert.Equal(cancelAt + 1, handler.Count);
+                    Assert.Equal(probe.Rented, probe.Returned);
+                }
+            }
+    }
+
+    [Fact]
+    public void ACanceledTokenStopsLargeDocumentsWhileScanningBeforeAnythingIsDelivered()
+    {
+        string xml = "<r>" + string.Concat(Enumerable.Repeat("<e a='1'>t</e>", 20_000)) + "</r>";
+        foreach (var probe in ProbeVariants())
+        {
+            using var source = new CancellationTokenSource();
+            source.Cancel();
+            var events = new Recorder();
+            Assert.Throws<OperationCanceledException>(() => OptimisticSax.TryParse(Encoding.UTF8.GetBytes(xml), events, DtdOptions, source.Token, probe));
+            Assert.Empty(events.Events);
+            Assert.Equal(probe.Rented, probe.Returned);
+            Assert.False(probe.Replayed);
+        }
+    }
+
+    [Fact]
+    public void LargeDocumentsThroughTheTapeMatchTheRescanAndTheStreamingParser()
+    {
+        var xml = new StringBuilder("<?xml version='1.0'?>\n<r xmlns='urn:d' xmlns:p='urn:p'>\n");
+        for (int row = 0; row < 40_000; row++)
+            xml.Append($"  <p:item id='{row}' name='item {row} é' p:flag='true'>value {row} &amp; more<sub a='{row % 7}'/></p:item>\n");
+        xml.Append("</r>");
+        byte[] data = Encoding.UTF8.GetBytes(xml.ToString());
+        var taped = new DigestHandler(); var tapeProbe = new SaxTapeProbe();
+        Assert.True(OptimisticSax.TryParse(data, taped, new XmlParseOptions(), Ct, tapeProbe));
+        Assert.True(tapeProbe.Replayed);
+        Assert.Equal(tapeProbe.Rented, tapeProbe.Returned);
+        var rescanned = new DigestHandler(); var rescanProbe = new SaxTapeProbe { MaxTapeInts = 1 << 10 };
+        Assert.True(OptimisticSax.TryParse(data, rescanned, new XmlParseOptions(), Ct, rescanProbe));
+        Assert.False(rescanProbe.Replayed);
+        Assert.Equal(rescanProbe.Rented, rescanProbe.Returned);
+        var slow = new DigestHandler();
+        XmlSaxParser.Parse(new MemoryStream(data), slow, cancellationToken: Ct);
+        Assert.Equal(slow.Hash, taped.Hash);
+        Assert.Equal(slow.Events, taped.Events);
+        Assert.Equal(rescanned.Hash, taped.Hash);
+        Assert.True(taped.Events > 100_000);
+    }
+
+    [Fact]
+    public void DocumentsBeyondTheDefaultTapeCapFallBackToTheRescan()
+    {
+        // About 9M tape ints: past the default cap, so the delivery pass re-scans and the result is unchanged.
+        string xml = "<r>" + string.Concat(Enumerable.Repeat("<e a='1' b='2'/>", 460_000)) + "</r>";
+        byte[] data = Encoding.UTF8.GetBytes(xml);
+        var probe = new SaxTapeProbe();
+        var fast = new DigestHandler();
+        var options = new XmlParseOptions { Limits = new() { InternedNames = null } };
+        Assert.True(OptimisticSax.TryParse(data, fast, options, Ct, probe));
+        Assert.False(probe.Replayed);
+        Assert.Equal(probe.Rented, probe.Returned);
+        var slow = new DigestHandler();
+        XmlSaxParser.Parse(new MemoryStream(data), slow, options, Ct);
+        Assert.Equal(slow.Hash, fast.Hash);
+        Assert.Equal(slow.Events, fast.Events);
+    }
+
+    [Fact]
+    public void MutatedInputNeverDivergesBetweenTheTapeTheRescanAndTheStreamingParser()
+    {
+        var random = new Random(4242);
+        string[] tokens = ["<", ">", "&", "&e;", "&amp;", "&#65;", "]]>", "'", "\"", " ", "\n", "\r\n", "é", "😀", "<b/>", "</a>", "xmlns:p='u'", "p:b", "=", "<!--", "-->"];
+        int accepted = 0;
+        for (int round = 0; round < 40; round++)
+            foreach (string seed in new[] { DoctypeSample, CrLfSample, AttributeSample }.Concat(DoctypeXml))
+            {
+                var bytes = new List<byte>(Encoding.UTF8.GetBytes(seed));
+                for (int edit = random.Next(0, 3); edit > 0; edit--)
+                {
+                    int at = random.Next(bytes.Count + 1);
+                    if (random.Next(2) == 0 && at < bytes.Count) bytes.RemoveAt(at);
+                    else bytes.InsertRange(at, Encoding.UTF8.GetBytes(tokens[random.Next(tokens.Length)]));
+                }
+                byte[] data = [.. bytes];
+                var taped = new Recorder(); var tapeProbe = new SaxTapeProbe { InitialTapeInts = random.Next(0, 3) * 5 };
+                var rescanned = new Recorder(); var rescanProbe = new SaxTapeProbe { MaxTapeInts = random.Next(0, 4) * 20, MaxArenaChars = random.Next(0, 2) * 15 };
+                bool a = OptimisticSax.TryParse(data, taped, DtdOptions, Ct, tapeProbe);
+                bool b = OptimisticSax.TryParse(data, rescanned, DtdOptions, Ct, rescanProbe);
+                Assert.Equal(tapeProbe.Rented, tapeProbe.Returned);
+                Assert.Equal(rescanProbe.Rented, rescanProbe.Returned);
+                Assert.Equal(a, b);
+                if (!a) { Assert.Empty(taped.Events); Assert.Empty(rescanned.Events); continue; }
+                accepted++;
+                Assert.Equal(rescanned.Events, taped.Events);
+                Assert.Equal(SlowBytes(data, DtdOptions).Normalized(), taped.Normalized());
+            }
+        Assert.True(accepted > 200, accepted.ToString());
+    }
+
+    // Counts callbacks; throws at (or cancels at) the zero-based callback index it is given.
+    private sealed class FaultingHandler(int failAt, CancellationTokenSource? source) : XmlSaxHandler
+    {
+        public int Count;
+        public int CancelAt = -1;
+
+        private void Hit()
+        {
+            int index = Count++;
+            if (index == failAt) throw new InvalidOperationException("handler");
+            if (index == CancelAt) source!.Cancel();
+        }
+
+        public override void StartDocument() => Hit();
+        public override void EndDocument() => Hit();
+        public override void Declaration(XmlDeclaration declaration) => Hit();
+        public override void Comment(ReadOnlySpan<char> text) => Hit();
+        public override void ProcessingInstruction(ReadOnlySpan<char> target, ReadOnlySpan<char> data) => Hit();
+        public override void StartElement(XmlStartElement element) => Hit();
+        public override void EndElement(XmlEndElement element) => Hit();
+        public override void Text(ReadOnlySpan<char> text) => Hit();
+        public override void StartCData() => Hit();
+        public override void EndCData() => Hit();
+        public override void StartDtd(XmlDocumentTypeView documentType) => Hit();
+        public override void DtdDeclaration(XmlDtdDeclaration declaration) => Hit();
+        public override void EndDtd() => Hit();
+    }
+
+    // Order-sensitive checksum of everything delivered except how text is split into callbacks.
+    private sealed class DigestHandler : XmlSaxHandler
+    {
+        public long Hash;
+        public int Events;
+
+        private void Mix(long value) => Hash = unchecked((Hash ^ value) * 1099511628211L);
+        private void Mix(ReadOnlySpan<char> text) { foreach (char c in text) Mix(c); Mix(-1); }
+        private void Mix(XmlLocation l) { Mix(l.LineNumber); Mix(l.LinePosition); Mix(l.ByteOffset ?? -2); }
+
+        public override void StartElement(XmlStartElement e)
+        {
+            Events++; Mix(1); Mix(e.LocalName); Mix(e.Prefix); Mix(e.NamespaceUri); Mix(e.Location); Mix(e.IsEmptyElement ? 1 : 0);
+            foreach (var a in e.Attributes) { Mix(a.LocalName); Mix(a.Prefix); Mix(a.NamespaceUri); Mix(a.Value); Mix(a.Location); }
+            foreach (var n in e.NamespaceDeclarations) { Mix(n.Prefix); Mix(n.NamespaceUri); Mix(n.Location); }
+        }
+
+        public override void EndElement(XmlEndElement e) { Events++; Mix(2); Mix(e.LocalName); Mix(e.Prefix); Mix(e.NamespaceUri); Mix(e.Location); }
+        public override void Text(ReadOnlySpan<char> text) { foreach (char c in text) Mix(c); }
+        public override void Comment(ReadOnlySpan<char> text) { Events++; Mix(3); Mix(text); }
+        public override void ProcessingInstruction(ReadOnlySpan<char> target, ReadOnlySpan<char> data) { Events++; Mix(4); Mix(target); Mix(data); }
+    }
+
     private sealed class CancelingHandler(CancellationTokenSource source, string cancelIn) : XmlSaxHandler
     {
         public readonly List<string> Delivered = [];

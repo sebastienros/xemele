@@ -19,15 +19,31 @@ internal sealed class SaxName
     internal string? ElementUri, AttributeUri;
     // Scope id the cached resolution is valid for; -2 means every scope.
     internal int ElementScope = -1, AttributeScope = -1;
+    // Position in the parser's name list (the token tape refers to names by it) and the ids of the cached namespace URIs.
+    internal int Id, ElementUriId, AttributeUriId;
 }
 
 // An attribute (or namespace declaration) of the tag being delivered; its value lives in the shared character buffer.
 internal struct FastAttribute
 {
     internal SaxName Name;
-    internal string LocalName, Prefix, NamespaceUri;
-    internal int ValueStart, ValueLength;
+    internal string NamespaceUri;
+    internal int ValueStart, ValueLength, UriId;
     internal XmlLocation Location;
+}
+
+// Limits of the SAX token tape and, for tests, a record of what the parser did with it. The tape is a pooled int array
+// that the validating pass fills so the delivery pass can replay it without scanning again; when a cap is reached the
+// parser gives up recording and the delivery pass re-scans the input instead.
+internal sealed class SaxTapeProbe
+{
+    internal const int DefaultMaxTapeInts = 1 << 23, DefaultMaxArenaChars = 1 << 23;
+    internal int MaxTapeInts = DefaultMaxTapeInts, MaxArenaChars = DefaultMaxArenaChars;
+    // Starting tape size; 0 picks a size from the input length. Tests use small values to exercise growth.
+    internal int InitialTapeInts;
+    // Outcome: the delivery pass replayed the tape, the final tape and attribute-character sizes, and pooled array balance.
+    internal bool Replayed;
+    internal int TapeInts, ArenaChars, Rented, Returned;
 }
 
 internal static class OptimisticSax
@@ -36,31 +52,31 @@ internal static class OptimisticSax
     // A first pass validates the entire document without delivering anything; only then does a second pass
     // deliver events straight from the input. A document the first pass declines is left untouched for the
     // streaming parser, so diagnostics, recovery and every unusual construct keep their authoritative behavior.
-    internal static bool TryParse(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken)
+    internal static bool TryParse(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken, SaxTapeProbe? probe = null)
     {
         var limits = options.Limits;
         if (options.Recover || input.IsEmpty) return false;
         if (input.Length > (limits.DocumentCharacters ?? long.MaxValue) || input.Length > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
         return input.Contains((byte)'\r')
-            ? RunNormalized(input, handler, options, cancellationToken, charInput: false)
-            : new SaxParser(input, handler, options, cancellationToken, charInput: false).Run();
+            ? RunNormalized(input, handler, options, cancellationToken, charInput: false, probe)
+            : new SaxParser(input, handler, options, cancellationToken, charInput: false, probe: probe).Run();
     }
 
     // CR and CRLF input is parsed from an LF-normalized copy; line and column numbers are unchanged and byte offsets are mapped back.
-    private static bool RunNormalized(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken, bool charInput)
+    private static bool RunNormalized(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken, bool charInput, SaxTapeProbe? probe)
     {
         byte[] buffer = FastLineBreaks.Rent(input.Length, out bool pooled);
         int[]? dropped = null;
         try
         {
             int length = FastLineBreaks.Normalize(input, buffer, !charInput, ref dropped, out int droppedCount);
-            var parser = new SaxParser(buffer.AsSpan(0, length), handler, options, cancellationToken, charInput, input.Length, dropped, droppedCount, normalized: true);
+            var parser = new SaxParser(buffer.AsSpan(0, length), handler, options, cancellationToken, charInput, input.Length, dropped, droppedCount, normalized: true, probe: probe);
             return parser.Run();
         }
         finally { FastLineBreaks.Release(buffer, pooled, dropped); }
     }
 
-    internal static bool TryParse(ReadOnlySpan<char> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken)
+    internal static bool TryParse(ReadOnlySpan<char> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellationToken, SaxTapeProbe? probe = null)
     {
         var limits = options.Limits;
         if (options.Recover || input.IsEmpty || input[0] == '\uFEFF') return false;
@@ -74,8 +90,8 @@ internal static class OptimisticSax
             if (byteCount > (limits.DocumentCharacters ?? long.MaxValue) || byteCount > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
             var bytes = rented.AsSpan(0, byteCount);
             return bytes.Contains((byte)'\r')
-                ? RunNormalized(bytes, handler, options, cancellationToken, charInput: true)
-                : new SaxParser(bytes, handler, options, cancellationToken, charInput: true).Run();
+                ? RunNormalized(bytes, handler, options, cancellationToken, charInput: true, probe)
+                : new SaxParser(bytes, handler, options, cancellationToken, charInput: true, probe: probe).Run();
         }
         finally { if (pooled) ArrayPool<byte>.Shared.Return(rented); }
     }
@@ -84,8 +100,24 @@ internal static class OptimisticSax
     {
         internal SaxName Name;
         internal string Uri;
-        internal int NameStart, NameLength, SavedScope, BindingStart;
+        internal int NameStart, NameLength, SavedScope, BindingStart, UriId;
     }
+
+    // Token tape: pass 1 appends one record per delivered token and the replay walks them. All values are ints; offsets
+    // index the (LF-normalized) input, names and URIs are ids into the parser's lists, locations are line, column and
+    // the already mapped byte offset. Records:
+    //   Declaration  version start/end, encoding start/end, standalone (0 absent, 1 yes, 2 no), byte offset
+    //   Misc, Text, Comment, CData  start, end (an input span; whitespace outside the root, plain text, comment/CDATA body)
+    //   Pi           target start/end, body start/end
+    //   Doctype      (none; the doctype read by pass 1 delivers itself)
+    //   RichText     parts up to PartEnd: PartSpan start/end, PartChar code point, PartEntity entity id
+    //   Start        head (kind, empty flag, attribute count, declaration count), name, uri, line, column, offset, then 7 ints per
+    //                attribute (name, uri, value start, value length, line, column, offset), then 5 per namespace declaration
+    //                (name, uri, line, column, offset); value starts index the attribute character arena
+    //   End          name, uri, line, column, offset
+    private const int KDeclaration = 1, KMisc = 2, KText = 3, KComment = 4, KCData = 5, KPi = 6, KDoctype = 7, KRichText = 8, KStart = 9, KEnd = 10;
+    private const int PartEnd = 0, PartSpan = 1, PartChar = 2, PartEntity = 3;
+    private const int StartHeader = 6, AttributeRecord = 7, DeclarationRecord = 5, EndRecord = 6;
 
     private ref struct SaxParser
     {
@@ -145,11 +177,24 @@ internal static class OptimisticSax
         private FastAttribute[] attributes, declarations;
         private NamespaceRow[] namespaces;
         private int attributeCount, declarationCount;
-        private Dictionary<string, string>? uris;
-        private List<string>? declared;
+        private Dictionary<string, int>? uris;
+        private List<int>? declared;
         private int declaredIndex;
+        private readonly SaxTapeProbe? probe;
+        private readonly int maxTapeInts, maxArenaChars;
+        // True while pass 1 is filling the tape; cleared (and the tape returned) when a cap is hit.
+        private bool record;
+        private int[]? tape;
+        private int tapeLength;
+        private SaxName[] nameById;
+        private int nameCount;
+        private string[] uriList;
+        private int uriCount;
+        private int[] bindingUriIds;
+        private OptimisticEntity?[] entityList = [];
+        private int entityCount;
 
-        internal SaxParser(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellation, bool charInput, int rawLength = -1, int[]? dropped = null, int droppedCount = 0, bool normalized = false)
+        internal SaxParser(ReadOnlySpan<byte> input, IXmlSaxHandler handler, XmlParseOptions options, CancellationToken cancellation, bool charInput, int rawLength = -1, int[]? dropped = null, int droppedCount = 0, bool normalized = false, SaxTapeProbe? probe = null)
         {
             var limits = options.Limits;
             this.options = options; this.normalized = normalized; innerReferencesAllowed = (limits.EntityDepth ?? int.MaxValue) >= 2;
@@ -160,30 +205,223 @@ internal static class OptimisticSax
             nameLimit = limits.InternedNames ?? int.MaxValue;
             referenceLimit = (limits.ExpandedCharacters ?? long.MaxValue) - (rawLength < 0 ? input.Length : rawLength);
             this.dropped = dropped; this.droppedCount = droppedCount;
+            this.probe = probe;
+            maxTapeInts = probe?.MaxTapeInts ?? SaxTapeProbe.DefaultMaxTapeInts;
+            maxArenaChars = probe?.MaxArenaChars ?? SaxTapeProbe.DefaultMaxArenaChars;
             frames = new Frame[16];
             table = new SaxName?[128];
-            bindingPrefixes = new string[8]; bindingUris = new string[8];
+            nameById = new SaxName[32];
+            uriList = new string[8]; uriList[0] = ""; uriList[1] = XmlNamespace; uriCount = 2;
+            bindingPrefixes = new string[8]; bindingUris = new string[8]; bindingUriIds = new int[8];
             attributes = new FastAttribute[8]; declarations = new FastAttribute[4]; namespaces = new NamespaceRow[4];
         }
 
+        private T[] Rent<T>(int size)
+        {
+            if (probe is not null) probe.Rented++;
+            return ArrayPool<T>.Shared.Rent(size);
+        }
+
+        private void Return<T>(T[] array)
+        {
+            if (probe is not null) probe.Returned++;
+            ArrayPool<T>.Shared.Return(array);
+        }
+
+        // Pass 1 validates the whole document (delivering nothing) while recording the tape; when the tape stays within its caps
+        // the delivery pass replays it, otherwise it re-scans the input. Pooled buffers go back on every path.
         internal bool Run()
         {
             try
             {
+                int initial = probe is { InitialTapeInts: > 0 } ? probe.InitialTapeInts : Math.Clamp(n / 4, 256, 1 << 20);
+                tape = Rent<int>(Math.Min(initial, maxTapeInts));
+                record = true;
                 if (!Pass(false)) return false;
-                if (!Pass(true)) throw new InvalidOperationException("The optimistic SAX parser rejected a document that it had already validated.");
+                if (record)
+                {
+                    if (probe is not null) { probe.Replayed = true; probe.TapeInts = tapeLength; probe.ArenaChars = attributeLength; }
+                    Replay();
+                }
+                else if (!Pass(true)) throw new InvalidOperationException("The optimistic SAX parser rejected a document that it had already validated.");
                 return true;
             }
             finally
             {
-                if (scratch is not null) ArrayPool<char>.Shared.Return(scratch);
-                if (attributeChars is not null) ArrayPool<char>.Shared.Return(attributeChars);
+                if (tape is not null) Return(tape);
+                if (scratch is not null) Return(scratch);
+                if (attributeChars is not null) Return(attributeChars);
             }
+        }
+
+        // Delivers the recorded tape: same events, locations and cancellation checks as the re-scanning delivery pass.
+        private void Replay()
+        {
+            handler.StartDocument();
+            cancellation.ThrowIfCancellationRequested();
+            ReadOnlySpan<int> t = tape.AsSpan(0, tapeLength);
+            for (int p = 0; p < t.Length; )
+            {
+                int head = t[p];
+                switch (head & 0xFF)
+                {
+                    case KStart:
+                    {
+                        bool empty = (head & 0x100) != 0;
+                        int attributeTotal = (head >> 16) & 0xFF, declarationTotal = (head >>> 24) & 0xFF;
+                        var name = nameById[t[p + 1]];
+                        string elementUri = uriList[t[p + 2]];
+                        var location = new XmlLocation(null, t[p + 3], t[p + 4], charInput ? null : t[p + 5]);
+                        p += StartHeader;
+                        if (attributeTotal > attributes.Length) Array.Resize(ref attributes, Math.Max(attributeTotal, attributes.Length * 2));
+                        for (int a = 0; a < attributeTotal; a++, p += AttributeRecord)
+                        {
+                            ref var attribute = ref attributes[a];
+                            attribute.Name = nameById[t[p]]; attribute.NamespaceUri = uriList[t[p + 1]];
+                            attribute.ValueStart = t[p + 2]; attribute.ValueLength = t[p + 3];
+                            attribute.Location = new XmlLocation(null, t[p + 4], t[p + 5], charInput ? null : t[p + 6]);
+                        }
+                        if (declarationTotal > namespaces.Length) namespaces = new NamespaceRow[Math.Max(declarationTotal, namespaces.Length * 2)];
+                        for (int d = 0; d < declarationTotal; d++, p += DeclarationRecord)
+                        {
+                            var declared = nameById[t[p]];
+                            namespaces[d] = new(declared.Kind == 1 ? "" : declared.Local, uriList[t[p + 1]],
+                                new XmlLocation(null, t[p + 2], t[p + 3], charInput ? null : t[p + 4]));
+                        }
+                        handler.StartElement(new XmlStartElement(name.Local, name.Prefix, elementUri,
+                            new XmlAttributeView(attributes.AsSpan(0, attributeTotal), attributeChars), new XmlNamespaceView(namespaces.AsSpan(0, declarationTotal)), empty, location));
+                        cancellation.ThrowIfCancellationRequested();
+                        if (empty) { handler.EndElement(new XmlEndElement(name.Local, name.Prefix, elementUri, location)); cancellation.ThrowIfCancellationRequested(); }
+                        break;
+                    }
+                    case KEnd:
+                    {
+                        var name = nameById[t[p + 1]];
+                        handler.EndElement(new XmlEndElement(name.Local, name.Prefix, uriList[t[p + 2]], new XmlLocation(null, t[p + 3], t[p + 4], charInput ? null : t[p + 5])));
+                        cancellation.ThrowIfCancellationRequested();
+                        p += EndRecord;
+                        break;
+                    }
+                    case KText: EmitText(t[p + 1], t[p + 2]); p += 3; break;
+                    case KRichText: p = ReplayRichText(t, p + 1); break;
+                    case KMisc:
+                    {
+                        var buffer = Scratch(TextChunk);
+                        for (int at = t[p + 1], end = t[p + 2]; at < end; )
+                        {
+                            int count = Math.Min(TextChunk, end - at);
+                            Ascii.ToUtf16(s.Slice(at, count), buffer, out _);
+                            handler.Text(buffer.AsSpan(0, count));
+                            cancellation.ThrowIfCancellationRequested();
+                            at += count;
+                        }
+                        p += 3;
+                        break;
+                    }
+                    case KComment:
+                    {
+                        int length = Decode(t[p + 1], t[p + 2], out _);
+                        handler.Comment(scratch.AsSpan(0, length));
+                        cancellation.ThrowIfCancellationRequested();
+                        p += 3;
+                        break;
+                    }
+                    case KCData:
+                        handler.StartCData();
+                        cancellation.ThrowIfCancellationRequested();
+                        EmitText(t[p + 1], t[p + 2]);
+                        handler.EndCData();
+                        cancellation.ThrowIfCancellationRequested();
+                        p += 3;
+                        break;
+                    case KPi:
+                    {
+                        var target = s[t[p + 1]..t[p + 2]];
+                        var body = s[t[p + 3]..t[p + 4]];
+                        var buffer = Scratch(target.Length + body.Length + 1);
+                        Ascii.ToUtf16(target, buffer, out _);
+                        Utf8.ToUtf16(body, buffer.AsSpan(target.Length), out _, out int written, replaceInvalidSequences: false);
+                        handler.ProcessingInstruction(buffer.AsSpan(0, target.Length), buffer.AsSpan(target.Length, written));
+                        cancellation.ThrowIfCancellationRequested();
+                        p += 5;
+                        break;
+                    }
+                    case KDeclaration:
+                    {
+                        int versionStart = t[p + 1], versionLength = t[p + 2] - versionStart, encodingStart = t[p + 3], encodingLength = t[p + 4] - encodingStart;
+                        var buffer = Scratch(versionLength + encodingLength + 2);
+                        Ascii.ToUtf16(s.Slice(versionStart, versionLength), buffer, out _);
+                        Ascii.ToUtf16(s.Slice(encodingStart, encodingLength), buffer.AsSpan(versionLength), out _);
+                        bool? standalone = t[p + 5] == 0 ? null : t[p + 5] == 1;
+                        handler.Declaration(new XmlDeclaration(buffer.AsSpan(0, versionLength), buffer.AsSpan(versionLength, encodingLength), standalone,
+                            new XmlLocation(null, 1, 1, charInput ? null : t[p + 6])));
+                        cancellation.ThrowIfCancellationRequested();
+                        p += 7;
+                        break;
+                    }
+                    case KDoctype:
+                        doctype!.Deliver(handler, cancellation);
+                        p += 1;
+                        break;
+                    default: throw new InvalidOperationException("Corrupt SAX token tape.");
+                }
+            }
+            handler.EndDocument();
+        }
+
+        // Replays the parts of one text run with references; returns the index after its end marker.
+        private int ReplayRichText(ReadOnlySpan<int> t, int p)
+        {
+            int length = 0;
+            Scratch(TextChunk + 8);
+            while (true)
+            {
+                switch (t[p])
+                {
+                    case PartSpan: AppendText(t[p + 1], t[p + 2], ref length); p += 3; break;
+                    case PartEntity: AppendEntity(entityList[t[p + 1]]!.Content, ref length); p += 2; break;
+                    case PartChar:
+                        if (length + 2 > TextChunk) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; }
+                        length = Append(scratch!, length, t[p + 1]);
+                        p += 2;
+                        break;
+                    default:
+                        if (length > 0) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); }
+                        return p + 1;
+                }
+            }
+        }
+
+        // Starts a tape record of count ints and returns its index, or -1 once recording has stopped.
+        private int Take(int count)
+        {
+            if (!record) return -1;
+            int at = tapeLength;
+            long need = (long)at + count;
+            if (need > maxTapeInts) { StopRecording(); return -1; }
+            var current = tape!;
+            if (need > current.Length)
+            {
+                var grown = Rent<int>((int)Math.Min(maxTapeInts, Math.Max(need, (long)current.Length * 2)));
+                current.AsSpan(0, at).CopyTo(grown);
+                Return(current);
+                tape = grown;
+            }
+            tapeLength = (int)need;
+            return at;
+        }
+
+        private void StopRecording()
+        {
+            record = false;
+            if (tape is not null) { Return(tape); tape = null; }
+            tapeLength = 0;
         }
 
         private bool Pass(bool deliver)
         {
             emit = deliver;
+            if (deliver) record = false;
             i = 0; line = 1; lineStart = 0; cont = 0; depth = 0; scope = 0; bindingCount = 0; rootSeen = false;
             referenceBudget = referenceLimit; declaredIndex = 0; doctypeSeen = false; nameBase = 0;
             frames[0] = default;
@@ -202,8 +440,8 @@ internal static class OptimisticSax
         private readonly int[]? dropped;
         private readonly int droppedCount;
         private int droppedCursor;
-        private XmlLocation Loc(int atLine, int atColumn, int atOffset) => new(null, atLine, atColumn,
-            charInput ? null : dropped is null ? atOffset : FastLineBreaks.Raw(dropped, droppedCount, ref droppedCursor, atOffset));
+        private int RawOffset(int atOffset) => dropped is null ? atOffset : FastLineBreaks.Raw(dropped, droppedCount, ref droppedCursor, atOffset);
+        private XmlLocation Loc(int atLine, int atColumn, int atOffset) => new(null, atLine, atColumn, charInput ? null : RawOffset(atOffset));
 
         private int Column(int position) => position - lineStart - cont + 1;
 
@@ -276,8 +514,8 @@ internal static class OptimisticSax
         {
             if (scratch is null || scratch.Length < capacity)
             {
-                var grown = ArrayPool<char>.Shared.Rent(Math.Max(capacity, TextChunk + 8));
-                if (scratch is not null) ArrayPool<char>.Shared.Return(scratch);
+                var grown = Rent<char>(Math.Max(capacity, TextChunk + 8));
+                if (scratch is not null) Return(scratch);
                 scratch = grown;
             }
             return scratch;
@@ -347,6 +585,12 @@ internal static class OptimisticSax
                     new XmlLocation(null, 1, 1, charInput ? null : declarationOffset)));
                 cancellation.ThrowIfCancellationRequested();
             }
+            else if (Take(7) is var w and >= 0)
+            {
+                var t = tape!;
+                t[w] = KDeclaration; t[w + 1] = versionStart; t[w + 2] = versionEnd; t[w + 3] = encodingStart; t[w + 4] = encodingEnd;
+                t[w + 5] = standalone is null ? 0 : standalone.Value ? 1 : 2; t[w + 6] = declarationOffset;
+            }
             return true;
         }
 
@@ -367,8 +611,13 @@ internal static class OptimisticSax
         {
             int start = i;
             SkipWhitespace();
-            if (!emit && i - start >= tokenLimit) return false;
-            if (!emit || i == start) return true;
+            if (!emit)
+            {
+                if (i - start >= tokenLimit) return false;
+                if (i != start && Take(3) is var w and >= 0) { var t = tape!; t[w] = KMisc; t[w + 1] = start; t[w + 2] = i; }
+                return true;
+            }
+            if (i == start) return true;
             var buffer = Scratch(TextChunk);
             for (int at = start; at < i; )
             {
@@ -406,6 +655,7 @@ internal static class OptimisticSax
             referenceBudget -= read.Expanded;
             if (referenceBudget < 0) return false;
             if (emit) read.Deliver(handler, cancellation);
+            else if (Take(1) is var w and >= 0) tape![w] = KDoctype;
             TrackLines(i, read.End, !Ascii.IsValid(s[i..read.End]));
             i = read.End;
             nameBase = read.Names;
@@ -427,6 +677,12 @@ internal static class OptimisticSax
             if (entity.InnerRefs != 0 && !innerReferencesAllowed) return -1;
             referenceBudget -= entity.Length + entity.InnerRefs;
             if (referenceBudget < 0) return -1;
+            if (entity.TapeId < 0)
+            {
+                if (entityCount == entityList.Length) Array.Resize(ref entityList, Math.Max(4, entityCount * 2));
+                entity.TapeId = entityCount;
+                entityList[entityCount++] = entity;
+            }
             referenceLength = p + 1 - at;
             return 1;
         }
@@ -484,8 +740,8 @@ internal static class OptimisticSax
             return true;
         }
 
-        // Delivers a validated run (no references) as text, a bounded chunk at a time.
-        private void EmitRun(int start, int end)
+        // Delivers a validated run (no references) as text, a bounded chunk at a time; true when it contains non-ASCII characters.
+        private bool EmitText(int start, int end)
         {
             var run = s[start..end];
             var buffer = Scratch(TextChunk).AsSpan(0, TextChunk);
@@ -497,8 +753,10 @@ internal static class OptimisticSax
                 if (written > 0) { handler.Text(buffer[..written]); cancellation.ThrowIfCancellationRequested(); }
                 run = run[read..];
             }
-            TrackLines(start, end, high);
+            return high;
         }
+
+        private void EmitRun(int start, int end) => TrackLines(start, end, EmitText(start, end));
 
         private bool Text()
         {
@@ -514,6 +772,7 @@ internal static class OptimisticSax
                 {
                     if (!emit && (end - start >= tokenLimit || !Scan(start, end, false))) return false;
                     if (emit) EmitRun(start, end);
+                    else if (Take(3) is var w and >= 0) { var t = tape!; t[w] = KText; t[w + 1] = start; t[w + 2] = end; }
                     i = end; return true;
                 }
                 if (stop == ']')
@@ -527,7 +786,9 @@ internal static class OptimisticSax
         }
 
         // Appends a validated segment to the scratch buffer, delivering a chunk whenever it fills.
-        private void AppendSegment(int start, int end, ref int length)
+        private void AppendSegment(int start, int end, ref int length) => TrackLines(start, end, AppendText(start, end, ref length));
+
+        private bool AppendText(int start, int end, ref int length)
         {
             var run = s[start..end];
             var buffer = Scratch(TextChunk + 8);
@@ -540,13 +801,26 @@ internal static class OptimisticSax
                 run = run[read..];
                 if (status == OperationStatus.DestinationTooSmall) { handler.Text(buffer.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; }
             }
-            TrackLines(start, end, high);
+            return high;
+        }
+
+        // Appends one rich-text part (or the record's kind) to the tape; the sizes are fixed per kind.
+        private void Put(int kind, int a, int b)
+        {
+            int count = kind == KRichText || kind == PartEnd ? 1 : kind == PartSpan ? 3 : 2;
+            int w = Take(count);
+            if (w < 0) return;
+            var t = tape!;
+            t[w] = kind;
+            if (count > 1) t[w + 1] = a;
+            if (count > 2) t[w + 2] = b;
         }
 
         private bool TextWithReferences(int start)
         {
             int length = 0, segment = start, at = start;
             long extra = 0;
+            if (!emit) Put(KRichText, 0, 0);
             while (true)
             {
                 int found = s[at..].IndexOfAny(TextStops);
@@ -561,9 +835,11 @@ internal static class OptimisticSax
                 if (stop != '<' && stop != '&') return false;
                 if (!emit && (end - start + extra >= tokenLimit || !Scan(segment, end, false))) return false;
                 if (emit) AppendSegment(segment, end, ref length);
+                else if (end > segment) Put(PartSpan, segment, end);
                 if (stop == '<')
                 {
                     if (emit && length > 0) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); }
+                    else if (!emit) Put(PartEnd, 0, 0);
                     i = end; return true;
                 }
                 int kind = EntityAt(end, out var entity, out int referenceLength);
@@ -572,6 +848,7 @@ internal static class OptimisticSax
                 {
                     extra += entity!.Length;
                     if (emit) AppendEntity(entity.Content, ref length);
+                    else Put(PartEntity, entity.TapeId, 0);
                 }
                 else
                 {
@@ -581,6 +858,7 @@ internal static class OptimisticSax
                         if (length + 2 > TextChunk) { handler.Text(scratch.AsSpan(0, length)); cancellation.ThrowIfCancellationRequested(); length = 0; }
                         length = Append(scratch!, length, value);
                     }
+                    else Put(PartChar, value, 0);
                 }
                 i = segment = at = end + referenceLength;
             }
@@ -667,6 +945,7 @@ internal static class OptimisticSax
                 cancellation.ThrowIfCancellationRequested();
             }
             else if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
+            else if (Take(3) is var w and >= 0) { var t = tape!; t[w] = KComment; t[w + 1] = bodyStart; t[w + 2] = bodyEnd; }
             i = bodyEnd + 3;
             return true;
         }
@@ -688,6 +967,7 @@ internal static class OptimisticSax
                 cancellation.ThrowIfCancellationRequested();
             }
             else if (bodyEnd + 3 - open >= tokenLimit || !Scan(bodyStart, bodyEnd, true)) return false;
+            else if (Take(3) is var w and >= 0) { var t = tape!; t[w] = KCData; t[w + 1] = bodyStart; t[w + 2] = bodyEnd; }
             i = bodyEnd + 3;
             return true;
         }
@@ -728,7 +1008,11 @@ internal static class OptimisticSax
                 handler.ProcessingInstruction(buffer.AsSpan(0, targetLength), buffer.AsSpan(targetLength, written));
                 cancellation.ThrowIfCancellationRequested();
             }
-            else if (++internCount + nameBase + 8 > nameLimit) return false;
+            else
+            {
+                if (++internCount + nameBase + 8 > nameLimit) return false;
+                if (Take(5) is var w and >= 0) { var t = tape!; t[w] = KPi; t[w + 1] = targetStart; t[w + 2] = targetStart + target.Length; t[w + 3] = bodyStart; t[w + 4] = bodyEnd; }
+            }
             i = p;
             return true;
         }
@@ -737,7 +1021,7 @@ internal static class OptimisticSax
         {
             if (depth == 0) return false;
             ref var frame = ref frames[depth];
-            int tagStart = i, closeLine = emit ? line : 0, closeColumn = emit ? Column(i) : 0;
+            int tagStart = i, closeLine = emit || record ? line : 0, closeColumn = emit || record ? Column(i) : 0;
             int p = i + 2;
             var open = s.Slice(frame.NameStart, frame.NameLength);
             if (n - p < open.Length || !s.Slice(p, open.Length).SequenceEqual(open)) return false;
@@ -751,6 +1035,11 @@ internal static class OptimisticSax
             {
                 handler.EndElement(new XmlEndElement(frame.Name.Local, frame.Name.Prefix, frame.Uri, Loc(closeLine, closeColumn, tagStart)));
                 cancellation.ThrowIfCancellationRequested();
+            }
+            else if (Take(EndRecord) is var w and >= 0)
+            {
+                var t = tape!;
+                t[w] = KEnd; t[w + 1] = frame.Name.Id; t[w + 2] = frame.UriId; t[w + 3] = closeLine; t[w + 4] = closeColumn; t[w + 5] = charInput ? 0 : RawOffset(tagStart);
             }
             depth--;
             return true;
@@ -791,6 +1080,9 @@ internal static class OptimisticSax
             }
             if (entry.Kind == 2) entry.Local = local;
             else if (entry.Kind == 0) { entry.Prefix = prefix; entry.Local = local; }
+            entry.Id = nameCount;
+            if (nameCount == nameById.Length) Array.Resize(ref nameById, nameCount * 2);
+            nameById[nameCount++] = entry;
             table[slot] = entry;
             if (++tableCount * 2 > table.Length) GrowTable();
             return entry;
@@ -814,9 +1106,10 @@ internal static class OptimisticSax
         }
 
         // Binding lookup for the current element/attribute scope; null means unbound.
-        private string? Lookup(string prefix)
+        private string? Lookup(string prefix, out int id)
         {
-            for (int b = bindingCount - 1; b >= 0; b--) if (bindingPrefixes[b] == prefix) return bindingUris[b];
+            for (int b = bindingCount - 1; b >= 0; b--) if (bindingPrefixes[b] == prefix) { id = bindingUriIds[b]; return bindingUris[b]; }
+            id = 0;
             return prefix.Length == 0 ? "" : null;
         }
 
@@ -824,11 +1117,11 @@ internal static class OptimisticSax
         {
             if (entry.ElementScope == scope || entry.ElementScope == ScopeAny) return entry.ElementUri;
             string prefix = entry.Prefix;
-            string? uri; int validFor = scope;
-            if (prefix == "xml") { uri = XmlNamespace; validFor = ScopeAny; }
-            else uri = Lookup(prefix);
+            string? uri; int validFor = scope, id;
+            if (prefix == "xml") { uri = XmlNamespace; id = 1; validFor = ScopeAny; }
+            else uri = Lookup(prefix, out id);
             if (uri is null) return null;
-            entry.ElementUri = uri;
+            entry.ElementUri = uri; entry.ElementUriId = id;
             entry.ElementScope = validFor;
             return uri;
         }
@@ -837,19 +1130,20 @@ internal static class OptimisticSax
         {
             if (entry.AttributeScope == scope || entry.AttributeScope == ScopeAny) return entry.AttributeUri;
             string prefix = entry.Prefix;
-            string? uri; int validFor = scope;
+            string? uri; int validFor = scope, id = 0;
             if (prefix.Length == 0) { uri = ""; validFor = ScopeAny; }
-            else if (prefix == "xml") { uri = XmlNamespace; validFor = ScopeAny; }
-            else uri = Lookup(prefix);
+            else if (prefix == "xml") { uri = XmlNamespace; id = 1; validFor = ScopeAny; }
+            else uri = Lookup(prefix, out id);
             if (uri is null) return null;
-            entry.AttributeUri = uri;
+            entry.AttributeUri = uri; entry.AttributeUriId = id;
             entry.AttributeScope = validFor;
             return uri;
         }
 
         private bool OpenTag()
         {
-            int tagStart = i, tagLine = emit ? line : 0, tagColumn = emit ? Column(i) : 0;
+            bool locate = emit || record;
+            int tagStart = i, tagLine = locate ? line : 0, tagColumn = locate ? Column(i) : 0;
             if (depth >= maxDepth - 1 || (depth == 0 && rootSeen)) return false;
             uint hash = Seed; int p = i + 1, nameStart = p;
             while ((uint)p < (uint)n) { byte b = s[p]; if ((FlagTable[b] & 1) == 0) break; hash = (hash ^ b) * Prime; p++; }
@@ -857,7 +1151,8 @@ internal static class OptimisticSax
             var name = FindOrCreateName(nameStart, p - nameStart, hash);
             if (name is null || name.Kind != 0) return false;
             int nameLength = p - nameStart;
-            i = p; attributeCount = 0; declarationCount = 0; attributeLength = 0;
+            i = p; attributeCount = 0; declarationCount = 0;
+            if (!record) attributeLength = 0;
             bool empty = false;
             while (true)
             {
@@ -871,7 +1166,7 @@ internal static class OptimisticSax
                     return false;
                 }
                 if (i == mark || attributeCount + declarationCount >= maxMembers) return false;
-                int attributeStart = i, attributeLine = emit ? line : 0, attributeColumn = emit ? Column(i) : 0;
+                int attributeStart = i, attributeLine = locate ? line : 0, attributeColumn = locate ? Column(i) : 0;
                 uint h = Seed; p = i;
                 while ((uint)p < (uint)n) { byte b = s[p]; if ((FlagTable[b] & 1) == 0) break; h = (h ^ b) * Prime; p++; }
                 if (p == i) return false;
@@ -884,20 +1179,20 @@ internal static class OptimisticSax
                 byte quote = s[i];
                 if (quote != '"' && quote != '\'') return false;
                 i++;
-                if (!AttributeValue(quote, emit || key.Kind != 0, out int valueStart, out int valueLength)) return false;
+                if (!AttributeValue(quote, emit || record || key.Kind != 0, out int valueStart, out int valueLength)) return false;
                 if (key.Kind == 0)
                 {
                     if (attributeCount == attributes.Length) Array.Resize(ref attributes, attributes.Length * 2);
                     ref var attribute = ref attributes[attributeCount++];
                     attribute.Name = key; attribute.ValueStart = valueStart; attribute.ValueLength = valueLength;
-                    if (emit) attribute.Location = Loc(attributeLine, attributeColumn, attributeStart);
+                    if (locate) attribute.Location = Loc(attributeLine, attributeColumn, attributeStart);
                 }
                 else
                 {
                     if (declarationCount == declarations.Length) Array.Resize(ref declarations, declarations.Length * 2);
                     ref var declaration = ref declarations[declarationCount++];
                     declaration.Name = key; declaration.ValueStart = valueStart; declaration.ValueLength = valueLength;
-                    if (emit) declaration.Location = Loc(attributeLine, attributeColumn, attributeStart);
+                    if (locate) declaration.Location = Loc(attributeLine, attributeColumn, attributeStart);
                 }
             }
             if (i - tagStart >= tokenLimit) return false;
@@ -912,7 +1207,7 @@ internal static class OptimisticSax
                 ref var attribute = ref attributes[a];
                 string? uri = AttributeUri(attribute.Name);
                 if (uri is null) return false;
-                attribute.NamespaceUri = uri; attribute.LocalName = attribute.Name.Local; attribute.Prefix = attribute.Name.Prefix;
+                attribute.NamespaceUri = uri; attribute.UriId = attribute.Name.AttributeUriId;
             }
             if (!emit && attributeCount > 1 && !AttributesAreUnique()) return false;
 
@@ -930,6 +1225,7 @@ internal static class OptimisticSax
                 cancellation.ThrowIfCancellationRequested();
                 if (empty) { handler.EndElement(new XmlEndElement(name.Local, name.Prefix, elementUri, location)); cancellation.ThrowIfCancellationRequested(); }
             }
+            else if (record) RecordStart(name, tagLine, tagColumn, tagStart, empty);
             if (empty)
             {
                 scope = savedScope; bindingCount = savedBindings;
@@ -938,9 +1234,31 @@ internal static class OptimisticSax
             }
             depth++;
             if (depth >= frames.Length) Array.Resize(ref frames, frames.Length * 2);
-            frames[depth] = new() { Name = name, Uri = elementUri, NameStart = nameStart, NameLength = nameLength, SavedScope = savedScope, BindingStart = savedBindings };
+            frames[depth] = new() { Name = name, Uri = elementUri, UriId = name.ElementUriId, NameStart = nameStart, NameLength = nameLength, SavedScope = savedScope, BindingStart = savedBindings };
             rootSeen = true;
             return true;
+        }
+
+        private void RecordStart(SaxName name, int tagLine, int tagColumn, int tagStart, bool empty)
+        {
+            int w = Take(StartHeader + AttributeRecord * attributeCount + DeclarationRecord * declarationCount);
+            if (w < 0) return;
+            var t = tape!;
+            t[w] = KStart | (empty ? 0x100 : 0) | (attributeCount << 16) | (declarationCount << 24);
+            t[w + 1] = name.Id; t[w + 2] = name.ElementUriId; t[w + 3] = tagLine; t[w + 4] = tagColumn; t[w + 5] = charInput ? 0 : RawOffset(tagStart);
+            w += StartHeader;
+            for (int a = 0; a < attributeCount; a++, w += AttributeRecord)
+            {
+                ref var attribute = ref attributes[a];
+                t[w] = attribute.Name.Id; t[w + 1] = attribute.UriId; t[w + 2] = attribute.ValueStart; t[w + 3] = attribute.ValueLength;
+                t[w + 4] = attribute.Location.LineNumber; t[w + 5] = attribute.Location.LinePosition; t[w + 6] = (int)(attribute.Location.ByteOffset ?? 0);
+            }
+            for (int d = 0; d < declarationCount; d++, w += DeclarationRecord)
+            {
+                ref var declaration = ref declarations[d];
+                t[w] = declaration.Name.Id; t[w + 1] = declaration.UriId;
+                t[w + 2] = declaration.Location.LineNumber; t[w + 3] = declaration.Location.LinePosition; t[w + 4] = (int)(declaration.Location.ByteOffset ?? 0);
+            }
         }
 
         private bool AttributesAreUnique()
@@ -951,7 +1269,7 @@ internal static class OptimisticSax
                 for (int b = 0; b < a; b++)
                 {
                     ref var second = ref attributes[b];
-                    if (ReferenceEquals(first.Name, second.Name) || (first.LocalName == second.LocalName && first.NamespaceUri == second.NamespaceUri)) return false;
+                    if (ReferenceEquals(first.Name, second.Name) || (first.Name.Local == second.Name.Local && first.NamespaceUri == second.NamespaceUri)) return false;
                 }
             }
             return true;
@@ -964,46 +1282,54 @@ internal static class OptimisticSax
                 ref var declaration = ref declarations[d];
                 if (!emit) for (int e = 0; e < d; e++) if (ReferenceEquals(declarations[e].Name, declaration.Name)) return false;
                 string prefix = declaration.Name.Kind == 1 ? "" : declaration.Name.Local;
-                string uri;
-                if (emit) uri = declared![declaredIndex++];
+                string uri; int uriId;
+                if (emit) { uriId = declared![declaredIndex++]; uri = uriList[uriId]; }
                 else
                 {
                     var value = attributeChars.AsSpan(declaration.ValueStart, declaration.ValueLength);
                     if (value.SequenceEqual(XmlnsNamespace) || value.SequenceEqual(XmlNamespace) || (prefix.Length != 0 && value.IsEmpty)) return false;
                     if (++internCount + nameBase + 8 > nameLimit) return false;
-                    uri = InternUri(value);
-                    (declared ??= []).Add(uri);
+                    uri = InternUri(value, out uriId);
+                    (declared ??= []).Add(uriId);
                 }
-                declaration.NamespaceUri = uri;
+                declaration.NamespaceUri = uri; declaration.UriId = uriId;
                 if (bindingCount == bindingPrefixes.Length)
                 {
-                    Array.Resize(ref bindingPrefixes, bindingCount * 2); Array.Resize(ref bindingUris, bindingCount * 2);
+                    Array.Resize(ref bindingPrefixes, bindingCount * 2); Array.Resize(ref bindingUris, bindingCount * 2); Array.Resize(ref bindingUriIds, bindingCount * 2);
                 }
-                bindingPrefixes[bindingCount] = prefix; bindingUris[bindingCount++] = uri;
+                bindingPrefixes[bindingCount] = prefix; bindingUriIds[bindingCount] = uriId; bindingUris[bindingCount++] = uri;
             }
             scope = ++scopeCounter;
             return true;
         }
 
-        private string InternUri(ReadOnlySpan<char> value)
+        private string InternUri(ReadOnlySpan<char> value, out int id)
         {
+            id = 0;
             if (value.IsEmpty) return "";
             uris ??= new(StringComparer.Ordinal);
             var lookup = uris.GetAlternateLookup<ReadOnlySpan<char>>();
-            if (lookup.TryGetValue(value, out string? existing)) return existing;
+            if (lookup.TryGetValue(value, out id)) return uriList[id];
             string owned = new(value);
-            uris.Add(owned, owned);
+            if (uriCount == uriList.Length) Array.Resize(ref uriList, uriCount * 2);
+            id = uriCount;
+            uriList[uriCount++] = owned;
+            uris.Add(owned, id);
             return owned;
         }
 
         private void EnsureAttributeChars(int needed)
         {
+            // The arena only accumulates across tags while recording; past its cap the tape is dropped and the delivery pass re-scans.
+            if (record && needed > maxArenaChars) StopRecording();
             if (attributeChars is not null && attributeChars.Length >= needed) return;
-            var grown = ArrayPool<char>.Shared.Rent(Math.Max(needed, Math.Max(512, (attributeChars?.Length ?? 0) * 2)));
+            int size = Math.Max(512, (attributeChars?.Length ?? 0) * 2);
+            if (record) size = Math.Min(size, maxArenaChars);
+            var grown = Rent<char>(Math.Max(size, needed));
             if (attributeChars is not null)
             {
                 attributeChars.AsSpan(0, attributeLength).CopyTo(grown);
-                ArrayPool<char>.Shared.Return(attributeChars);
+                Return(attributeChars);
             }
             attributeChars = grown;
         }

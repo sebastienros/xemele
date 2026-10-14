@@ -12,6 +12,8 @@ internal sealed class OptimisticEntity
 {
     internal string Content = "", Attribute = "";
     internal int Length, InnerRefs;
+    // Index assigned by the SAX token tape the first time the entity is referenced (the entity objects belong to one parse).
+    internal int TapeId = -1;
 }
 
 // The DOCTYPE of a whole-buffer parse. The real streaming parser reads the declaration (so DTD semantics, quotas and

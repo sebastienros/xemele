@@ -100,7 +100,7 @@ public readonly ref struct XmlAttributeView
     internal XmlAttributeView(ReadOnlySpan<AttributeRow> rows) { this.rows = rows; }
     internal XmlAttributeView(ReadOnlySpan<FastAttribute> fast, ReadOnlySpan<char> chars) { this.fast = fast; this.chars = chars; }
     public int Count => rows.Length + fast.Length;
-    public XmlAttributeItem this[int index] { get { if (!fast.IsEmpty) { if ((uint)index >= (uint)fast.Length) throw new ArgumentOutOfRangeException(nameof(index)); ref readonly var a = ref fast[index]; return new(a.LocalName, a.Prefix, a.NamespaceUri, chars.Slice(a.ValueStart, a.ValueLength), false, true, [], a.Location); } if ((uint)index >= (uint)rows.Length) throw new ArgumentOutOfRangeException(nameof(index)); var row = rows[index]; return new(row.LocalName, row.Prefix, row.NamespaceUri, row.IsValueComplete ? row.Value.AsSpan() : [], row.IsDefaulted, row.IsValueComplete, row.IsValueComplete ? [] : row.ValueParts.Span, row.Location); } }
+    public XmlAttributeItem this[int index] { get { if (!fast.IsEmpty) { if ((uint)index >= (uint)fast.Length) throw new ArgumentOutOfRangeException(nameof(index)); ref readonly var a = ref fast[index]; return new(a.Name.Local, a.Name.Prefix, a.NamespaceUri, chars.Slice(a.ValueStart, a.ValueLength), false, true, [], a.Location); } if ((uint)index >= (uint)rows.Length) throw new ArgumentOutOfRangeException(nameof(index)); var row = rows[index]; return new(row.LocalName, row.Prefix, row.NamespaceUri, row.IsValueComplete ? row.Value.AsSpan() : [], row.IsDefaulted, row.IsValueComplete, row.IsValueComplete ? [] : row.ValueParts.Span, row.Location); } }
     public Enumerator GetEnumerator() => new(this);
     public ref struct Enumerator
     {
