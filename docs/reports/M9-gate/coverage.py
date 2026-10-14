@@ -4,7 +4,7 @@ sys.dont_write_bytecode=True
 import hashlib,importlib.util,json,os,shutil,subprocess,time,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
-out=ROOT/'artifacts/M9-gate/coverage-final'
+out=ROOT/'artifacts/M9-gate/coverage-qualified'
 out.mkdir(parents=True,exist_ok=False)
 package=Path('/Users/sebastienros/.nuget/packages/coverlet.console/6.0.4/coverlet.console.6.0.4.nupkg')
 assert hashlib.sha256(package.read_bytes()).hexdigest()=='48ad640bc67eb52e0f95c2f80f6368b24088033c5792e834d7ec4ae2ae543217'
@@ -55,7 +55,7 @@ try:
     args=f'--fx-version 10.0.11 "{tests / "Xemele.Tests.dll"}" -parallelMode none -culture invariant -noColor -result-xml "{out / "unit.xml"}"'
     run([host,'--fx-version','10.0.11',tool,tests/'Xemele.Tests.dll','--target',host,'--targetargs',args,
          '--include','[Xemele]Xemele.Parsing.Syntax.XmlParserCore*','--include','[Xemele]Xemele.Parsing.Input.XmlInputDecoder*','--include','[Xemele]Xemele.XmlDocument*','--include','[Xemele]Xemele.Streaming.OptimisticSax*','--include','[Xemele]Xemele.Internal.Operations.FastLineBreaks*','--include','[Xemele]Xemele.Internal.Operations.OptimisticDoctype*','--include','[Xemele]Xemele.Internal.Operations.OptimisticEntity*','--include','[Xemele]Xemele.Streaming.SaxName*','--include','[Xemele]Xemele.Streaming.SaxTapeProbe*','--exclude-assemblies-without-sources','None',
-         '--exclude-by-file','**/Tree/ValidationMetadata/Document.ValidationMetadata.cs,**/Tree/ValidationMetadata/Document.SourceProvenance.cs','--format','json','--output',out/'unit-coverage.json'],500)
+         '--exclude-by-file','**/Tree/ValidationMetadata/Document.ValidationMetadata.cs','--exclude-by-file','**/Tree/ValidationMetadata/Document.SourceProvenance.cs','--format','json','--output',out/'unit-coverage.json'],500)
     report['productionSha256After']=sha(original);assert report['productionSha256Before']==report['productionSha256After']
     coverage=json.loads((out/'unit-coverage.json').read_bytes());assert coverage
     report['rawCoverageSha256']=sha(out/'unit-coverage.json');report['result']='collection-passed'
