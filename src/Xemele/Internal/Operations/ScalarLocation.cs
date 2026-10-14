@@ -10,6 +10,7 @@ internal sealed class ScalarLocation(Uri? sourceUri)
     private int column = 1;
     private bool afterCr;
     internal int ColumnCapacity => int.MaxValue - column;
+    internal void Seed(int line, int column) { this.line = line; this.column = column; afterCr = false; }
     internal void AdvanceColumns(int count)
     {
         if ((uint)count > (uint)ColumnCapacity) throw new ArgumentOutOfRangeException(nameof(count));

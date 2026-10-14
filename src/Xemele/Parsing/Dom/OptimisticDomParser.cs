@@ -7,6 +7,7 @@ using System.Runtime.Intrinsics;
 using System.Text.Unicode;
 using Xemele.Internal.Operations;
 using Xemele.Parsing.Dom;
+using Xemele.Parsing.Dtd;
 
 namespace Xemele;
 
@@ -27,22 +28,22 @@ public sealed partial class XmlDocument
         if (input.Length > (limits.DocumentCharacters ?? long.MaxValue) || input.Length > expanded) return false;
         var candidate = new XmlDocument(limits);
         bool parsed = input.Contains((byte)'\r')
-            ? ParseNormalized(candidate, input, limits, cancellationToken, charInput: false)
-            : new OptimisticParser(candidate, input, limits, cancellationToken).Run();
+            ? ParseNormalized(candidate, input, options, cancellationToken, charInput: false)
+            : new OptimisticParser(candidate, input, options, cancellationToken).Run();
         if (!parsed) return false;
         document = candidate;
         return true;
     }
 
     // CR and CRLF input is parsed from an LF-normalized copy; line and column numbers are unchanged and byte offsets are mapped back.
-    private static bool ParseNormalized(XmlDocument candidate, ReadOnlySpan<byte> input, XmlResourceLimits limits, CancellationToken cancellationToken, bool charInput)
+    private static bool ParseNormalized(XmlDocument candidate, ReadOnlySpan<byte> input, XmlParseOptions options, CancellationToken cancellationToken, bool charInput)
     {
         byte[] buffer = FastLineBreaks.Rent(input.Length, out bool pooled);
         int[]? dropped = null;
         try
         {
             int length = FastLineBreaks.Normalize(input, buffer, !charInput, ref dropped, out int droppedCount);
-            var parser = new OptimisticParser(candidate, buffer.AsSpan(0, length), limits, cancellationToken, charInput, input.Length, dropped, droppedCount);
+            var parser = new OptimisticParser(candidate, buffer.AsSpan(0, length), options, cancellationToken, charInput, input.Length, dropped, droppedCount, normalized: true);
             return parser.Run();
         }
         finally { FastLineBreaks.Release(buffer, pooled, dropped); }
@@ -68,8 +69,8 @@ public sealed partial class XmlDocument
             if (byteCount > (limits.DocumentCharacters ?? long.MaxValue) || byteCount > (limits.ExpandedCharacters ?? long.MaxValue)) return false;
             var candidate = new XmlDocument(limits);
             bool parsed = bytes.Contains((byte)'\r')
-                ? ParseNormalized(candidate, bytes, limits, cancellationToken, charInput: true)
-                : new OptimisticParser(candidate, bytes, limits, cancellationToken, charInput: true).Run();
+                ? ParseNormalized(candidate, bytes, options, cancellationToken, charInput: true)
+                : new OptimisticParser(candidate, bytes, options, cancellationToken, charInput: true).Run();
             if (!parsed) return false;
             document = candidate;
             return true;
@@ -93,6 +94,15 @@ public sealed partial class XmlDocument
     private struct OptimisticFrame
     {
         internal int Slot, First, Last, Count, NameStart, NameLength, SavedScope, BindingStart;
+    }
+
+    // A declared internal general entity reduced to what the fast path can reproduce exactly: replacement text made of plain
+    // characters and the five predefined references. Length is the replacement text in UTF-16 units (an upper bound on both the
+    // scalars and the spelled characters the streaming parser charges) and InnerRefs the predefined references inside it.
+    private sealed class OptimisticEntity
+    {
+        internal string Content = "", Attribute = "";
+        internal int Length, InnerRefs;
     }
 
     private struct OptimisticMember
@@ -142,8 +152,12 @@ public sealed partial class XmlDocument
         private int droppedCursor;
         private uint Off(int offset) => charInput ? uint.MaxValue : (uint)(dropped is null ? offset : FastLineBreaks.Raw(dropped, droppedCount, ref droppedCursor, offset));
         private readonly CancellationToken cancellation;
+        private readonly XmlParseOptions options;
+        private readonly bool normalized, innerReferencesAllowed;
         private readonly int maxDepth, maxMembers, tokenLimit, nameLimit;
-        private long referenceBudget;
+        private long referenceBudget, nameBase;
+        private Dictionary<string, OptimisticEntity?>? entities;
+        private bool doctypeSeen;
         private int i, line, lineStart, cont;
         private int nodeCount, memberCount, depth, scope, scopeCounter, qnameCount;
         private bool rootSeen;
@@ -157,9 +171,12 @@ public sealed partial class XmlDocument
         private OptimisticMembers attributes, declarations;
         private int attributeCount, declarationCount;
 
-        internal OptimisticParser(XmlDocument doc, ReadOnlySpan<byte> input, XmlResourceLimits limits, CancellationToken cancellation, bool charInput = false, int rawLength = -1, int[]? dropped = null, int droppedCount = 0)
+        internal OptimisticParser(XmlDocument doc, ReadOnlySpan<byte> input, XmlParseOptions options, CancellationToken cancellation, bool charInput = false, int rawLength = -1, int[]? dropped = null, int droppedCount = 0, bool normalized = false)
         {
+            var limits = options.Limits;
             this.doc = doc; this.charInput = charInput; s = input; n = input.Length; this.cancellation = cancellation;
+            this.options = options; this.normalized = normalized;
+            innerReferencesAllowed = (limits.EntityDepth ?? int.MaxValue) >= 2;
             maxDepth = limits.Depth ?? int.MaxValue;
             maxMembers = Math.Min(MaxMembers, limits.AttributesPerElement ?? int.MaxValue);
             tokenLimit = limits.TokenCharacters ?? int.MaxValue;
@@ -201,10 +218,10 @@ public sealed partial class XmlDocument
             return true;
         }
 
-        private void PresizeArenas()
+        private void PresizeArenas(int from = 0)
         {
             int nodes = 1, attributeEstimate = 0; bool tag = false; byte quote = 0;
-            for (int offset = 0; offset < n && nodes < 256 && attributeEstimate < 256;)
+            for (int offset = from; offset < n && nodes < 256 && attributeEstimate < 256;)
             {
                 var block = s.Slice(offset, Math.Min(4096, n - offset));
                 int at = block.IndexOfAny("<>='\""u8);
@@ -398,10 +415,96 @@ public sealed partial class XmlDocument
                 int run = i; SkipWhitespace();
                 if (i - run >= tokenLimit || (uint)i >= (uint)n || s[i] != '<' || i + 1 >= n) return false;
                 byte next = s[i + 1];
-                if (next == '!') { if (!Comment()) return false; }
+                if (next == '!')
+                {
+                    if (i + 2 < n && s[i + 2] == 'D') { if (!Doctype()) return false; }
+                    else if (!Comment()) return false;
+                }
                 else if (next == '?') { if (!ProcessingInstruction()) return false; }
                 else return true;
             }
+        }
+
+        // The DOCTYPE and its internal subset are parsed by the streaming parser itself, so declarations, validity checks,
+        // quotas and locations come from the same code. Only subsets that merely declare internal general entities are kept.
+        private bool Doctype()
+        {
+            if (doctypeSeen || normalized || options.DtdProcessing != XmlDtdProcessing.Parse) return false;
+            doctypeSeen = true;
+            if (!Xemele.Parsing.Syntax.XmlParserCore.TryScanDoctype(s, i, line, Column(i), charInput, options, cancellation, out var scan)) return false;
+            var model = scan.Model;
+            if (scan.Declaration.PublicId is not null || scan.Declaration.SystemId is not null ||
+                model.Elements.Count != 0 || model.Attributes.Count != 0 || model.Notations.Count != 0 || model.ParameterEntities.Count != 0 ||
+                model.DeclarationValidityDiagnostic is not null || model.UnreadParameterLocation is not null) return false;
+            referenceBudget -= scan.Expanded;
+            if (referenceBudget < 0) return false;
+            nameBase = scan.Names;
+            var table = new Dictionary<string, OptimisticEntity?>(model.GeneralEntities.Count, StringComparer.Ordinal);
+            foreach (var declaration in model.GeneralEntities) table.TryAdd(declaration.Name, Analyze(declaration));
+            bool high = !Ascii.IsValid(s[i..scan.End]);
+            if (high && HasNonCharacter(s[i..scan.End])) return false;
+            TrackLines(i, scan.End, high);
+            i = scan.End;
+            entities = table;
+            doc.SetDtdMetadata(scan.Declaration, model);
+            PresizeArenas(i);
+            return true;
+        }
+
+        private static OptimisticEntity? Analyze(DtdEntityDeclaration declaration)
+        {
+            if (declaration.IsParameter || declaration.IsExternal || declaration.ReplacementText is not { } text ||
+                declaration.SystemId is not null || declaration.PublicId is not null || declaration.NotationName is not null) return null;
+            var content = new StringBuilder(text.Length);
+            var attribute = new StringBuilder(text.Length);
+            int references = 0;
+            for (int k = 0; k < text.Length; k++)
+            {
+                char c = text[k];
+                if (c == '&')
+                {
+                    var rest = text.AsSpan(k);
+                    char value; int length;
+                    if (rest.StartsWith("&lt;")) { value = '<'; length = 4; }
+                    else if (rest.StartsWith("&gt;")) { value = '>'; length = 4; }
+                    else if (rest.StartsWith("&amp;")) { value = '&'; length = 5; }
+                    else if (rest.StartsWith("&apos;")) { value = '\''; length = 6; }
+                    else if (rest.StartsWith("&quot;")) { value = '"'; length = 6; }
+                    else return null;
+                    content.Append(value); attribute.Append(value);
+                    k += length - 1; references++;
+                }
+                else if (c is '<' or ']' or '>' or '\r' or '\uFFFE' or '\uFFFF' || (c < ' ' && c is not ('\t' or '\n'))) return null;
+                else if (char.IsHighSurrogate(c))
+                {
+                    if (k + 1 >= text.Length || !char.IsLowSurrogate(text[k + 1])) return null;
+                    content.Append(c).Append(text[k + 1]); attribute.Append(c).Append(text[k + 1]); k++;
+                }
+                else if (char.IsLowSurrogate(c)) return null;
+                else { content.Append(c); attribute.Append(c is '\t' or '\n' ? ' ' : c); }
+            }
+            return new() { Content = content.ToString(), Attribute = attribute.ToString(), Length = text.Length, InnerRefs = references };
+        }
+
+        // 1: a declared entity (charged against the expansion budget), 0: not an entity reference (predefined, numeric or no DTD,
+        // left to Reference), -1: unknown, undeclared or unsupported, so the streaming parser decides.
+        private int EntityAt(int at, out OptimisticEntity? entity, out int referenceLength)
+        {
+            entity = null; referenceLength = 0;
+            if (entities is null || at + 2 >= n || (FlagTable[s[at + 1]] & 2) == 0) return 0;
+            int p = at + 2, limit = Math.Min(n, at + 130);
+            while (p < limit && (FlagTable[s[p]] & 1) != 0 && s[p] != ':') p++;
+            if (p >= n || s[p] != ';') return 0;
+            var name = s[(at + 1)..p];
+            if (name.SequenceEqual("lt"u8) || name.SequenceEqual("gt"u8) || name.SequenceEqual("amp"u8) || name.SequenceEqual("apos"u8) || name.SequenceEqual("quot"u8)) return 0;
+            Span<char> chars = stackalloc char[name.Length];
+            for (int k = 0; k < chars.Length; k++) chars[k] = (char)name[k];
+            if (!entities.GetAlternateLookup<ReadOnlySpan<char>>().TryGetValue(chars, out entity) || entity is null) return -1;
+            if (entity.InnerRefs != 0 && !innerReferencesAllowed) return -1;
+            referenceBudget -= entity.Length + entity.InnerRefs;
+            if (referenceBudget < 0) return -1;
+            referenceLength = p + 1 - at;
+            return 1;
         }
 
         private bool Epilog()
@@ -502,7 +605,8 @@ public sealed partial class XmlDocument
 
         private bool TextWithReferences(int start, int startLine, int startColumn)
         {
-            int length = 0, segment = start, at = start;
+            int length = 0, segment = start, at = start, locStart = start;
+            long extra = 0;
             while (true)
             {
                 int found = s[at..].IndexOfAny(TextStops);
@@ -515,14 +619,32 @@ public sealed partial class XmlDocument
                     at = end + 1; continue;
                 }
                 if (stop != '<' && stop != '&') return false;
-                if (end - start >= tokenLimit || !AppendSegment(segment, end, ref length)) return false;
+                if (end - start + extra >= tokenLimit || !AppendSegment(segment, end, ref length)) return false;
                 if (stop == '<')
                 {
-                    AddLeaf(XmlNodeKind.Text, null, new string(scratch!, 0, length), startLine, startColumn, start);
+                    if (length != 0) AddLeaf(XmlNodeKind.Text, null, new string(scratch!, 0, length), startLine, startColumn, locStart);
                     i = end; return true;
                 }
-                if (!Reference(end, out int value, out int referenceLength)) return false;
-                length = Append(Scratch(length + 3, length), length, value);
+                int kind = EntityAt(end, out var entity, out int referenceLength);
+                if (kind < 0) return false;
+                if (kind > 0)
+                {
+                    extra += entity!.Length;
+                    if (entity.Content.Length != 0)
+                    {
+                        entity.Content.CopyTo(0, Scratch(length + entity.Content.Length + 1, length), length, entity.Content.Length);
+                        length += entity.Content.Length;
+                    }
+                    else if (length == 0)
+                    {
+                        locStart = end + referenceLength; startLine = line; startColumn = Column(locStart);
+                    }
+                }
+                else
+                {
+                    if (!Reference(end, out int value, out referenceLength)) return false;
+                    length = Append(Scratch(length + 3, length), length, value);
+                }
                 i = segment = at = end + referenceLength;
             }
         }
@@ -649,7 +771,7 @@ public sealed partial class XmlDocument
             }
             if (p - open >= tokenLimit) return false;
             string name = TargetName(target);
-            if (doc.names.Count + qnameCount + 8 > nameLimit) return false;
+            if (doc.names.Count + qnameCount + nameBase + 8 > nameLimit) return false;
             var data = doc.GetName(name, "", "");
             AddLeaf(XmlNodeKind.ProcessingInstruction, data, Own(ref values, s[bodyStart..bodyEnd]), startLine, startColumn, open);
             i = p;
@@ -708,7 +830,7 @@ public sealed partial class XmlDocument
             if (colon >= 0 && key[(colon + 1)..].Contains((byte)':')) return null;
             if (colon == 0 || colon == key.Length - 1) return null;
             if (colon > 0 && (FlagTable[key[colon + 1]] & 2) == 0) return null;
-            if (doc.names.Count + ++qnameCount + 8 > nameLimit) return null;
+            if (doc.names.Count + ++qnameCount + nameBase + 8 > nameLimit) return null;
             var entry = new OptimisticName { Key = key.ToArray(), Hash = hash };
             string prefix = colon < 0 ? "" : Latin(key[..colon]);
             string local = colon < 0 ? Latin(key) : Latin(key[(colon + 1)..]);
@@ -865,7 +987,7 @@ public sealed partial class XmlDocument
 
         private bool Declare()
         {
-            if (doc.names.Count + qnameCount + 8 > nameLimit) return false;
+            if (doc.names.Count + qnameCount + nameBase + 8 > nameLimit) return false;
             for (int d = 0; d < declarationCount; d++)
             {
                 ref var declaration = ref declarations[d];
@@ -945,6 +1067,7 @@ public sealed partial class XmlDocument
         {
             var buffer = Scratch(256);
             int length = 0;
+            long extra = 0;
             if (p - start > buffer.Length) buffer = Scratch(p - start + 16);
             for (int k = start; k < p; k++) buffer[length++] = (char)s[k];
             while (true)
@@ -955,8 +1078,20 @@ public sealed partial class XmlDocument
                 if (b == quote) break;
                 if (b == '&')
                 {
-                    if (!Reference(p, out int value, out int referenceLength)) return null;
-                    length = Append(buffer, length, value); p += referenceLength;
+                    int kind = EntityAt(p, out var entity, out int referenceLength);
+                    if (kind < 0) return null;
+                    if (kind > 0)
+                    {
+                        string text = entity!.Attribute;
+                        while (length + text.Length + 3 > buffer.Length) buffer = GrowScratch(length);
+                        text.CopyTo(0, buffer, length, text.Length);
+                        length += text.Length; extra += entity.Length; p += referenceLength;
+                    }
+                    else
+                    {
+                        if (!Reference(p, out int value, out referenceLength)) return null;
+                        length = Append(buffer, length, value); p += referenceLength;
+                    }
                 }
                 else if (b == '\t') { buffer[length++] = ' '; p++; }
                 else if (b == '\n') { buffer[length++] = ' '; p++; line++; lineStart = p; cont = 0; }
@@ -969,7 +1104,7 @@ public sealed partial class XmlDocument
                     cont += consumed - 1; p += consumed;
                 }
             }
-            if (p - start >= tokenLimit) return null;
+            if (p - start + extra >= tokenLimit) return null;
             i = p + 1;
             return values.Own(buffer.AsSpan(0, length));
         }
