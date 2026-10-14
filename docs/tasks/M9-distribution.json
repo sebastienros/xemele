@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Package and deployment-consumption validation",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-final-os-validation",
   "base_revision": "cdb27d5993bc3b03653142168e2de9384c07bfa6",
@@ -37,7 +37,7 @@
     {
       "id": "M9-distribution-A1",
       "description": "Build reproducible package with notices/docs/Source Link and net10.0 consumption/trimming/AOT matrix.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "local-package",
         "missing-platform-matrix",
@@ -45,13 +45,14 @@
         "hosted-current-three-os",
         "hosted-windows-consumers-pass",
         "required-os-matrix-source-bound",
-        "required-os-distribution-integrated"
+        "required-os-distribution-integrated",
+        "final-current-platform-matrix"
       ]
     },
     {
       "id": "M9-distribution-A2",
       "description": "Install package into isolated consumers on required OS/architectures; no publication is performed.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "local-package",
         "missing-platform-matrix",
@@ -59,20 +60,22 @@
         "hosted-current-three-os",
         "hosted-windows-consumers-pass",
         "required-os-matrix-source-bound",
-        "required-os-distribution-integrated"
+        "required-os-distribution-integrated",
+        "final-current-platform-matrix"
       ]
     },
     {
       "id": "M9-distribution-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "local-package",
         "partial-local-integration",
         "current-local-package",
         "hosted-windows-consumers-pass",
         "required-os-matrix-source-bound",
-        "required-os-distribution-integrated"
+        "required-os-distribution-integrated",
+        "final-current-platform-matrix"
       ]
     }
   ],
@@ -84,7 +87,9 @@
     "tools/Packaging/THIRD-PARTY-NOTICES.md",
     "docs/reports/M9-distribution/current-local-checks.json,current-extra-checks.json: current repaired-runtime18-command local package/trim/AOT/tool/symbol evidence",
     "tools/Packaging/verify.py: EXPECTED_UNIT_TESTS10754 matches actual verified M9unit population for the pending hosted candidate",
-    "tools/Packaging/verify.py: explicitWindowsconsumerNuGetconfig bypasses local-firstCLI bug; .github/workflows/release.yml: oneWindowsx64 capped20min job"
+    "tools/Packaging/verify.py: explicitWindowsconsumerNuGetconfig bypasses local-firstCLI bug; .github/workflows/release.yml: oneWindowsx64 capped20min job",
+    "tools/Packaging/verify.py: currentsource11216 expected unit population",
+    "docs/reports/M9-distribution/final-matrix.json,final-linux-x64.json,final-win-x64.json: actual renewed source-current OSresults and explicitcollateralusage"
   ],
   "evidence": [
     {
@@ -257,21 +262,29 @@
       "result": "passed",
       "summary": "Required OS/RID distribution matrix integrated and source-equivalent to actual passing reports: each 10754 units pass, Linux/macOS21 commands and Windows23 commands pass managed/trim/NativeAOT/tool. All criteria passed; no performance/fuzz/publication credit.208 task records validate.",
       "artifact": "docs/reports/M9-distribution/hosted-windows-final/matrix.json"
+    },
+    {
+      "id": "final-current-platform-matrix",
+      "kind": "check",
+      "revision": "47529a699addf6be8bfc6b880b7e44d302f558dc",
+      "command": "One explicitly approved validation-branch push; actual run38522581339 two20mincap Windows/Linuxjobs; exact downloaded summaries; source-bound current macOSlocal checks; planning/diff checks",
+      "result": "passed",
+      "summary": "Current11216unit checks/package/freshmanaged/trim/NativeAOT/tool pass onWindowsx64/Linuxx64 plusactualsource-equivalentmacOSarm64. Bothapprovedjobs pass317/499sec. Extra legacyCI3jobs107sec failed knownfragmentdiscovery before runtime checks; cancellation foundterminal, no releasecredit/rerun. Exact originalsuccesses/failures retained; no publication.",
+      "artifact": "docs/reports/M9-distribution/final-matrix.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Required OS/architecture distribution matrix passed with actual isolated managed/trim/NativeAOT/tool execution; all three OS10754-unit suites pass. Earlier failures retained and both narrow harness/Windows feed fixes verified.",
+    "summary": "Current-source threeOS/botharchitecture release matrix passes. Original platform results retained; no additional retries/publication.",
     "checks": [
-      "Windows23 commands passed at b2e2457c; Linux/macOS21 commands each passed at a19b7ea8; source applicability reviewed",
-      "Each OS canonical clean package pairs byte-identical; notices/docs/embedded exact Source Link and private PackageReference consumers verified",
-      "One approved Windows job8.05 elapsed minutes; no extra job/publication/fuzz; 208 task records validate"
+      "Actual11216unit checks perOS; packageconsumption/trim/NativeAOT/tool and deterministicarchives",
+      "ApprovedWindows/Linux2jobs816sec; source-equivalentcurrentmacOSlocal18commands",
+      "Exact SourceLinkcommit metadata, API1430/preview222 andnotice/license/userguide checks retained"
     ],
-    "remaining": [
-      "Renew current-source Windows/Linux after parser changes, using current macOSarm64 evidence where source-equivalent. Original OS successes/failures retained; no new hosted authorization inferred."
-    ],
+    "remaining": [],
     "requests": [
-      "Final M9 gate still requires remaining performance/robustness evidence and any affected checks after future runtime changes; this is a distribution-lane handoff, not terminal M9 completion."
+      "Generic build.yml excludes onlyoldervalidationbranch and generic fragment discovery rejects the known header-only parent marker. Record maintenancefollow-up; no extra run or runtime defect inferred.",
+      "Do not push further metadata changes to validationbranch without newrunnerbudget; no remote main/tag/publication authorized."
     ]
   }
 }
