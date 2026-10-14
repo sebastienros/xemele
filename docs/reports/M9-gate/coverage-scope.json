@@ -20,5 +20,10 @@
   ],
   "scope": "Original complete XMLParserCore/decoder plus all new optimistic DOM/SAX algorithms, prefix DTD scan and line-break/entity preprocessing. Other instrumented tree/storage/lifecycle files reported separately.",
   "excludedCoreSources": [],
-  "frozenBeforeMeasurement": true
+  "frozenBeforeMeasurement": true,
+  "nonCoreInstrumentationExclusions": [
+    "src/Xemele/Tree/ValidationMetadata/Document.ValidationMetadata.cs",
+    "src/Xemele/Tree/ValidationMetadata/Document.SourceProvenance.cs"
+  ],
+  "reason": "Production setter IL-shape assertions already pass normally; instrumentation changes those unrelated setter bodies. Frozen current XML algorithm source scope unchanged."
 }

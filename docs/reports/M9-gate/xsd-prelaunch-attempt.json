@@ -1,0 +1,38 @@
+{
+  "result": "failed-before-launch",
+  "revision": "d4402f04dd04e9240e3ee323c4744dcfe1a58a50",
+  "commands": [
+    {
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj",
+        "--source",
+        "/private/tmp",
+        "--disable-build-servers",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:NuGetAudit=false"
+      ],
+      "receipt": {
+        "command": 0,
+        "pid": null,
+        "exit": null,
+        "reason": "AssertionError",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": [],
+        "nestedOwnership": {
+          "registry": "/private/tmp/xemele-m9-final-xsd/artifacts/M9-gate/xsd/nested-000",
+          "groups": [],
+          "pendingIntents": [],
+          "allOwnedGroupsAbsent": true,
+          "remainingGroups": {}
+        }
+      },
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputTail": ""
+    }
+  ],
+  "cause": "Original nested ownership helper only accepts registries beneath artifacts/M8-xsd-corpus; gate adapter changed artifact root. Restore never launched. Restore original root layout; executor/cleanup algorithms remain unchanged."
+}

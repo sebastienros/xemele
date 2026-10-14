@@ -16,7 +16,7 @@ released=module('released_xsd',ROOT/'docs/reports/M8-xsd-corpus/run.py')
 approved=module('approved_xsd',ROOT/'docs/reports/M8-xsd-corpus/approved_dispositions.py')
 parser=argparse.ArgumentParser();parser.add_argument('--resume',action='store_true');args=parser.parse_args()
 prior=json.loads((HERE/'current-xsd-attempt2.json').read_bytes()) if args.resume else None
-out=ROOT/('artifacts/M9-gate/xsd-resumed' if args.resume else 'artifacts/M9-gate/xsd');out.mkdir(parents=True,exist_ok=False)
+out=ROOT/('artifacts/M8-xsd-corpus/m9-final-gate-resumed' if args.resume else 'artifacts/M8-xsd-corpus/m9-final-gate');out.mkdir(parents=True,exist_ok=False)
 host=Path(released.D);corpus=ROOT/'tests/corpora/xsd'
 revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
 assert not subprocess.check_output(['git','status','--porcelain','--','src','tests/corpora/xsd','docs/api','tests/Xemele.Conformance.Tests/Xsd','tests/Xemele.Differential.Tests/Xsd','Directory.Build.props','Directory.Packages.props','global.json'],cwd=ROOT,text=True).strip(),'Reviewed source inputs must be committed'
