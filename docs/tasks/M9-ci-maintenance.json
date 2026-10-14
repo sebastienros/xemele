@@ -55,7 +55,8 @@
       "description": "Update only stale bootstrap/portable test workflow guards as demonstrated; retain ordinary tests/foundation/corpus checks and exclude release-validation pushes from unrelated generic CI.",
       "status": "passed",
       "evidence": [
-        "local-ci-checks"
+        "local-ci-checks",
+        "portable-reference-checks"
       ]
     },
     {
@@ -82,6 +83,15 @@
       "result": "passed",
       "summary": "12744 MTP tests pass/0skip; 3 controlled exit2 failures; 1430 actual compiled API members and foundation mutation/mismatch controls; 55 fragments/3388 checksum fixtures; 24 corpus tests/20 CLI checks; source-equivalent final build and pack pass. Original failure and local intermediate failures retained. Hosted checks pending.",
       "artifact": "docs/reports/M9-ci-maintenance/summary.json"
+    },
+    {
+      "id": "portable-reference-checks",
+      "kind": "check",
+      "revision": "dbe0c29d6fbea45c08288bd5869f070af1b5fbd3",
+      "command": "prepare_runtime.py; prepare_references.py --jing-source /private/tmp/xemele-rng-jing (official pinned libxml2 fetch); actual multilingual MTP discovery strict UTF-8; pinned-runtime native differential RelaxNg.ReferenceTests and DtdCanonical.ReferenceTests; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "14 affected differential tests pass/0skip with rebuilt pinned engines, actual source/binary/class hashes and original oracle controls. Runtime11 config pinning verified; exact canonical11 package restored with five audit warnings visible in test-only project. Earlier full12744 MTP/3 controlled exit2 checks reused for unchanged cases. First hosted failure retained; next matrix pending.",
+      "artifact": "docs/reports/M9-ci-maintenance/summary.json"
     }
   ],
   "blockers": [],
@@ -91,7 +101,7 @@
       "Local CI equivalents passed; original and intermediate failures retained."
     ],
     "remaining": [
-      "Fixed revision hosted three-OS Build and validate matrix pending."
+      "First hosted attempt failed on demonstrated encoding/runtime/reference prerequisites; second fixed revision matrix pending."
     ],
     "requests": [
       "Coordinator grants exact aggregate benchmark project repair for demonstrated CS0103 XxHash3 missing dependency; existing M9-benchmark-build prerequisite verified. Preserve benchmark source/algorithm and historical measurements.",

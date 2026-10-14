@@ -58,7 +58,17 @@
       "cli_checks": 20
     },
     "bootstrap": "2 checksum/independent expectation checks passed",
-    "runtime_pack": "created; unpublished"
+    "runtime_pack": "created; unpublished",
+    "reference_setup": {
+      "affected_differential_tests": 14,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "runtime": "10.0.11",
+      "utf8_multilingual_discovery": "strict UTF-8 decoding passed on 1083496-character actual test list",
+      "engines": "Jing20241231/a6bc0041035988325dfbfe7823ef2c098fc56597 and libxml2 2.15.4/96498992efa48d52b0e8b83058bd88dbdaf153c1 rebuilt; original runner source hashes and full engine/oracle assertions pass",
+      "canonical_audit": "Exact original test-only 10.0.11 reference retained. Five NU1902/NU1903 advisories remain visible as warnings in isolated generated restore project; audits enabled; no runtime package dependency."
+    }
   },
   "hosted_attempts": [
     {
@@ -73,5 +83,11 @@
       }
     }
   ],
-  "scope": "Runtime source and API/corpus/release inputs preserved; only reference-test identity/Java paths made portable. Original standalone gate evidence retained separately. No fuzz campaign, release duplicate, remote main/tag or publication."
+  "scope": "Runtime source and API/corpus/release inputs preserved; only reference-test identity/Java paths made portable. Original standalone gate evidence retained separately. No fuzz campaign, release duplicate, remote main/tag or publication.",
+  "reference_source_revision": "dbe0c29d6fbea45c08288bd5869f070af1b5fbd3",
+  "local_setup_failures": [
+    "Preserved libxml2.git cache lacked HEAD/config; official pinned upstream fetched into owned outputs instead.",
+    "Preserved CMake lacked modules; task-local CMake3.31.6 installed instead.",
+    "Frozen test-reference packages triggered warning-as-error audit failures; only NU1902/NU1903 kept as visible warnings in isolated generated reference restore project."
+  ]
 }
