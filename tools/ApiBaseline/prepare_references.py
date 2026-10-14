@@ -107,7 +107,7 @@ endif()
     candidates = list(build.rglob('rng-reference.exe' if os.name == 'nt' else 'rng-reference'))
     assert len(candidates) == 1
     binary = candidates[0]
-    archives = list(build.rglob('xml2.lib' if os.name == 'nt' else 'libxml2.a'))
+    archives = list(build.rglob('libxml2s.lib' if os.name == 'nt' else 'libxml2.a'))
     assert len(archives) == 1
     compiler_metadata = next(build.glob('CMakeFiles/*/CMakeCCompiler.cmake'))
     compiler = re.search(r'set\(CMAKE_C_COMPILER "([^"]+)"\)',
