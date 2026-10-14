@@ -1,6 +1,9 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using System.Text.Unicode;
 using Xemele.Internal.Operations;
 using Xemele.Parsing.Dom;
@@ -10,7 +13,7 @@ namespace Xemele;
 public sealed partial class XmlDocument
 {
     // Optimistic whole-buffer UTF-8 DOM parse. It accepts only the common, well-formed subset
-    // (ASCII names, LF line breaks, predefined references, no DTD, no BOM) and builds exactly the
+    // (ASCII names, LF line breaks, predefined and numeric references, no DTD) and builds exactly the
     // document, names, locations and counters that the streaming parser would. Anything else,
     // including every error, returns false before the caller-visible result exists, and the
     // streaming parser re-parses from scratch so diagnostics and semantics stay authoritative.
@@ -127,7 +130,9 @@ public sealed partial class XmlDocument
         {
             PresizeArenas();
             doc.RecordSourceOrigin(new(null, 1, 1, 0));
-            if (n >= 6 && s[0] == '<' && s[1] == '?' && s[2] == 'x' && s[3] == 'm' && s[4] == 'l' && s[5] is (byte)' ' or (byte)'\t' or (byte)'\n' or (byte)'\r')
+            if (n >= 3 && s[0] == 0xEF && s[1] == 0xBB && s[2] == 0xBF) { i = 3; lineStart = 3; }
+            var head = s[i..];
+            if (head.Length >= 6 && head.StartsWith("<?xml"u8) && head[5] is (byte)' ' or (byte)'\t' or (byte)'\n' or (byte)'\r')
             { if (!Declaration()) return false; }
             if (!Prolog()) return false;
             if (!Content()) return false;
@@ -188,8 +193,18 @@ public sealed partial class XmlDocument
 
         private static int ContinuationBytes(ReadOnlySpan<byte> bytes)
         {
-            int count = 0;
-            foreach (byte b in bytes) if ((b & 0xC0) == 0x80) count++;
+            int count = 0, at = 0;
+            if (Vector128.IsHardwareAccelerated && bytes.Length >= Vector128<byte>.Count)
+            {
+                ref byte origin = ref MemoryMarshal.GetReference(bytes);
+                var threshold = Vector128.Create((sbyte)-64);
+                for (; at <= bytes.Length - Vector128<byte>.Count; at += Vector128<byte>.Count)
+                {
+                    var block = Vector128.LoadUnsafe(ref origin, (nuint)at).AsSByte();
+                    count += BitOperations.PopCount(Vector128.LessThan(block, threshold).ExtractMostSignificantBits());
+                }
+            }
+            for (; at < bytes.Length; at++) if ((bytes[at] & 0xC0) == 0x80) count++;
             return count;
         }
 
@@ -204,14 +219,10 @@ public sealed partial class XmlDocument
             }
         }
 
-        // Validates a content run and advances the line state past it. Controls (including CR) reject.
-        private bool Scan(int start, int end, bool checkControls)
+        // Advances line/column state past a validated run; high means it contains non-ASCII bytes.
+        private void TrackLines(int start, int end, bool high)
         {
-            if (start == end) return true;
             var run = s[start..end];
-            if (checkControls && run.IndexOfAny(Controls) >= 0) return false;
-            bool high = !Ascii.IsValid(run);
-            if (high && (!Utf8.IsValid(run) || HasNonCharacter(run))) return false;
             int newline = run.LastIndexOf((byte)'\n');
             if (newline >= 0)
             {
@@ -220,6 +231,47 @@ public sealed partial class XmlDocument
                 cont = high ? ContinuationBytes(run[(newline + 1)..]) : 0;
             }
             else if (high) cont += ContinuationBytes(run);
+        }
+
+        // Validates a content run and advances the line state past it. Controls (including CR) reject.
+        private bool Scan(int start, int end, bool checkControls)
+        {
+            if (start == end) return true;
+            var run = s[start..end];
+            if (checkControls && run.IndexOfAny(Controls) >= 0) return false;
+            bool high = !Ascii.IsValid(run);
+            if (high && (!Utf8.IsValid(run) || HasNonCharacter(run))) return false;
+            TrackLines(start, end, high);
+            return true;
+        }
+
+        // Appends a validated segment to the scratch buffer (decoding and validating in one pass).
+        private bool AppendSegment(int start, int end, ref int length)
+        {
+            if (start == end) return true;
+            var run = s[start..end];
+            var buffer = Scratch(length + run.Length + 1, length);
+            if (Utf8.ToUtf16(run, buffer.AsSpan(length), out _, out int written, replaceInvalidSequences: false) != OperationStatus.Done) return false;
+            bool high = written != run.Length;
+            if (high && HasNonCharacter(run)) return false;
+            TrackLines(start, end, high);
+            length += written;
+            return true;
+        }
+
+        private bool TextValue(int start, int end, out string value)
+        {
+            var run = s[start..end];
+            if (Ascii.IsValid(run))
+            {
+                TrackLines(start, end, false);
+                value = values.OwnAscii(run);
+                return true;
+            }
+            int length = 0;
+            value = "";
+            if (!AppendSegment(start, end, ref length)) return false;
+            value = new string(scratch!, 0, length);
             return true;
         }
 
@@ -232,7 +284,8 @@ public sealed partial class XmlDocument
 
         private bool Declaration()
         {
-            i = 5;
+            int declarationOffset = i;
+            i += 5;
             SkipWhitespace();
             if (!Keyword("version"u8)) return false;
             SkipWhitespace(); if (!Eat('=')) return false; SkipWhitespace();
@@ -268,8 +321,8 @@ public sealed partial class XmlDocument
             }
             if (!(i + 1 < n && s[i] == '?' && s[i + 1] == '>')) return false;
             i += 2;
-            if (i + 8 >= tokenLimit) return false;
-            doc.SetValidationDeclaration(standalone, new(null, 1, 1, 0));
+            if (i - declarationOffset + 8 >= tokenLimit) return false;
+            doc.SetValidationDeclaration(standalone, new(null, 1, 1, declarationOffset));
             return true;
         }
 
@@ -364,8 +417,8 @@ public sealed partial class XmlDocument
                 byte stop = s[end];
                 if (stop == '<')
                 {
-                    if (end - start >= tokenLimit || !Scan(start, end, false)) return false;
-                    AddLeaf(XmlNodeKind.Text, null, Own(ref values, s[start..end]), startLine, startColumn, start);
+                    if (end - start >= tokenLimit || !TextValue(start, end, out string value)) return false;
+                    AddLeaf(XmlNodeKind.Text, null, value, startLine, startColumn, start);
                     i = end; return true;
                 }
                 if (stop == ']')
@@ -408,28 +461,26 @@ public sealed partial class XmlDocument
                     at = end + 1; continue;
                 }
                 if (stop != '<' && stop != '&') return false;
-                if (end - start >= tokenLimit || !Scan(segment, end, false)) return false;
-                var buffer = Scratch(length + (end - segment) + 1, length);
-                length += Encoding.UTF8.GetChars(s[segment..end], buffer.AsSpan(length));
+                if (end - start >= tokenLimit || !AppendSegment(segment, end, ref length)) return false;
                 if (stop == '<')
                 {
-                    AddLeaf(XmlNodeKind.Text, null, new string(buffer, 0, length), startLine, startColumn, start);
+                    AddLeaf(XmlNodeKind.Text, null, new string(scratch!, 0, length), startLine, startColumn, start);
                     i = end; return true;
                 }
-                if (!Reference(end, out char value, out int referenceLength)) return false;
-                buffer = Scratch(length + 2, length);
-                buffer[length++] = value;
+                if (!Reference(end, out int value, out int referenceLength)) return false;
+                length = Append(Scratch(length + 3, length), length, value);
                 i = segment = at = end + referenceLength;
-                // Columns count source characters, so the reference spelling advances them.
             }
         }
 
-        private bool Reference(int at, out char value, out int length)
+        // Decodes a predefined or numeric reference at '&'; control characters and anything unusual bail.
+        private bool Reference(int at, out int value, out int length)
         {
-            value = '\0'; length = 0;
+            value = 0; length = 0;
             if (--referenceBudget < 0 || at + 3 >= n) return false;
             switch (s[at + 1])
             {
+                case (byte)'#': return NumericReference(at, out value, out length);
                 case (byte)'l': if (s[at + 2] == 't' && s[at + 3] == ';') { value = '<'; length = 4; return true; } return false;
                 case (byte)'g': if (s[at + 2] == 't' && s[at + 3] == ';') { value = '>'; length = 4; return true; } return false;
                 case (byte)'a':
@@ -441,6 +492,48 @@ public sealed partial class XmlDocument
                     return false;
             }
             return false;
+        }
+
+        private bool NumericReference(int at, out int value, out int length)
+        {
+            value = 0; length = 0;
+            int p = at + 2, digits = 0;
+            long code = 0;
+            if (s[p] == 'x')
+            {
+                p++;
+                for (; p < n && digits < 8; p++, digits++)
+                {
+                    byte b = s[p]; int d;
+                    if (b >= '0' && b <= '9') d = b - '0';
+                    else if (b >= 'a' && b <= 'f') d = b - 'a' + 10;
+                    else if (b >= 'A' && b <= 'F') d = b - 'A' + 10;
+                    else break;
+                    code = code * 16 + d;
+                }
+            }
+            else
+            {
+                for (; p < n && digits < 8; p++, digits++)
+                {
+                    byte b = s[p];
+                    if (b < '0' || b > '9') break;
+                    code = code * 10 + (b - '0');
+                }
+            }
+            if (digits == 0 || p >= n || s[p] != ';') return false;
+            if (code < 0x20 || code > 0x10FFFF || code is >= 0xD800 and <= 0xDFFF or 0xFFFE or 0xFFFF) return false;
+            value = (int)code; length = p + 1 - at;
+            return true;
+        }
+
+        private static int Append(char[] buffer, int length, int codePoint)
+        {
+            if (codePoint <= 0xFFFF) { buffer[length] = (char)codePoint; return length + 1; }
+            codePoint -= 0x10000;
+            buffer[length] = (char)(0xD800 + (codePoint >> 10));
+            buffer[length + 1] = (char)(0xDC00 + (codePoint & 0x3FF));
+            return length + 2;
         }
 
         private bool Comment()
@@ -796,12 +889,12 @@ public sealed partial class XmlDocument
             {
                 if ((uint)p >= (uint)n) return null;
                 byte b = s[p];
-                if (length + 2 > buffer.Length) buffer = GrowScratch(length);
+                if (length + 3 > buffer.Length) buffer = GrowScratch(length);
                 if (b == quote) break;
                 if (b == '&')
                 {
-                    if (!Reference(p, out char value, out int referenceLength)) return null;
-                    buffer[length++] = value; p += referenceLength;
+                    if (!Reference(p, out int value, out int referenceLength)) return null;
+                    length = Append(buffer, length, value); p += referenceLength;
                 }
                 else if (b == '\t') { buffer[length++] = ' '; p++; }
                 else if (b == '\n') { buffer[length++] = ' '; p++; line++; lineStart = p; cont = 0; }
