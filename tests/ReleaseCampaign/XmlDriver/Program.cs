@@ -31,6 +31,12 @@ static void Exercise(ReadOnlySpan<byte> bytes)
         }
     };
     bool accepted = XmlDocument.TryParse(bytes, out var document, out var diagnostics, options);
+#if XEMELE_CRASH_CONTROL
+    // Separate qualification executable only: the normal XmlDriver excludes this code.
+    // Its initial <r/> seed succeeds; mutating the opening byte exposes a deliberate bug.
+    if (!bytes.IsEmpty && bytes[0] != (byte)'<')
+        throw new InvalidOperationException("Intentional XML harness crash-positive control.");
+#endif
     if (accepted && document is null) throw new InvalidOperationException("Accepted XML lacks its document.");
     if (!accepted && diagnostics.Count == 0) throw new InvalidOperationException("Rejected XML lacks its diagnostic.");
 }
