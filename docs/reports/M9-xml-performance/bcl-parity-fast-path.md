@@ -21,7 +21,7 @@ Accepted by the fast path:
 
 Bails out to the streaming parser:
 
-- DOCTYPE and general entities, CR/CRLF, non-ASCII names, `Recover`, any
+- DOCTYPE with internal general entities (see the DOCTYPE follow-up below), CR/CRLF, non-ASCII names, `Recover`, any
   error. UTF-16 input, async load and SAX are not routed through it.
 
 Techniques: vectorized `IndexOfAny` scanning for text, quote and name ends;
@@ -84,10 +84,9 @@ node and member representation size, not parser transients.
 
 ## Known gaps
 
-1. DOCTYPE and entity documents (`entity-medium`, 2.7x BCL). A fast path needs
-   the real `DtdParser` model plus identical `ExpandedCharacters`,
-   `EntityDepth` and `InternedNames` accounting. It was judged too risky for
-   this change.
+1. DOCTYPE and entity documents: now handled for internal-subset general entities
+   (see the DOCTYPE follow-up); external DTDs, parameter entities and declarations
+   other than general entities still use the streaming parser.
 2. CR/CRLF input (needs byte-offset remapping) and non-ASCII names.
 3. Async load and stream-based SAX still use the streaming parser.
 4. SAX over in-memory input is now about 1.3-2.9x the BCL reader (see the SAX follow-up).
@@ -183,7 +182,64 @@ DOM harness: 1.04M inputs, SAX harness: 1.17M inputs (including CR/CRLF/mixed va
 `PreparedBorrowedTextDispatchAllocatesZero`), which also fail on the base commit.
 
 ### Not done
-- DOCTYPE/entity input (entity-medium: 2.6x BCL in DOM, ~11x in SAX) still uses the streaming parser.
 - Non-ASCII element/attribute names bail to the streaming parser.
 - SAX token tape (est. ~30% off the delivery pass) is not implemented.
 - Retained-memory (`memory.py`) was not re-run for this revision.
+
+## Follow-up: internal-subset DOCTYPE and general entities (DOM UTF-8/UTF-16 and SAX)
+
+### Design
+The DOCTYPE is not re-implemented. `XmlParserCore.TryScanDoctype` (`Parsing/Core/XmlParserCore.Prefix.cs`) runs the real
+streaming core over just the DOCTYPE (seeded with the DOCTYPE's line/column; UTF-8 offsets are mapped through the same
+byte-offset table, so entity declaration locations are exact) against a probe sink that captures the
+`XmlDocumentType`/`DtdModel` and pauses the core right after the closing `>`. DTD syntax, entity declaration rules
+(first declaration wins, character references resolved in the replacement text), diagnostics and the
+`ExpandedCharacters`/`InternedNames` charged by the DOCTYPE come from that code. The probe has no resolver, so external
+subsets cannot be loaded, and any exception or `ArgumentException` from limit validation simply bails.
+
+`OptimisticDoctype` (`Internal/Operations`) accepts the scan only when the DOCTYPE is nothing but internal general
+entities (no public/system id, no ELEMENT/ATTLIST/NOTATION, no parameter entities, no validity diagnostic). Each entity
+is reduced to its content-text and attribute-text (tab/LF become a space in attribute values) form, or marked
+unusable; using an unusable entity bails.
+
+Both fast paths then expand `&name;` inline with the streaming parser's accounting: the reference budget is charged
+`ReplacementText.Length + inner predefined references` (inner references need `EntityDepth >= 2`), the DOCTYPE's own
+expanded characters and interned names are subtracted/added up front (`nameBase`), and the token check counts
+`raw length + sum(entity length)` per text token / attribute value. DOM text nodes keep the slow path's location rules
+(the first contributing scalar; an empty entity followed by text locates the text after the entity; a purely empty
+entity makes no node). The DOM sets the DTD metadata (no DOCTYPE node exists in the tree). SAX is two-pass: pass 1 reads
+the DOCTYPE and validates, pass 2 reuses the result and delivers `StartDtd`, one `DtdDeclaration` per general entity and
+`EndDtd` with the pump's cancellation checkpoints (before each callback and after the last).
+
+### Still bails
+External identifiers / DTD loading; ELEMENT, ATTLIST, NOTATION and parameter-entity declarations or references;
+`DtdProcessing` other than `Parse`; a redeclared predefined entity; undeclared or malformed references; entity text
+containing `<`, `>`, `]`, CR, control characters, or any reference other than the five predefined ones (nested
+entities and `&#13;`); a second DOCTYPE or one outside the prolog; CR/CRLF input with a DOCTYPE (the internal subset
+keeps the raw CR); non-ASCII DOCTYPE/entity names; EntityDepth 1 with inner references; anything over a limit.
+
+### Validation
+- `OptimisticParserTests` (DOM) and `OptimisticSaxTests`: accepted/bail theories (UTF-8 and UTF-16, public entry
+  points), limit sweeps over `ExpandedCharacters`, `TokenCharacters`, `EntityDepth`, `InternedNames`,
+  `DocumentCharacters`, `Depth` at every value, large documents (3000 rows, 29 KB entity), a mutation fuzzer,
+  `DtdProcessing = Prohibit`, and (SAX) cancellation inside `StartDtd`/`DtdDeclaration`/`EndDtd`/entity text.
+- Differential harnesses extended with DOCTYPE/entity seeds, fuzz tokens and tight limit sets (EntityDepth 1/2,
+  InternedNames 3/6, ExpandedCharacters 40/70/110, DocumentCharacters 90, token/expanded combinations) and DTD/entity
+  comparison: DOM 6.39M inputs (586k accepted by the fast path, 3,237 DOCTYPE documents), SAX 8.37M inputs (895k accepted,
+  4,931 DOCTYPE documents), 0 divergences.
+- Full `Xemele.Tests`: only the two known failures (plus the known flaky allocation test, which passes in isolation);
+  `Xemele.Conformance.Tests` 920/920 and `Xemele.Differential.Tests` 618/618 pass.
+
+### Results (in-process paired runner, minimum of runs, microseconds; before = original streaming path)
+| fixture / mode | before | after | BCL | after/BCL |
+| --- | ---: | ---: | ---: | ---: |
+| entity-medium DOM UTF-8 | 5609 | 578 | 1748 | 0.33 |
+| entity-medium DOM UTF-16 | 4586 | 586 | 1656 | 0.35 |
+| entity-medium SAX UTF-8 | 13404 | 775 | 1219 | 0.64 |
+| entity-medium SAX UTF-16 | 13347 | 788 | 1214 | 0.65 |
+| feed-small DOM / SAX | 54 / 148 | 17 / 12 | 17 / 8 | 0.98 / 1.43 |
+| xhtml-medium DOM / SAX | 3142 / 8863 | 733 / 958 | 1364 / 555 | 0.54 / 1.72 |
+| build-medium DOM / SAX | 3478 / 9504 | 1140 / 1534 | 2530 / 528 | 0.45 / 2.91 |
+
+The other fixtures are unchanged within noise; entity-medium goes from 3.2x slower than the BCL to 0.33x in DOM and
+from 11x to 0.64x in SAX.
