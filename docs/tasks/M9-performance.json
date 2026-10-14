@@ -29,25 +29,27 @@
   "acceptance": [
     {
       "id": "M9-performance-A1",
-      "description": "Run frozen throughput/allocation/live-memory benchmarks on controlled hardware against each reference.",
+      "description": "Under the explicit human timing revision, verify frozen allocation/live-memory results and review available local comparative timing as informational. Dedicated x64/arm64 throughput/confidence/reference target verification is deferred, with no original timing-target pass credit.",
       "status": "pending",
       "evidence": [
         "required-controlled-run",
         "current-streaming-memory",
         "retained-dom-target",
         "current-repaired-dom-memory",
-        "current-repaired-stream-memory"
+        "current-repaired-stream-memory",
+        "human-informational-timing-revision"
       ]
     },
     {
       "id": "M9-performance-A2",
-      "description": "Record raw results/environment/confidence and target outcomes; route runtime optimization to separate repair tasks.",
+      "description": "Record actual environments, local informational results and all measured deficits; preserve original thresholds and unrun dedicated evidence. Resolve unchanged allocation/live-memory gates and route confirmed runtime failures to owning repairs.",
       "status": "pending",
       "evidence": [
         "required-controlled-run",
         "current-streaming-memory",
         "current-all-engine-qualification",
-        "managed-benchmark-oracles"
+        "managed-benchmark-oracles",
+        "human-informational-timing-revision"
       ]
     },
     {
@@ -70,7 +72,8 @@
     "benchmarks/baselines/release/operations.json: justified finite profilev2 and equivalent explicitUTF8output; original fixtures unchanged",
     "docs/reports/M9-performance/current-summary.md,current-preparation.json,managed-qualification-current.json,rust-utf8-qualification.json:30engine/fixture qualifications, all earlier failures preserved",
     "docs/reports/M9-performance/dom-current.py,dom-retention-current.json,memory-current.py,current-memory2.json: actual current repaired-runtime memory passes",
-    "docs/reports/M9-performance/ManagedBenchmarks/: prepared memory-diagnosed ShortRun managed workloads and90untimed operation oracles"
+    "docs/reports/M9-performance/ManagedBenchmarks/: prepared memory-diagnosed ShortRun managed workloads and90untimed operation oracles",
+    "docs/reports/M9-performance/timing-decision.json: direct human dedicated timing deferral, original acceptance and unchanged memory/allocation gates"
   ],
   "evidence": [
     {
@@ -180,24 +183,32 @@
       "result": "passed",
       "summary": "Current memory/30enginequalifications/90managedoracles source-equivalent on integrated main; prepared native/Rustbinary hashes preserved. Mandatory controlled timing stillunrun, lane remainsblocked.",
       "artifact": "docs/reports/M9-performance/current-integration.json"
+    },
+    {
+      "id": "human-informational-timing-revision",
+      "kind": "review",
+      "revision": "7075f767c4db3dd10f7c6603d15105ba5e234fb5",
+      "command": "Read direct human response to dedicated-timing gate question in this M9 chat",
+      "result": "passed",
+      "summary": "Human defers dedicated timing and accepts reviewed local measurements as informational. No original timing thresholds/confidence/floors passed. RetainedDOM0.75,streaming8MiB and allocation requirements unchanged; active branch memory result needs reconciliation.",
+      "artifact": "docs/reports/M9-performance/timing-decision.json"
     }
   ],
   "blockers": [
     "Current XML-performance retained-memory report0.902x needs same-profile reconciliation against unchanged0.75target; timing now deferred by explicit human decision."
   ],
   "handoff": {
-    "summary": "Verified DOM/XPath/build repairs imported; all10unchanged fixtures qualify against three engines, currentDOM0.687098182 and allfive1GiBmemory bounds pass. Timing remains blocked honestly.",
+    "summary": "Direct human dedicated-timing revision recorded; no original timing target passes. Existing memory/allocation evidence retained as history; current XML lane report requires same-profile retained-memory reconciliation before performance verification.",
     "checks": [
-      "30engine/fixture qualifications, originalscope failures and protocol correction preserved;90managed benchmark operation oracles pass",
-      "Current retainedDOM0.687098182 <=0.75; streamingwholemanagedlive289640bytes <8MiB withpositive9MiBcontrols",
-      "Concrete traversal/repeated intern zero-allocation assertions passed in current integrated10754-unit checks; verified repair allocation tradeoffs imported"
+      "Original frozen fixtures/reference qualifications/memory reports preserved",
+      "Dedicated comparisons remain NOT RUN; human review decision recorded separately"
     ],
     "remaining": [
-      "Dedicated comparative throughput/confidence/primaryfloor and regression validation on eligiblex64/arm64 hardware; no release timing pass."
+      "Collect current XML-performance owned handoff and review local results/deficits",
+      "Reconcile current retained-memory0.902report against unchanged0.75target and original0.687098evidence; no memory waiver"
     ],
     "requests": [
-      "M9-robustness must reassess whole-source and current original XSD evidence after runtime repairs; fuzz remains explicitly deferred.",
-      "M9-distribution must validate the current repaired runtime; additional hosted retry still awaits its existing budget approval."
+      "M9-gate must apply narrow informational-timing revision while retaining ordinary correctness and unchanged memory/allocation gates"
     ]
   }
 }

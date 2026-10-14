@@ -1,0 +1,56 @@
+{
+  "id": "M9-human-informational-timing-revision",
+  "sourceThread": "01a13810-0096-7491-abf5-382065b22b4c",
+  "source": "Direct human answer to asynchronous M9 dedicated timing gate question",
+  "humanAnswer": "Defer dedicated timing; use local results as informational evidence",
+  "originalAcceptance": [
+    {
+      "id": "M9-performance-A1",
+      "description": "Run frozen throughput/allocation/live-memory benchmarks on controlled hardware against each reference.",
+      "status": "pending",
+      "evidence": [
+        "required-controlled-run",
+        "current-streaming-memory",
+        "retained-dom-target",
+        "current-repaired-dom-memory",
+        "current-repaired-stream-memory"
+      ]
+    },
+    {
+      "id": "M9-performance-A2",
+      "description": "Record raw results/environment/confidence and target outcomes; route runtime optimization to separate repair tasks.",
+      "status": "pending",
+      "evidence": [
+        "required-controlled-run",
+        "current-streaming-memory",
+        "current-all-engine-qualification",
+        "managed-benchmark-oracles"
+      ]
+    },
+    {
+      "id": "M9-performance-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "passed",
+      "evidence": [
+        "honest-accounting"
+      ]
+    }
+  ],
+  "revision": "Dedicated x64/arm64 comparative timing is deferred from the revised M9 gate. Review local measurements as informational evidence with all deficits and limitations; do not give original throughput/confidence/fixture-floor targets pass credit.",
+  "unaffectedRequirements": [
+    "Retained managed DOM <=0.75x BCL on exact frozen representative corpus",
+    "Bounded1GiB streaming <=8MiB",
+    "Concrete steady traversal0B and meaningful allocation controls",
+    "Confirmed resource/correctness defects and supported-profile tests",
+    "Original evidence/history retained; package publication separate"
+  ],
+  "dedicatedTimingExecution": "NOT RUN",
+  "originalTimingTargetPassCredit": 0,
+  "pendingCurrentAssessment": "Active XML-performance branch reports local latency1.88x BCL,allocation0.88x,retained0.902x. These are unintegrated informational measurements, not release passes; reconcile retained-memory methodology/profile against original accepted0.687098182 before verification.",
+  "reportedMeasurementSource": {
+    "branch": "codex/xml-performance",
+    "checkpoint": "08a7ba712",
+    "report": "docs/reports/M9-xml-performance/progress.md"
+  },
+  "application": "M9-performance revised timing acceptance and downstream M9-gate; no fuzz launch or hardware claim."
+}

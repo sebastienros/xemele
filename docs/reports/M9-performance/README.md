@@ -1,3 +1,5 @@
+Current gate accounting: [direct human timing revision](timing-decision.json) defers dedicated timing and accepts local comparisons as informational. Original timing thresholds remain reported, with no timing-target pass. Memory/allocation requirements are unchanged; current XML branch retention is being reconciled before verification. The following original status notes remain history.
+
 # Release performance accounting
 
 The frozen release thresholds remain unchanged in `benchmarks/baselines/release/targets.json`. Current [preparation and memory evidence](current-summary.md) replaces stale whole-runtime equivalence claims after the verified DOM/XPath repairs. Original accounting, failed measurements, positive controls and earlier reports remain preserved.
