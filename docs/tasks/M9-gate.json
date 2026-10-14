@@ -4,7 +4,7 @@
   "milestone": "M9",
   "title": "Verify stable release candidate",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M9 coordinator 01a13810-0096-7491-abf5-382065b22b4c",
   "branch": "codex/m9-final-gate",
   "base_revision": "6db97882b9868429f91ab3bd1ce5d7c80c6db30e",
@@ -35,40 +35,58 @@
   "acceptance": [
     {
       "id": "M9-gate-A1",
-      "description": "Verify all cumulative gates, API/performance/package/robustness evidence and resolved repair dependencies at final integrated revision. Apply the explicit human offline campaign revision recorded in docs/reports/M9-robustness/offline-decision.json; campaign/harness execution remains offline/unrun and nonblocking, while dedicated timing and confirmed defects remain mandatory. Apply the direct human dedicated-timing deferral in docs/reports/M9-performance/timing-decision.json; local timings are informational, with no original timing-target passes. Memory/allocation requirements are unchanged. Apply separate direct human acceptance of current approximately0.90xBCL retained-memory budget in docs/reports/M9-performance/memory-decision.json; retain original0.75target without pass credit.",
-      "status": "pending",
-      "evidence": []
+      "description": "Verify cumulative capabilities and current API/corpus/coverage/resource/package/platform evidence at integrated source, applying exact recorded human offline-campaign, informational-timing andapproximately0.90retained-budget decisions. Preserve original criteria/history without originalunrun/failed-target passcredit.",
+      "status": "passed",
+      "evidence": [
+        "final-completion-audit"
+      ]
     },
     {
       "id": "M9-gate-A2",
       "description": "Repeat affected acceptance checks on exact package revision; document exceptions and outstanding exclusions; publication remains separate. Record offline campaign execution separately from actual passing checks; no original sustained-duration or crash-positive pass is implied.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-completion-audit"
+      ]
     },
     {
       "id": "M9-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-completion-audit"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M9-gate/summary.json andcurrentAPI/coverage/XSD/identity/package summaries: requirement-by-requirement revised release audit"
+  ],
+  "evidence": [
+    {
+      "id": "final-completion-audit",
+      "kind": "check",
+      "revision": "9ff3f0e47f14f079791535095f63b2f5e6dd63e0",
+      "command": "Inspect actual12754ordinary/API/migration results, fullcurrent4798/5189coverage,83472originalXSDrows, currentretention/five1GiBcontrols, actual3OSpackage/AOT/tool summaries; exactsourceclosurecomparisons; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "All207prerequisitesverified; allrequiredcurrentrevisedgatechecks actual/source-equivalentpass. 3OS/botharchitectures current11216units/package/trim/AOT/tool,1430API/222preview,earlier12279populations,92.4648%corecoverage,155zero-creditnonpasses.Originalcampaign/dedicatedtiming/0.75claims never passed. No unresolvedproductreleaseblocker; genericlegacyCI maintenanceissue separately disclosed.",
+      "artifact": "docs/reports/M9-gate/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Passing provisional local gate evidence preserved; distribution reopened for current OS renewal. Gate will be reclaimed only after renewed distribution verification.",
+    "summary": "Revised integrated M9 release candidate satisfies allrequiredcurrentchecks under exacthuman decisions; publication remainsseparate.",
     "checks": [
-      "12754ordinary checks/API1430/preview222/20migration pass;earlier12279display/source populations preserved",
-      "Current XMLcore16files4798/5189branches=92.4648%,0coreexclusions;11216instrumentedunits pass",
-      "Current originalXSD83472rows/186cleanchildren;39329true144false11null;155zero-creditnonpasses,annotZ002true",
-      "Current macOSarm64 deterministic2packages/freshcache managed/trim/AOT/tool all18commands pass;five1GiBmodes pass"
+      "12754ordinarychecks,1430API/222preview/20migration,earlier12279populations preserved",
+      "XMLcore4798/5189=92.4648% on16files,0coreexclusions;83472XSDrows/155zero-creditnonpasses/annotZ002true",
+      "Retained0.827740<=acceptedapprox0.90;five1GiBmodesmax297832<8MiB withnegativecontrol",
+      "Current3OS/botharchitectures11216units/package/trim/AOT/tool/deterministicarchives;approved2jobrunpassed816sec"
     ],
     "remaining": [
-      "Current-source Windows/Linux platform verification or explicit narrowly documented user gate revision",
-      "Final integrated gate audit/checkpoint/cleanup and authorized terminal handoff"
+      "Offlinehuman campaigns anddedicatedtiming deferred/nonblocking, notoriginalpasses;package unpublished"
     ],
     "requests": [
-      "Packaging owner: EXPECTED_UNIT_TESTS10754->11216; prepare only Windows/Linux20mincap jobs, no push/run without explicit newapproval"
+      "Main collectterminalhandoff directly ifmessaging toolrejects; no approvalceremony ornextmilestone",
+      "LegacygenericCI fragmentdiscovery/exclusion maintenancefollowup; collateral107sec/3failedjobs retained, no retriesauthorized"
     ]
   }
 }

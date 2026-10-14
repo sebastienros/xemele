@@ -1,0 +1,172 @@
+{
+  "task": "M9-gate",
+  "result": "passed-revised-release-candidate",
+  "revision": "9ff3f0e47f14f079791535095f63b2f5e6dd63e0",
+  "runtime": "10.0.11",
+  "sdk": "10.0.400",
+  "requiredPrerequisitesVerified": 207,
+  "ordinaryTests": 12754,
+  "API": 1430,
+  "previewUnchanged": 222,
+  "earlierPopulation": 12279,
+  "coverage": {
+    "coveredBranches": 4798,
+    "totalBranches": 5189,
+    "ratio": 0.9246482944690692,
+    "coreFiles": 16,
+    "excludedCoreSources": []
+  },
+  "originalXSD": {
+    "rowsInspected": 83472,
+    "originalProductCounts": {
+      "passed": 39329,
+      "failed": 144,
+      "indeterminate": 11
+    },
+    "exactDispositions": 155,
+    "annotationPassed": true,
+    "originalPassCredit": 0,
+    "gateCredit": 0
+  },
+  "performance": {
+    "result": "passed-revised-performance",
+    "revision": "7dea17c7c6937562400ba3185b79122bd63ab66d",
+    "DOM": {
+      "geomeanLatencyRatio": 0.5367209152475795,
+      "geomeanAllocationRatio": 0.7875363399513807,
+      "maximumLatencyRatio": 1.0139415379205627,
+      "maximumAllocationRatio": 1.1398223978328164,
+      "aggregateRetainedRatio": 0.8277402660892974,
+      "A2TargetPassed": true
+    },
+    "DOMScope": "Default-feature UTF8 owned DOM on all ten frozen fixtures; no SAX or other-input parity inferred",
+    "retainedBudget": {
+      "accepted": 0.9015108,
+      "actual": 0.8277402660892974,
+      "passed": true,
+      "original075TargetPassed": false
+    },
+    "streaming": {
+      "modes": 5,
+      "bytesPerMode": 1073741824,
+      "maximumWholeManagedLiveBytes": 297832,
+      "requiredMaximum": 8388608,
+      "control": {
+        "mode": "negative",
+        "inputBytes": 8192,
+        "BytesRead": 8192,
+        "Starts": 2,
+        "Ends": 2,
+        "Characters": 8172,
+        "Completed": 1,
+        "earlyCallback": true,
+        "withinLimit": false,
+        "parserLiveUpperBoundBytes": 9653656,
+        "conservativeMaximumWholeHeapLiveBytes": 9653656,
+        "externalPeakResidentSetBytes": 57982976
+      },
+      "passed": true
+    },
+    "allocations": "Actual DOM medians and ordinary warmed concrete traversal/borrowed dispatch assertions in12754passing checks; pooledSAXtape adds approximately0.5KiB perparse in author measurements, not zero allocation",
+    "localTiming": {
+      "status": "informational only",
+      "SAX_UTF8_reportedRatio": 1.127,
+      "SAX_UTF16_reportedRatio": 1.279,
+      "dedicatedControlledExecution": "NOT RUN",
+      "originalReleaseTimingTargetPassCredit": 0
+    },
+    "historicalMeter": "Old0.687098GetTotalMemory estimate preserved in historical report; superseded for current gate by controlled compacted held-minus-released0.827740. No old0.75target pass credited.",
+    "scopeLimits": [
+      "Pinned native/Rust qualified fixture outputs retained; their earlier timings are distinct measurement windows, not fresh release passes.",
+      "Dedicated timing and campaigns explicitly deferred/offline by separate human decisions.",
+      "Package/platform/current corpus/corecoverage evidence remains final gate work."
+    ]
+  },
+  "platformMatrix": "docs/reports/M9-distribution/final-matrix.json",
+  "requirements": [
+    {
+      "requirement": "All earlier gates and required task/repair prerequisites verified",
+      "status": "passed",
+      "evidence": "207 actual task records verified, M0-M8gate states verified; finalgate record follows integration"
+    },
+    {
+      "requirement": "Current ordinary correctness and inherited behavior",
+      "status": "passed",
+      "evidence": "11216units+920conformance+618differential=12754pass,0fail/errors/skips/not-run;earlier12279name/source populations match, runtimeGUIDcontexts explicitly distinguished",
+      "report": "docs/reports/M9-xml-performance/completion-checks.json"
+    },
+    {
+      "requirement": "Actual publicAPI, preview compatibility and migration",
+      "status": "passed",
+      "evidence": "Exactpackaged1430members/55fragments,222preview unchanged,2mismatchcontrols;20actualmigrationchecks",
+      "report": "docs/reports/M9-gate/package-api.json"
+    },
+    {
+      "requirement": "Full current XML algorithm branchcoverage",
+      "status": "passed",
+      "evidence": "4798/5189=92.464829%,16corefiles,0coreexclusions;11216instrumentedunits pass;real1hit/1misscollectorcontrol. Two unrelated metadataILsource instrumentation exclusions leavecorecomplete",
+      "report": "docs/reports/M9-gate/final-coverage.json"
+    },
+    {
+      "requirement": "Original standards corpus/dispositions",
+      "status": "passed",
+      "evidence": "83472rows,186cleanchildren;39329true/144false/11null,155exactapprovedzero-creditnonpasses,annotZ002true",
+      "report": "docs/reports/M9-gate/final-xsd.json"
+    },
+    {
+      "requirement": "Revised performance/allocation/live memory",
+      "status": "passed-under-human-revision",
+      "evidence": "TenfixtureUTF8DOMfeatureA2met; controlledretained0.827740<=acceptedapprox0.90; five1GiBmodesmax297832bytes<8MiB with9MiBcontrolrefusal andearlyEOFcounts;actualwarmedallocationguards",
+      "report": "docs/reports/M9-performance/final-performance.json"
+    },
+    {
+      "requirement": "Current exact-package/platform/architecture execution",
+      "status": "passed",
+      "evidence": "Windowsx64/Linuxx64/currentmacOSarm64 each11216units plusactualfreshmanaged/trim/NativeAOT/tool anddeterministicpackchecks;embeddedSourceLinkexactcommit",
+      "report": "docs/reports/M9-distribution/final-matrix.json"
+    },
+    {
+      "requirement": "Managed net10.0 only and no public placeholders/native-library implementation dependency",
+      "status": "passed",
+      "evidence": "Current buildconfig net10.0 only; no NotImplementedException/DllImport/LibraryImport in product source; actual package/NativeAOT execution"
+    },
+    {
+      "requirement": "Campaign/harness execution",
+      "status": "offline-nonblocking-human-revision",
+      "evidence": "Explicitofflinewaiver; no originalduration/crashpositive pass or executioncredit",
+      "report": "docs/reports/M9-robustness/offline-decision.json"
+    },
+    {
+      "requirement": "Dedicated comparative release timing",
+      "status": "deferred-informational-human-revision",
+      "evidence": "DedicatedrunNOTRUN; localtimings andSAXdeficits remaininformational;0originalrelease timingtargetpasscredit",
+      "report": "docs/reports/M9-performance/timing-decision.json"
+    },
+    {
+      "requirement": "Original0.75retainedtarget",
+      "status": "superseded-current-budget-human-revision",
+      "evidence": "Currentcontrolled0.827740vsacceptedapprox0.90;old0.687GetTotalMemoryestimate remainshistorical andnotcurrentgateproof;original0.75targetnotpassed",
+      "report": "docs/reports/M9-performance/memory-decision.json"
+    },
+    {
+      "requirement": "Preserve code/evidence/unpublished packages and restrict remote actions",
+      "status": "passed-checkpoint-preserved",
+      "evidence": "Localunpublished2packagecheckpointd440manifest preserved;onlyapprovedvalidationbranchpushed,no remote main/tags/publication;cleanup andterminalcustody recorded aftergateintegration"
+    }
+  ],
+  "actualRetainedFailures": [
+    "InitialXPathqualificationobserver16MiBrefusal; correctedobserver-only128MiBprofile/resumedaffectedfixture",
+    "FocusedseekableEOFcancellationbug1/1failed beforeone-linefix;final12754checks pass",
+    "Twoinitialcoverageattempts instrumented unrelatedsetterIL; separateCLIglobs provenoffline2tests thencompletecorecoveragepass",
+    "XSDprelaunchregistrylayout failure noPID; reusedoriginalacceptedregistrylayout thenall83472rows pass",
+    "HistoricalOSmatrixfailures retained unchanged",
+    "Accidentallypush-triggeredlegacy3jobCI failed fragmentdiscovery,107sec;terminalbeforecancel attempt,no rerun/currentreleasecredit"
+  ],
+  "remainingReleaseBlockers": [],
+  "maintenanceFollowups": [
+    "Genericlegacybuildworkflow excludes onlyoldervalidationbranch and rejects knownheader-onlyparentAPIfragment; fixthroughowningbuildtask,notreported aspassingcurrentCI. CanonicalAPI andapprovedreleasepipelinepassed."
+  ],
+  "published": false,
+  "checkpoint": "artifacts/M9-gate/checkpoint-d4402f04",
+  "originalFullReleaseEvidenceClaimed": false
+}
