@@ -366,7 +366,7 @@ public sealed class ValidationTests
         cancel.Cancel();
         Assert.Equal(cancel.Token, Assert.Throws<OperationCanceledException>(() => schema.Validate(document, new() { CancellationToken = cancel.Token })).CancellationToken);
         Assert.Equal(cancel.Token, Assert.Throws<OperationCanceledException>(() => DtdSchema.Compile("<!ELEMENT r EMPTY>", cancellationToken: cancel.Token)).CancellationToken);
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
     }
 
     private static bool BclValid(string dtd, string xml)

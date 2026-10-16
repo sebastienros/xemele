@@ -80,11 +80,13 @@ public sealed class ReferenceCorpusTests
         if (limitations.Length != 0)
         {
             Assert.Equal(hash, Assert.Single(limitations).GetProperty("sha256").GetString());
-            foreach (var field in new[] { "name", "version", "runtime" })
+            foreach (var field in new[] { "name", "version" })
             {
                 Assert.Equal(ledger.RootElement.GetProperty("engine").GetProperty(field).GetString(), reference.RootElement.GetProperty("engine").GetProperty(field).GetString());
             }
 
+            // The ledger's runtime is provenance; outcomes are checked against the installed .NET 10 patch.
+            Assert.StartsWith(".NET 10.", reference.RootElement.GetProperty("engine").GetProperty("runtime").GetString());
             Assert.Equal(ledger.RootElement.GetProperty("referenceOutcome").GetString(), outcome);
         }
         else

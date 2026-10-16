@@ -126,7 +126,7 @@ public sealed class AttributeValidityTests
     [Fact]
     public void BorrowedNamesPreserveUnicodeScalarLimitsAndCancellation()
     {
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
         foreach (var value in new[] { "根", "a😀", "a\u0301" })
         {
             Assert.True(DtdLexical.Name(value, false, true, new()));

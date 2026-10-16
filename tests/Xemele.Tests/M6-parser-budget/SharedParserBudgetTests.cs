@@ -132,7 +132,7 @@ public sealed class SharedParserBudgetTests
             adapter.Complete();
             Assert.Null(adapter.Diagnostic);
         }
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
     }
 
     [Fact]

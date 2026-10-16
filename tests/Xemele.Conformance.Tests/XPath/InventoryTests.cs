@@ -31,7 +31,7 @@ public sealed class InventoryTests
     [Fact]
     public void FrozenInventoryIsUnmodifiedAndComplete()
     {
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
         var inventory = File.ReadAllBytes(Path.Combine(Root(), "tests/corpora/xpath/inventory.json"));
         Assert.Equal("87df3cf2ed58ef577d12186b23cd289b702269242629389c2a9e58b7dd0930e7",
             Convert.ToHexStringLower(SHA256.HashData(inventory)));

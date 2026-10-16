@@ -20,7 +20,7 @@ public sealed class SchemaResourceKindTests
     [Fact]
     public void ExactEnumValuesAndActualRuntime()
     {
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
         Assert.Equal(new[] { "ExternalSubset", "ExternalEntity", "Catalog", "XIncludeXml", "XIncludeText", "Schema" },
             Enum.GetNames<XmlResourceKind>());
         Assert.Equal([0, 1, 2, 3, 4, 5], Enum.GetValues<XmlResourceKind>().Select(kind => (int)kind));

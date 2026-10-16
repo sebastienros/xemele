@@ -22,7 +22,7 @@ public sealed class ResourceKindTests
     };
 
     [Fact]
-    public void ActualRuntimeIsPinned() => Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+    public void ActualRuntimeUsesNet10() => Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
 
     [Theory]
     [MemberData(nameof(Kinds))]

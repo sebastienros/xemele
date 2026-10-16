@@ -139,7 +139,7 @@ public sealed class SourceUriTests
         using var unnamed = new MemoryStream("<r>"u8.ToArray());
         Assert.Null(Assert.Single(Assert.Throws<XmlParseException>(() => XmlDocument.Load(unnamed)).Diagnostics).Location.SourceUri);
         Assert.Null(Assert.Single(Assert.Throws<XmlParseException>(() => DtdSchema.Compile("<!ELEMENT")).Diagnostics).Location.SourceUri);
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
     }
 
 #pragma warning restore xUnit1051

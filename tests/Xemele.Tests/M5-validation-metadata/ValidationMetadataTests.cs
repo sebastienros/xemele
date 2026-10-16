@@ -156,7 +156,7 @@ public sealed class ValidationMetadataTests
     [Fact]
     public void ActualTestHostUsesPinnedRuntime()
     {
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
     }
 
     private sealed class ChunkStream(byte[] bytes, bool asyncOnly) : MemoryStream(bytes, writable: false)

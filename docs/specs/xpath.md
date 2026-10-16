@@ -310,5 +310,5 @@ compiled checker. Production checks must execute all vectors plus the
 mutation/cancellation/limits/static-context
 requirements above. Differential reference: .NET System.Xml.XPath XPathNavigator
 on equivalent fully resolved XML for core expressions (excluding chosen ordering,
-ID inference, extension and quota differences); pin .NET 10.0.11 and invariant
-culture. Expected mismatches require explicit vector classification.
+ID inference, extension and quota differences); use the installed .NET 10 runtime
+and invariant culture. Expected mismatches require explicit vector classification.

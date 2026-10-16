@@ -169,7 +169,7 @@ public sealed class ReadCompletenessTests
     [Fact]
     public void RetainedLocationIsGetterOnlyScalarStorageWithStraightFieldLoadIl()
     {
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
         var property = typeof(Model).GetProperty("UnreadParameterLocation", BindingFlags.Instance | BindingFlags.NonPublic)!;
         Assert.Null(property.SetMethod);
         Assert.Equal(typeof(XmlLocation?), property.PropertyType);

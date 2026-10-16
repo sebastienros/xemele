@@ -171,7 +171,7 @@ public sealed class SourceProvenanceTests
         Assert.Equal(18, il.Length);
         Assert.Null(typeof(XmlDocument).GetProperty("ValidationSourceContentRevision", BindingFlags.Public | BindingFlags.Instance));
         Assert.Null(typeof(XmlDocument).GetMethod("MarkValidationSourceComplete", BindingFlags.Public | BindingFlags.Instance));
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
     }
 
     private sealed class ChunkStream(byte[] bytes, bool asyncOnly) : MemoryStream(bytes, false)

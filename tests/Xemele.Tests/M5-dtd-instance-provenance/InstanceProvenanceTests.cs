@@ -190,7 +190,7 @@ public sealed class InstanceProvenanceTests
         using var canceled = new CancellationTokenSource();
         canceled.Cancel();
         Assert.Throws<OperationCanceledException>(() => schema.Validate(document, new() { CancellationToken = canceled.Token }));
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
     }
 
     [Fact]

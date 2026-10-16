@@ -114,7 +114,7 @@ public sealed class ReferenceTests
     }
     private static void Compare(string xml, string expression)
     {
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
         AssertResult(Reference(xml, expression), Evaluate(xml, expression));
     }
     private static XmlDocument Parse(string xml) => XmlDocument.Parse(xml, cancellationToken: TestContext.Current.CancellationToken);

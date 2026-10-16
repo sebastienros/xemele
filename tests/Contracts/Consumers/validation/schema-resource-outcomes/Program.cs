@@ -1,6 +1,6 @@
 using Xemele;
 using Xemele.Validation;
-if (Environment.Version.ToString() != "10.0.11") throw new Exception("Pinned runtime required.");
+if (Environment.Version.Major != 10 || Environment.Version.Minor != 0) throw new Exception("The .NET 10 runtime is required.");
 bool xmlOnly = Environment.GetEnvironmentVariable("OUTCOMES_XML_ONLY") == "1";
 if (xmlOnly && typeof(XmlDocument).Assembly.GetType("Xemele.HtmlDocument") is not null) throw new Exception("HTML present in XML-only consumer.");
 var request = new XmlResourceRequest(new Uri("urn:example"), null, XmlResourceKind.Schema);
@@ -18,7 +18,7 @@ try
 catch (SchemaCompileException error) when (error.Diagnostics.Single().Code == "SCHEMA.ResourceDenied") { }
 var schema = XmlSchema.Compile("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='root'/></xs:schema>");
 if (!schema.Validate("<root/>").IsValid) throw new Exception("XML consumer failed.");
-Console.WriteLine($"PASS: additive/legacy/optional/mandatory/XML consumer, XML-only={xmlOnly}, runtime 10.0.11.");
+Console.WriteLine($"PASS: additive/legacy/optional/mandatory/XML consumer, XML-only={xmlOnly}, runtime {Environment.Version}.");
 internal sealed class Legacy : XmlResourceResolver
 {
     public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken) => null;

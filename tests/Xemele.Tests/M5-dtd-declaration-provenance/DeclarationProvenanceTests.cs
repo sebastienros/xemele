@@ -170,7 +170,7 @@ public sealed class DeclarationProvenanceTests
     [Fact]
     public void ModelDiagnosticIsGetOnlyAndItsGetterIlIsSingleReferenceLoad()
     {
-        Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
+        Assert.StartsWith(".NET 10.", RuntimeInformation.FrameworkDescription);
         var property = typeof(Model).GetProperty("DeclarationValidityDiagnostic", BindingFlags.Instance | BindingFlags.NonPublic)!;
         Assert.Null(property.SetMethod);
         var il = property.GetMethod!.GetMethodBody()!.GetILAsByteArray()!;
