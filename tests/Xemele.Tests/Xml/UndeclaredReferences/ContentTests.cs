@@ -69,8 +69,7 @@ public sealed class ContentTests
     [Fact]
     public void OriginalE13ExactBytesHaveOwnedUnknownAndProcessedKnownDeclaration()
     {
-        var resources = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES")
-            ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        var resources = Xemele.TestUtilities.TestRepository.CorpusResources;
         var path = Path.Combine(resources, "xmlconf/eduni/errata-3e/E13.xml");
         var bytes = File.ReadAllBytes(path);
         Assert.Equal(252, bytes.Length);

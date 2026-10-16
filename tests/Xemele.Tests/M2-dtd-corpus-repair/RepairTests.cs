@@ -104,7 +104,7 @@ public sealed class RepairTests
     private static byte[] Read(JsonElement f)
     {
         var path = f.GetProperty("path").GetString()!;
-        var bytes = File.ReadAllBytes(Path.Combine(Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources", path));
+        var bytes = File.ReadAllBytes(Path.Combine(Xemele.TestUtilities.TestRepository.CorpusResources, path));
         Assert.Equal(f.GetProperty("bytes").GetInt32(), bytes.Length);
         Assert.Equal(f.GetProperty("sha256").GetString(), Convert.ToHexStringLower(SHA256.HashData(bytes)));
         return bytes;

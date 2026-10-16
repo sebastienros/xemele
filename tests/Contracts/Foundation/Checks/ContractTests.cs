@@ -6,6 +6,7 @@ using Y = M2::Xemele;
 using FoundationModels;
 namespace ContractChecks;
 
+[Trait("Category", "Infrastructure")]
 public sealed class ContractTests
 {
     [Fact]

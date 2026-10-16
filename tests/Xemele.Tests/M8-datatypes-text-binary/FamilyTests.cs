@@ -102,7 +102,7 @@ public sealed class FamilyTests
     public void NamesExactlyMatchPinnedSecondEditionForEveryBmpScalar()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Directory.Build.props")))
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Xemele.slnx")))
         {
             dir = dir.Parent;
         }

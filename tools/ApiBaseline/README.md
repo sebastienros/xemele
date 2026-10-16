@@ -1,5 +1,7 @@
 # API and corpus discovery, version 1
 
+Normal CI uses `dotnet run --project tools/Build -c Release --no-build -- verify`.
+The Python tooling below remains available for specialized maintenance checks.
 Run `python -B tools/ApiBaseline/discover.py --root <repository>`. The default
 repository is derived from the script location. Success writes one deterministic
 JSON summary to stdout; invalid input writes `discovery error: ...` to stderr and
@@ -66,8 +68,9 @@ zero rather than a conformance success. Discovery does not execute fixtures.
 
 `python -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v`
 uses temporary synthetic fragments and fixtures only. None is shipped as a
-runtime API baseline or real corpus. `.github/workflows/build.yml` runs discovery,
-restore, Release build/test and runtime pack on Windows,
+runtime API baseline or real corpus. The weekly/manual test-data workflow runs
+these legacy maintenance checks. `.github/workflows/build.yml` uses managed
+validation, restore, Release build/test and runtime pack on Windows,
 Linux and macOS. Hosted executions require repository CI; local validation
 records its actual host and does not imply the other platforms ran.
 
@@ -94,18 +97,34 @@ in tools/ApiBaseline/; contract fixtures are not shipped runtime baselines.
 
 ## Clean-checkout CI prerequisites
 
-`prepare_corpus.py` reuses the bounded, hash-pinned XML archive provisioner and
-copies its exact 3,386 resources into the ignored manifest paths. Discovery still
-checks every fixture byte. `--archive` supports an existing pinned offline archive.
+The SDK selected by `global.json` is the only ordinary build/test prerequisite.
+Test-project builds run the managed `tools/Build` corpus provisioner automatically.
+It bounds and verifies the immutable archive download, extracts exactly 3,386
+inventoried resources into ignored manifest paths, and checks every fixture byte.
+The archive cache stays under `artifacts/test-data/`; subsequent builds can run
+offline after NuGet restore. Existing corrupt bytes fail explicitly.
 
-After building, `prepare_runtime.py` installs runtime 10.0.11 if needed and pins
-generated net10.0 application runtimeconfigs to it with roll-forward disabled.
-SDK selection stays governed by global.json.
+Test projects declare runtime 10.0.11 with roll-forward disabled; this runtime is
+supplied by the pinned SDK. No runtime installer or generated-config rewrite is
+part of the normal build. The canonicalization reference is a pinned test-only
+NuGet dependency, restored through NuGet's normal cache resolution.
 
-`prepare_references.py` builds Jing and libxml2 at the frozen RNG source revisions,
-checks runner source hashes, records actual platform binary/class hashes, and
-restores System.Security.Cryptography.Xml 10.0.11 for independent canonical checks.
-It requires Java/Javac, CMake and a C compiler. The original engine calls and
-reference limitation/oracle assertions remain in use. CI exports the generated
-identity file and Java executable through environment variables; historical local
-defaults remain supported. Outputs stay ignored under artifacts/M9-ci-maintenance.
+`prepare_corpus.py`, `prepare_references.py`, and the Python API/CLI audit scripts
+remain maintenance tools. The weekly/manual test-data workflow builds Jing and
+libxml2 at the frozen RNG revisions, checks runner source hashes, and records
+actual platform binary/class identities. Its snapshot generator captures only
+independent-engine output and binds it to all input hashes. Normal managed tests
+verify these snapshots and the existing oracle/limitation accounting, without
+starting native or Java processes. Live mode is explicit through
+`XEMELE_LIVE_REFERENCES=1`. See `docs/testing.md` for the full workflow.
+
+Frozen runner sources are exempt from checkout line-ending conversion so their
+hashes remain identical on Windows. External reference build outputs stay ignored
+under `artifacts/M9-ci-maintenance`; compact reviewed result baselines are tracked
+beside the RNG inventories. The maintenance workflow proposes draft PRs rather
+than accepting updates silently or changing upstream pins automatically.
+
+Allocation probes require full matching compiled Git revisions, not matching
+package-version prefixes. Runtime and test assemblies can have different package
+versions while their complete versions and binary hashes remain recorded and
+validated in parent/child provenance.

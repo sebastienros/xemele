@@ -52,7 +52,7 @@ public sealed class StreamingTests
     {
         var root = FindRoot();
         using var ledger = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(root, "tests/corpora/xml/m2-applicability.json")));
-        var resources = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        var resources = Xemele.TestUtilities.TestRepository.CorpusResources;
         var hashes = ledger.RootElement.GetProperty("files").EnumerateArray().ToDictionary(f => f.GetProperty("path").GetString()!, f => f.GetProperty("sha256").GetString()!);
         List<string> failures = [], contextDifferences = [], baseDenials = [];
         int count = 0, accepted = 0, rejected = 0;

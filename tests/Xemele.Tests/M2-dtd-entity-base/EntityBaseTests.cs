@@ -20,7 +20,7 @@ public sealed class EntityBaseTests
     public void OriginalE18BytesHaveIndependentExpectedRequestsCallbacksAndCompleteDtdModel()
     {
         const string baseUri = "https://xemele.invalid/corpus/xmlconf/eduni/errata-2e/";
-        var resources = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        var resources = Xemele.TestUtilities.TestRepository.CorpusResources;
         byte[] Read(string name, int length, string hash)
         {
             var value = File.ReadAllBytes(Path.Combine(resources, "xmlconf/eduni/errata-2e", name));

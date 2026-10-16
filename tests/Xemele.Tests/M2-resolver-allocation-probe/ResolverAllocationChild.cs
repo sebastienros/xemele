@@ -106,8 +106,10 @@ internal static class ResolverAllocationChild
     private static Provenance Fingerprint(string executable)
     {
         Assembly test = typeof(ResolverAllocationChild).Assembly, product = typeof(XmlResolutionSession).Assembly;
-        Require(System.Text.RegularExpressions.Regex.IsMatch(Version(test), @"\+[0-9a-f]{40}$")
-            && Version(test) == Version(product), "Missing full matching compiled source revision.");
+        var testRevision = System.Text.RegularExpressions.Regex.Match(Version(test), @"\+[0-9a-f]{40}$");
+        var productRevision = System.Text.RegularExpressions.Regex.Match(Version(product), @"\+[0-9a-f]{40}$");
+        Require(testRevision.Success && productRevision.Success && testRevision.Value == productRevision.Value,
+            "Missing full matching compiled source revision.");
         var runtime = RuntimeEnvironment.GetRuntimeDirectory();
         var native = Path.Combine(runtime, OperatingSystem.IsMacOS() ? "libcoreclr.dylib" : OperatingSystem.IsWindows() ? "coreclr.dll" : "libcoreclr.so");
         var nativeGc = Path.Combine(runtime, OperatingSystem.IsMacOS() ? "libclrgc.dylib" : OperatingSystem.IsWindows() ? "clrgc.dll" : "libclrgc.so");

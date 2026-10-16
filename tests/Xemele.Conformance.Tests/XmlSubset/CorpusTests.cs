@@ -23,7 +23,7 @@ public sealed class CorpusTests
         }
     }
     private static JsonDocument Inventory() => JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "tests/corpora/xml/inventory.json")));
-    private static string Resources => Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+    private static string Resources => Xemele.TestUtilities.TestRepository.CorpusResources;
     internal static byte[] VerifiedBytes(string root, string relative, string hash)
     {
         root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root));

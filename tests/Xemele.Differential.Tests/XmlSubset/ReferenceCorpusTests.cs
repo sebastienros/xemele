@@ -44,7 +44,7 @@ public sealed class ReferenceCorpusTests
     [MemberData(nameof(Rejections))]
     public async Task OriginalSupportedBytesRejectWithExplicitReferenceComparison(string id, string relative, string hash)
     {
-        var root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources"));
+        var root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Xemele.TestUtilities.TestRepository.CorpusResources));
         var path = Path.GetFullPath(Path.Combine(root, relative));
         Assert.StartsWith(Path.EndsInDirectorySeparator(root) ? root : root + Path.DirectorySeparatorChar, path, StringComparison.Ordinal);
         for (FileSystemInfo? item = new FileInfo(path); item is not null; item = item is FileInfo f ? f.Directory : ((DirectoryInfo)item).Parent)

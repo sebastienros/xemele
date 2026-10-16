@@ -4,11 +4,14 @@
     <OutputType>Exe</OutputType>
     <!-- Keep the solution configuration for the runner, which is outside the solution. -->
     <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1902;NU1903</WarningsNotAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="xunit.v3.mtp-v2" />
+    <PackageReference Include="System.Security.Cryptography.Xml" />
     <ProjectReference Include="../Xemele.TestUtilities/Xemele.TestUtilities.csproj" />
     <ProjectReference Include="../../src/Xemele/Xemele.csproj" />
     <ProjectReference Include="../../tools/ReferenceRunners/Bcl/BclReference.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../tools/ReferenceRunners/ProtocolFixture/ProtocolFixture.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

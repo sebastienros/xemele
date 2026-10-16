@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="../../src/Xemele/Xemele.csproj" />
+    <ProjectReference Include="../../tools/Build/Xemele.Build.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
+  <Target Name="PreparePinnedTestData" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="dotnet &quot;$(MSBuildThisFileDirectory)../../tools/Build/bin/$(Configuration)/net10.0/Xemele.Build.dll&quot; prepare" />
+  </Target>
 </Project>

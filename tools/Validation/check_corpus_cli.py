@@ -80,7 +80,8 @@ def main():
         if results.exists():
             shutil.rmtree(results)
         run(['dotnet', 'test', '--project', TEST_PROJECT, '-c', 'Release', '--no-build', '--no-restore',
-             '--no-ansi', '--no-progress', '--minimum-expected-tests', '24', '--report-xunit-xml',
+             '--no-ansi', '--no-progress', '--filter-class', 'Xemele.CorpusInfrastructure.Tests.ProvisioningTests',
+             '--minimum-expected-tests', '24', '--report-xunit-xml',
              '--results-directory', str(results)])
         tests = [test for path in results.glob('*.xunit.xml') for test in ET.parse(path).iter('test')]
         skipped = [test for test in tests if test.get('result') == 'Skip']

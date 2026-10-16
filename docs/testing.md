@@ -37,6 +37,59 @@ Represent independent inputs and configurations as xUnit theory rows rather than
 
 Before import, record source URL, revision/archive hash, license/attribution, local mapping, and adapter version. Keep small minimized regressions in Git; download large corpora into an ignored cache with checksums. CI provisions the cache before tests and can run offline afterward. Changes to exclusions or expected outputs receive the same review as parser code.
 
+### .NET-only build and test prerequisites
+
+`dotnet build Xemele.slnx -c Release` builds the managed `tools/Build` utility and
+automatically prepares test data. The first build downloads the immutable W3C XML
+archive into `artifacts/test-data/`, checks its pinned SHA-256, and extracts exactly
+the 3,386 inventoried regular files into the ignored `tests/corpora/xml/xmlconf/`
+directory. Download time/size, expanded size, entry count, paths, lengths and
+fixture hashes are bounded or validated. Existing corrupt archives or fixtures
+fail explicitly rather than being silently replaced. Verified caches support
+offline builds after NuGet restore. `XEMELE_CORPUS_RESOURCES` remains available
+for tests using another already-provisioned corpus location.
+
+`dotnet test --solution Xemele.slnx -c Release --no-build` includes corpus
+infrastructure and foundation contract tests as well as the product suites.
+The SDK pin supplies runtime 10.0.11; test projects declare that runtime with
+roll-forward disabled instead of downloading or rewriting runtime configs.
+Allocation-test runtime settings are declared by test projects. Protocol failure
+fixtures run as actual managed child processes, including malformed UTF-8,
+overflow, timeout and cancellation controls.
+
+`dotnet run --project tools/Build -c Release --no-build -- verify` validates
+corpus manifests and fixture/source bytes, validates API fragments, and compares
+the runtime and foundation fixtures with the approved compiled API extractor.
+`... -- test` additionally verifies discovery, report contents and deliberate
+failure exit codes. Neither command requires Python, Java, native compilers, or
+Git command-line tools.
+
+### Independent-reference maintenance
+
+Normal RELAX NG tests consume compact recorded Jing/libxml2 outcomes, not native
+binaries. Each snapshot pins engine revision/version and runner-source hash,
+hashes every input inventory, schema, instance and resource, and must account for
+every expected outcome. Product assertions still use upstream authoritative
+expectations; the existing 15 libxml2 limitations remain explicit disagreements,
+not agreements. Live BCL comparisons continue to execute on each test run.
+The pinned canonicalization reference is restored as a test-only NuGet dependency,
+not loaded from an assumed global cache path. Its existing NuGet vulnerability
+warnings remain visible; these packages are not runtime product dependencies.
+
+The weekly/manual `.github/workflows/test-data.yml` workflow installs the external
+toolchains, verifies pinned upstream downloads, rebuilds independent engines, and
+regenerates snapshots using `tools/Validation/reference_snapshots.py`. It executes
+both live and recorded comparisons before proposing a draft PR for changes.
+Raw build identities remain workflow artifacts. Snapshots are never generated
+from Xemele output. Set `XEMELE_LIVE_REFERENCES=1` and the identity/Java variables
+exported by `prepare_references.py` to run the live RNG checks manually.
+
+The weekly refresh deliberately does not follow mutable "latest" URLs or advance
+upstream pins, fixture expectations or limitation ledgers automatically. New
+upstream revisions require reviewed provenance/inventory changes first. Legacy
+Python discovery, signature-mutation and exhaustive CLI maintenance checks remain
+in that workflow; native AOT release packaging remains a separate toolchain.
+
 ## Differential harness
 
 Run isolated reference processes through a versioned input/output protocol. Inputs specify operation, bytes/encoding, parser options, resources, and limits. Outputs describe acceptance, diagnostics categories, tree/event/query results, or serialized bytes.

@@ -25,7 +25,7 @@ public sealed class OriginalTests
             return dir!.FullName;
         }
     }
-    private static string Resources => Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+    private static string Resources => Xemele.TestUtilities.TestRepository.CorpusResources;
     private static JsonElement[] Oracles()
     {
         using var file = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Root, "tests/fixtures/M2-dtd-nonvalidating/original-oracles.json")));

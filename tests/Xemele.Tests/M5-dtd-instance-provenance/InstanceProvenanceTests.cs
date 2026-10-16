@@ -33,7 +33,7 @@ public sealed class InstanceProvenanceTests
     [InlineData("13", "40470ff5f2281476ed4521e066d85122e9cc240f1fa916f97bd095644540fa14", "async")]
     public async Task OriginalPinnedNormativeCasesAreCompleteInvalid(string id, string hash, string transport)
     {
-        var cache = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        var cache = Xemele.TestUtilities.TestRepository.CorpusResources;
         var path = id == "13" ? "xmlconf/eduni/errata-3e/E13.xml" : "xmlconf/eduni/errata-2e/E15" + id + ".xml";
         var bytes = File.ReadAllBytes(Path.Combine(cache, path));
         Assert.Equal(hash, Convert.ToHexStringLower(SHA256.HashData(bytes)));

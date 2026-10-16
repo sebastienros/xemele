@@ -11,6 +11,14 @@ review. Applicable unimplemented cases remain failures. Accepted/Rejected result
 are compared with pinned independent expectations, never expectations generated
 from Xemele output.
 
+Normal builds and tests require only the pinned .NET SDK. Large upstream inputs
+are downloaded by managed tooling with immutable archive and fixture hashes;
+test execution then uses local bytes. Native/Java reference outcomes may be
+recorded snapshots only when engine/runner identity, all input hashes, complete
+case accounting, and known disagreements are verified. Scheduled/manual
+maintenance executes those independent engines and proposes reviewed snapshot
+updates. A recorded comparison is not reported as a new live-engine execution.
+
 Manifests use `schemaVersion: 1`, `id`, `sourceUrl`, immutable `revision`,
 lowercase 64-digit `sha256`, `license`, `notice`, `adapterVersion`, `profile`,
 and a nonempty `fixtures` array. Each fixture has a repository-contained `path`,

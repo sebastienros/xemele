@@ -19,7 +19,7 @@ public sealed class DtdGrammarPinnedTests
     [Theory, MemberData(nameof(Resources))]
     public void PinnedExternalSubsetEveryShortSplitWithAuthoredModel(string path, string hash, int length, bool valid, string oracle)
     {
-        var cache = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        var cache = Xemele.TestUtilities.TestRepository.CorpusResources;
         var bytes = File.ReadAllBytes(Path.Combine(cache, path));
         Assert.Equal(length, bytes.Length);
         Assert.Equal(hash, Convert.ToHexStringLower(SHA256.HashData(bytes)));

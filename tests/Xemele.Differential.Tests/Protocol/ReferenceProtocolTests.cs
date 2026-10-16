@@ -22,7 +22,8 @@ public sealed class ReferenceProtocolTests
         }
     }
     private static string Fixture => Environment.GetEnvironmentVariable("XEMELE_CHILD_FIXTURE")
-        ?? Path.Combine(Root, "tests/Xemele.Differential.Tests/Protocol/child_fixture.py");
+        ?? Path.Combine(Root, "tools", "ReferenceRunners", "ProtocolFixture", "bin",
+            ReferenceProcess.BuildConfiguration(AppContext.BaseDirectory), "net10.0", "ProtocolFixture.dll");
     private static string Request(string xml, object? offlineResources = null, string operation = "xml.events", int protocolVersion = 1) =>
         JsonSerializer.Serialize(new
         {
@@ -120,7 +121,7 @@ public sealed class ReferenceProtocolTests
     [InlineData("failure-events")]
     public async Task ActualChildFailuresAreInfrastructureFailures(string mode)
     {
-        var failure = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
+        var failure = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("dotnet",
             [Fixture, mode], Request("<r/>"), TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken));
         if (mode == "invalid-utf8-json-string")
         {
@@ -131,7 +132,7 @@ public sealed class ReferenceProtocolTests
     [Fact]
     public async Task UnknownAdditiveFieldsAndExplicitEmptyValuesRemainValid()
     {
-        using var result = JsonDocument.Parse(await ReferenceProcess.ExecuteAsync("python3", [Fixture, "additive-fields"],
+        using var result = JsonDocument.Parse(await ReferenceProcess.ExecuteAsync("dotnet", [Fixture, "additive-fields"],
             Request("<r/>"), TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken));
         Assert.Equal("success", result.RootElement.GetProperty("outcome").GetString());
         Assert.Equal("", result.RootElement.GetProperty("events")[1].GetProperty("value").GetString());
@@ -141,15 +142,15 @@ public sealed class ReferenceProtocolTests
     public async Task OtherOperationsRequireExplicitPayloadValidator()
     {
         var request = Request("<r/>", operation: "fixture.custom");
-        var failure = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
+        var failure = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("dotnet",
             [Fixture, "custom-payload"], request, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken));
         Assert.Contains("Unsupported success payload", failure.Message);
-        using var result = JsonDocument.Parse(await ReferenceProcess.ExecuteAsync("python3", [Fixture, "custom-payload"],
+        using var result = JsonDocument.Parse(await ReferenceProcess.ExecuteAsync("dotnet", [Fixture, "custom-payload"],
             request, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken,
             validateSuccessPayload: root => root.TryGetProperty("fixtureValue", out var value)
                 && value.ValueKind == JsonValueKind.String && value.GetString() == "checked"));
         Assert.Equal("checked", result.RootElement.GetProperty("fixtureValue").GetString());
-        var invalid = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
+        var invalid = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("dotnet",
             [Fixture, "custom-invalid"], request, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken,
             validateSuccessPayload: root => root.TryGetProperty("fixtureValue", out var value)
                 && value.ValueKind == JsonValueKind.String));
@@ -164,7 +165,7 @@ public sealed class ReferenceProtocolTests
         var pidFile = Path.GetTempFileName();
         try
         {
-            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => ReferenceProcess.ExecuteAsync("python3",
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => ReferenceProcess.ExecuteAsync("dotnet",
                 [Fixture, "sleep", pidFile], Request("<r/>"), TimeSpan.FromSeconds(10), cancel.Token));
             var pid = int.Parse(await File.ReadAllTextAsync(pidFile, TestContext.Current.CancellationToken), System.Globalization.CultureInfo.InvariantCulture);
             Assert.Throws<ArgumentException>(() => System.Diagnostics.Process.GetProcessById(pid));

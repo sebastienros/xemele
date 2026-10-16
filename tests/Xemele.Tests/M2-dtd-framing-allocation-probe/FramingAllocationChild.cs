@@ -108,8 +108,10 @@ internal static class FramingAllocationChild
     private static Provenance Fingerprint(string executable)
     {
         Assembly test = typeof(FramingAllocationChild).Assembly, product = typeof(XmlTextDeclarationFramer).Assembly;
-        Require(System.Text.RegularExpressions.Regex.IsMatch(Version(test), @"\+[0-9a-f]{40}$")
-            && Version(test) == Version(product), "Missing full matching compiled source revision.");
+        var testRevision = System.Text.RegularExpressions.Regex.Match(Version(test), @"\+[0-9a-f]{40}$");
+        var productRevision = System.Text.RegularExpressions.Regex.Match(Version(product), @"\+[0-9a-f]{40}$");
+        Require(testRevision.Success && productRevision.Success && testRevision.Value == productRevision.Value,
+            "Missing full matching compiled source revision.");
         var runtime = RuntimeEnvironment.GetRuntimeDirectory();
         var nativeGc = Path.Combine(runtime, OperatingSystem.IsMacOS() ? "libclrgc.dylib" : OperatingSystem.IsWindows() ? "clrgc.dll" : "libclrgc.so");
         var configuration = GC.GetConfigurationVariables();

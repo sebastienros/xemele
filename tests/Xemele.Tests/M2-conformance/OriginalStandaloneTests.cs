@@ -8,8 +8,7 @@ namespace Xemele.Tests.ConformanceGrammar;
 
 public sealed class OriginalStandaloneTests
 {
-    private static string Cache => Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES")
-        ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+    private static string Cache => Xemele.TestUtilities.TestRepository.CorpusResources;
     [Fact]
     public void OriginalInvNotSa14PreservesCdataAndMixedContentAtEverySplit()
     {

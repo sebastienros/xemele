@@ -50,7 +50,7 @@ public sealed class ApplicabilityTests
         var originalFiles = inventory.RootElement.GetProperty("files").EnumerateArray().ToArray();
         var files = ledger.RootElement.GetProperty("files").EnumerateArray().ToArray();
         Assert.Equal(3386, files.Length);
-        var resources = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        var resources = Xemele.TestUtilities.TestRepository.CorpusResources;
         for (var i = 0; i < files.Length; i++)
         {
             Assert.Equal(originalFiles[i].GetRawText(), files[i].GetRawText());

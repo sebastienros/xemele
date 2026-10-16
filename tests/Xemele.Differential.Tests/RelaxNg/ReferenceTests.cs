@@ -100,46 +100,76 @@ public sealed class ReferenceTests
             }
             var input = Path.Combine(directory, "requests.tsv");
             await File.WriteAllLinesAsync(input, requests, TestContext.Current.CancellationToken);
-            using var identities = JsonDocument.Parse(File.ReadAllText(Environment.GetEnvironmentVariable("XEMELE_RNG_REFERENCE_IDENTITY")
-                ?? Path.Combine(Root, "tools/ReferenceRunners/RelaxNg/reference-build.json")));
+            var live = Environment.GetEnvironmentVariable("XEMELE_LIVE_REFERENCES") == "1";
+            using var identities = JsonDocument.Parse(File.ReadAllText(live
+                ? Environment.GetEnvironmentVariable("XEMELE_RNG_REFERENCE_IDENTITY")
+                    ?? Path.Combine(Root, "tools/ReferenceRunners/RelaxNg/reference-build.json")
+                : Path.Combine(Root, "tools/ReferenceRunners/RelaxNg/reference-build.json")));
             var identity = identities.RootElement.GetProperty(engine);
-            var start = new ProcessStartInfo { RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false };
-            if (engine == "jing")
+            string output;
+            if (!live)
             {
-                var jar = identity.GetProperty("jarPath").GetString()!;
-                Assert.Equal(identity.GetProperty("jarSha256").GetString(), Hash(File.ReadAllBytes(jar)));
-                var classes = identity.GetProperty("classPath").GetString()!;
-                foreach (var file in identity.GetProperty("runnerClassHashes").EnumerateObject())
-                {
-                    Assert.Equal(file.Value.GetString(), Hash(File.ReadAllBytes(Path.Combine(classes, file.Name))));
-                }
-
-                start.FileName = Environment.GetEnvironmentVariable("XEMELE_JAVA")
-                    ?? "/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/bin/java";
-                start.ArgumentList.Add("-cp");
-                start.ArgumentList.Add(classes + Path.PathSeparator + jar);
-                start.ArgumentList.Add("RngReference");
+                using var snapshot = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Corpus, $"reference-results-{engine}.json")));
+                var recorded = snapshot.RootElement;
+                Assert.Equal(1, recorded.GetProperty("schemaVersion").GetInt32());
+                Assert.Equal(engine, recorded.GetProperty("engine").GetString());
+                foreach (var field in new[] { "revision", "version", "sourceSha256" })
+                    Assert.Equal(identity.GetProperty(field).GetString(), recorded.GetProperty("identity").GetProperty(field).GetString());
+                var runnerSource = engine == "jing" ? "RngReference.java" : "libxml2_reference.c";
+                Assert.Equal(identity.GetProperty("sourceSha256").GetString(),
+                    Hash(File.ReadAllBytes(Path.Combine(Root, "tools/ReferenceRunners/RelaxNg", runnerSource))));
+                var required = inventories.SelectMany(i => i.RootElement.GetProperty("resources").EnumerateArray())
+                    .Concat(cases.SelectMany(c => new[] { c.GetProperty("schema") }.Concat(c.GetProperty("instances").EnumerateArray())))
+                    .Select(f => "tests/corpora/relaxng/" + f.GetProperty("path").GetString())
+                    .Concat(new[] { "jing-inventory.json", "libxml2-inventory.json", "profile-inventory.json" }
+                        .Select(name => "tests/corpora/relaxng/" + name)).ToHashSet(StringComparer.Ordinal);
+                var hashes = recorded.GetProperty("inputs").EnumerateObject().ToArray();
+                Assert.Equal(required.Order(StringComparer.Ordinal), hashes.Select(p => p.Name).Order(StringComparer.Ordinal));
+                foreach (var file in hashes)
+                    Assert.Equal(file.Value.GetString(), Hash(File.ReadAllBytes(Path.Combine(Root, file.Name))));
+                output = string.Join('\n', recorded.GetProperty("results").EnumerateArray().Select(row =>
+                    string.Join('\t', row.GetProperty("caseId").GetString(), row.GetProperty("phase").GetString(), row.GetProperty("outcome").GetString())));
             }
             else
             {
-                start.FileName = identity.GetProperty("binaryPath").GetString()!;
-                Assert.Equal(identity.GetProperty("binarySha256").GetString(), Hash(File.ReadAllBytes(start.FileName)));
+                var start = new ProcessStartInfo { RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false };
+                if (engine == "jing")
+                {
+                    var jar = identity.GetProperty("jarPath").GetString()!;
+                    Assert.Equal(identity.GetProperty("jarSha256").GetString(), Hash(File.ReadAllBytes(jar)));
+                    var classes = identity.GetProperty("classPath").GetString()!;
+                    foreach (var file in identity.GetProperty("runnerClassHashes").EnumerateObject())
+                    {
+                        Assert.Equal(file.Value.GetString(), Hash(File.ReadAllBytes(Path.Combine(classes, file.Name))));
+                    }
+
+                    start.FileName = Environment.GetEnvironmentVariable("XEMELE_JAVA")
+                        ?? "/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/bin/java";
+                    start.ArgumentList.Add("-cp");
+                    start.ArgumentList.Add(classes + Path.PathSeparator + jar);
+                    start.ArgumentList.Add("RngReference");
+                }
+                else
+                {
+                    start.FileName = identity.GetProperty("binaryPath").GetString()!;
+                    Assert.Equal(identity.GetProperty("binarySha256").GetString(), Hash(File.ReadAllBytes(start.FileName)));
+                }
+                start.ArgumentList.Add(input);
+                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+                timeout.CancelAfter(TimeSpan.FromSeconds(60));
+                using var process = Process.Start(start) ?? throw new InvalidOperationException("Reference process unavailable.");
+                string errors;
+                try
+                {
+                    var stdout = process.StandardOutput.ReadToEndAsync(timeout.Token);
+                    var stderr = process.StandardError.ReadToEndAsync(timeout.Token);
+                    await process.WaitForExitAsync(timeout.Token);
+                    output = await stdout;
+                    errors = await stderr;
+                }
+                catch { if (!process.HasExited) { process.Kill(entireProcessTree: true); } await process.WaitForExitAsync(CancellationToken.None); throw; }
+                Assert.True(process.ExitCode == 0, "Reference infrastructure failure: " + errors);
             }
-            start.ArgumentList.Add(input);
-            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
-            timeout.CancelAfter(TimeSpan.FromSeconds(60));
-            using var process = Process.Start(start) ?? throw new InvalidOperationException("Reference process unavailable.");
-            string output, errors;
-            try
-            {
-                var stdout = process.StandardOutput.ReadToEndAsync(timeout.Token);
-                var stderr = process.StandardError.ReadToEndAsync(timeout.Token);
-                await process.WaitForExitAsync(timeout.Token);
-                output = await stdout;
-                errors = await stderr;
-            }
-            catch { if (!process.HasExited) { process.Kill(entireProcessTree: true); } await process.WaitForExitAsync(CancellationToken.None); throw; }
-            Assert.True(process.ExitCode == 0, "Reference infrastructure failure: " + errors);
             var observed = new Dictionary<(string Id, string Phase), string>();
             foreach (var line in output.Split('\n', StringSplitOptions.RemoveEmptyEntries))
             {

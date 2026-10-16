@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../CorpusManager/CorpusManager.csproj" />
+    <ProjectReference Include="../ApiBaseline/Checker/ApiCheck.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../tests/Contracts/Foundation/Fixtures/ApiProbe/ApiProbe.csproj" ReferenceOutputAssembly="false" />
+    <InternalsVisibleTo Include="Xemele.CorpusInfrastructure.Tests" />
+  </ItemGroup>
+</Project>

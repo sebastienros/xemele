@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Xemele.CorpusInfrastructure.Tests;
 
+[Trait("Category", "Infrastructure")]
 public sealed class ProvisioningTests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "xemele-corpora-" + Guid.NewGuid().ToString("N"));

@@ -365,11 +365,31 @@ Runnable examples are grouped by feature in [samples](samples/README.md).
 The [feature benchmark guide](benchmarks/Xemele.Benchmarks/README.md) distinguishes
 the aggregate BenchmarkDotNet entry point from standalone diagnostic probes.
 
-Use the SDK selected by `global.json`:
+Only the .NET SDK selected by `global.json` is required to build and test:
 
 ```sh
 dotnet build Xemele.slnx -c Release
+dotnet test --solution Xemele.slnx -c Release --no-build
 ```
+
+The first test-project build downloads the pinned XML corpus using .NET and
+verifies the archive and every fixture hash. Subsequent builds reuse verified
+local bytes; corrupt data fails explicitly. NuGet restore and the initial corpus
+download need network access. No Python, Java, CMake, native compiler, or separate
+runtime installation is needed for ordinary builds and tests.
+
+For the additional CI API/provenance and test-runner checks:
+
+```sh
+dotnet run --project tools/Build -c Release --no-build -- verify
+dotnet run --project tools/Build -c Release --no-build -- test
+```
+
+Live native/Java reference runs are isolated in the weekly/manual
+[test-data workflow](.github/workflows/test-data.yml), which proposes reviewed
+reference-result updates. See the [testing guide](docs/testing.md) for caching,
+provenance, and maintenance details. Native AOT release packaging has separate
+toolchain requirements.
 
 See the [specifications](docs/specs/README.md) for behavior contracts,
 the [samples](samples) for focused executable examples, and

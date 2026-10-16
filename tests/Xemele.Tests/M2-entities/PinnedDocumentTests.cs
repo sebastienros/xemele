@@ -18,7 +18,7 @@ public sealed class PinnedDocumentTests
     [InlineData("115", "738337bb46c142f6950825850fe9c93c54fbb7fe06772181ce118f3a321de01c", "doc", "v")]
     public void PinnedWholeDocumentWithIndependentRootStructureOracle(string id, string sha256, string rootName, string text)
     {
-        var cache = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        var cache = Xemele.TestUtilities.TestRepository.CorpusResources;
         var bytes = File.ReadAllBytes(Path.Combine(cache, "xmlconf", "xmltest", "valid", "sa", id + ".xml"));
         Assert.Equal(sha256, Convert.ToHexStringLower(SHA256.HashData(bytes)));
         using var source = new MemoryStream(bytes, false);
