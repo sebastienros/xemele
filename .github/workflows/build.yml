@@ -1,0 +1,106 @@
+name: Build
+permissions:
+  contents: read
+on:
+  push:
+    branches: [main, 'release/**']
+    paths-ignore:
+      - 'README.md'
+  pull_request:
+    branches: [main, 'release/**']
+    paths-ignore:
+      - 'README.md'
+  workflow_call:
+  workflow_dispatch:
+jobs:
+  build:
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: '1'
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      NUGET_PACKAGES: ${{ matrix.os == 'ubuntu-latest' && '/mnt/nuget/packages' || format('{0}/.nuget/packages', github.workspace) }}
+      NUGET_HTTP_CACHE_PATH: ${{ github.workspace }}/.nuget/http-cache
+      NUGET_SCRATCH: ${{ github.workspace }}/.nuget/scratch
+      NUGET_PLUGINS_CACHE_PATH: ${{ github.workspace }}/.nuget/plugins
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Configure platform-native line endings
+        run: git config --global core.autocrlf ${{ runner.os == 'Windows' && 'true' || 'input' }}
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Prepare Linux NuGet package directory
+        if: runner.os == 'Linux'
+        shell: bash
+        run: sudo install -d -o "$(id -u)" -g "$(id -g)" "$NUGET_PACKAGES"
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+          check-latest: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Test fragment discovery
+        run: python -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v
+      - name: Provision pinned corpus bytes for clean-checkout checks
+        run: python -B tools/ApiBaseline/prepare_corpus.py
+      - name: Discover API and corpus fragments
+        run: python -B tools/ApiBaseline/discover.py
+      - name: Restore
+        run: dotnet restore Xemele.slnx -p:Configuration=Release -p:VersionSuffix=preview-${{ github.run_number }} --disable-build-servers -m:1 -p:UseSharedCompilation=false
+      - name: Build
+        run: dotnet build Xemele.slnx -c Release --no-restore -p:VersionSuffix=preview-${{ github.run_number }} --disable-build-servers -m:1 -p:UseSharedCompilation=false
+      - name: Compare compiled runtime API and verify foundation contracts
+        run: python -B tools/ApiBaseline/verify.py
+      - name: Prepare pinned runtime and independent reference engines
+        run: |
+          python -B tools/ApiBaseline/prepare_runtime.py
+          python -B tools/ApiBaseline/prepare_references.py
+      - name: Discover and execute MTP tests and verify failure exit codes
+        env:
+          DOTNET_TieredCompilation: '0'
+          DOTNET_TieredPGO: '0'
+          DOTNET_ReadyToRun: '0'
+          DOTNET_gcServer: '0'
+          DOTNET_GCConcurrent: '0'
+        run: python -B tools/Validation/check_runner.py
+      - name: Verify focused corpus MTP tests and root offline CLI
+        run: python -B tools/Validation/check_corpus_cli.py
+      - name: Verify bootstrap corpus bytes and independent expectations
+        run: python -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py
+      - name: Pack runtime
+        run: dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore -p:VersionSuffix=preview-${{ github.run_number }} -p:DirectoryBuildTargetsPath="${{ github.workspace }}/tools/Packaging/Release.targets" --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
+      - name: Pack preview tool
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.os == 'ubuntu-latest'
+        run: dotnet pack src/Xemele.Tool/Xemele.Tool.csproj -c Release --no-build --no-restore -p:VersionSuffix=preview-${{ github.run_number }} -p:DirectoryBuildTargetsPath="${{ github.workspace }}/tools/Packaging/Release.targets" --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
+      - name: Push preview packages to Feedz
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.os == 'ubuntu-latest'
+        shell: bash
+        env:
+          FEEDZ_IO_API_KEY: ${{ secrets.FEEDZ_IO_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$FEEDZ_IO_API_KEY" || { echo "::error::Missing Feedz API key"; exit 1; }
+          for package in artifacts/packages/*.nupkg; do
+            dotnet nuget push "$package" --api-key "$FEEDZ_IO_API_KEY" --source https://f.feedz.io/sebastienros/xemele/nuget/index.json --skip-duplicate
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: results-${{ matrix.os }}
+          path: |
+            artifacts/test-results
+            artifacts/packages
+            artifacts/corpus-cli
+            artifacts/api
+          if-no-files-found: ignore

@@ -1,0 +1,22 @@
+using System.Runtime.InteropServices;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Benchmarks.M5DtdValidation;
+
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual host must be .NET 10.0.11.");
+if (args is not [var mode, var output] || mode is not ("--discover" or "--benchmark")) throw new ArgumentException();
+var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output)
+    .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+Type[] types = [typeof(DtdValidationBenchmarks), typeof(DtdSchemaCompilationBenchmarks)];
+var suites = types.Select(type => BenchmarkConverter.TypeToBenchmarks(type, config)).ToArray();
+var cases = suites.SelectMany(suite => suite.BenchmarksCases).ToArray();
+if (cases.Length != 14 || cases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Expected 14 ShortRun NoEmit cases.");
+Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; 14 ShortRun NoEmit cases; no builds/generation.");
+if (mode == "--discover") return;
+foreach (var suite in suites)
+{
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != suite.BenchmarksCases.Length || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failed.");
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "engine": {
+    "name": "System.Xml",
+    "version": "10.0.0.0",
+    "runtime": ".NET 10.0.11"
+  },
+  "productExpectation": "rejected",
+  "referenceOutcome": "success",
+  "reason": "System.Xml 10.0.11 checks StartsWith(1.0) and accepts these malformed VersionNum suffixes; XML production26 requires 1. followed by digits only. No general suffix exemption. Engine/outcome/hash/identity changes require reassessment.",
+  "primarySources": [
+    "https://www.w3.org/TR/REC-xml/#NT-VersionNum",
+    "https://github.com/dotnet/runtime/blob/v10.0.11/src/libraries/System.Private.Xml/src/System/Xml/Core/XmlTextReaderImpl.cs#L3505-L3521"
+  ],
+  "cases": [
+    {
+      "id": "xmlconf/xmltest/xmltest.xml#not-wf-sa-102",
+      "sha256": "fb4b62a170914a0971cc71cb7a75a25d26880705fe07002472c77610b4222d72"
+    },
+    {
+      "id": "xmlconf/oasis/oasis.xml#o-p26fail1",
+      "sha256": "bc7d5972546842d7af7b2690b120111dd05acd2fb6e735c79c21769d496bf48b"
+    },
+    {
+      "id": "xmlconf/oasis/oasis.xml#o-p26fail2",
+      "sha256": "26d605e9456b1a5cd9b76e0348c9b00a30489b8754564f33fbf4e32bde220097"
+    }
+  ]
+}

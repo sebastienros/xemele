@@ -1,0 +1,9 @@
+// Distinct synchronous recovery family. No declaration method is a runtime feature.
+namespace Xemele;
+public sealed partial class XmlDocument
+{
+    public static XmlParseResult<XmlDocument> ParseWithDiagnostics(string input, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Declaration model");
+    public static XmlParseResult<XmlDocument> ParseWithDiagnostics(ReadOnlySpan<char> input, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Declaration model");
+    public static XmlParseResult<XmlDocument> ParseWithDiagnostics(ReadOnlySpan<byte> input, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Declaration model");
+    public static XmlParseResult<XmlDocument> LoadWithDiagnostics(Stream input, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Declaration model");
+}

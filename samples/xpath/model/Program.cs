@@ -1,0 +1,15 @@
+using Xemele;
+using Xemele.XPath;
+var document = new XmlDocument();
+var root = document.CreateElement("root");
+document.DocumentNode.AppendChild(root);
+root.AppendChild(document.CreateText("12"));
+root.AppendChild(document.CreateCData(".5"));
+root.SetNamespaceDeclaration("p", "urn:p");
+var attribute = root.SetAttribute("a", "original");
+var value = XPathValue.FromNodeSet([XPathItem.FromAttribute(attribute), XPathItem.FromNode(root), XPathItem.FromNode(root.FirstChild)]);
+attribute.Value = "changed";
+var firstChild = root.FirstChild;
+firstChild.Value = "changed";
+if (value.AsString() != "12.5" || value.AsNumber() != 12.5 || value.AsNodeSet()[1].StringValue != "original") throw new InvalidOperationException("Snapshot sample failed.");
+Console.WriteLine($"items={value.AsNodeSet().Count}; first={value.AsString()}; numeric={value.AsNumber()}; retained attribute={value.AsNodeSet()[1].StringValue}");

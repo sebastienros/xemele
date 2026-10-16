@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/bin/**;**/obj/**</DefaultItemExcludes>
+    <RuntimeFrameworkVersion>10.0.11</RuntimeFrameworkVersion>
+    <RollForward>Disable</RollForward>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" VersionOverride="0.15.8" />
+    <PackageReference Include="AngleSharp" VersionOverride="1.8.2" />
+    <ProjectReference Include="../../src/Xemele/Xemele.csproj" />
+  </ItemGroup>
+</Project>

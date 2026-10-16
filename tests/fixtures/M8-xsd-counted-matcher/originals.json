@@ -1,0 +1,299 @@
+{
+  "status": "Source-only triage; original refusals observed, repair not run",
+  "upstream_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "baseline_revision": "pre-squash",
+  "matcher_sha256": "d90147ad082df4c9d8fe2971755eab9640b6c8358e5cee223f8a3beb7163e81b",
+  "matcher_blob": "258e88b8df9f79beded3737907b757e87bd6e929",
+  "baseline_policy": {
+    "validation_work": 100000000,
+    "child_seconds": 30
+  },
+  "cause": "Matcher.Add retains each differing non-nullable counter even once both satisfy the minimum. Repeated content partitions grow without useful language distinction; Q005 (e1+){1,1000} on 1000 e1 children forces at least C(1000,3)=166167000 charged pair inspections in one state family. This is a static lower bound, not timing or runtime measurement.",
+  "proposed_boundary": "Same PC/flags and componentwise smaller repetition counters after both meet minimum can represent a superset of future continuations. Prove this using independent finite-language enumeration; retain differing below-minimum states and actual finite maxima. Use existing charges/polls, no cap increase or clamp shortcut.",
+  "originals": [
+    {
+      "group": 742,
+      "name": "particlesQ005",
+      "schema": [
+        {
+          "path": "msData/particles/particlesQ005.xsd",
+          "sha256": "520332c599ce6a047c953c1bd0ddbbe27a7ca5b82a096759cb37fb207bc43194"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g742/i0:particlesQ005.v",
+          "expected": [
+            {
+              "validity": "valid"
+            }
+          ],
+          "current": [
+            {
+              "date": "2006-07-16",
+              "status": "accepted"
+            }
+          ],
+          "path": "msData/particles/particlesQ005.xml",
+          "sha256": "c89af6cd32c05f8da973b9d4c2a91d5ca017d8fdf3672ca219b1574e46dc6541"
+        }
+      ]
+    },
+    {
+      "group": 844,
+      "name": "particlesZ034_a1",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ034_a.xsd",
+          "sha256": "c9f7493ada128e6ee88da7a10f5936f9cc408e06b16277b90f1e839cc839f021"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g844/i0:particlesZ034_a1.v",
+          "expected": [
+            {
+              "validity": "valid"
+            }
+          ],
+          "current": [
+            {
+              "date": "2006-07-16",
+              "status": "accepted"
+            }
+          ],
+          "path": "msData/particles/particlesZ034_a1.xml",
+          "sha256": "c90564eb2c3d0d34b69015c448cb6cbcc226588d94c9162a4e090b92a0888622"
+        }
+      ]
+    },
+    {
+      "group": 845,
+      "name": "particlesZ034_a2",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ034_a.xsd",
+          "sha256": "c9f7493ada128e6ee88da7a10f5936f9cc408e06b16277b90f1e839cc839f021"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g845/i0:particlesZ034_a2.i",
+          "expected": [
+            {
+              "validity": "invalid"
+            }
+          ],
+          "current": [
+            {
+              "date": "2006-07-16",
+              "status": "accepted"
+            }
+          ],
+          "path": "msData/particles/particlesZ034_a2.xml",
+          "sha256": "ada31ad84c2ee4d4deae0513a40a83b826cac5930db54d7c0a2aa7dba742af4c"
+        }
+      ]
+    },
+    {
+      "group": 846,
+      "name": "particlesZ034_a3",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ034_a.xsd",
+          "sha256": "c9f7493ada128e6ee88da7a10f5936f9cc408e06b16277b90f1e839cc839f021"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g846/i0:particlesZ034_a3.i",
+          "expected": [
+            {
+              "validity": "invalid"
+            }
+          ],
+          "current": [
+            {
+              "date": "2006-07-16",
+              "status": "accepted"
+            }
+          ],
+          "path": "msData/particles/particlesZ034_a3.xml",
+          "sha256": "a47b4254fafdf6f7c0d3f6bf137250c1984040fe0e6fef6695647a72d7cdfb67"
+        }
+      ]
+    },
+    {
+      "group": 847,
+      "name": "particlesZ034_b",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ034_b.xsd",
+          "sha256": "46d43a6933444b1bb3e53bb905a362ee6f50cd95fa37fc01d2ef85d046797097"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g847/i0:particlesZ034_b.i",
+          "expected": [
+            {
+              "validity": "invalid"
+            }
+          ],
+          "current": [
+            {
+              "date": "2006-07-16",
+              "status": "accepted"
+            }
+          ],
+          "path": "msData/particles/particlesZ034_b1.xml",
+          "sha256": "a47b4254fafdf6f7c0d3f6bf137250c1984040fe0e6fef6695647a72d7cdfb67"
+        }
+      ]
+    },
+    {
+      "group": 848,
+      "name": "particlesZ035_a",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ035_a.xsd",
+          "sha256": "209be317d1f385fe88fcb9e8f8b9669af831f4c9c01461f7f598a90357c51af0"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g848/i0:particlesZ035_a.i",
+          "expected": [
+            {
+              "validity": "invalid"
+            }
+          ],
+          "current": [
+            {
+              "date": "2006-07-16",
+              "status": "accepted"
+            }
+          ],
+          "path": "msData/particles/particlesZ035_a.xml",
+          "sha256": "9b404dc15d677c38206762e3ffeb53841b7e6db2d1dfb5922e358684f25d81af"
+        }
+      ]
+    },
+    {
+      "group": 849,
+      "name": "particlesZ036_a",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ036_a.xsd",
+          "sha256": "d3d4ed9a47f502d452fab3f76ccc270f5e80256ab98366e8096b2c1f65b2030a"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g849/i0:particlesZ036_a.i",
+          "expected": [
+            {
+              "validity": "invalid"
+            }
+          ],
+          "current": [
+            {
+              "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4075",
+              "status": "stable",
+              "date": "2009-01-15"
+            }
+          ],
+          "path": "msData/particles/particlesZ036_a.xml",
+          "sha256": "c90564eb2c3d0d34b69015c448cb6cbcc226588d94c9162a4e090b92a0888622"
+        }
+      ]
+    },
+    {
+      "group": 850,
+      "name": "particlesZ036_b1",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ036_b.xsd",
+          "sha256": "b56c35ebdc619d549300a8b8f77f897fe37588064f8697c2eb93aa133447aeda"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g850/i0:particlesZ036_b1.i",
+          "expected": [
+            {
+              "validity": "valid"
+            }
+          ],
+          "current": [
+            {
+              "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4075",
+              "status": "stable",
+              "date": "2009-01-15"
+            }
+          ],
+          "path": "msData/particles/particlesZ036_b1.xml",
+          "sha256": "62ec6e4df16e9ae9a5ab96ccbeab5977538084fc9cd09eec866fb359e0a146b8"
+        }
+      ]
+    },
+    {
+      "group": 851,
+      "name": "particlesZ036_b2",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ036_b.xsd",
+          "sha256": "b56c35ebdc619d549300a8b8f77f897fe37588064f8697c2eb93aa133447aeda"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g851/i0:particlesZ036_b2.i",
+          "expected": [
+            {
+              "validity": "valid"
+            }
+          ],
+          "current": [
+            {
+              "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4075",
+              "status": "stable",
+              "date": "2009-01-15"
+            }
+          ],
+          "path": "msData/particles/particlesZ036_b2.xml",
+          "sha256": "ddc4733fe6cdab6e4ed3d2a467493dec08a952c0bb79fc37b87f50b9810ac2da"
+        }
+      ]
+    },
+    {
+      "group": 852,
+      "name": "particlesZ036_c",
+      "schema": [
+        {
+          "path": "msData/particles/particlesZ036_c.xsd",
+          "sha256": "2630d449e31a1bdb3cfd5d51839c722e5a8cea715ae2b34d48c5abf9871115ee"
+        }
+      ],
+      "instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g852/i0:particlesZ036_c.v",
+          "expected": [
+            {
+              "validity": "valid"
+            }
+          ],
+          "current": [
+            {
+              "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4075",
+              "status": "stable",
+              "date": "2009-01-15"
+            }
+          ],
+          "path": "msData/particles/particlesZ036_c.xml",
+          "sha256": "ddc4733fe6cdab6e4ed3d2a467493dec08a952c0bb79fc37b87f50b9810ac2da"
+        }
+      ]
+    }
+  ]
+}

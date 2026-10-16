@@ -1,0 +1,72 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+bool measure = mode == "--measure", failed = false;
+var inputs = new[] { 1, 32, 512 }.Select(count => "<r xmlns:p='urn:p'>" + string.Concat(Enumerable.Repeat("<p:n a='根😀'/>", count)) + "</r>").ToArray();
+var encoded = inputs.Select(Encoding.UTF8.GetBytes).ToArray();
+long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var scope = new SchemaCompileContext().Parse("<r a='v' xmlns:p='urn:p'/>");
+var root = scope.Document.RootElement; var attribute = root.Attributes[0]; var declaration = root.NamespaceDeclarations[0];
+var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+var nodeMethod = typeof(SchemaDocumentScope).GetMethod("Location", flags, [typeof(XmlNode)]);
+var attributeMethod = typeof(SchemaDocumentScope).GetMethod("Location", flags, [typeof(XmlAttribute)]);
+var namespaceMethod = typeof(SchemaDocumentScope).GetMethod("Location", flags, [typeof(XmlNamespaceDeclaration)]);
+var nodeLookup = nodeMethod?.CreateDelegate<Func<XmlNode, XmlLocation>>(scope);
+var attributeLookup = attributeMethod?.CreateDelegate<Func<XmlAttribute, XmlLocation>>(scope);
+var namespaceLookup = namespaceMethod?.CreateDelegate<Func<XmlNamespaceDeclaration, XmlLocation>>(scope);
+bool hasLocations = nodeLookup is not null && attributeLookup is not null && namespaceLookup is not null;
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldBefore : 0;
+var rows = new List<object>();
+Run("borrowed root navigation", () => scope.Document.RootElement.LocalName.Length, true);
+if (hasLocations)
+{
+    Run("node location", () => nodeLookup!(root).LinePosition, true);
+    Run("attribute location", () => attributeLookup!(attribute).LinePosition, true);
+    Run("namespace location", () => namespaceLookup!(declaration).LinePosition, true);
+}
+for (int i = 0; i < inputs.Length; i++)
+{
+    string xml = inputs[i]; byte[] bytes = encoded[i];
+    Run("owned character parse " + new[] { 1, 32, 512 }[i], () => XmlDocument.Parse(xml).RootElement.LocalName.Length, false);
+    Run("owned byte parse " + new[] { 1, 32, 512 }[i], () => XmlDocument.Parse(bytes.AsSpan()).RootElement.LocalName.Length, false);
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) failed = true;
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new XmlDocument[16];
+for (int i = 0; i < retained.Length; i++) retained[i] = XmlDocument.Parse(inputs[1]);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(scope);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), serverGc = System.Runtime.GCSettings.IsServerGC,
+    runtimeAssembly = Hash(typeof(XmlDocument).Assembly.Location), probeAssembly = Hash(typeof(Program).Assembly.Location),
+    inputSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join("\n", inputs)))),
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_SOURCE_REVISION"), hasLocations, coldSetupBytes,
+    positiveBytes, retainedBefore, retainedAfter, retainedDocuments = 16, rows, failed }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: {rows.Count} consumed cases, 16 warm and 64 observations; locations={hasLocations}, failed={failed}");
+if (failed) throw new InvalidOperationException("Allocation control failed; preserve output for post-release inspection.");
+void Run(string name, Func<long> operation, bool zero)
+{
+    for (int i = 0; i < 16; i++) if (operation() <= 0) throw new InvalidOperationException("Oracle failed.");
+    var distribution = new long[64]; long consumed = 0;
+    long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        consumed += operation();
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    }
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    if (consumed <= 0 || measure && (zero ? distribution.Any(x => x != 0) : distribution.Any(x => x <= 0))) failed = true;
+    rows.Add(new { name, operations = 64, bytes, consumed, zero, distribution });
+}
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));

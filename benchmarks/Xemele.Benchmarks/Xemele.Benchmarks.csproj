@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/bin/**;**/obj/**</DefaultItemExcludes>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Standalone probes own their entry points; the aggregate uses this one. -->
+    <Compile Remove="**/Program.cs" />
+    <Compile Remove="schemas/rng-validate/Probe.cs" />
+    <Compile Include="Program.cs" />
+    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="System.IO.Hashing" VersionOverride="10.0.11" />
+    <ProjectReference Include="../../src/Xemele/Xemele.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,4249 @@
+{
+  "policy": "Only the 53 named applicability/profile disagreements, indeterminate observations and assessment limitations are nonblocking dispositions. Preserve original metadata, expectations, input bytes and actual outcomes. None counts as an original or conformance pass. Import/missing-component/annotation URI defects and optional-mapping candidates are outside this scope.",
+  "upstream_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "source_revision": "pre-squash",
+  "history_note": "Repository commit identifiers were removed when history was squashed. Artifact paths containing pre-squash are historical labels, not current filesystem locations. Input checksums and recorded outcomes are unchanged.",
+  "counts": {
+    "total": 53,
+    "original_false": 42,
+    "original_null": 11,
+    "proposed_pass_credit": 0
+  },
+  "categories": [
+    {
+      "id": "xsd11-applicability",
+      "count": 10,
+      "rationale": "These originals use XSD1.1-only notQName/notNamespace/defined-name wildcard features. Metadata lacks a version gate, so the faithful metadata importer classified them applicable. Product unknown-attribute rejection is consistent with the frozen1.0 profile.",
+      "primarySources": [
+        "https://www.w3.org/TR/xmlschema11-1/"
+      ]
+    },
+    {
+      "id": "conditional-inclusion-preprocessing",
+      "count": 12,
+      "rationale": "Metadata explicitly includes1.0 and1.1. vc001/vc002/vc014/vc024 depend on XSD1.1 conditional-inclusion attributes minVersion/maxVersion/typeAvailable/typeUnavailable/facetAvailable to remove otherwise incompatible constructs. The raw frozen SecondEdition path does not perform that preprocessing.",
+      "primarySources": [
+        "https://www.w3.org/TR/xmlschema11-1/"
+      ]
+    },
+    {
+      "id": "original-indeterminate",
+      "count": 13,
+      "rationale": "Each original expected validity is indeterminate, so no binary valid/invalid comparison is available. Eleven actual records have passed:null; particlesZ026.v is schema-unavailable and schZ012_a is incomplete-refusal, both recorded passed:false. Completion/refusal is distinct from an original validity oracle.",
+      "primarySources": []
+    },
+    {
+      "id": "mandatory-redefine-resource",
+      "count": 3,
+      "rationale": "mgO020/mgP041/mgP050 contain nonempty redefine referring to absent foo. Unlike optional composition, replacement components require successful resolution. Resource refusal also prevents reaching additional invalid all-group occurrence constraints.",
+      "primarySources": [
+        "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#modify-schema"
+      ]
+    },
+    {
+      "id": "resource-cycles",
+      "count": 6,
+      "rationale": "Four IBM originals involve redefine cycles, not merely ordinary includes; their original oracle and schZ006 are INVALID, but current terminal is incomplete ResourceCycle refusal. schU1 expects VALID while metadata remains disputed-test and W3C4135 unresolved. Existing approvals for schU3/U4/U5 do not cover these six.",
+      "primarySources": [
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4135"
+      ]
+    },
+    {
+      "id": "invalid-hinted-prerequisite",
+      "count": 4,
+      "rationale": "These instance-only originals hint invalid schemas. test73456.xsd places attribute inside sequence; test84002_a/b.xsd contain forbidden prefixed namespace undeclarations; addB191a.xsd references no-namespace b without its own import. Current schema-unavailable does not assess the original instance predicate.",
+      "primarySources": [
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4057"
+      ]
+    },
+    {
+      "id": "circular-union-original-oracle",
+      "count": 2,
+      "rationale": "stE110.xsd has union cycle st to st2 to st. The original schema expects VALID despite the1.0 circular-union prohibition and queried upstream issue4957. Product rejects the schema; its dependent instance is unassessed.",
+      "primarySources": [
+        "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#cos-st",
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4957"
+      ]
+    },
+    {
+      "id": "particle-versioned-original-oracle",
+      "count": 2,
+      "rationale": "Metadata describes particlesZ001 restriction as invalid in1.0 and valid in1.1, but schema VALID is not version-gated. The1.0 restriction mapping fails its occurrence comparison; dependent1.0 instance INVALID cannot be assessed after compile failure.",
+      "primarySources": [
+        "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#rcase-RecurseAsIfGroup"
+      ]
+    },
+    {
+      "id": "additional-late-hint",
+      "count": 1,
+      "rationale": "addB163.v repeats the same foo hint after a prior physical foo namespace use. Original expects VALID. Actual remains instance-hint-ordering-limitation; its recorded supplementary engine assessment is instance-invalid with XSD.HintOrder. The verified seven-ID guard does not cover this case.",
+      "primarySources": [
+        "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#schema-loc"
+      ]
+    }
+  ],
+  "guards": [
+    "Match exact original IDs, metadata/input hashes, expected/kind/classification and observed actual/codes/passedfalseornull. Changed outcomes, denials, quota/cancel/harness failures never receive inferred approval.",
+    "No applicable1.0 implementation defect is waived. The2importbugs+12missingcomponentcases+13optionalmappings are outside this53. Annotation anyURI defect is repaired in the claimed compiler task.",
+    "XSD1.1 wildcard features and raw conditional-preprocessing inputs retain original ungated applicability classification; no silent exclusion or transformed input replaces the original. Any preprocessing supplement requires its own source and actual evidence.",
+    "Eleven no-binary-oracle observations are distinct from2unassessed/refused no-oracle inputs. None receives validity pass credit. Missing mandatory redefine resources never become fabricated schemas or semantic INVALID.",
+    "All6observed cycles involve redefine. Retain exact incomplete-refusal; no automatic cycle-to-invalid mapping, no broader ordinary include/refusal waiver or imported1.1cycle rule. schU1originalVALID remains disputed underW3C4135.",
+    "Four hinted prerequisites retain original invalid/malformed schema outcomes and unassessedinstances, never INVALIDinstancecredit.",
+    "Circularunion andparticleversion oracles retain originalVALID disagreements and dependentnonassessment; separate source-derivedINVALID reports do not replace originals.",
+    "Latehint addB163 originallimitation stays unchanged; its existing XSD.HintOrder supplement is separate. A fresh exact supplemental proof/source-reviewed adapter scope is required before asserting current supplement agreement.",
+    "Pending record alone grants no authorization, taskverification, overall harnesscompletion or gatepass. Existing58profile proposal and earlier36 approvals are disjoint and separately bound."
+  ],
+  "cases": [
+    {
+      "id": "ibmMeta/anyAttribute.testSet#g3/s:s3_10_6v01s",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/anyAttribute.testSet",
+        "sha256": "3a03cd61aed1b98a518bb1352e51284d2752607a4652698acfd1d4f51a415320",
+        "bytes": 8795
+      },
+      "inventory_record_sha256": "900669778053b15e8229c26bf3ea024e2116c52c8acf56e2fab816a264c54f5e",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii01.xsd",
+          "sha256": "f65a501d60e69aea9efa050d7af371bb6daadb56d0c083beea68048cc9e739a8",
+          "bytes": 776
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii01.xsd",
+          "sha256": "f65a501d60e69aea9efa050d7af371bb6daadb56d0c083beea68048cc9e739a8",
+          "bytes": 776
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_anyAttribute.testSet.jsonl",
+          "sha256": "c976697f13124f556cca0ca59de42bab2e29c623e77cf3c811a7e9bfb7e30ef4",
+          "bytes": 5704
+        },
+        "lineNumber": 7,
+        "rawLineSha256WithoutTerminator": "db3adc125e769e244f6ae8cd447a184d096ff3ab61ef3a39e1c0f4b1346aa4b2",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/anyAttribute.testSet#g3/i0:s3_10_6v01i",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/anyAttribute.testSet",
+        "sha256": "3a03cd61aed1b98a518bb1352e51284d2752607a4652698acfd1d4f51a415320",
+        "bytes": 8795
+      },
+      "inventory_record_sha256": "cd560d538ecee942de1a0afd053c1cb195682b51d2dfb623daa182d4fb0231db",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii01.xml",
+          "sha256": "aa8c13292537f38d6c281deb7d689ce9746afd38e9c7849f61b3bd32896fe6fc",
+          "bytes": 342
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii01.xsd",
+          "sha256": "f65a501d60e69aea9efa050d7af371bb6daadb56d0c083beea68048cc9e739a8",
+          "bytes": 776
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_anyAttribute.testSet.jsonl",
+          "sha256": "c976697f13124f556cca0ca59de42bab2e29c623e77cf3c811a7e9bfb7e30ef4",
+          "bytes": 5704
+        },
+        "lineNumber": 8,
+        "rawLineSha256WithoutTerminator": "496e4276d5383c1b2131585a02633ef17b2e37dfe16037d6f77cfcf6cfa4fe2d",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/anyAttribute.testSet#g4/s:s3_10_6v02s",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/anyAttribute.testSet",
+        "sha256": "3a03cd61aed1b98a518bb1352e51284d2752607a4652698acfd1d4f51a415320",
+        "bytes": 8795
+      },
+      "inventory_record_sha256": "ed8da40f9b686d18b2e98ef408df649f2dc62a3fa41dc6a38fde17fda1e790b0",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii02.xsd",
+          "sha256": "2a1dd9d366a7273b6aa06260f207f9d32b2d856c4e5d4716f13cc1439716ce30",
+          "bytes": 667
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii02.xsd",
+          "sha256": "2a1dd9d366a7273b6aa06260f207f9d32b2d856c4e5d4716f13cc1439716ce30",
+          "bytes": 667
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_anyAttribute.testSet.jsonl",
+          "sha256": "c976697f13124f556cca0ca59de42bab2e29c623e77cf3c811a7e9bfb7e30ef4",
+          "bytes": 5704
+        },
+        "lineNumber": 9,
+        "rawLineSha256WithoutTerminator": "da7a94c25dde2644845cf8dd3252e133e46b19fea86edfc64e52fd3f57106ad2",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/anyAttribute.testSet#g4/i0:s3_10_6v02i",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/anyAttribute.testSet",
+        "sha256": "3a03cd61aed1b98a518bb1352e51284d2752607a4652698acfd1d4f51a415320",
+        "bytes": 8795
+      },
+      "inventory_record_sha256": "82f33067964ed65fc0cb8583959db399926a399dc285be3ad0e39d8dc12e8d8e",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii02.xml",
+          "sha256": "7a2b0da13465a28827e47a69ac563556db68b1f79c2bad3a0877e4f37d6c189d",
+          "bytes": 486
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii02.xsd",
+          "sha256": "2a1dd9d366a7273b6aa06260f207f9d32b2d856c4e5d4716f13cc1439716ce30",
+          "bytes": 667
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_anyAttribute.testSet.jsonl",
+          "sha256": "c976697f13124f556cca0ca59de42bab2e29c623e77cf3c811a7e9bfb7e30ef4",
+          "bytes": 5704
+        },
+        "lineNumber": 10,
+        "rawLineSha256WithoutTerminator": "8453a83860f7010e6d3ce22db54ee89625b8d6aa4c164aa1ac0d19e331c08375",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/anyAttribute.testSet#g6/s:s3_10_6v04s",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/anyAttribute.testSet",
+        "sha256": "3a03cd61aed1b98a518bb1352e51284d2752607a4652698acfd1d4f51a415320",
+        "bytes": 8795
+      },
+      "inventory_record_sha256": "378d3eee5a2389e5b69196cc63a0d9cc289062fee91c6f923d5e5224082f5a3f",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii04.xsd",
+          "sha256": "cfe0d083fbe8d140a4a48bdc26f4126c887179938b31891dd051309611d19497",
+          "bytes": 709
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii04.xsd",
+          "sha256": "cfe0d083fbe8d140a4a48bdc26f4126c887179938b31891dd051309611d19497",
+          "bytes": 709
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_anyAttribute.testSet.jsonl",
+          "sha256": "c976697f13124f556cca0ca59de42bab2e29c623e77cf3c811a7e9bfb7e30ef4",
+          "bytes": 5704
+        },
+        "lineNumber": 13,
+        "rawLineSha256WithoutTerminator": "9de475ffc1f572fe1e9542334255da2bc780292fe255e5f2f0285beaa7e2678c",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/anyAttribute.testSet#g6/i0:s3_10_6v04i",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/anyAttribute.testSet",
+        "sha256": "3a03cd61aed1b98a518bb1352e51284d2752607a4652698acfd1d4f51a415320",
+        "bytes": 8795
+      },
+      "inventory_record_sha256": "500a785df214c549d29b6396ecc9fafd61a85dacad6781709b3a75bb34297e08",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii04.xml",
+          "sha256": "9a6cbe598244b5f11688363af29a911c784e55a566300003ef325cff43798fd9",
+          "bytes": 356
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_6/s3_10_6ii04.xsd",
+          "sha256": "cfe0d083fbe8d140a4a48bdc26f4126c887179938b31891dd051309611d19497",
+          "bytes": 709
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_anyAttribute.testSet.jsonl",
+          "sha256": "c976697f13124f556cca0ca59de42bab2e29c623e77cf3c811a7e9bfb7e30ef4",
+          "bytes": 5704
+        },
+        "lineNumber": 14,
+        "rawLineSha256WithoutTerminator": "568abedadbaf18f3e32099a8d11d39b0165d4cae8af3eeedbd8b42145c2f01b5",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/wildcard.testSet#g13/s:s3_10_1ii08s",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/wildcard.testSet",
+        "sha256": "02985ac3299db1db1dcebbdc666bb21ceea9c3f4a6f212777ef5ff5a6d2abc63",
+        "bytes": 16972
+      },
+      "inventory_record_sha256": "ee03d31a5bd1352d4ee583f48998a2c4d5bff47bbf534bd74d5b6bbbb2d65e98",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii08.xsd",
+          "sha256": "1af817c1ff1d8c22f70493fb5c16483bb74e9c55c983c4851a63122636742bfa",
+          "bytes": 700
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii08.xsd",
+          "sha256": "1af817c1ff1d8c22f70493fb5c16483bb74e9c55c983c4851a63122636742bfa",
+          "bytes": 700
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_wildcard.testSet.jsonl",
+          "sha256": "c88a28326d30acc365c9f4f218d147f2d2186afaf6d7bbdfc3c4e8e7e1c63fbd",
+          "bytes": 11681
+        },
+        "lineNumber": 27,
+        "rawLineSha256WithoutTerminator": "5c2e1b9e8b3de7ae3728b5e01fff156c82d94b8c037201d02e08b121583e23a6",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/wildcard.testSet#g13/i0:s3_10_1ii08i",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/wildcard.testSet",
+        "sha256": "02985ac3299db1db1dcebbdc666bb21ceea9c3f4a6f212777ef5ff5a6d2abc63",
+        "bytes": 16972
+      },
+      "inventory_record_sha256": "521da4def38b77f2a5f356942d5392e202baf7ae678c92c3738170f909a910eb",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii08.xml",
+          "sha256": "fcebe7b4b720d98635f3c122bfdbce0c0791a6d61ac01e57a7637dbb474d60f9",
+          "bytes": 205
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii08.xsd",
+          "sha256": "1af817c1ff1d8c22f70493fb5c16483bb74e9c55c983c4851a63122636742bfa",
+          "bytes": 700
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_wildcard.testSet.jsonl",
+          "sha256": "c88a28326d30acc365c9f4f218d147f2d2186afaf6d7bbdfc3c4e8e7e1c63fbd",
+          "bytes": 11681
+        },
+        "lineNumber": 28,
+        "rawLineSha256WithoutTerminator": "77a643b6c2b04b554ace08eda665a5135c4f32da0a27caa1ef4260ae82156eab",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/wildcard.testSet#g14/s:s3_10_1ii09s",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/wildcard.testSet",
+        "sha256": "02985ac3299db1db1dcebbdc666bb21ceea9c3f4a6f212777ef5ff5a6d2abc63",
+        "bytes": 16972
+      },
+      "inventory_record_sha256": "c877ef5b5efd2c3b4a9710364ac2707b40eaff81eaaca039c6fc0a0f8f89532f",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii09.xsd",
+          "sha256": "065e66dceb43523059ceaa7dabb314eef60492c201736635e42b3c3b6d8a3c3d",
+          "bytes": 777
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii09.xsd",
+          "sha256": "065e66dceb43523059ceaa7dabb314eef60492c201736635e42b3c3b6d8a3c3d",
+          "bytes": 777
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_wildcard.testSet.jsonl",
+          "sha256": "c88a28326d30acc365c9f4f218d147f2d2186afaf6d7bbdfc3c4e8e7e1c63fbd",
+          "bytes": 11681
+        },
+        "lineNumber": 29,
+        "rawLineSha256WithoutTerminator": "3c7b7d89e60153b2c3903b960be6e4bdcf0105fb1ab4f9345819b443abbf529e",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/wildcard.testSet#g14/i0:s3_10_1ii09i",
+      "category": "xsd11-applicability",
+      "metadata": {
+        "path": "ibmMeta/wildcard.testSet",
+        "sha256": "02985ac3299db1db1dcebbdc666bb21ceea9c3f4a6f212777ef5ff5a6d2abc63",
+        "bytes": 16972
+      },
+      "inventory_record_sha256": "b745614213cee03208a3b87467d819e90a028a2134f2398c6c32f213e8037475",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii09.xml",
+          "sha256": "4356889573f77274cf7f7010313d7e9e183b7aa04ff7b7c30c096c9d95f9fba6",
+          "bytes": 262
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/instance_invalid/S3_10_1/s3_10_1ii09.xsd",
+          "sha256": "065e66dceb43523059ceaa7dabb314eef60492c201736635e42b3c3b6d8a3c3d",
+          "bytes": 777
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_wildcard.testSet.jsonl",
+          "sha256": "c88a28326d30acc365c9f4f218d147f2d2186afaf6d7bbdfc3c4e8e7e1c63fbd",
+          "bytes": 11681
+        },
+        "lineNumber": 30,
+        "rawLineSha256WithoutTerminator": "9b796a9a79778a72cbd3fc624f84fd15b4daf9aaced5430c2fad8007a494d5d4",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g0/s:vc001.xsd",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "d1dac622353673dcac09f54fd94341f69d1b533d3eefe4846298568e867fa2d5",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-29"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc001.xsd",
+          "sha256": "882a890fca6c07b6ecb3ad7e5b1808167cfbbf8ce955aa44d92d3186e0b5951d",
+          "bytes": 548
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc001.xsd",
+          "sha256": "882a890fca6c07b6ecb3ad7e5b1808167cfbbf8ce955aa44d92d3186e0b5951d",
+          "bytes": 548
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 1,
+        "rawLineSha256WithoutTerminator": "319716970cb5b2db687152cb405d2c920e6b1aa6c3f499e3af0820f862e9efe0",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g0/i0:vc001.v1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "9e0e41c2bd18464d847a5fe0368a05a6715a56c9bada64dcb8e60db7ccfd894c",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-29"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc001.v1.xml",
+          "sha256": "7478cb29a5a41705dcdbb77ae90ba7f8e1d71b11642e042320b2662fd73c6186",
+          "bytes": 15
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc001.xsd",
+          "sha256": "882a890fca6c07b6ecb3ad7e5b1808167cfbbf8ce955aa44d92d3186e0b5951d",
+          "bytes": 548
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 2,
+        "rawLineSha256WithoutTerminator": "0ff4373dedc42d7d915e9c227ca9b3556035801f9c606875d169e09e08c6af92",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "valid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g0/i1:vc001.n1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "1c3c85baf05da1a273a127ee8f7aa8c52c399fe33859a5741f6b015ff926ef77",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid",
+            "version": "1.0"
+          },
+          {
+            "validity": "invalid",
+            "version": "1.1"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-29"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc001.n1.xml",
+          "sha256": "928573bc8a1e8b5085c5f5d87bcb9d5b7118678ca0d02e025479cce8237c18b5",
+          "bytes": 72
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc001.xsd",
+          "sha256": "882a890fca6c07b6ecb3ad7e5b1808167cfbbf8ce955aa44d92d3186e0b5951d",
+          "bytes": 548
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 3,
+        "rawLineSha256WithoutTerminator": "f850a3c9c691ecc027f5a697903c24f9aad67220ce7c9406ac12ed9f7da8e588",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "valid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g1/s:vc002.xsd",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "12a28b048457e1f45b36fb150a7d0bf547a6fc45609089a6f676dec7efebf2d7",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-29"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc002.xsd",
+          "sha256": "8ee081f9ef2df51b49921b183f94cf0fed164df827faf9f2e18d37ba4fe6e7d6",
+          "bytes": 631
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc002.xsd",
+          "sha256": "8ee081f9ef2df51b49921b183f94cf0fed164df827faf9f2e18d37ba4fe6e7d6",
+          "bytes": 631
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 4,
+        "rawLineSha256WithoutTerminator": "1dc83ea28d118657d87b5089609f10bf486e1b4f9ad19c9b920eabbfba6eec14",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g1/i0:vc002.v1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "c5d25b28f909fa5091344f4ce1d04cfbab7a8cf0669a7d59d5ca35ad64264246",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-29"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc002.v1.xml",
+          "sha256": "936a1881a4ae5ed52e9ddff3433103d37234ac28500e892cc89b2f6010e1314f",
+          "bytes": 23
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc002.xsd",
+          "sha256": "8ee081f9ef2df51b49921b183f94cf0fed164df827faf9f2e18d37ba4fe6e7d6",
+          "bytes": 631
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 5,
+        "rawLineSha256WithoutTerminator": "86611b663a02b97808872547710f85fa1ba0cf0944781bee9df5fbe3bff6aae4",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "valid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g1/i1:vc002.n1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "b6066322e1caa2f6ac39e66dcc13f48112d5957ad68e9d4347e0a0889dd2ac39",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-29"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc002.n1.xml",
+          "sha256": "6e52775eaafd4b89a4043341b6bebb72d06e25c1f44682a44ba9c192f14a0222",
+          "bytes": 23
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc002.xsd",
+          "sha256": "8ee081f9ef2df51b49921b183f94cf0fed164df827faf9f2e18d37ba4fe6e7d6",
+          "bytes": 631
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 6,
+        "rawLineSha256WithoutTerminator": "5dffdac760bb66b39a089018ba89ed813154b438056c97f368c624569c75606a",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g13/s:vc014.xsd",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "06748bc4df3b09ce58c17d92e4009c989d95786793cf3e16ce188a2884ec4a62",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-30"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          },
+          {
+            "element": "testGroup",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc014.xsd",
+          "sha256": "cee6de839d333fcd418fee52d4ef58b7e34d40bb3caa68d7f241be7b2eeab5b6",
+          "bytes": 854
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc014.xsd",
+          "sha256": "cee6de839d333fcd418fee52d4ef58b7e34d40bb3caa68d7f241be7b2eeab5b6",
+          "bytes": 854
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 32,
+        "rawLineSha256WithoutTerminator": "595e60c5c2b6674bbb1035d1c5ee326c3dddc06d3a4b4e668223ff21f551006d",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g13/i0:vc014.v1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "3d7b2fa058d711101c591b131db2fe174aa1e39ac325b749d4a10af8025cac9a",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-30"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          },
+          {
+            "element": "testGroup",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc014.v1.xml",
+          "sha256": "efe28fe5a83aa0cb67e2bbd5e45aa4227dc7dea588e73c293690e283f828470a",
+          "bytes": 15
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc014.xsd",
+          "sha256": "cee6de839d333fcd418fee52d4ef58b7e34d40bb3caa68d7f241be7b2eeab5b6",
+          "bytes": 854
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 33,
+        "rawLineSha256WithoutTerminator": "ed5b7fa6cd748c11b1c5396f3fd3f3f7b355a6becc4e884ede1b711c44832433",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "valid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g13/i1:vc014.n1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "8ceac3b3b3823286d3258520c2945d36facfae4a9fa332f31dfca65baf3a3206",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-30"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          },
+          {
+            "element": "testGroup",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc014.n1.xml",
+          "sha256": "18fc8f818e4051b329c7a7cdda0cefa6d35e6715a7f420bdfe05e876d05f22d2",
+          "bytes": 20
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc014.xsd",
+          "sha256": "cee6de839d333fcd418fee52d4ef58b7e34d40bb3caa68d7f241be7b2eeab5b6",
+          "bytes": 854
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 34,
+        "rawLineSha256WithoutTerminator": "f3e7df2dc8cd6ddcc274962082e71237ee4acfa7f060c2c6eeb5b09d7971eb4b",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g18/s:vc024-11.xsd",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "423ff479b558025bc87dce4c0d2eabd9148ac36f59061804a9214fa8e95fcf29",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-30"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          },
+          {
+            "element": "testGroup",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc024.xsd",
+          "sha256": "6c8bd9666b7a26f4c84c59080c7dfa2e9585332558fd6d8e18dd721a1269a0ea",
+          "bytes": 577
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc024.xsd",
+          "sha256": "6c8bd9666b7a26f4c84c59080c7dfa2e9585332558fd6d8e18dd721a1269a0ea",
+          "bytes": 577
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 43,
+        "rawLineSha256WithoutTerminator": "2505e47a1e45847b63c074056aa199efc0c19a516356d6ee8d6a5b9508dfd569",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g18/i0:vc024.v1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "3a2e5fcb7d744a126ac636a5292eb6f122b176ead2496ffbaa31e0c13946ff08",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-30"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          },
+          {
+            "element": "testGroup",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc001.v1.xml",
+          "sha256": "7478cb29a5a41705dcdbb77ae90ba7f8e1d71b11642e042320b2662fd73c6186",
+          "bytes": 15
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc024.xsd",
+          "sha256": "6c8bd9666b7a26f4c84c59080c7dfa2e9585332558fd6d8e18dd721a1269a0ea",
+          "bytes": 577
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 44,
+        "rawLineSha256WithoutTerminator": "b3624a2915acb0c4e400c68441f1e7edad1a71dcb05c767f5a374cb48abad330",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "valid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "saxonMeta/VC.testSet#g18/i1:vc024.n1.xml",
+      "category": "conditional-inclusion-preprocessing",
+      "metadata": {
+        "path": "saxonMeta/VC.testSet",
+        "sha256": "37ab134cc6fdf85a967f7909816fac89125950e61f399d3b29848053394f3680",
+        "bytes": 30957
+      },
+      "inventory_record_sha256": "01a4b89b6c61d12fc1c29d13ddf707d14a5a62a1d29ea2ac812aa0b80e76881a",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "invalid",
+            "version": "1.1"
+          },
+          {
+            "validity": "valid",
+            "version": "1.0"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2008-07-30"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "testSet",
+            "version": "1.0 1.1",
+            "edition": ""
+          },
+          {
+            "element": "testGroup",
+            "version": "1.0 1.1",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "saxonData/VC/vc001.n1.xml",
+          "sha256": "928573bc8a1e8b5085c5f5d87bcb9d5b7118678ca0d02e025479cce8237c18b5",
+          "bytes": 72
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "saxonData/VC/vc024.xsd",
+          "sha256": "6c8bd9666b7a26f4c84c59080c7dfa2e9585332558fd6d8e18dd721a1269a0ea",
+          "bytes": 577
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_VC.testSet.jsonl",
+          "sha256": "7fcf072c3e87496568df7923af33ce3809b39320d7bb4e1f355cafde2dd266b7",
+          "bytes": 14120
+        },
+        "lineNumber": 45,
+        "rawLineSha256WithoutTerminator": "66fecabf60d8bc9778d67f7ed466ab582919b12b3befef67add87f909edb802f",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "valid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g8/s:addC002",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "4b32dc1964ec786ef0ce17e63e7bd5f7ad9a4bd5d8f670a12551eb3d07ac13e7",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4228",
+            "status": "stable",
+            "date": "2010-07-06"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/adhocAddC002.xsd",
+          "sha256": "254fa2fb72e6539810efbd30ce6001a60de1ba9e5a72644321a2102d3e5aa988",
+          "bytes": 683
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/additional/adhocAddC002.xsd",
+          "sha256": "254fa2fb72e6539810efbd30ce6001a60de1ba9e5a72644321a2102d3e5aa988",
+          "bytes": 683
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 11,
+        "rawLineSha256WithoutTerminator": "02eb8c01a4c1b69a85a833e24d40563eed354e101a3317e69af34512c6aaa08f",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g70/s:addB064",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "d48eb6700fd94a2157ef546f28d7f2403652ecf6db60f2349a124457d9992a8e",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4228",
+            "status": "stable",
+            "date": "2010-07-06"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/test73722.xsd",
+          "sha256": "f03014697aa31f7ddc69290672454ba5ab8545a4c2ad62555a8ace064edb6dbf",
+          "bytes": 40927
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/additional/test73722.xsd",
+          "sha256": "f03014697aa31f7ddc69290672454ba5ab8545a4c2ad62555a8ace064edb6dbf",
+          "bytes": 40927
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/additional/test73722_dt.xsd",
+          "sha256": "6307f977a859ca31ba1569424c103f3c0442348e0c5fa5976b92af3297f0ce84",
+          "bytes": 42712,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test73722_dt.xsd"
+        },
+        {
+          "path": "msData/additional/test73722.xsd",
+          "sha256": "f03014697aa31f7ddc69290672454ba5ab8545a4c2ad62555a8ace064edb6dbf",
+          "bytes": 40927,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test73722.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 93,
+        "rawLineSha256WithoutTerminator": "a6cfefe9e6f7d34014cd686961bb5b7c8f2accfb811f9fba5653635589ddee9a",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g78/s:addB071",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "b9b2c72fe0b9b213e2febf6ecb0e812b80864fe2d1e4a6228457ce8c01474108",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4228",
+            "status": "stable",
+            "date": "2010-07-06"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/test65026.xsd",
+          "sha256": "d383edba5c96296987644ff574bec250cf792e1ec4af7c14d6146a233983fb99",
+          "bytes": 680
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/additional/test65026.xsd",
+          "sha256": "d383edba5c96296987644ff574bec250cf792e1ec4af7c14d6146a233983fb99",
+          "bytes": 680
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 106,
+        "rawLineSha256WithoutTerminator": "5142c133641f68b2175f9165927781728462e0e9aa8891f8438533c34dcab9e3",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g224/s:addD003",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "174f729742b7a2075dcfe24339a7c2e267b537e953f609987338babe8cecc8c6",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4228",
+            "status": "stable",
+            "date": "2010-07-06"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/xsd.xsd",
+          "sha256": "40b80483e206066d5aeafff0c8a446b3d5438d082b41653c69dc14fb9e55a47e",
+          "bytes": 87568
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/additional/xsd.xsd",
+          "sha256": "40b80483e206066d5aeafff0c8a446b3d5438d082b41653c69dc14fb9e55a47e",
+          "bytes": 87568
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 323,
+        "rawLineSha256WithoutTerminator": "7af2913f9e6ff3c2695ad2209ae91d3dbe178dcb1c826a255a299e3cd6458066",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Element_w3c.xml#g354/s:elemZ031",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Element_w3c.xml",
+        "sha256": "6d056718faff0dc30d2554bbba585d2d15b03324b207ef8e8d169b717710f1ea",
+        "bytes": 265670
+      },
+      "inventory_record_sha256": "c0d26d1376b6b23839693512f6b01d7edde67915ee2392c708f9cc4335aa8b0b",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4059",
+            "status": "stable",
+            "date": "2010-04-02"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/element/elemZ031.xsd",
+          "sha256": "bb4e7c6635ab48fd856d897e0695845ca29aa74020cf9bda13027e8b481c27ec",
+          "bytes": 356
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/element/elemZ031.xsd",
+          "sha256": "bb4e7c6635ab48fd856d897e0695845ca29aa74020cf9bda13027e8b481c27ec",
+          "bytes": 356
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Element_w3c.xml.jsonl",
+          "sha256": "bface26e96659ec78a8a0ba5a7c84939cea72945abdf0f2ec7d370e44f923354",
+          "bytes": 228417
+        },
+        "lineNumber": 524,
+        "rawLineSha256WithoutTerminator": "7d0fc0e8db0c36688514abbfa8d6eb7f329840bb0fd1f1509730ec47728e202f",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-valid",
+          "codes": [],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g51/s:schG14",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "cf79e506b7d3f0243503cb9f3c5b087992332e51f538dfe4932291e7e23bb195",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4131",
+            "status": "stable",
+            "date": "2010-07-05"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schG14a.xsd",
+          "sha256": "a1bbe384dc7f55f209ca1bb75f766798ea143a8ca388f24b39b921c295f67cd5",
+          "bytes": 325
+        },
+        {
+          "path": "msData/schema/schG14.xsd",
+          "sha256": "b815da413cf5d5641632fad5876523a80d76e99f32f316fb3abfb54c1d8aa231",
+          "bytes": 582
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schG14a.xsd",
+          "sha256": "a1bbe384dc7f55f209ca1bb75f766798ea143a8ca388f24b39b921c295f67cd5",
+          "bytes": 325
+        },
+        {
+          "path": "msData/schema/schG14.xsd",
+          "sha256": "b815da413cf5d5641632fad5876523a80d76e99f32f316fb3abfb54c1d8aa231",
+          "bytes": 582
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schG14a.xsd",
+          "sha256": "a1bbe384dc7f55f209ca1bb75f766798ea143a8ca388f24b39b921c295f67cd5",
+          "bytes": 325,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schG14a.xsd"
+        },
+        {
+          "path": "msData/schema/schG14.xsd",
+          "sha256": "b815da413cf5d5641632fad5876523a80d76e99f32f316fb3abfb54c1d8aa231",
+          "bytes": 582,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schG14.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 74,
+        "rawLineSha256WithoutTerminator": "612094876da5dea8e44f4d88b6908e6647ddbc8f21a835851997352c903331d8",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-valid",
+          "codes": [],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g125/s:schZ012_a",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "9e037eb5cfd4e3db845d297d521424478ee2bbc79d76a345fde8e219b5f814db",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4137",
+            "status": "stable",
+            "date": "2010-07-05"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schZ012_a.xsd",
+          "sha256": "3423550a8e7c3665a89909b3cdb7860a70fd2ad5e26c75dd4f166a29e619e88f",
+          "bytes": 142
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schZ012_a.xsd",
+          "sha256": "3423550a8e7c3665a89909b3cdb7860a70fd2ad5e26c75dd4f166a29e619e88f",
+          "bytes": 142
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schZ012_a.xsd",
+          "sha256": "3423550a8e7c3665a89909b3cdb7860a70fd2ad5e26c75dd4f166a29e619e88f",
+          "bytes": 142,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schZ012_a.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 159,
+        "rawLineSha256WithoutTerminator": "2e4656a7d8c3e725695457285f6fbc21540d01c48c5a1dd3c46fc38d4d78b3a6",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceDenied"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "resolution": "denied-unmapped-absence",
+              "uri": "https://w3c-xsd.test/source/msData/schema/schZ012_A.xsd",
+              "referrer": "https://w3c-xsd.test/source/msData/schema/schZ012_a.xsd",
+              "kind": "Schema",
+              "systemId": "schZ012_A.xsd"
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g131/s:schZ015",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "d4f45e4b507a96ebf3e8e1d800f751733fd50b2d15d4fc16e237479aab74c5f5",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4229",
+            "status": "stable",
+            "date": "2010-07-06"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schZ015.xsd",
+          "sha256": "f43e1c303c2e32f1f7c6956ccb870164d1b737cf137345e342daf8da9435dab9",
+          "bytes": 121
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schZ015.xsd",
+          "sha256": "f43e1c303c2e32f1f7c6956ccb870164d1b737cf137345e342daf8da9435dab9",
+          "bytes": 121
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schZ015.xsd",
+          "sha256": "f43e1c303c2e32f1f7c6956ccb870164d1b737cf137345e342daf8da9435dab9",
+          "bytes": 121,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schZ015.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 165,
+        "rawLineSha256WithoutTerminator": "bb99e83636208eb2dcb79036af7855ebb1a29e9e9a07495c8488846efcd8029a",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g830/s:particlesZ026",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Particles_w3c.xml",
+        "sha256": "b07572c609a1f7d987e3bf917baf2b4b9af38720cab2b8ef20ec63c1b8597a9d",
+        "bytes": 754054
+      },
+      "inventory_record_sha256": "ab47d8756f4e868f499e33eaf0793e970775e288bcefbca6492ab05e2ea2ecf0",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4071",
+            "status": "stable",
+            "date": "2010-04-05"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "schemaTest",
+            "version": "1.0",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/particles/particlesZ026a.xsd",
+          "sha256": "bb2c7f0e29d5e90d50f13d945a2d2e2e3e00fabf3f170e34643257bc75c44e33",
+          "bytes": 2942
+        },
+        {
+          "path": "msData/particles/particlesZ026b.xsd",
+          "sha256": "96f91bbc93213063b1e92f5998734c878dde4b58347918147940dd0838c63d57",
+          "bytes": 811
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/particles/particlesZ026a.xsd",
+          "sha256": "bb2c7f0e29d5e90d50f13d945a2d2e2e3e00fabf3f170e34643257bc75c44e33",
+          "bytes": 2942
+        },
+        {
+          "path": "msData/particles/particlesZ026b.xsd",
+          "sha256": "96f91bbc93213063b1e92f5998734c878dde4b58347918147940dd0838c63d57",
+          "bytes": 811
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/particles/particlesZ026a.xsd",
+          "sha256": "bb2c7f0e29d5e90d50f13d945a2d2e2e3e00fabf3f170e34643257bc75c44e33",
+          "bytes": 2942,
+          "uri": "https://w3c-xsd.test/source/msData/particles/particlesZ026a.xsd"
+        },
+        {
+          "path": "msData/particles/particlesZ026b.xsd",
+          "sha256": "96f91bbc93213063b1e92f5998734c878dde4b58347918147940dd0838c63d57",
+          "bytes": 811,
+          "uri": "https://w3c-xsd.test/source/msData/particles/particlesZ026b.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Particles_w3c.xml.jsonl",
+          "sha256": "81f0dcc1fb35dd747eccbc5a6bd6a1a80273c44fe9704941b47e4c97b48a9501",
+          "bytes": 743061
+        },
+        "lineNumber": 1335,
+        "rawLineSha256WithoutTerminator": "a16dcee5994c3cbea54731768541e8216212849f9003a8d0d830627d7e4c12b4",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "indeterminate",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": null
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g830/i0:particlesZ026.v",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Particles_w3c.xml",
+        "sha256": "b07572c609a1f7d987e3bf917baf2b4b9af38720cab2b8ef20ec63c1b8597a9d",
+        "bytes": 754054
+      },
+      "inventory_record_sha256": "108a67079da75a1db87ebc98a14cee3e66e24c0da2756732e7d1648344f6fe90",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4071",
+            "status": "stable",
+            "date": "2010-04-05"
+          }
+        ],
+        "version_edition_scopes": [
+          {
+            "element": "instanceTest",
+            "version": "1.0",
+            "edition": ""
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/particles/particlesZ026.xml",
+          "sha256": "ec36a65691600bf13e0a067c09d1080319d8088f405ced840bbe516616e91a97",
+          "bytes": 354
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/particles/particlesZ026a.xsd",
+          "sha256": "bb2c7f0e29d5e90d50f13d945a2d2e2e3e00fabf3f170e34643257bc75c44e33",
+          "bytes": 2942
+        },
+        {
+          "path": "msData/particles/particlesZ026b.xsd",
+          "sha256": "96f91bbc93213063b1e92f5998734c878dde4b58347918147940dd0838c63d57",
+          "bytes": 811
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/particles/particlesZ026a.xsd",
+          "sha256": "bb2c7f0e29d5e90d50f13d945a2d2e2e3e00fabf3f170e34643257bc75c44e33",
+          "bytes": 2942,
+          "uri": "https://w3c-xsd.test/source/msData/particles/particlesZ026a.xsd"
+        },
+        {
+          "path": "msData/particles/particlesZ026b.xsd",
+          "sha256": "96f91bbc93213063b1e92f5998734c878dde4b58347918147940dd0838c63d57",
+          "bytes": 811,
+          "uri": "https://w3c-xsd.test/source/msData/particles/particlesZ026b.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Particles_w3c.xml.jsonl",
+          "sha256": "81f0dcc1fb35dd747eccbc5a6bd6a1a80273c44fe9704941b47e4c97b48a9501",
+          "bytes": 743061
+        },
+        "lineNumber": 1336,
+        "rawLineSha256WithoutTerminator": "58cf85f2fe9a43d64778ba95b13a0b40e0d80c46d2b9aade6ad48f11fa8e13cd",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "indeterminate",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g1/i0:schA2.i",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "5775d058c965b9b3d1c2023e40f39765e017d5a9c72b5ce4b9ab3144902d8e75",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4131",
+            "status": "stable",
+            "date": "2010-07-05"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schA2.xml",
+          "sha256": "da895fb68b5c8d81ed5ff28ddc68b5fa05a042f4004269aaffa1201dba5f50e5",
+          "bytes": 214
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schA2_a.xsd",
+          "sha256": "31c0e615b29acfb45aec054341c59b30d972e9ca5a75056079ba6fbd69d45bd3",
+          "bytes": 578
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schA2_b.xsd",
+          "sha256": "ffe35805ca39fa078f5c2f1983a124b52c9ebac0e7b56eea4430ac5bdd6f4e9d",
+          "bytes": 577,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA2_b.xsd"
+        },
+        {
+          "path": "msData/schema/schA2.xml",
+          "sha256": "da895fb68b5c8d81ed5ff28ddc68b5fa05a042f4004269aaffa1201dba5f50e5",
+          "bytes": 214,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA2.xml"
+        },
+        {
+          "path": "msData/schema/schA2_a.xsd",
+          "sha256": "31c0e615b29acfb45aec054341c59b30d972e9ca5a75056079ba6fbd69d45bd3",
+          "bytes": 578,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA2_a.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 4,
+        "rawLineSha256WithoutTerminator": "8408d3321b4ce7394324865fca3f37a5d85fa3d38f77f12c350c8aadc9b9a76c",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "indeterminate",
+          "actual": "instance-valid",
+          "codes": [],
+          "passed": null,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "ns-a",
+              "location": "schA2_b.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/schema/schA2_b.xsd",
+              "element": "element[0]/{ns-a}root",
+              "baseUri": "https://w3c-xsd.test/source/msData/schema/schA2.xml",
+              "policy": "namespace already supplied; hint retained without fetch"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "msData/schema/schA2_a.xsd",
+                  "Namespace": "ns-a",
+                  "Hint": false,
+                  "Element": "metadata",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/schema/schA2_a.xsd"
+                }
+              ],
+              "limitations": []
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g4/i0:schA5.i",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "e58fa4ec0722435b127dc8c891afb1442cd44df65844140815538df729064a27",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4131",
+            "status": "stable",
+            "date": "2010-07-05"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schA5.xml",
+          "sha256": "deadf6ec7fd4b614602cc730b202a48a378a81a5b04cfe4bd959c1a321d33564",
+          "bytes": 264
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schA5_a.xsd",
+          "sha256": "31c0e615b29acfb45aec054341c59b30d972e9ca5a75056079ba6fbd69d45bd3",
+          "bytes": 578
+        },
+        {
+          "path": "msData/schema/schA5_b.xsd",
+          "sha256": "82cbfe225dc27583ab01f774b3ca2a6e5014127560e2154e7ccf032c1fbb857a",
+          "bytes": 577
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schA5_d.xsd",
+          "sha256": "a30d212b1f8ec797c8a49b7963e7f823a0817d3d2a03d44c04d7cc73557ef587",
+          "bytes": 573,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA5_d.xsd"
+        },
+        {
+          "path": "msData/schema/schA5.xml",
+          "sha256": "deadf6ec7fd4b614602cc730b202a48a378a81a5b04cfe4bd959c1a321d33564",
+          "bytes": 264,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA5.xml"
+        },
+        {
+          "path": "msData/schema/schA5_a.xsd",
+          "sha256": "31c0e615b29acfb45aec054341c59b30d972e9ca5a75056079ba6fbd69d45bd3",
+          "bytes": 578,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA5_a.xsd"
+        },
+        {
+          "path": "msData/schema/schA5_b.xsd",
+          "sha256": "82cbfe225dc27583ab01f774b3ca2a6e5014127560e2154e7ccf032c1fbb857a",
+          "bytes": 577,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA5_b.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 9,
+        "rawLineSha256WithoutTerminator": "9748fc2f34e23efe644b132923f5d76d103f52ac936bc57ab2c96e8a74703f7e",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "indeterminate",
+          "actual": "instance-valid",
+          "codes": [],
+          "passed": null,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "ns-b",
+              "location": "schA5_d.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/schema/schA5_d.xsd",
+              "element": "element[0]/{ns-a}root",
+              "baseUri": "https://w3c-xsd.test/source/msData/schema/schA5.xml",
+              "policy": "namespace already supplied; hint retained without fetch"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "msData/schema/schA5_a.xsd",
+                  "Namespace": "ns-a",
+                  "Hint": false,
+                  "Element": "metadata",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/schema/schA5_a.xsd"
+                },
+                {
+                  "Location": "msData/schema/schA5_b.xsd",
+                  "Namespace": "ns-b",
+                  "Hint": false,
+                  "Element": "metadata",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/schema/schA5_b.xsd"
+                }
+              ],
+              "limitations": []
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g5/i0:schA7.i",
+      "category": "original-indeterminate",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "b4334faa3430fa067c8f20f7270aa24fe87b9cdd10a1890156ce47bba215b5e7",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "indeterminate",
+        "originalExpected": [
+          {
+            "validity": "indeterminate"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4131",
+            "status": "stable",
+            "date": "2010-07-05"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schA7.xml",
+          "sha256": "9ea1fa4fad41b2ff0f0a575ad52e17c4234333d27309c309697ea62bd312f823",
+          "bytes": 281
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schA7_a.xsd",
+          "sha256": "8cc655d611bc1b111af04b0573dbb53bf98b05dd189da47254e65f4f38b4f1d8",
+          "bytes": 579
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schA7_c.xsd",
+          "sha256": "09ac9303bb79f40b9f93d93023fbf291fa3a0a9b4dfbd0c02886a1752eeb84d5",
+          "bytes": 355,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA7_c.xsd"
+        },
+        {
+          "path": "msData/schema/schA7.xml",
+          "sha256": "9ea1fa4fad41b2ff0f0a575ad52e17c4234333d27309c309697ea62bd312f823",
+          "bytes": 281,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA7.xml"
+        },
+        {
+          "path": "msData/schema/schA7_b.xsd",
+          "sha256": "f0e629c48262bf26f03b34da77bd657a37c6487e80aedca09949a657ba2b0bb7",
+          "bytes": 539,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA7_b.xsd"
+        },
+        {
+          "path": "msData/schema/schA7_a.xsd",
+          "sha256": "8cc655d611bc1b111af04b0573dbb53bf98b05dd189da47254e65f4f38b4f1d8",
+          "bytes": 579,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schA7_a.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 11,
+        "rawLineSha256WithoutTerminator": "1ef88edf38e18d1793cc4e31f86e3478abb515a54839df00916617dcf7f359c2",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "indeterminate",
+          "actual": "instance-valid",
+          "codes": [],
+          "passed": null,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "ns-a",
+              "location": "schA7_c.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/schema/schA7_c.xsd",
+              "element": "element[0]/{ns-a}root",
+              "baseUri": "https://w3c-xsd.test/source/msData/schema/schA7.xml",
+              "policy": "namespace already supplied; hint retained without fetch"
+            },
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "ns-b",
+              "location": "schA7_b.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/schema/schA7_b.xsd",
+              "element": "element[0]/{ns-a}root",
+              "baseUri": "https://w3c-xsd.test/source/msData/schema/schA7.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "msData/schema/schA7_a.xsd",
+                  "Namespace": "ns-a",
+                  "Hint": false,
+                  "Element": "metadata",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/schema/schA7_a.xsd"
+                },
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/schema/schA7_b.xsd",
+                  "Namespace": "ns-b",
+                  "Hint": true,
+                  "Element": "element[0]/{ns-a}root",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/schema/schA7.xml"
+                }
+              ],
+              "limitations": []
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/ModelGroups_w3c.xml#g305/s:mgO020",
+      "category": "mandatory-redefine-resource",
+      "metadata": {
+        "path": "msMeta/ModelGroups_w3c.xml",
+        "sha256": "b127312899fb18b36bd04a5d878f09a136e32f7de76e0a86466973fa918693e1",
+        "bytes": 227976
+      },
+      "inventory_record_sha256": "805a6c79efa2c68bbc73bc4b7ef0e5ef4e13731d3afcbc8b9e108675fb7340c3",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2006-07-16",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/modelGroups/mgO020.xsd",
+          "sha256": "78bb8ddd331478098fb59ee8772ef44d82e6c328d9d9274ccdf0dd1031e5cd12",
+          "bytes": 284
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/modelGroups/mgO020.xsd",
+          "sha256": "78bb8ddd331478098fb59ee8772ef44d82e6c328d9d9274ccdf0dd1031e5cd12",
+          "bytes": 284
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/modelGroups/mgO020.xsd",
+          "sha256": "78bb8ddd331478098fb59ee8772ef44d82e6c328d9d9274ccdf0dd1031e5cd12",
+          "bytes": 284,
+          "uri": "https://w3c-xsd.test/source/msData/modelGroups/mgO020.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_ModelGroups_w3c.xml.jsonl",
+          "sha256": "a3a15628229e280868786ec57dce52f4f5256c270d5d6e9dd1f18df6bd0f69aa",
+          "bytes": 276737
+        },
+        "lineNumber": 490,
+        "rawLineSha256WithoutTerminator": "d43938f8f5c2b3c1b8c88bea1c20e469232c79c149a677e8ad1f88a57bed1a6d",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceDenied"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "resolution": "denied-unmapped-absence",
+              "uri": "https://w3c-xsd.test/source/msData/modelGroups/foo",
+              "referrer": "https://w3c-xsd.test/source/msData/modelGroups/mgO020.xsd",
+              "kind": "Schema",
+              "systemId": "foo"
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/ModelGroups_w3c.xml#g326/s:mgP041",
+      "category": "mandatory-redefine-resource",
+      "metadata": {
+        "path": "msMeta/ModelGroups_w3c.xml",
+        "sha256": "b127312899fb18b36bd04a5d878f09a136e32f7de76e0a86466973fa918693e1",
+        "bytes": 227976
+      },
+      "inventory_record_sha256": "8c1a7f06f453f8ae735c6870d5e464a34d5eb4bc9b87a056fc54ce5f8195a210",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2006-07-16",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/modelGroups/mgP041.xsd",
+          "sha256": "f9fd0681487013cde7ffc86f869c16fac8a32681c431296fd2c7f1ed2f1d00c9",
+          "bytes": 284
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/modelGroups/mgP041.xsd",
+          "sha256": "f9fd0681487013cde7ffc86f869c16fac8a32681c431296fd2c7f1ed2f1d00c9",
+          "bytes": 284
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/modelGroups/mgP041.xsd",
+          "sha256": "f9fd0681487013cde7ffc86f869c16fac8a32681c431296fd2c7f1ed2f1d00c9",
+          "bytes": 284,
+          "uri": "https://w3c-xsd.test/source/msData/modelGroups/mgP041.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_ModelGroups_w3c.xml.jsonl",
+          "sha256": "a3a15628229e280868786ec57dce52f4f5256c270d5d6e9dd1f18df6bd0f69aa",
+          "bytes": 276737
+        },
+        "lineNumber": 518,
+        "rawLineSha256WithoutTerminator": "fd8e7000e471fdb0094a15172ff0f057fff01fd9c21972b9cbc6fdab764fe7ad",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceDenied"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "resolution": "denied-unmapped-absence",
+              "uri": "https://w3c-xsd.test/source/msData/modelGroups/foo",
+              "referrer": "https://w3c-xsd.test/source/msData/modelGroups/mgP041.xsd",
+              "kind": "Schema",
+              "systemId": "foo"
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/ModelGroups_w3c.xml#g330/s:mgP050",
+      "category": "mandatory-redefine-resource",
+      "metadata": {
+        "path": "msMeta/ModelGroups_w3c.xml",
+        "sha256": "b127312899fb18b36bd04a5d878f09a136e32f7de76e0a86466973fa918693e1",
+        "bytes": 227976
+      },
+      "inventory_record_sha256": "1ebcab7b419d9a494d19d6ab1f715a2d9a4ebc84b81cc796bc6e8386aae0233a",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2006-07-16",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/modelGroups/mgP050.xsd",
+          "sha256": "287e5fe92f744a71f4aa23ec3268e03eab5093250499c0a5c2d41c70a04338d1",
+          "bytes": 284
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/modelGroups/mgP050.xsd",
+          "sha256": "287e5fe92f744a71f4aa23ec3268e03eab5093250499c0a5c2d41c70a04338d1",
+          "bytes": 284
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/modelGroups/mgP050.xsd",
+          "sha256": "287e5fe92f744a71f4aa23ec3268e03eab5093250499c0a5c2d41c70a04338d1",
+          "bytes": 284,
+          "uri": "https://w3c-xsd.test/source/msData/modelGroups/mgP050.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_ModelGroups_w3c.xml.jsonl",
+          "sha256": "a3a15628229e280868786ec57dce52f4f5256c270d5d6e9dd1f18df6bd0f69aa",
+          "bytes": 276737
+        },
+        "lineNumber": 522,
+        "rawLineSha256WithoutTerminator": "4a14a3ac74a4b71aa8a264776bb3932a4e0e7f654f9363630efabaffa0988173",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceDenied"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "resolution": "denied-unmapped-absence",
+              "uri": "https://w3c-xsd.test/source/msData/modelGroups/foo",
+              "referrer": "https://w3c-xsd.test/source/msData/modelGroups/mgP050.xsd",
+              "kind": "Schema",
+              "systemId": "foo"
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet#g0/s:s4_2_4si01s",
+      "category": "resource-cycles",
+      "metadata": {
+        "path": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet",
+        "sha256": "67e5f03ce0c20bfe71d288bfd73908dc74f4fef1ac30e96005df45d8445eef41",
+        "bytes": 4423
+      },
+      "inventory_record_sha256": "8ad544d61ae34d7d0d219c5fbef2a3175a9a180ff4886513b318c94cdd31dfc3",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01.xsd",
+          "sha256": "3c9fdda0c98c6c9b4abb8d62f62835c0961a2b5a9f2448a58eaeb5da719254a2",
+          "bytes": 696
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01.xsd",
+          "sha256": "3c9fdda0c98c6c9b4abb8d62f62835c0961a2b5a9f2448a58eaeb5da719254a2",
+          "bytes": 696
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01b.xsd",
+          "sha256": "a66833071662c47591251eb1166960a2c86aa66b534a669d0afa68d8a86abc11",
+          "bytes": 831,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si01b.xsd"
+        },
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01.xsd",
+          "sha256": "3c9fdda0c98c6c9b4abb8d62f62835c0961a2b5a9f2448a58eaeb5da719254a2",
+          "bytes": 696,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si01.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_cyclicRedefineIncludeImportOverride.testSet.jsonl",
+          "sha256": "08f74dbeee77a18bb91d1795756392a482022702281dc3a2afae0d143b477c07",
+          "bytes": 3180
+        },
+        "lineNumber": 1,
+        "rawLineSha256WithoutTerminator": "f852d8a0f86e427fa2f8ec2a06a20c2d40d2a08e8b2fe8d71414567c99959a4c",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceCycle"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet#g1/s:s4_2_4si01bs",
+      "category": "resource-cycles",
+      "metadata": {
+        "path": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet",
+        "sha256": "67e5f03ce0c20bfe71d288bfd73908dc74f4fef1ac30e96005df45d8445eef41",
+        "bytes": 4423
+      },
+      "inventory_record_sha256": "5664e4a3c687ae3faff8f7caa760c81dd68ae68a7ec8c7e320cb5d99b3062c5b",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01b.xsd",
+          "sha256": "a66833071662c47591251eb1166960a2c86aa66b534a669d0afa68d8a86abc11",
+          "bytes": 831
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01b.xsd",
+          "sha256": "a66833071662c47591251eb1166960a2c86aa66b534a669d0afa68d8a86abc11",
+          "bytes": 831
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01.xsd",
+          "sha256": "3c9fdda0c98c6c9b4abb8d62f62835c0961a2b5a9f2448a58eaeb5da719254a2",
+          "bytes": 696,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si01.xsd"
+        },
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si01b.xsd",
+          "sha256": "a66833071662c47591251eb1166960a2c86aa66b534a669d0afa68d8a86abc11",
+          "bytes": 831,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si01b.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_cyclicRedefineIncludeImportOverride.testSet.jsonl",
+          "sha256": "08f74dbeee77a18bb91d1795756392a482022702281dc3a2afae0d143b477c07",
+          "bytes": 3180
+        },
+        "lineNumber": 2,
+        "rawLineSha256WithoutTerminator": "f2199fb4b627e5d9a69bc961fa0a3678a2df33752ae37c679018f232c5c7debe",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceCycle"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet#g2/s:s4_2_4si02s",
+      "category": "resource-cycles",
+      "metadata": {
+        "path": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet",
+        "sha256": "67e5f03ce0c20bfe71d288bfd73908dc74f4fef1ac30e96005df45d8445eef41",
+        "bytes": 4423
+      },
+      "inventory_record_sha256": "069277c1c704c27297516d6047e2d5cba82cf3182fbbbd89768c5c1aceef6aca",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02.xsd",
+          "sha256": "867df1aab4d2336877ad1f32c4a1dedbdb7547107c3085c7ae1eb2edfefec30e",
+          "bytes": 696
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02.xsd",
+          "sha256": "867df1aab4d2336877ad1f32c4a1dedbdb7547107c3085c7ae1eb2edfefec30e",
+          "bytes": 696
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02b.xsd",
+          "sha256": "3c0e04cd3e9804d7d29358ff83b2f212491ce78b41c5ad71a3bf92b79090eed2",
+          "bytes": 664,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si02b.xsd"
+        },
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02.xsd",
+          "sha256": "867df1aab4d2336877ad1f32c4a1dedbdb7547107c3085c7ae1eb2edfefec30e",
+          "bytes": 696,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si02.xsd"
+        },
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02c.xsd",
+          "sha256": "bf0066aac564cf2e02b410caa275fee6dec717101d6d3a7c1bcbd15b0222b80d",
+          "bytes": 639,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si02c.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_cyclicRedefineIncludeImportOverride.testSet.jsonl",
+          "sha256": "08f74dbeee77a18bb91d1795756392a482022702281dc3a2afae0d143b477c07",
+          "bytes": 3180
+        },
+        "lineNumber": 3,
+        "rawLineSha256WithoutTerminator": "4e8785045025260d8830a7102d1268baa59b7b2028d2e7e4735be72611fc4110",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceCycle"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet#g3/s:s4_2_4si02bs",
+      "category": "resource-cycles",
+      "metadata": {
+        "path": "ibmMeta/cyclicRedefineIncludeImportOverride.testSet",
+        "sha256": "67e5f03ce0c20bfe71d288bfd73908dc74f4fef1ac30e96005df45d8445eef41",
+        "bytes": 4423
+      },
+      "inventory_record_sha256": "dae92e88bebf9b80240f2d3c83d7a69bdecf9a0bf7a33ddce562577710ff85ec",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2010-12-01",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02b.xsd",
+          "sha256": "3c0e04cd3e9804d7d29358ff83b2f212491ce78b41c5ad71a3bf92b79090eed2",
+          "bytes": 664
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02b.xsd",
+          "sha256": "3c0e04cd3e9804d7d29358ff83b2f212491ce78b41c5ad71a3bf92b79090eed2",
+          "bytes": 664
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02c.xsd",
+          "sha256": "bf0066aac564cf2e02b410caa275fee6dec717101d6d3a7c1bcbd15b0222b80d",
+          "bytes": 639,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si02c.xsd"
+        },
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02b.xsd",
+          "sha256": "3c0e04cd3e9804d7d29358ff83b2f212491ce78b41c5ad71a3bf92b79090eed2",
+          "bytes": 664,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si02b.xsd"
+        },
+        {
+          "path": "ibmData/schema_invalid/S4_2_4/s4_2_4si02.xsd",
+          "sha256": "867df1aab4d2336877ad1f32c4a1dedbdb7547107c3085c7ae1eb2edfefec30e",
+          "bytes": 696,
+          "uri": "https://w3c-xsd.test/source/ibmData/schema_invalid/S4_2_4/s4_2_4si02.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-ibmMeta_cyclicRedefineIncludeImportOverride.testSet.jsonl",
+          "sha256": "08f74dbeee77a18bb91d1795756392a482022702281dc3a2afae0d143b477c07",
+          "bytes": 3180
+        },
+        "lineNumber": 4,
+        "rawLineSha256WithoutTerminator": "af1326fd0604bfe63a59de288f800517d4261a19999082b003523c372925b14a",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceCycle"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g106/s:schU1",
+      "category": "resource-cycles",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "f4b0a674fe6a537b8c20e757d6532b7e00728e2625c25ca2655cac1dd2cfa5d7",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4135",
+            "status": "disputed-test",
+            "date": "2007-01-03"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schU1_a.xsd",
+          "sha256": "b3a735d1c4d88c3a0d7a0f41dd1bb0eeb55c1e8ccfcac103d2e6ea95333d0071",
+          "bytes": 834
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schU1_a.xsd",
+          "sha256": "b3a735d1c4d88c3a0d7a0f41dd1bb0eeb55c1e8ccfcac103d2e6ea95333d0071",
+          "bytes": 834
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schU1_b.xsd",
+          "sha256": "9c64f6cded3136ff2c37863689402961da50f962347ce7df176bf9facd44cf8d",
+          "bytes": 607,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schU1_b.xsd"
+        },
+        {
+          "path": "msData/schema/schU1_a.xsd",
+          "sha256": "b3a735d1c4d88c3a0d7a0f41dd1bb0eeb55c1e8ccfcac103d2e6ea95333d0071",
+          "bytes": 834,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schU1_a.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 137,
+        "rawLineSha256WithoutTerminator": "9d21ebab2d0cbc9c5bcad6e425e73e3482b2696791225f0b703c0ee28f3ff57f",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceCycle"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Schema_w3c.xml#g116/s:schZ006",
+      "category": "resource-cycles",
+      "metadata": {
+        "path": "msMeta/Schema_w3c.xml",
+        "sha256": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4",
+        "bytes": 92021
+      },
+      "inventory_record_sha256": "0ac4bdad6bea208e562c596b5a5ba252e60495adaffed56c6a5ce04bc72ce2fa",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2006-07-16",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/schema/schZ006.xsd",
+          "sha256": "e7c0fd3b8291d632581cc29384bd6f272737174a924806a910274fcac61e486f",
+          "bytes": 5196
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/schema/schZ006.xsd",
+          "sha256": "e7c0fd3b8291d632581cc29384bd6f272737174a924806a910274fcac61e486f",
+          "bytes": 5196
+        }
+      ],
+      "referenced_inputs": [
+        {
+          "path": "msData/schema/schZ006_b.xsd",
+          "sha256": "3a277241be719cd1f9828c2b33d0821c363efca32734520969069463cee2a983",
+          "bytes": 1407,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schZ006_b.xsd"
+        },
+        {
+          "path": "msData/schema/schZ006.xsd",
+          "sha256": "e7c0fd3b8291d632581cc29384bd6f272737174a924806a910274fcac61e486f",
+          "bytes": 5196,
+          "uri": "https://w3c-xsd.test/source/msData/schema/schZ006.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Schema_w3c.xml.jsonl",
+          "sha256": "753efb0392f563b8f7ff17b2a865282887245b301178ac7c3655491f16366824",
+          "bytes": 101507
+        },
+        "lineNumber": 150,
+        "rawLineSha256WithoutTerminator": "14a192c7e6b75cff884453becb0f76a619c584230700dd3e1740bec937ffbc62",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "invalid",
+          "actual": "incomplete-refusal",
+          "codes": [
+            "SCHEMA.ResourceCycle"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g126/i0:addB120.i",
+      "category": "invalid-hinted-prerequisite",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "87628c365f889e31801add24b8b6756f4457893f5ef5864d7ff9423adb244cbd",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2006-07-16"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/test73456.xml",
+          "sha256": "bcadc767906977f645b55c4be9908f8386b68de47bb184ce3ab7d67c1dcac0bf",
+          "bytes": 123
+        }
+      ],
+      "ordered_schema_inputs": [],
+      "referenced_inputs": [
+        {
+          "path": "msData/additional/test73456.xsd",
+          "sha256": "189074b9fcddce35895355c944d3f94ec8d2c2b133cdbef7c9eb2cc73230ffde",
+          "bytes": 373,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test73456.xsd"
+        },
+        {
+          "path": "msData/additional/test73456.xml",
+          "sha256": "bcadc767906977f645b55c4be9908f8386b68de47bb184ce3ab7d67c1dcac0bf",
+          "bytes": 123,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test73456.xml"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 171,
+        "rawLineSha256WithoutTerminator": "bf1e69be735594d1abd958287f4478c930f7377372aa1b7710cadd145ce6fd02",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "",
+              "location": "test73456.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/test73456.xsd",
+              "element": "element[0]/{}a",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/test73456.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/test73456.xsd",
+                  "Namespace": "",
+                  "Hint": true,
+                  "Element": "element[0]/{}a",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/test73456.xml"
+                }
+              ],
+              "limitations": []
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g143/i0:addB138.i",
+      "category": "invalid-hinted-prerequisite",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "1b5e331d7d572149a52b7d4b835d47bc7f960f1e672af0baaa404a30628aa2cb",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2006-07-16"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/test84002_a.xml",
+          "sha256": "adde477257307ba56119b60185047f4c5f62f0a9eecf0034c64d98a029ad4439",
+          "bytes": 157
+        }
+      ],
+      "ordered_schema_inputs": [],
+      "referenced_inputs": [
+        {
+          "path": "msData/additional/test84002_a.xsd",
+          "sha256": "de661bfc396d6fa684b15005258abe759eeaaa69a2c5ac06395f6300adcc0376",
+          "bytes": 346,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test84002_a.xsd"
+        },
+        {
+          "path": "msData/additional/test84002_a.xml",
+          "sha256": "adde477257307ba56119b60185047f4c5f62f0a9eecf0034c64d98a029ad4439",
+          "bytes": 157,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test84002_a.xml"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 197,
+        "rawLineSha256WithoutTerminator": "757300a199f1861a3a61929af60be5f1705a7590ea4a6b4cb52da404feaeebe6",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "SCHEMA.Syntax"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "",
+              "location": "test84002_a.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/test84002_a.xsd",
+              "element": "element[0]/{}a",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/test84002_a.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/test84002_a.xsd",
+                  "Namespace": "",
+                  "Hint": true,
+                  "Element": "element[0]/{}a",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/test84002_a.xml"
+                }
+              ],
+              "limitations": []
+            },
+            {
+              "kind": "hint-schema-preparation-error",
+              "input": {
+                "Location": "https://w3c-xsd.test/source/msData/additional/test84002_a.xsd",
+                "Namespace": "",
+                "Hint": true,
+                "Element": "element[0]/{}a",
+                "BaseUri": "https://w3c-xsd.test/source/msData/additional/test84002_a.xml"
+              },
+              "detail": "Invalid namespace declaration. Line 4, position 10.",
+              "policy": "probe unchanged original schema through selected engine; instance remains unassessed"
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g144/i0:addB139.i",
+      "category": "invalid-hinted-prerequisite",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "af10c0c186be9e1b0330bbc9010eabb51d41590e2fa1c028e6c9977db1768d97",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2006-07-16"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/test84002_b.xml",
+          "sha256": "964abd832d62a6ec37e220d307ac09de48540a3b4f8bd1a556740166a88ea2ea",
+          "bytes": 133
+        }
+      ],
+      "ordered_schema_inputs": [],
+      "referenced_inputs": [
+        {
+          "path": "msData/additional/test84002_b.xsd",
+          "sha256": "dc9f52595bb0d09429d50991c321088e958c56eb9af0b26219b06b2f0b82a10a",
+          "bytes": 316,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test84002_b.xsd"
+        },
+        {
+          "path": "msData/additional/test84002_b.xml",
+          "sha256": "964abd832d62a6ec37e220d307ac09de48540a3b4f8bd1a556740166a88ea2ea",
+          "bytes": 133,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test84002_b.xml"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 198,
+        "rawLineSha256WithoutTerminator": "ee3c7c353d4d8287a602859fce110960fe346cca9c856b1af53cc1b3f5ff49b8",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "SCHEMA.Syntax"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "",
+              "location": "test84002_b.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/test84002_b.xsd",
+              "element": "element[0]/{}a",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/test84002_b.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/test84002_b.xsd",
+                  "Namespace": "",
+                  "Hint": true,
+                  "Element": "element[0]/{}a",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/test84002_b.xml"
+                }
+              ],
+              "limitations": []
+            },
+            {
+              "kind": "hint-schema-preparation-error",
+              "input": {
+                "Location": "https://w3c-xsd.test/source/msData/additional/test84002_b.xsd",
+                "Namespace": "",
+                "Hint": true,
+                "Element": "element[0]/{}a",
+                "BaseUri": "https://w3c-xsd.test/source/msData/additional/test84002_b.xml"
+              },
+              "detail": "Invalid namespace declaration. Line 3, position 10.",
+              "policy": "probe unchanged original schema through selected engine; instance remains unassessed"
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g190/i0:addB191.v",
+      "category": "invalid-hinted-prerequisite",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "1d97b595c7adfc6da7b7a3d690872d8ca3b6e6dfa39e61d7370c1005dae6fea1",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4057",
+            "status": "stable",
+            "date": "2008-11-25"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/addB191.xml",
+          "sha256": "dffc0ad4d7b4e60625d6ef9dc332517ad99fce19f83be6f539bb3213332cb3de",
+          "bytes": 190
+        }
+      ],
+      "ordered_schema_inputs": [],
+      "referenced_inputs": [
+        {
+          "path": "msData/additional/addB191a.xsd",
+          "sha256": "29eb19067a21a07d92b1070844fac75da50ae1f0b4343b5564988a0322d08d68",
+          "bytes": 250,
+          "uri": "https://w3c-xsd.test/source/msData/additional/addB191a.xsd"
+        },
+        {
+          "path": "msData/additional/addB191.xml",
+          "sha256": "dffc0ad4d7b4e60625d6ef9dc332517ad99fce19f83be6f539bb3213332cb3de",
+          "bytes": 190,
+          "uri": "https://w3c-xsd.test/source/msData/additional/addB191.xml"
+        },
+        {
+          "path": "msData/additional/addB191b.xsd",
+          "sha256": "4f035d45f7f3efbae7081c402bdabb7c3f1a30b904059b6f524213f21bbbb5ad",
+          "bytes": 97,
+          "uri": "https://w3c-xsd.test/source/msData/additional/addB191b.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 261,
+        "rawLineSha256WithoutTerminator": "e3a823aef290b8fd4069c9401aa6152ca34b04970c3a5a886f2cd4a78adcc581",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "a",
+              "location": "addB191a.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/addB191a.xsd",
+              "element": "element[0]/{a}root",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/addB191.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "",
+              "location": "addB191b.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/addB191b.xsd",
+              "element": "element[0]/{a}root",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/addB191.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/addB191a.xsd",
+                  "Namespace": "a",
+                  "Hint": true,
+                  "Element": "element[0]/{a}root",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/addB191.xml"
+                },
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/addB191b.xsd",
+                  "Namespace": "",
+                  "Hint": true,
+                  "Element": "element[0]/{a}root",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/addB191.xml"
+                }
+              ],
+              "limitations": []
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/SimpleType_w3c.xml#g164/s:ste110",
+      "category": "circular-union-original-oracle",
+      "metadata": {
+        "path": "msMeta/SimpleType_w3c.xml",
+        "sha256": "adf300162cfa0cb4e41fe1e95760a9389df3acd5424203178e78e30d6b4c7752",
+        "bytes": 227958
+      },
+      "inventory_record_sha256": "2321e4198deb586427b37d8acbd05af7b1c730fffd4c03fca1be353039a173d4",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4957",
+            "status": "queried",
+            "date": "2007-08-17"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/simpleType/stE110.xsd",
+          "sha256": "7da2252c875c96a4619118ac9db73da1ccfc011c346fa9bb100c27e8be412ab5",
+          "bytes": 292
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/simpleType/stE110.xsd",
+          "sha256": "7da2252c875c96a4619118ac9db73da1ccfc011c346fa9bb100c27e8be412ab5",
+          "bytes": 292
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_SimpleType_w3c.xml.jsonl",
+          "sha256": "b9d7d61ef7b96af88ae941377835d147dc3aee466f1c934f6b711fdfb40489f7",
+          "bytes": 164488
+        },
+        "lineNumber": 212,
+        "rawLineSha256WithoutTerminator": "e61c99ca1c8d514b6665bbeffbe5903a72888ce054aaf65a0a51645cd16fe232",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/SimpleType_w3c.xml#g164/i0:ste110.i",
+      "category": "circular-union-original-oracle",
+      "metadata": {
+        "path": "msMeta/SimpleType_w3c.xml",
+        "sha256": "adf300162cfa0cb4e41fe1e95760a9389df3acd5424203178e78e30d6b4c7752",
+        "bytes": 227958
+      },
+      "inventory_record_sha256": "9d28e1590aa32f3509624aa073b65bb30ab823e0190b0a363da8c5b58bdc0b45",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2006-07-16",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/simpleType/ste100.xml",
+          "sha256": "8410d8da910d40f34e3c774f58fb8ea81c1ba2154f832ece1f5e45ecb7cdb41a",
+          "bytes": 21
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/simpleType/stE110.xsd",
+          "sha256": "7da2252c875c96a4619118ac9db73da1ccfc011c346fa9bb100c27e8be412ab5",
+          "bytes": 292
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_SimpleType_w3c.xml.jsonl",
+          "sha256": "b9d7d61ef7b96af88ae941377835d147dc3aee466f1c934f6b711fdfb40489f7",
+          "bytes": 164488
+        },
+        "lineNumber": 213,
+        "rawLineSha256WithoutTerminator": "7e263084521dec82129255343f8f6a44d803ec8bf31f0115a5c1f016772504ee",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g808/s:particlesZ001",
+      "category": "particle-versioned-original-oracle",
+      "metadata": {
+        "path": "msMeta/Particles_w3c.xml",
+        "sha256": "b07572c609a1f7d987e3bf917baf2b4b9af38720cab2b8ef20ec63c1b8597a9d",
+        "bytes": 754054
+      },
+      "inventory_record_sha256": "d950aedcddead30c303029cf78df953655a6bbee3325d7d95d6a5716b878fd51",
+      "original": {
+        "kind": "schema",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2006-07-16",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/particles/particlesZ001.xsd",
+          "sha256": "87f7c7dea59e9be7b574dee7f17ca8db2725d7ce900018eb7ff587b1f93a0b56",
+          "bytes": 916
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/particles/particlesZ001.xsd",
+          "sha256": "87f7c7dea59e9be7b574dee7f17ca8db2725d7ce900018eb7ff587b1f93a0b56",
+          "bytes": 916
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Particles_w3c.xml.jsonl",
+          "sha256": "81f0dcc1fb35dd747eccbc5a6bd6a1a80273c44fe9704941b47e4c97b48a9501",
+          "bytes": 743061
+        },
+        "lineNumber": 1304,
+        "rawLineSha256WithoutTerminator": "d60f028fe11863838c624937e18b56d8517ac3b2cdc33779dbfc6969caf118a8",
+        "summary": {
+          "classification": "applicable",
+          "kind": "schema",
+          "expected": "valid",
+          "actual": "schema-invalid",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Particles_w3c.xml#g808/i0:particlesZ001.i",
+      "category": "particle-versioned-original-oracle",
+      "metadata": {
+        "path": "msMeta/Particles_w3c.xml",
+        "sha256": "b07572c609a1f7d987e3bf917baf2b4b9af38720cab2b8ef20ec63c1b8597a9d",
+        "bytes": 754054
+      },
+      "inventory_record_sha256": "93bbfa11cf583420db7ccbc0c6459934624ff4e3eeacc0a0c6661a45cb0c7206",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "invalid",
+        "originalExpected": [
+          {
+            "validity": "invalid",
+            "version": "1.0"
+          },
+          {
+            "validity": "valid",
+            "version": "1.1"
+          }
+        ],
+        "currentStatus": [
+          {
+            "date": "2006-07-16",
+            "status": "accepted"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/particles/particlesZ001.xml",
+          "sha256": "e1bfecf2ddce3fe3ccda3dc1674ec8bdac22f193aa60297e013d99d990b5b14f",
+          "bytes": 250
+        }
+      ],
+      "ordered_schema_inputs": [
+        {
+          "path": "msData/particles/particlesZ001.xsd",
+          "sha256": "87f7c7dea59e9be7b574dee7f17ca8db2725d7ce900018eb7ff587b1f93a0b56",
+          "bytes": 916
+        }
+      ],
+      "referenced_inputs": [],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Particles_w3c.xml.jsonl",
+          "sha256": "81f0dcc1fb35dd747eccbc5a6bd6a1a80273c44fe9704941b47e4c97b48a9501",
+          "bytes": 743061
+        },
+        "lineNumber": 1305,
+        "rawLineSha256WithoutTerminator": "8aa27dc63a0b08fec6a9bdb16f59d38dc2ec4bc1486b34ef54d059cf109e78ee",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "invalid",
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    },
+    {
+      "id": "msMeta/Additional_w3c.xml#g166/i0:addB163.v",
+      "category": "additional-late-hint",
+      "metadata": {
+        "path": "msMeta/Additional_w3c.xml",
+        "sha256": "03446f965f65351d7e70550d2f62490a89aeffee4272d88c842a327efd66d16f",
+        "bytes": 191646
+      },
+      "inventory_record_sha256": "5a1d4fe79ab591522af08489864eea2486b8c0affee42c4f8282212defd7af82",
+      "original": {
+        "kind": "instance",
+        "classification": "applicable",
+        "expected": "valid",
+        "originalExpected": [
+          {
+            "validity": "valid"
+          }
+        ],
+        "currentStatus": [
+          {
+            "status": "accepted",
+            "date": "2006-07-16"
+          }
+        ]
+      },
+      "ordered_inputs": [
+        {
+          "path": "msData/additional/test93490_9.xml",
+          "sha256": "b07928a022605f64c41f1b8c37d4ec251b4811af9b2aef15c61f4e1cb9bb4044",
+          "bytes": 379
+        }
+      ],
+      "ordered_schema_inputs": [],
+      "referenced_inputs": [
+        {
+          "path": "msData/additional/test93490_5.xsd",
+          "sha256": "e00e3ae9336703cd01726a2edb26949e1b9f89b63afcda59cb556f02965e9448",
+          "bytes": 432,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test93490_5.xsd"
+        },
+        {
+          "path": "msData/additional/test93490_9.xml",
+          "sha256": "b07928a022605f64c41f1b8c37d4ec251b4811af9b2aef15c61f4e1cb9bb4044",
+          "bytes": 379,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml"
+        },
+        {
+          "path": "msData/additional/test93490_1.xsd",
+          "sha256": "f9ae38ad861fa41309f42a090ffe2680c18f2cf4d44f72767d22af7e78a1875f",
+          "bytes": 466,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test93490_1.xsd"
+        },
+        {
+          "path": "msData/additional/test93490_3.xsd",
+          "sha256": "69190f2142bc43ced3685e222085260601f73eb8668bcf683138e674dbc3ef8e",
+          "bytes": 466,
+          "uri": "https://w3c-xsd.test/source/msData/additional/test93490_3.xsd"
+        }
+      ],
+      "observation": {
+        "artifact": {
+          "path": "artifacts/M8-xsd-corpus/pre-squash-full-03547a3df63c4a18a78e305521a94bf3/product-msMeta_Additional_w3c.xml.jsonl",
+          "sha256": "6983ab8d2a30f076add70b2b45663616159e5b2e9501d5c11ef6015486b7b911",
+          "bytes": 229668
+        },
+        "lineNumber": 226,
+        "rawLineSha256WithoutTerminator": "a50cef498022666c6cc9355a4702628c02c16cd8cbb7aaa782f81bf17ad3dd1e",
+        "summary": {
+          "classification": "applicable",
+          "kind": "instance",
+          "expected": "valid",
+          "actual": "instance-hint-ordering-limitation",
+          "codes": [
+            "XSD.HintOrder"
+          ],
+          "passed": false,
+          "unavailable_resource_requests": [
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "",
+              "location": "test93490_5.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/test93490_5.xsd",
+              "element": "element[0]/{}root",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "foo",
+              "location": "test93490_1.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/test93490_1.xsd",
+              "element": "element[1]/{foo}elem1",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "bar",
+              "location": "test93490_3.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/test93490_3.xsd",
+              "element": "element[2]/{bar}elem2",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml",
+              "policy": "first hint for namespace; explicit precompilation"
+            },
+            {
+              "kind": "authored-instance-hint",
+              "namespaceUri": "foo",
+              "location": "test93490_1.xsd",
+              "uri": "https://w3c-xsd.test/source/msData/additional/test93490_1.xsd",
+              "element": "element[6]/{}c",
+              "baseUri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml",
+              "policy": "namespace already supplied; hint retained without fetch"
+            },
+            {
+              "kind": "explicit-instance-schema-inputs",
+              "inputs": [
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/test93490_5.xsd",
+                  "Namespace": "",
+                  "Hint": true,
+                  "Element": "element[0]/{}root",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml"
+                },
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/test93490_1.xsd",
+                  "Namespace": "foo",
+                  "Hint": true,
+                  "Element": "element[1]/{foo}elem1",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml"
+                },
+                {
+                  "Location": "https://w3c-xsd.test/source/msData/additional/test93490_3.xsd",
+                  "Namespace": "bar",
+                  "Hint": true,
+                  "Element": "element[2]/{bar}elem2",
+                  "BaseUri": "https://w3c-xsd.test/source/msData/additional/test93490_9.xml"
+                }
+              ],
+              "limitations": [
+                "Namespace foo was used at element 1 before hint at element[6]/{}c; explicit precompilation cannot reproduce ordered discovery."
+              ]
+            }
+          ]
+        }
+      },
+      "status": "pending-human-authorization",
+      "original_pass_credit": false,
+      "gate_pass_credit": false
+    }
+  ]
+}

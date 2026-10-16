@@ -1,0 +1,31 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Html;
+using Xemele.Benchmarks.LegacyHtml;
+Console.WriteLine("FrameworkDescription="+RuntimeInformation.FrameworkDescription+"; Architecture="+RuntimeInformation.ProcessArchitecture);
+if(RuntimeInformation.FrameworkDescription!=".NET 10.0.11")throw new Exception("Actual pinned runtime required.");
+if(args[0] is "--discover" or "--benchmark")
+{
+ var config=ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+ var suites=new[]{typeof(LegacyScanBenchmarks),typeof(LegacyNameBenchmarks),typeof(LegacyCompositionBenchmarks)}.Select(t=>BenchmarkConverter.TypeToBenchmarks(t,config)).ToArray();
+ var cases=suites.SelectMany(s=>s.BenchmarksCases).ToArray();if(cases.Length!=30||cases.Any(c=>c.Job.Run.WarmupCount!=3||c.Job.Run.IterationCount!=3||c.Job.Run.LaunchCount!=1||c.Job.Infrastructure.Toolchain!=InProcessNoEmitToolchain.Instance))throw new Exception("30 ShortRun NoEmit cases required.");
+ Console.WriteLine("30 ShortRun NoEmit cases; no builds/generation.");if(args[0]=="--discover")return;var summaries=BenchmarkRunner.Run(suites);if(summaries.Sum(s=>s.Reports.Length)!=30||summaries.SelectMany(s=>s.Reports).Any(r=>!r.Success||r.ResultStatistics is null))throw new Exception("Benchmark failure.");return;
+}
+if(args[0]!="--measure")throw new ArgumentException();
+string workload=LegacyCompositionBenchmarks.Workload("repeated");long before=GC.GetAllocatedBytesForCurrentThread();var doc=HtmlParser.Parse(workload);Print("cold-parse-owned-setup-and-dom",GC.GetAllocatedBytesForCurrentThread()-before,1);
+before=GC.GetAllocatedBytesForCurrentThread();var positive=new byte[1024];long allocated=GC.GetAllocatedBytesForCurrentThread()-before;if(allocated==0)throw new Exception("Positive allocation control");Print("positive-control",allocated,1);GC.KeepAlive(positive);
+var pool=new LegacyNamePool(128);foreach(string name in new[]{"p","data-name","unknown-maximum-length-name"})pool.Get(name);string consumed="";int result=0;
+foreach(string name in new[]{"p","data-name","unknown-maximum-length-name"})
+{
+ for(int i=0;i<1000;i++){consumed=pool.Get(name);result=LegacyScanBenchmarks.Loop(name);result=LegacyCharsets.Label("utf-8");}
+ for(int batch=0;batch<16;batch++){before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<4096;i++){consumed=pool.Get(name);result=LegacyScanBenchmarks.Loop(name);result=LegacyCharsets.Label("utf-8");}allocated=GC.GetAllocatedBytesForCurrentThread()-before;Print("steady-borrowed-name-scan-label-"+name,allocated,4096);if(allocated!=0)throw new Exception("Borrowed primitives allocated.");}
+}
+var scanCases=new LegacyScanBenchmarks();foreach(string kind in new[]{"short-hit","short-miss","long-hit","long-miss","dense","multilingual"}){scanCases.Case=kind;scanCases.Setup();if(scanCases.Loop()!=scanCases.CachedSearch())throw new Exception("Delimiter oracle mismatch.");}
+foreach(string kind in new[]{"repeated","distinct","multilingual","malformed"}){string input=LegacyCompositionBenchmarks.Workload(kind);for(int i=0;i<8;i++)HtmlParser.Parse(input);before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<100;i++)doc=HtmlParser.Parse(input);Print("owned-dom-"+kind,GC.GetAllocatedBytesForCurrentThread()-before,100);}
+var names=Enumerable.Range(0,100).Select(i=>"new-name-"+i).ToArray();var uniquePool=new LegacyNamePool(128);before=GC.GetAllocatedBytesForCurrentThread();foreach(string name in names)consumed=uniquePool.Get(name);Print("owned-new-name-storage-and-dictionary-growth",GC.GetAllocatedBytesForCurrentThread()-before,100);
+var retained=new HtmlDocument[100];GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapBefore=GC.GetTotalMemory(false);for(int i=0;i<100;i++)retained[i]=HtmlParser.Parse(workload);GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapAfter=GC.GetTotalMemory(false);Console.WriteLine(JsonSerializer.Serialize(new{domain="retained-whole-heap-inclusive-doc-array-runtime-roots",beforeBytes=heapBefore,afterBytes=heapAfter,inclusiveDeltaBytes=heapAfter-heapBefore,denominatorDocuments=100}));GC.KeepAlive(retained);GC.KeepAlive(doc);GC.KeepAlive(consumed);GC.KeepAlive(result);
+static void Print(string domain,long numeratorBytes,int denominatorOperations)=>Console.WriteLine(JsonSerializer.Serialize(new{domain,numeratorBytes,denominatorOperations}));

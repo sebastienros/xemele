@@ -1,0 +1,91 @@
+// Executable contract protocol model only. It does not decode or parse XML.
+using Xemele.Parsing.Syntax;
+using Xemele.Parsing.Input;
+namespace M1ProtocolChecks;
+internal static class Program
+{
+    private static int checks;
+    private static void Require(bool value) { checks++; if (!value) throw new Exception("Contract model assertion failed: " + checks); }
+    private static void Throws<T>(Action call) where T : Exception
+    { try { call(); } catch (T) { checks++; return; } throw new Exception("Expected " + typeof(T).Name); }
+    public static void Main()
+    {
+        // Bytes vs UTF-16 units vs scalars, and EOF vs last scalar's starting byte.
+        const string source = "A🙂\r\n";
+        long[] offsets = [0, 1, 1, 5, 6];
+        var decoded = new DecodeResult(7, source.Length, DecodeStep.Completed, null);
+        Require(decoded.ConsumedBytes == 7 && decoded.WrittenCharacters == 5);
+        Require(source.EnumerateRunes().Count() == 4 && offsets[1] == offsets[2]);
+        Require(offsets[^1] != decoded.ConsumedBytes);
+        // CRLF normalizes to LF at byte 5, one normalized line transition.
+        (int Line, int Column, long Byte)[] normalizedLocations = [(1,1,0), (1,2,1), (1,3,5), (2,1,7)];
+        Require(normalizedLocations[2] == (1,3,5) && normalizedLocations[3] == (2,1,7));
+        foreach (bool pause in new[] { false, true })
+        {
+            var model = new EventSequenceModel(); var events = new List<string>(); int consumed = 0;
+            ScanResult result;
+            do
+            {
+                result = model.Append("<r/>".AsSpan(consumed), true, e => { events.Add(e); return !pause; });
+                consumed += result.Consumed;
+                Require(result.Consumed >= 0 && consumed <= 4);
+            } while (result.Step == ScanStep.Paused);
+            Require(result.Step == ScanStep.Completed && consumed == 4);
+            Require(string.Join(',', events) == "start-document,start-element,content,end-element,end-document");
+            Require(events.Count(e => e == "end-document") == 1);
+            Throws<InvalidOperationException>(() => model.Append([], true, _ => true));
+        }
+        var error = new IOException("user callback"); var faulted = new EventSequenceModel();
+        try { faulted.Append("<r/>", true, _ => throw error); } catch (IOException caught) { Require(ReferenceEquals(error, caught)); }
+        Throws<InvalidOperationException>(() => faulted.Append([], true, _ => true));
+        var reentrant = new EventSequenceModel();
+        Throws<InvalidOperationException>(() => reentrant.Append("<r/>", true, _ => { reentrant.Append([], true, _ => true); return true; }));
+        Throws<InvalidOperationException>(() => reentrant.Append([], true, _ => true));
+        var canceled = new EventSequenceModel();
+        Throws<OperationCanceledException>(() => canceled.Append("<r/>", true, _ => true, new(true)));
+        Throws<InvalidOperationException>(() => canceled.Append([], true, _ => true));
+        Require(new Xemele.XmlSaveOptions().NamespaceHandling == Xemele.XmlNamespaceHandling.Strict);
+        Require(!new Xemele.XmlSaveOptions().EmitByteOrderMark && !new Xemele.XmlSaveOptions().Indent);
+        Require(!new Xemele.XmlSaveOptions().OmitXmlDeclaration && new Xemele.XmlSaveOptions().Encoding.CodePage == 65001);
+        Require(typeof(XmlNameView).IsByRefLike && typeof(XmlAttributeView).IsByRefLike);
+        Require(typeof(XmlNamespaceView).IsByRefLike && typeof(XmlDeclarationView).IsByRefLike);
+        Require(typeof(Xemele.XmlNodeChildren.Enumerator).IsValueType && typeof(Xemele.XmlAttributes.Enumerator).IsValueType);
+        Require(typeof(Xemele.XmlNamespaceDeclarations.Enumerator).IsValueType);
+        Require(typeof(IXmlEventSink).GetMethods().All(m => m.ReturnType == typeof(bool)));
+        foreach (string future in new[] { "XmlWriter", "XmlReader", "XmlResourceResolver", "XmlDtdProcessing", "DtdModel" })
+            Require(typeof(Xemele.XmlDocument).Assembly.GetTypes().All(t => t.Name != future));
+        Console.WriteLine($"Passed {checks} contract-model assertions; no runtime parsing/decoding/serialization claim.");
+    }
+}
+internal sealed class EventSequenceModel
+{
+    private static readonly string[] Events = ["start-document", "start-element", "content", "end-element", "end-document"];
+    private int next;
+    private bool accepted, completed, busy, faulted;
+    public ScanResult Append(ReadOnlySpan<char> input, bool final, Func<string, bool> callback, CancellationToken token = default)
+    {
+        if (completed || busy || faulted) throw new InvalidOperationException();
+        busy = true;
+        try
+        {
+            token.ThrowIfCancellationRequested();
+            int consumed = 0;
+            while (next < Events.Length)
+            {
+                if (next == 1 && !accepted)
+                {
+                    if (!input.SequenceEqual("<r/>")) throw new ArgumentException("Synthetic fixed event model only");
+                    consumed = input.Length; accepted = true;
+                }
+                token.ThrowIfCancellationRequested();
+                string current = Events[next++]; // advance delivery before pause
+                if (!callback(current)) return new(consumed, ScanStep.Paused);
+            }
+            token.ThrowIfCancellationRequested();
+            if (!final) throw new ArgumentException("Synthetic final source only");
+            completed = true; return new(consumed, ScanStep.Completed);
+        }
+        catch { faulted = true; throw; }
+        finally { busy = false; }
+    }
+}

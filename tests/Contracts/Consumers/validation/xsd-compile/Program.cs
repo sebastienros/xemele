@@ -1,0 +1,16 @@
+using Xemele;
+using Xemele.Validation;
+const string Source = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:orders' xmlns:o='urn:orders'><xs:complexType name='Order'><xs:sequence><xs:element name='item' type='xs:string' maxOccurs='unbounded'/></xs:sequence><xs:attribute name='id' type='xs:ID' use='required'/></xs:complexType><xs:element name='order' type='o:Order'/></xs:schema>";
+var context = new SchemaCompileContext(new() { BaseUri = new Uri("urn:orders:schema") });
+IXsdCompiler compiler = new XmlSchemaCompiler();
+var input = context.Parse(Source);
+var graph = compiler.Compile(input.Document, context.Options, context.Operation);
+var root = graph.Elements[graph.GlobalElements[new("urn:orders", "order")]];
+var type = graph.Types.Single(t => t.Name == root.Type);
+var group = (XsdGroupTerm)type.Particle!.Term;
+var item = graph.Elements[((XsdElementTerm)group.Particles[0].Term).DeclarationId];
+if (item.Name != new SchemaName("", "item") || group.Particles[0].MaxOccurs is not null || type.Attributes[0].Use != XsdAttributeUse.Required || item.Type is not SchemaName itemType || graph.Datatypes.FindType(itemType) is null) throw new Exception("Declaration graph mismatch.");
+input.Document.RootElement.SetAttribute("targetNamespace", "changed");
+if (root.Name.NamespaceUri != "urn:orders") throw new Exception("Published graph retained mutable input.");
+if (typeof(XmlDocument).Assembly.GetTypes().Any(t => t.Namespace is string ns && (ns.Contains("Html", StringComparison.OrdinalIgnoreCase) || ns.StartsWith("Xemele.Css", StringComparison.Ordinal)))) throw new Exception("XML-only consumer loaded a later dependency.");
+Console.WriteLine("PASS: IXsdCompiler real immutable component graph, local IDs, namespace/type/attribute lookup, unbounded particle, definition-only registry; runtime " + Environment.Version);

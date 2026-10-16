@@ -1,0 +1,13 @@
+* text=auto
+
+# Keep hash-pinned corpora, encoding vectors, and canonicalization data byte-exact.
+tests/corpora/** -text
+tests/fixtures/** -text
+
+# Preserve binary/encoded fuzzing seeds and frozen benchmark payloads.
+tests/Fuzz/seeds/** -text
+benchmarks/baselines/release/fixtures/** -text
+
+# Contract data includes original XML inputs and a SHA-256-pinned grammar.
+tests/Contracts/Fixtures/**/*.xml -text
+tests/Contracts/Fixtures/**/*.rnc -text

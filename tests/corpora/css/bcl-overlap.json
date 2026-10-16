@@ -1,0 +1,148 @@
+{
+  "reference": "System.Xml.XPath on .NET 10.0.11; authored CSS to XPath pairs, not a CSS engine",
+  "domain": "Namespace-free lower-case element names; CSS whitespace equals XML whitespace in generated class attributes. HTML root is the generated root element, not implied html. Full namespace/case/escape/rejection matrix remains the integrated 89 CSS tests.",
+  "seed": 1295467347,
+  "trees": 24,
+  "vectors": [
+    {
+      "css": "*",
+      "xpath": "descendant-or-self::*"
+    },
+    {
+      "css": "item",
+      "xpath": "descendant-or-self::item"
+    },
+    {
+      "css": "#i0",
+      "xpath": "descendant-or-self::*[@id='i0']"
+    },
+    {
+      "css": ".a",
+      "xpath": "descendant-or-self::*[contains(concat(' ',normalize-space(@class),' '),' a ')]"
+    },
+    {
+      "css": ".a.b",
+      "xpath": "descendant-or-self::*[contains(concat(' ',normalize-space(@class),' '),' a ') and contains(concat(' ',normalize-space(@class),' '),' b ')]"
+    },
+    {
+      "css": "[data]",
+      "xpath": "descendant-or-self::*[@data]"
+    },
+    {
+      "css": "[data=en-US]",
+      "xpath": "descendant-or-self::*[@data='en-US']"
+    },
+    {
+      "css": "[data|=en]",
+      "xpath": "descendant-or-self::*[@data='en' or starts-with(@data,'en-')]"
+    },
+    {
+      "css": "[data^=en]",
+      "xpath": "descendant-or-self::*[starts-with(@data,'en')]"
+    },
+    {
+      "css": "[data$=US]",
+      "xpath": "descendant-or-self::*[substring(@data,string-length(@data)-1)='US']"
+    },
+    {
+      "css": "[data*=US]",
+      "xpath": "descendant-or-self::*[contains(@data,'US')]"
+    },
+    {
+      "css": "[class~=b]",
+      "xpath": "descendant-or-self::*[contains(concat(' ',normalize-space(@class),' '),' b ')]"
+    },
+    {
+      "css": "root item",
+      "xpath": "descendant-or-self::root/descendant::item"
+    },
+    {
+      "css": "root > item",
+      "xpath": "descendant-or-self::root/item"
+    },
+    {
+      "css": "item + item",
+      "xpath": "descendant-or-self::item/following-sibling::*[1][self::item]"
+    },
+    {
+      "css": "item ~ item",
+      "xpath": "descendant-or-self::item/following-sibling::item"
+    },
+    {
+      "css": "item, .a",
+      "xpath": "descendant-or-self::item | descendant-or-self::*[contains(concat(' ',normalize-space(@class),' '),' a ')]"
+    },
+    {
+      "css": ":scope",
+      "xpath": "."
+    },
+    {
+      "css": ":empty",
+      "xpath": "descendant-or-self::*[not(*) and not(text())]"
+    },
+    {
+      "css": ":first-child",
+      "xpath": "descendant-or-self::*[not(preceding-sibling::*)]"
+    },
+    {
+      "css": ":last-child",
+      "xpath": "descendant-or-self::*[not(following-sibling::*)]"
+    },
+    {
+      "css": ":only-child",
+      "xpath": "descendant-or-self::*[not(preceding-sibling::*) and not(following-sibling::*)]"
+    },
+    {
+      "css": "item:first-of-type",
+      "xpath": "descendant-or-self::item[not(preceding-sibling::item)]"
+    },
+    {
+      "css": "item:last-of-type",
+      "xpath": "descendant-or-self::item[not(following-sibling::item)]"
+    },
+    {
+      "css": "item:only-of-type",
+      "xpath": "descendant-or-self::item[not(preceding-sibling::item) and not(following-sibling::item)]"
+    },
+    {
+      "css": "item:nth-child(odd)",
+      "xpath": "descendant-or-self::item[(count(preceding-sibling::*)+1) mod 2=1]"
+    },
+    {
+      "css": "item:nth-child(even)",
+      "xpath": "descendant-or-self::item[(count(preceding-sibling::*)+1) mod 2=0]"
+    },
+    {
+      "css": "item:nth-child(-n+3)",
+      "xpath": "descendant-or-self::item[count(preceding-sibling::*)<3]"
+    },
+    {
+      "css": "item:nth-child(2n+1)",
+      "xpath": "descendant-or-self::item[(count(preceding-sibling::*)+1) mod 2=1]"
+    },
+    {
+      "css": "item:nth-last-child(2)",
+      "xpath": "descendant-or-self::item[count(following-sibling::*)=1]"
+    },
+    {
+      "css": "item:nth-of-type(2)",
+      "xpath": "descendant-or-self::item[count(preceding-sibling::item)=1]"
+    },
+    {
+      "css": "item:nth-last-of-type(odd)",
+      "xpath": "descendant-or-self::item[(count(following-sibling::item)+1) mod 2=1]"
+    },
+    {
+      "css": "item:not(.a)",
+      "xpath": "descendant-or-self::item[not(contains(concat(' ',normalize-space(@class),' '),' a '))]"
+    },
+    {
+      "css": "item:not(.a,[data=en])",
+      "xpath": "descendant-or-self::item[not(contains(concat(' ',normalize-space(@class),' '),' a ') or @data='en')]"
+    },
+    {
+      "css": "\\69 tem",
+      "xpath": "descendant-or-self::item"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+// --control disables all allocation/heap counters; no benchmark timers/BDN.
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele.Validation;
+using Xemele.Benchmarks.M8XsdParticleNormalization;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure output.");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+bool measure = mode == "--measure";
+long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new ParticlesFixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldBefore : 0;
+var rows = new List<object>();
+for (int route = 0; route < ParticlesFixture.Routes.Length; route++)
+{
+    long firstBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    GC.KeepAlive(fixture.Run(route));
+    long firstRunBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - firstBefore : 0;
+    for (int warm = 0; warm < 16; warm++) GC.KeepAlive(fixture.Run(route));
+    var distribution = new long[64];
+    long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        GC.KeepAlive(fixture.Run(route));
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    if (measure && (bytes <= 0 || distribution.Any(b => b <= 0))) throw new InvalidOperationException("Expected owned-result allocation: " + ParticlesFixture.Routes[route]);
+    rows.Add(new { route, name = ParticlesFixture.Routes[route], operations = 64, firstRunBytes, bytes, distribution });
+}
+long positiveBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveBefore : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive allocation control failed.");
+// Separate retained categories. Prior arrays and fixture inputs stay alive so
+// incremental deltas describe coarse process live-heap changes, not object sizes.
+int[][] retainedRoutes = [[0, 1, 2, 3, 4, 0, 1, 2], [5, 6, 7, 8, 9, 5, 6, 8], [10, 11, 12, 13, 14, 10, 12, 13], [15, 16, 17, 18, 19, 20, 23, 18], [21, 22, 21, 22, 21, 22, 21, 22]];
+string[] retainedNames = ["legacy-content-programs", "owned-batch-maps", "public-schemas", "schema-diagnostics", "validation-results"];
+var retained = new object[retainedRoutes.Length][];
+var heap = new List<object>();
+for (int category = 0; category < retainedRoutes.Length; category++)
+{
+    long heapBefore = measure ? GC.GetTotalMemory(true) : 0;
+    retained[category] = new object[8];
+    for (int i = 0; i < 8; i++) retained[category][i] = fixture.Run(retainedRoutes[category][i]);
+    long heapAfter = measure ? GC.GetTotalMemory(true) : 0;
+    heap.Add(new { name = retainedNames[category], count = 8, heapBefore, heapAfter, delta = heapAfter - heapBefore });
+}
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, status = "passed", runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription, serverGc = System.Runtime.GCSettings.IsServerGC,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_PARTICLES_REVISION"), assemblySha256 = Hash(typeof(XmlSchema).Assembly.Location), probeSha256 = Hash(typeof(ParticlesFixture).Assembly.Location),
+    coldSetupBytes, positiveBytes, retainedResults = 40, heap, consumed = fixture.Consume(), rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 24 routes consumed; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));

@@ -1,0 +1,113 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.Validation;
+
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual host must be .NET 10.0.11.");
+if (args is [var mode, var output] && mode is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(ValidationBenchmarks), config);
+    if (suite.BenchmarksCases.Length != 4 || suite.BenchmarksCases.Any(c =>
+        c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 ||
+        c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Expected four ShortRun NoEmit cases.");
+    Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; four ShortRun NoEmit cases; no builds/generation.");
+    if (mode == "--discover") return;
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != 4 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failed.");
+    return;
+}
+if (args is not [var command, var path] || command is not ("--control" or "--allocation")) throw new Exception("Expected control/allocation/discover/benchmark and output path.");
+if (command == "--control")
+{
+    Fixtures.Controls();
+    File.WriteAllText(path, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), controls = "passed" }));
+    return;
+}
+long start = GC.GetAllocatedBytesForCurrentThread();
+GC.KeepAlive(Fixtures.Unlimited); GC.KeepAlive(Fixtures.OneDiagnostic); GC.KeepAlive(Fixtures.Diagnostics);
+long fixtureInitialization = GC.GetAllocatedBytesForCurrentThread() - start;
+Fixtures.Controls();
+start = GC.GetAllocatedBytesForCurrentThread();
+var run = new ValidationOperation(Fixtures.Unlimited);
+long cold = GC.GetAllocatedBytesForCurrentThread() - start;
+long[] warm = new long[32], steady = new long[32];
+long consumed = 0;
+for (int batch = 0; batch < 32; batch++)
+{
+    start = GC.GetAllocatedBytesForCurrentThread();
+    consumed += Fixtures.Charge(run, 4096);
+    warm[batch] = GC.GetAllocatedBytesForCurrentThread() - start;
+}
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int batch = 0; batch < 32; batch++)
+{
+    long inner = GC.GetAllocatedBytesForCurrentThread();
+    consumed += Fixtures.Charge(run, 4096);
+    steady[batch] = GC.GetAllocatedBytesForCurrentThread() - inner;
+}
+long primitive = GC.GetAllocatedBytesForCurrentThread() - start;
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 32; i++) GC.KeepAlive(new ValidationOperation(Fixtures.Unlimited));
+long setup = GC.GetAllocatedBytesForCurrentThread() - start;
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 32; i++) GC.KeepAlive(new ValidationResult(true, Fixtures.Diagnostics));
+long snapshots = GC.GetAllocatedBytesForCurrentThread() - start;
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 32; i++) GC.KeepAlive(Fixtures.Refused());
+long refusals = GC.GetAllocatedBytesForCurrentThread() - start;
+var retained = new ValidationResult[1024];
+long retainedBefore = GC.GetTotalMemory(true);
+for (int i = 0; i < retained.Length; i++) retained[i] = new ValidationResult(true, Fixtures.Diagnostics);
+long retainedAfter = GC.GetTotalMemory(true);
+GC.KeepAlive(retained);
+File.WriteAllText(path, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), fixtureInitializationBytes = fixtureInitialization, retainedBeforeBytes = retainedBefore, retainedAfterBytes = retainedAfter, retainedSnapshots = 1024, coldSetupBytes = cold, warmDistribution = warm, steadyDistribution = steady, primitiveBytes = primitive, primitiveOperations = 131072, setupBytes = setup, snapshotBytes = snapshots, refusalBytes = refusals, ownedOperations = 32, consumed }, new JsonSerializerOptions { WriteIndented = true }));
+if (primitive != 0 || steady.Any(b => b != 0) || setup <= 0 || snapshots <= 0 || refusals <= 0) throw new Exception("Allocation gate failure.");
+GC.KeepAlive(run);
+
+internal static class Fixtures
+{
+    static Fixtures() { }
+    internal static readonly ValidationOptions Unlimited = new() { MaxOperations = null, Limits = new() { EvaluationWork = null } };
+    internal static readonly ValidationOptions OneDiagnostic = new() { Limits = new() { Diagnostics = 1 } };
+    internal static readonly XmlDiagnostic[] Diagnostics = [new("DTD.Test", XmlDiagnosticSeverity.Error, "Mismatch.", default)];
+    internal static int Charge(ValidationOperation run, int count)
+    {
+        int result = 0;
+        for (int i = 0; i < count; i++) if (run.ChargeOperations()) result++;
+        return result;
+    }
+    internal static ValidationResult Refused()
+    {
+        var run = new ValidationOperation(OneDiagnostic);
+        run.AddDiagnostic(Diagnostics[0]);
+        run.AddDiagnostic(Diagnostics[0]);
+        return run.Complete();
+    }
+    internal static void Controls()
+    {
+        var run = new ValidationOperation(new() { MaxOperations = 2 });
+        if (!run.ChargeOperations(2) || !run.Complete().IsValid || run.ChargeOperations() || run.Complete().IsComplete) throw new Exception("Boundary control.");
+        var result = Refused();
+        if (result.IsComplete || result.IsValid || result.Diagnostics.Count != 1 || result.Diagnostics[0].Code != "VALIDATION.Limit") throw new Exception("Diagnostic control.");
+        using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
+        try { new ValidationOperation(new() { CancellationToken = cancellation.Token }); throw new Exception("Cancellation missing."); }
+        catch (OperationCanceledException e) { if (e.CancellationToken != cancellation.Token) throw; }
+    }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class ValidationBenchmarks
+{
+    private ValidationOperation run = null!;
+    [GlobalSetup] public void Setup() => run = new(Fixtures.Unlimited);
+    [Benchmark(OperationsPerInvoke = 256)] public int WarmWorkCharge() => Fixtures.Charge(run, 256);
+    [Benchmark] public object OwnedOperationSetup() => new ValidationOperation(Fixtures.Unlimited);
+    [Benchmark] public object OwnedResultSnapshot() => new ValidationResult(true, Fixtures.Diagnostics);
+    [Benchmark] public object DiagnosticOverflow() => Fixtures.Refused();
+}

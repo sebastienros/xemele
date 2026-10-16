@@ -1,0 +1,196 @@
+{
+  "authority": "https://html.spec.whatwg.org/multipage/parsing.html#processing-instruction-open-state",
+  "sourceSha256": "34e193906e6898ae7faf576a8d4c0f8de619a86ec99d85a3baeb2713171f1dbf",
+  "notice": "Independent tokenizer witness inputs/expectations authored for the verified additive PI contract; no upstream arrays rewritten.",
+  "tests": [
+    {
+      "description": "case-preserved",
+      "input": "<?Foo?>",
+      "output": [
+        [
+          "ProcessingInstruction",
+          "Foo",
+          ""
+        ]
+      ]
+    },
+    {
+      "description": "underscore-hyphen-digit",
+      "input": "<?_Foo-2 value>tail",
+      "output": [
+        [
+          "ProcessingInstruction",
+          "_Foo-2",
+          "value"
+        ],
+        [
+          "Character",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "description": "plain-greater-delimiter",
+      "input": "<?foo>tail",
+      "output": [
+        [
+          "ProcessingInstruction",
+          "foo",
+          ""
+        ],
+        [
+          "Character",
+          "tail"
+        ]
+      ]
+    },
+    {
+      "description": "question-delimiter",
+      "input": "<?foo data?>",
+      "output": [
+        [
+          "ProcessingInstruction",
+          "foo",
+          "data"
+        ]
+      ]
+    },
+    {
+      "description": "repeated-question",
+      "input": "<?foo data???>",
+      "output": [
+        [
+          "ProcessingInstruction",
+          "foo",
+          "data??"
+        ]
+      ]
+    },
+    {
+      "description": "question-space",
+      "input": "<?foo? >",
+      "output": [
+        [
+          "ProcessingInstruction",
+          "foo",
+          "? "
+        ]
+      ]
+    },
+    {
+      "description": "raw-data-null-and-reference",
+      "input": "<?foo \r\n &amp;\u0000?>",
+      "output": [
+        [
+          "ProcessingInstruction",
+          "foo",
+          "&amp;\u0000"
+        ]
+      ]
+    },
+    {
+      "description": "reserved-xml-target",
+      "input": "<?XmL data?>",
+      "output": [
+        [
+          "Comment",
+          "?XmL data?"
+        ]
+      ]
+    },
+    {
+      "description": "reserved-stylesheet-target",
+      "input": "<?XML-STYLESHEET href=x?>",
+      "output": [
+        [
+          "Comment",
+          "?XML-STYLESHEET href=x?"
+        ]
+      ]
+    },
+    {
+      "description": "invalid-first-digit",
+      "input": "<?1target?>",
+      "output": [
+        [
+          "Comment",
+          "?1target?"
+        ]
+      ]
+    },
+    {
+      "description": "invalid-first-null",
+      "input": "<?\u0000target?>",
+      "output": [
+        [
+          "Comment",
+          "?\ufffdtarget?"
+        ]
+      ]
+    },
+    {
+      "description": "invalid-target-dot",
+      "input": "<?Foo.bar?>",
+      "output": [
+        [
+          "Comment",
+          "?Foo.bar?"
+        ]
+      ]
+    },
+    {
+      "description": "invalid-target-nonascii",
+      "input": "<?Foo\u00e9?>",
+      "output": [
+        [
+          "Comment",
+          "?Foo\u00e9?"
+        ]
+      ]
+    },
+    {
+      "description": "eof-open",
+      "input": "<?",
+      "output": []
+    },
+    {
+      "description": "eof-target",
+      "input": "<?Foo",
+      "output": []
+    },
+    {
+      "description": "eof-data",
+      "input": "<?Foo data",
+      "output": []
+    },
+    {
+      "description": "eof-question",
+      "input": "<?Foo data?",
+      "output": []
+    },
+    {
+      "description": "ordered-tokens",
+      "input": "<a><?Foo?>b</a>",
+      "output": [
+        [
+          "StartTag",
+          "a",
+          {}
+        ],
+        [
+          "ProcessingInstruction",
+          "Foo",
+          ""
+        ],
+        [
+          "Character",
+          "b"
+        ],
+        [
+          "EndTag",
+          "a"
+        ]
+      ]
+    }
+  ]
+}

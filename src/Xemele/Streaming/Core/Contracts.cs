@@ -1,0 +1,61 @@
+// Borrowed notifications expire at return. False accepts the notification and pauses.
+using Xemele;
+namespace Xemele.Streaming;
+
+internal enum StreamingStep
+{
+    NeedInput, Paused, Completed, Rejected, NeedResource
+}
+internal interface IXmlStreamingSink
+{
+    bool StartDocument(XmlLocation location);
+    bool EndDocument(XmlLocation location);
+    bool StartElement(XmlStartElement element);
+    bool EndElement(XmlEndElement element);
+    bool Text(ReadOnlySpan<char> text, XmlLocation location);
+    bool Comment(ReadOnlySpan<char> text, XmlLocation location);
+    bool ProcessingInstruction(ReadOnlySpan<char> target, ReadOnlySpan<char> data, XmlLocation location);
+    bool StartCData(XmlLocation location);
+    bool EndCData(XmlLocation location);
+    bool Declaration(XmlDeclaration declaration);
+    bool StartDtd(XmlDocumentTypeView documentType);
+    bool DtdDeclaration(XmlDtdDeclaration declaration);
+    bool EndDtd(XmlLocation location);
+    bool SkippedEntity(XmlSkippedEntity entity);
+    bool IncompleteAttributeDefault(XmlIncompleteAttributeDefault declaration);
+    bool Diagnostic(XmlDiagnostic diagnostic);
+}
+internal abstract class XmlStreamingSink : IXmlStreamingSink
+{
+    public virtual bool StartDocument(XmlLocation location) => true;
+    public virtual bool EndDocument(XmlLocation location) => true;
+    public virtual bool StartElement(XmlStartElement element) => true;
+    public virtual bool EndElement(XmlEndElement element) => true;
+    public virtual bool Text(ReadOnlySpan<char> text, XmlLocation location) => true;
+    public virtual bool Comment(ReadOnlySpan<char> text, XmlLocation location) => true;
+    public virtual bool ProcessingInstruction(ReadOnlySpan<char> target, ReadOnlySpan<char> data, XmlLocation location) => true;
+    public virtual bool StartCData(XmlLocation location) => true;
+    public virtual bool EndCData(XmlLocation location) => true;
+    public virtual bool Declaration(XmlDeclaration declaration) => true;
+    public virtual bool StartDtd(XmlDocumentTypeView documentType) => true;
+    public virtual bool DtdDeclaration(XmlDtdDeclaration declaration) => true;
+    public virtual bool EndDtd(XmlLocation location) => true;
+    public virtual bool SkippedEntity(XmlSkippedEntity entity) => true;
+    public virtual bool IncompleteAttributeDefault(XmlIncompleteAttributeDefault declaration) => true;
+    public virtual bool Diagnostic(XmlDiagnostic diagnostic) => true;
+}
+internal interface IXmlStreamingPump : IDisposable
+{
+    void Supply(ReadOnlyMemory<byte> input, bool isFinalBlock);
+    StreamingStep Advance(IXmlStreamingSink sink, CancellationToken cancellationToken);
+    XmlDiagnostic? Diagnostic
+    {
+        get;
+    }
+}
+// Async resolution/transport is an additive interface; synchronous readers do not need it.
+internal interface IAsyncXmlStreamingPump : IXmlStreamingPump, IAsyncDisposable
+{
+    ValueTask AdvanceResourceAsync(CancellationToken cancellationToken);
+    ValueTask<StreamingStep> AdvanceAsync(IXmlStreamingSink sink, CancellationToken cancellationToken);
+}

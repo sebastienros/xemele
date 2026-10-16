@@ -1,0 +1,680 @@
+using System.Collections.ObjectModel;
+using Xemele.Internal.Operations;
+using Xemele.Parsing.Dom;
+using Xemele.Parsing.Syntax;
+
+namespace Xemele.Validation;
+
+// Published state contains only owned immutable component/program snapshots.
+/// <summary>Contains compiled XML Schema declarations, datatypes, content models, and identity constraints.</summary>
+/// <remarks>Compilation owns immutable component snapshots; validation uses per-operation state and does not modify instances. Datatype checks distinguish lexical forms from typed values, including whitespace normalization and typed fixed-value comparisons. Validation does not expose a post-schema-validation infoset or rewrite instance values into canonical lexical forms.</remarks>
+public sealed class XmlSchema
+{
+    private const string Xs = "http://www.w3.org/2001/XMLSchema";
+    private readonly XsdCompiledSchema schema;
+    private readonly IReadOnlyDictionary<SchemaName, XsdContentProgram> programs;
+    private readonly XmlFacetEvaluator facets;
+    private readonly XsdIdentityProgram identity;
+    private readonly ComponentAvailability availability;
+    private XmlSchema()
+    {
+        schema = null!;
+        programs = null!;
+        facets = null!;
+        identity = null!;
+        availability = null!;
+    }
+    private XmlSchema(CompilationEnvelope envelope, IReadOnlyDictionary<SchemaName, XsdContentProgram> programs,
+        XmlFacetEvaluator facets, XsdIdentityProgram identity)
+    {
+        schema = envelope.Components;
+        this.programs = programs;
+        this.facets = facets;
+        this.identity = identity;
+        availability = envelope.Availability;
+    }
+
+    /// <summary>Compiles a parsed XML Schema document and its resolved schema dependencies.</summary>
+    /// <param name="schema">The complete principal schema document.</param>
+    /// <param name="options">The resource-resolution and compilation options, or null to use defaults.</param>
+    /// <returns>The compiled schema and its component-availability information.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="schema"/> is null.</exception>
+    /// <exception cref="SchemaCompileException">Schema syntax or constraints are invalid, a construct is unsupported, or compilation cannot complete within resource policy.</exception>
+    /// <exception cref="InvalidOperationException">The schema changes during compilation.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is requested.</exception>
+    public static XmlSchema Compile(XmlDocument schema, SchemaCompileOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(schema);
+        return Compile(schema, new SchemaCompileContext(options));
+    }
+    /// <summary>Parses and compiles XML Schema text with DTD processing prohibited.</summary>
+    /// <param name="schema">The principal schema XML text.</param>
+    /// <param name="options">The resource-resolution and compilation options, or null to use defaults.</param>
+    /// <returns>The compiled schema and its component-availability information.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="schema"/> is null.</exception>
+    /// <exception cref="SchemaCompileException">Parsing or compilation fails, including unsupported constructs or resource-policy refusal.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is requested.</exception>
+    public static XmlSchema Compile(string schema, SchemaCompileOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(schema);
+        var context = new SchemaCompileContext(options);
+        return Compile(context.Parse(schema).Document, context);
+    }
+    /// <summary>Reads and compiles an XML Schema document with DTD processing prohibited.</summary>
+    /// <param name="schema">The readable schema stream, consumed from its current position and left open.</param>
+    /// <param name="options">The resource-resolution and compilation options, or null to use defaults.</param>
+    /// <returns>The compiled schema and its component-availability information.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="schema"/> is null.</exception>
+    /// <exception cref="ArgumentException">The stream is not readable.</exception>
+    /// <exception cref="SchemaCompileException">Parsing or compilation fails, including unsupported constructs or resource-policy refusal.</exception>
+    /// <exception cref="IOException">Reading the caller's stream fails.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is requested.</exception>
+    public static XmlSchema Compile(Stream schema, SchemaCompileOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(schema);
+        if (!schema.CanRead)
+        {
+            throw new ArgumentException("Readable stream required.", nameof(schema));
+        }
+
+        var context = new SchemaCompileContext(options);
+        return Compile(context.Parse(schema).Document, context);
+    }
+    private static XmlSchema Compile(XmlDocument source, SchemaCompileContext context)
+    {
+        var revision = source.ContentRevision;
+        var availability = new AvailabilityBuilder(context.Operation);
+        var compiled = new XmlSchemaCompiler().CompileAvailable(source, context, availability);
+        availability.Join(compiled);
+        // Compiler builtins are declaration carriers; replace them with executable metadata.
+        var definitions = new List<XmlDatatypeDefinition>();
+        foreach (var definition in compiled.SimpleTypes)
+        {
+            Tick(context.Operation, definition.Location);
+            if (definition.Name.NamespaceUri != Xs)
+            {
+                definitions.Add(definition);
+            }
+        }
+        var registry = new XmlDatatypeRegistry(definitions, context.Operation);
+        compiled = compiled with
+        {
+            Datatypes = registry
+        };
+        var facets = new XmlFacetEvaluator();
+        foreach (var definition in compiled.SimpleTypes)
+        {
+            var executable = registry.FindType(definition.Name)!;
+            if (!facets.ValidateAvailableDefinition(executable, registry, context.Operation, availability))
+            {
+                throw SchemaSnapshots.Failure(context.Operation);
+            }
+        }
+        var programs = new XsdContentCompiler().CompileAll(compiled, context.Operation, facets, availability);
+        FinalizeDeclarations(compiled, programs, facets, context.Operation, availability);
+        var identity = new XsdIdentityCompiler().Compile(compiled, context.Operation);
+        // The completed backing dictionary is private to this invocation and
+        // never mutated again. A wrapper seals it without another traversal/copy.
+        if (!context.Operation.ChargeComponents(3, default))
+        {
+            throw SchemaSnapshots.Failure(context.Operation);
+        }
+
+        var envelope = new CompilationEnvelope(compiled, availability.Seal());
+        var published = new XmlSchema(envelope, new ReadOnlyDictionary<SchemaName, XsdContentProgram>(programs), facets, identity);
+        Tick(context.Operation, default, 0);
+        if (revision < 0 || source.ContentRevision != revision)
+        {
+            throw new InvalidOperationException("Schema source changed during compilation.");
+        }
+
+        return published;
+    }
+    private static void Tick(ISchemaOperation op, XmlLocation at, long work = 1)
+    {
+        if (!op.Charge(work, at))
+        {
+            throw SchemaSnapshots.Failure(op);
+        }
+    }
+    private static void Reject(ISchemaOperation op, XmlLocation at, string message)
+    {
+        op.AddDiagnostic(new("XSD.SchemaConstraint", XmlDiagnosticSeverity.Error, message, at));
+        throw SchemaSnapshots.Failure(op);
+    }
+    private static bool Derived(XsdCompiledSchema schema, SchemaName name, string builtin, ISchemaOperation op)
+    {
+        while (true)
+        {
+            Tick(op, default);
+            if (name == new SchemaName(Xs, builtin))
+            {
+                return true;
+            }
+
+            if (schema.Datatypes.FindType(name)?.BaseType is not { } parent)
+            {
+                return false;
+            }
+
+            name = parent;
+        }
+    }
+    private static void NotationType(XsdCompiledSchema schema, SchemaName name, ISchemaOperation op, XmlLocation at)
+    {
+        if (!Derived(schema, name, "NOTATION", op))
+        {
+            return;
+        }
+
+        var enumeration = false;
+        for (var type = schema.Datatypes.FindType(name); type is not null; type = type.BaseType is { } parent ? schema.Datatypes.FindType(parent) : null)
+        {
+            Tick(op, at);
+            foreach (var facet in type.Facets)
+            {
+                Tick(op, facet.Location);
+                enumeration |= facet.Kind == XmlFacetKind.Enumeration;
+            }
+        }
+        if (!enumeration)
+        {
+            Reject(op, at, "NOTATION requires an effective enumeration restriction.");
+        }
+    }
+    private static void NotationValue(XsdCompiledSchema schema, XmlDatatypeValue value, ReadOnlySpan<char> lexical,
+        SchemaNamespaceContext context, ISchemaOperation op, XmlLocation at)
+    {
+        Tick(op, at);
+        while (value.SelectedMember is { } member)
+        {
+            Tick(op, at);
+            value = member;
+        }
+        if (value.Items is { } items)
+        {
+            var normalized = schema.Datatypes.Find(Xs)!.Normalize(lexical, XmlWhitespaceRule.Collapse, op).AsSpan();
+            foreach (var item in items)
+            {
+                var end = XsdFacadeText.IndexOf(normalized, ' ', op, at);
+                if (end < 0)
+                {
+                    end = normalized.Length;
+                }
+
+                NotationValue(schema, item, normalized[..end], context, op, at);
+                normalized = end == normalized.Length ? [] : normalized[(end + 1)..];
+            }
+            return;
+        }
+        if (!Derived(schema, value.TypeName, "NOTATION", op))
+        {
+            return;
+        }
+
+        var text = schema.Datatypes.Find(Xs)!.Normalize(lexical, XmlWhitespaceRule.Collapse, op).AsSpan();
+        if (!XsdFacadeText.IsDeclaredNotation(text, context, schema.Notations, op, at))
+        {
+            Reject(op, at, "NOTATION value must name a declared schema notation.");
+        }
+    }
+    private static DatatypeConstraintRepresentation? Constraint(XsdCompiledSchema schema, XmlFacetEvaluator facets,
+        SchemaName type, string? lexical, SchemaNamespaceContext context, XmlLocation at, ISchemaOperation op, AvailabilityBuilder availability)
+    {
+        if (lexical is null)
+        {
+            return null;
+        }
+
+        Tick(op, at);
+        if (availability.Unavailable(ComponentAvailability.Simple(type)))
+        {
+            if (!facets.CheckAvailableConstraint(schema.Datatypes.FindType(type)!, lexical, context, schema.Datatypes, op, availability))
+            {
+                throw SchemaSnapshots.Failure(op);
+            }
+
+            return null;
+        }
+        if (Derived(schema, type, "ID", op))
+        {
+            Reject(op, at, "ID declarations cannot have default or fixed value constraints.");
+        }
+
+        if (!DatatypeConstraintRepresentation.TryCreate(schema.Datatypes.FindType(type)!, lexical, context,
+            schema.Datatypes, facets, op, out var prepared, out var error))
+        {
+            if (op.IsComplete)
+            {
+                op.AddDiagnostic(new(error?.Code ?? "XSD.SchemaConstraint", XmlDiagnosticSeverity.Error,
+                error?.Message ?? "Invalid value constraint.", at));
+            }
+
+            throw SchemaSnapshots.Failure(op);
+        }
+        // Publication must not defer canonical lexical rejection until an
+        // instance first consumes the constraint. Keep the authored typed value
+        // for equality, and assess the canonical text through the same type/context.
+        if (!facets.TryValidate(schema.Datatypes.FindType(type)!, prepared!.Lexical, context, schema.Datatypes, op, out _, out error))
+        {
+            if (op.IsComplete)
+            {
+                op.AddDiagnostic(new(error?.Code ?? "XSD.SchemaConstraint", XmlDiagnosticSeverity.Error,
+                error?.Message ?? "Canonical value constraint is invalid for its declared datatype.", at));
+            }
+
+            throw SchemaSnapshots.Failure(op);
+        }
+        NotationValue(schema, prepared.DeclaredValue, lexical, context, op, at);
+        return prepared;
+    }
+    private static void FinalizeDeclarations(XsdCompiledSchema schema, IReadOnlyDictionary<SchemaName, XsdContentProgram> programs,
+        XmlFacetEvaluator facets, ISchemaOperation op, AvailabilityBuilder availability)
+    {
+        var types = new Dictionary<SchemaName, XsdTypeDefinition>();
+        foreach (var type in schema.Types)
+        {
+            Tick(op, type.Location);
+            types.Add(type.Name, type);
+        }
+        // Include unused, anonymous and displaced redefine definitions, not just reachable instance types.
+        foreach (var type in schema.SimpleTypes)
+        {
+            Tick(op, type.Location);
+            if (type.Name.NamespaceUri != Xs)
+            {
+                NotationType(schema, type.Name, op, type.Location);
+                if (type.ItemType is { } item)
+                {
+                    NotationType(schema, item, op, type.Location);
+                }
+
+                foreach (var member in type.MemberTypes)
+                {
+                    Tick(op, type.Location);
+                    NotationType(schema, member, op, type.Location);
+                }
+            }
+            foreach (var facet in type.Facets)
+            {
+                Tick(op, facet.Location);
+                if (facet.Kind != XmlFacetKind.Enumeration || availability.Unavailable(ComponentAvailability.Simple(type.Name)))
+                {
+                    continue;
+                }
+                // Enumeration lexical forms are parsed against the base at their authored context.
+                var basis = schema.Datatypes.FindType(type.BaseType ?? type.Name)!;
+                // Direct list/union construction has anySimpleType as a nominal
+                // base. Parse with its member graph so selected NOTATION values
+                // are retained; omit only this level's authored facets.
+                if (type.Variety != XmlDatatypeVariety.Atomic && basis.Name == new SchemaName(Xs, "anySimpleType"))
+                {
+                    basis = type with
+                    {
+                        Facets = []
+                    };
+                }
+
+                if (!facets.TryValidate(basis, facet.LexicalValue, facet.Context, schema.Datatypes, op, out var value, out var error))
+                {
+                    if (op.IsComplete)
+                    {
+                        op.AddDiagnostic(new(error?.Code ?? "XSD.SchemaConstraint", XmlDiagnosticSeverity.Error,
+                        error?.Message ?? "Invalid enumeration value.", facet.Location));
+                    }
+
+                    throw SchemaSnapshots.Failure(op);
+                }
+                NotationValue(schema, value!, facet.LexicalValue, facet.Context, op, facet.Location);
+            }
+        }
+        foreach (var attribute in schema.Attributes)
+        {
+            Tick(op, attribute.Location);
+            NotationType(schema, attribute.Type, op, attribute.Location);
+            Constraint(schema, facets, attribute.Type, attribute.DefaultValue ?? attribute.FixedValue, attribute.Context, attribute.Location, op, availability);
+        }
+        foreach (var type in schema.Types)
+        {
+            var ids = 0;
+            if (type.Name.NamespaceUri != Xs && type.SimpleType is { } simple)
+            {
+                NotationType(schema, simple, op, type.Location);
+            }
+
+            foreach (var binding in type.Attributes)
+            {
+                Tick(op, binding.Location);
+                var attribute = schema.Attributes[binding.DeclarationId];
+                if (binding.Use != XsdAttributeUse.Prohibited && Derived(schema, attribute.Type, "ID", op) && ++ids > 1)
+                {
+                    Reject(op, binding.Location, "A complex type cannot have more than one ID attribute use.");
+                }
+
+                var local = Constraint(schema, facets, attribute.Type, binding.DefaultValue ?? binding.FixedValue, binding.Context, binding.Location, op, availability);
+                if (local is not null && binding.FixedValue is not null && attribute.FixedValue is not null)
+                {
+                    var declared = Constraint(schema, facets, attribute.Type, attribute.FixedValue, attribute.Context, attribute.Location, op, availability)!;
+                    if (!schema.Datatypes.Find(Xs)!.ValueEquals(local.DeclaredValue, declared.DeclaredValue, op))
+                    {
+                        Reject(op, binding.Location, "Attribute binding changes the referenced typed fixed value.");
+                    }
+                }
+            }
+        }
+        foreach (var element in schema.Elements)
+        {
+            Tick(op, element.Location);
+            if (element.Type is not { } name || !types.TryGetValue(name, out var type))
+            {
+                continue;
+            }
+
+            if (type.SimpleType is { } simple)
+            {
+                NotationType(schema, simple, op, element.Location);
+            }
+
+            var lexical = element.DefaultValue ?? element.FixedValue;
+            if (lexical is null)
+            {
+                continue;
+            }
+
+            if (type.ContentKind is XsdContentKind.Empty or XsdContentKind.ElementOnly ||
+                type.ContentKind == XsdContentKind.Mixed && programs.TryGetValue(type.Name, out var prepared) && !new XsdContentMatcher().CreateCursor(prepared).Complete(op))
+            {
+                Reject(op, element.Location, "Element value constraint requires simple or emptiable mixed content.");
+            }
+
+            Constraint(schema, facets, type.SimpleType ?? new(Xs, "anySimpleType"), lexical, element.Context, element.Location, op, availability);
+        }
+    }
+    /// <summary>Assesses a parsed instance against the compiled schema without modifying the document.</summary>
+    /// <param name="document">The XML instance document.</param>
+    /// <param name="options">The validation budgets and cancellation token, or null to use defaults.</param>
+    /// <returns>The validity, completion status, and diagnostics.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The instance changes during validation.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is requested.</exception>
+    public ValidationResult Validate(XmlDocument document, ValidationOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        return new XmlSchemaValidator().Validate(schema, document, options ?? new(), programs, new XsdContentMatcher(),
+            facets, new XsdIdentityFactory(), identity, availability);
+    }
+    /// <summary>Parses XML instance text and assesses it against the compiled schema.</summary>
+    /// <param name="document">The instance XML text; DTD processing is prohibited.</param>
+    /// <param name="options">The shared parsing and validation budgets and cancellation token, or null to use defaults.</param>
+    /// <returns>The validity, completion status, and diagnostics, including instance parsing failures.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is requested.</exception>
+    public ValidationResult Validate(string document, ValidationOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        var snapshot = Snapshot(options);
+        var operation = new SchemaValidationOperation(snapshot);
+        var parsed = XsdFacadeInput.Parse(document, operation);
+        return Evaluate(parsed, snapshot, operation);
+    }
+    /// <summary>Reads an XML instance and assesses it against the compiled schema.</summary>
+    /// <param name="document">The readable instance stream, consumed from its current position and left open; DTD processing is prohibited.</param>
+    /// <param name="options">The shared parsing and validation budgets and cancellation token, or null to use defaults.</param>
+    /// <returns>The validity, completion status, and diagnostics, including instance parsing failures.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
+    /// <exception cref="ArgumentException">The stream is not readable.</exception>
+    /// <exception cref="IOException">Reading the caller's stream fails.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is requested.</exception>
+    public ValidationResult Validate(Stream document, ValidationOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        if (!document.CanRead)
+        {
+            throw new ArgumentException("Readable stream required.", nameof(document));
+        }
+
+        var snapshot = Snapshot(options);
+        var operation = new SchemaValidationOperation(snapshot);
+        return Evaluate(XsdFacadeInput.Parse(document, operation), snapshot, operation);
+    }
+    private static ValidationOptions Snapshot(ValidationOptions? options)
+    {
+        options ??= new();
+        ArgumentNullException.ThrowIfNull(options.Limits);
+        return options with
+        {
+            Limits = options.Limits with
+            {
+            }
+        };
+    }
+    private ValidationResult Evaluate(XmlDocument? parsed, ValidationOptions snapshot, SchemaValidationOperation operation)
+    {
+        if (parsed is null)
+        {
+            return operation.Complete();
+        }
+        // The verified DOM evaluator has its own ledger. Transfer the exact remaining
+        // allowance so parsing and assessment cannot each consume a full work cap.
+        if (operation.RemainingWork == 0)
+        {
+            operation.Refuse("VALIDATION.Limit", "Instance assessment allowance exhausted.", default);
+            return operation.Complete();
+        }
+        return Validate(parsed, snapshot with
+        {
+            MaxOperations = operation.RemainingWork
+        });
+    }
+}
+
+// Structured parser output distinguishes owned syntax refusal from caller I/O exceptions.
+internal static class XsdFacadeInput
+{
+    private static OperationBudget? Budget(SchemaValidationOperation operation)
+    {
+        if (!operation.Charge(0, default))
+        {
+            return null;
+        }
+
+        var characters = operation.Limits.DocumentCharacters;
+        if (operation.RemainingWork is long work)
+        {
+            if (work == 0)
+            {
+                operation.Refuse("VALIDATION.Limit", "Instance parsing allowance exhausted.", default);
+                return null;
+            }
+            characters = characters is long cap ? Math.Min(cap, work) : work;
+        }
+        return new(new()
+        {
+            Limits = operation.Limits with
+            {
+                DocumentCharacters = characters
+            },
+            DtdProcessing = XmlDtdProcessing.Prohibit
+        }, operation.CancellationToken);
+    }
+    internal static XmlDocument? Parse(string input, SchemaValidationOperation operation)
+    {
+        var budget = Budget(operation);
+        if (budget is null)
+        {
+            return null;
+        }
+
+        long charged = 0;
+        Exception? primary = null;
+        try
+        {
+            using var core = new XmlParserCore(budget.Options, operationBudget: budget);
+            var sink = new DomSink(budget.Options, cancellationToken: operation.CancellationToken);
+            var result = core.Append(input.AsSpan(), [], true, sink, operation.CancellationToken);
+            if (!Debit(budget, operation, ref charged))
+            {
+                return null;
+            }
+
+            return Finish(sink.Document, sink.Diagnostic ?? result.Diagnostic, operation);
+        }
+        catch (Exception error) { primary = error; throw; }
+        finally { try { Debit(budget, operation, ref charged); } catch when (primary is not null) { } }
+    }
+    internal static XmlDocument? Parse(Stream input, SchemaValidationOperation operation)
+    {
+        var budget = Budget(operation);
+        if (budget is null)
+        {
+            return null;
+        }
+
+        long charged = 0;
+        Exception? primary = null;
+        try
+        {
+            using var parser = new ByteDomAdapter(budget.Options, operation.CancellationToken, budget);
+            // One bounded input buffer belongs to this operation. Caller streams stay open.
+            var buffer = new byte[4096];
+            while (parser.Diagnostic is null)
+            {
+                operation.CancellationToken.ThrowIfCancellationRequested();
+                var count = input.Read(buffer.AsSpan());
+                if ((uint)count > buffer.Length)
+                {
+                    throw new IOException("Invalid stream read count.");
+                }
+
+                if (count == 0)
+                {
+                    parser.Complete();
+                }
+                else
+                {
+                    parser.Append(buffer.AsSpan(0, count));
+                }
+
+                if (!Debit(budget, operation, ref charged))
+                {
+                    return null;
+                }
+
+                if (count == 0)
+                {
+                    break;
+                }
+            }
+            return Finish(parser.Document, parser.Diagnostic, operation);
+        }
+        catch (Exception error) { primary = error; throw; }
+        finally { try { Debit(budget, operation, ref charged); } catch when (primary is not null) { } }
+    }
+    private static bool Debit(OperationBudget budget, SchemaValidationOperation operation, ref long charged)
+    {
+        long actual = budget.Count(Quota.DocumentCharacters), used = actual - charged;
+        charged = actual;
+        return operation.Charge(used, default);
+    }
+    private static XmlDocument? Finish(XmlDocument document, XmlDiagnostic? diagnostic, SchemaValidationOperation operation)
+    {
+        operation.CancellationToken.ThrowIfCancellationRequested();
+        if (diagnostic is null)
+        {
+            return document;
+        }
+
+        operation.Refuse(diagnostic.Code.Contains("Limit", StringComparison.OrdinalIgnoreCase) ? "VALIDATION.Limit" : "SCHEMA.Syntax", diagnostic.Message, diagnostic.Location);
+        return null;
+    }
+}
+
+// Straightforward borrowed scans charge each inspected UTF-16 unit and poll at
+// every unit. No token strings or whole-remainder precharges are necessary.
+internal static class XsdFacadeText
+{
+    internal static int IndexOf(ReadOnlySpan<char> text, char delimiter, ISchemaOperation op, XmlLocation at)
+    {
+        for (var i = 0; i < text.Length; i++)
+        {
+            if (!op.Charge(1, at))
+            {
+                throw SchemaSnapshots.Failure(op);
+            }
+
+            if (text[i] == delimiter)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+    private static bool Equal(ReadOnlySpan<char> left, ReadOnlySpan<char> right, ISchemaOperation op, XmlLocation at)
+    {
+        if (!op.Charge(0, at))
+        {
+            throw SchemaSnapshots.Failure(op);
+        }
+
+        if (left.Length != right.Length)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < left.Length; i++)
+        {
+            if (!op.Charge(1, at))
+            {
+                throw SchemaSnapshots.Failure(op);
+            }
+
+            if (left[i] != right[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    internal static bool IsDeclaredNotation(ReadOnlySpan<char> text, SchemaNamespaceContext context,
+        IReadOnlyDictionary<SchemaName, XsdNotationDeclaration> notations, ISchemaOperation op, XmlLocation at)
+    {
+        var colon = IndexOf(text, ':', op, at);
+        var local = colon < 0 ? text : text[(colon + 1)..];
+        var uri = colon < 0 ? context.DefaultNamespace : null;
+        if (colon >= 0)
+        {
+            foreach (var prefix in context.Prefixes)
+            {
+                if (!op.Charge(1, at))
+                {
+                    throw SchemaSnapshots.Failure(op);
+                }
+
+                if (Equal(text[..colon], prefix.Key, op, at))
+                {
+                    uri = prefix.Value;
+                    break;
+                }
+            }
+        }
+
+        if (uri is null)
+        {
+            return false;
+        }
+
+        foreach (var notation in notations)
+        {
+            if (!op.Charge(1, at))
+            {
+                throw SchemaSnapshots.Failure(op);
+            }
+
+            if (Equal(uri, notation.Key.NamespaceUri, op, at) && Equal(local, notation.Key.LocalName, op, at))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}

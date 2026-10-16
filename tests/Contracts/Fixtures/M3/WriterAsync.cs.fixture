@@ -1,0 +1,20 @@
+namespace Xemele;
+public sealed partial class XmlWriter : IAsyncDisposable
+{
+    public ValueTask WriteStartDocumentAsync(CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteStartElementAsync(string localName, string namespaceUri = "", string prefix = "", CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteNamespaceAsync(string prefix, string namespaceUri, CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteAttributeAsync(string localName, string value, string namespaceUri = "", string prefix = "", CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteTextAsync(ReadOnlyMemory<char> text, CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteCDataAsync(ReadOnlyMemory<char> text, CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteCommentAsync(ReadOnlyMemory<char> text, CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteProcessingInstructionAsync(string target, ReadOnlyMemory<char> data, CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteEndElementAsync(CancellationToken cancellationToken = default) => default;
+    public ValueTask WriteEndDocumentAsync(CancellationToken cancellationToken = default) => default;
+    public ValueTask FlushAsync(CancellationToken cancellationToken = default) => default;
+    public ValueTask DisposeAsync() => default;
+}
+public static class XmlAsyncSerializer
+{
+    public static Task SerializeAsync(XmlDocument document, Stream output, XmlSaveOptions? options = null, CancellationToken cancellationToken = default) => Task.CompletedTask;
+}

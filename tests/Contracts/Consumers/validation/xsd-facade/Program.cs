@@ -1,0 +1,11 @@
+using Xemele;
+using Xemele.Validation;
+const string source = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='root' type='xs:int'/></xs:schema>";
+var schema = XmlSchema.Compile(source);
+if (!schema.Validate("<root>7</root>").IsValid || schema.Validate("<root>x</root>").IsValid) throw new Exception("Public validation failed.");
+var dom = XmlDocument.Parse(source);
+schema = XmlSchema.Compile(dom);
+using var stream = new MemoryStream("<root>8</root>"u8.ToArray());
+if (!schema.Validate(stream).IsValid || !stream.CanRead) throw new Exception("Stream validation failed.");
+if (typeof(XmlSchema).Assembly.GetType("Xemele.HtmlDocument") is not null && Environment.GetEnvironmentVariable("FACADE_XML_ONLY") == "1") throw new Exception("XML-only consumer includes HTML.");
+Console.WriteLine("Public facade consumer passed.");

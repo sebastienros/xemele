@@ -1,0 +1,28 @@
+using System.Runtime.InteropServices;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Benchmarks.M8DatatypesTextBinary;
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+if (args is ["--control"])
+{
+    foreach (string name in new[] { "short", "long" })
+    {
+        var benchmark = new TextBinaryBenchmarks { Case = name }; benchmark.Setup();
+        if (benchmark.BaselineEquals() != benchmark.ProviderEquals()) throw new InvalidOperationException("Baseline result changed.");
+        if (benchmark.InvalidSuffix()) throw new InvalidOperationException("Invalid suffix accepted.");
+        _ = benchmark.ProviderHash(); GC.KeepAlive(benchmark.OwnedParse());
+    }
+    Console.WriteLine("PASS: two baseline/provider fixtures consumed, no timing/counters/BDN.");
+    return;
+}
+if (args is not [var mode, var artifacts] || mode is not ("--discover" or "--benchmark")) throw new ArgumentException();
+var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)
+    .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+var suite = BenchmarkConverter.TypeToBenchmarks(typeof(TextBinaryBenchmarks), config);
+if (suite.BenchmarksCases.Length != 10 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new InvalidOperationException("Ten ShortRun NoEmit cases required.");
+Console.WriteLine("DISCOVERY:10 ShortRun NoEmit cases, no builds/generation.");
+if (mode == "--discover") return;
+var summary = BenchmarkRunner.Run(suite);
+if (summary.Reports.Length != 10 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("Benchmark failure.");

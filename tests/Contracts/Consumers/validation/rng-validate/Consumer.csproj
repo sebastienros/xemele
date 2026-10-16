@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType></PropertyGroup><ItemGroup>
+<ProjectReference Include="../../../../../src/Xemele/Xemele.csproj" Condition="'$(RngXmlOnly)' != 'true'" />
+<ProjectReference Include="../../../../SourceSubsets/M8-rng-validate/XmlOnly.csproj" Condition="'$(RngXmlOnly)' == 'true'" />
+</ItemGroup></Project>

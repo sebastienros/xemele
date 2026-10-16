@@ -1,0 +1,27 @@
+using System.Text;
+using System.Runtime.InteropServices;
+using Xemele;
+using Xemele.Streaming;
+using Xemele.XPath;
+using Xemele.Html;
+using Xemele.Css;
+using Xemele.Validation;
+
+const string xml = "<r><n>7</n></r>";
+var document = XmlDocument.Parse(xml);
+if (XPathExpression.Compile("sum(/r/n)").Evaluate(document.RootElement).AsNumber() != 7) throw new Exception("XPath result.");
+if (XmlSerializer.Serialize(document, options: new() { OmitXmlDeclaration = true }) != xml) throw new Exception("XML serialization.");
+int starts = 0; bool complete = false;
+using var source = new MemoryStream(Encoding.UTF8.GetBytes(xml));
+XmlSaxParser.Parse(source, new XmlSaxCallbacks { OnStartElement = _ => starts++, OnEndDocument = () => complete = true });
+if (starts != 2 || !complete || !source.CanRead) throw new Exception("SAX ownership/events.");
+var html = Html5Parser.Parse("<p class='selected'>hello");
+if (CssSelector.Compile("p.selected").Select(html.DocumentNode).Count != 1) throw new Exception("HTML/CSS.");
+var rng = RelaxNgSchema.Compile("<element xmlns='http://relaxng.org/ns/structure/1.0' name='r'><element name='n'><text/></element></element>");
+var xsd = Xemele.Validation.XmlSchema.Compile("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:element name='n' type='xs:integer'/></xs:sequence></xs:complexType></xs:element></xs:schema>");
+var sch = SchematronSchema.Compile("<schema xmlns='http://purl.oclc.org/dsdl/schematron'><pattern><rule context='r'><assert test='number(n)&gt;0'>positive</assert></rule></pattern></schema>");
+if (!rng.Validate(xml).IsValid || !xsd.Validate(xml).IsValid || !sch.Validate(xml).Validation.IsValid) throw new Exception("Schema acceptance.");
+if (xsd.Validate("<r><n>bad</n></r>").IsValid || sch.Validate("<r><n>0</n></r>").Validation.IsValid) throw new Exception("Schema rejection.");
+if (!SchematronReport.SerializeSvrl(sch.Validate(xml)).Contains("schematron-output", StringComparison.Ordinal)) throw new Exception("SVRL.");
+Console.WriteLine("PASS XML/XPath/SAX ownership/HTML/CSS/RNG/XSD/Schematron/SVRL release usage");
+Console.WriteLine($"{RuntimeInformation.FrameworkDescription};{RuntimeInformation.ProcessArchitecture}");

@@ -1,0 +1,12 @@
+using Xemele;
+var document = new XmlDocument();
+var root = document.CreateElement("catalog");
+document.DocumentNode.AppendChild(root);
+root.SetAttribute("edition", "one");
+root.SetNamespaceDeclaration("p", "urn:products");
+var item = document.CreateElement("item", "urn:products", "p");
+item.AppendChild(document.CreateText("Managed trees"));
+root.AppendChild(item);
+var imported = new XmlDocument().ImportNode(item);
+if (imported.GetTextContent() != "Managed trees" || imported == item || !imported.Parent.IsDefault) throw new Exception("Import failed.");
+Console.WriteLine($"{root.LocalName}: {root.GetTextContent()}; children={root.Children.Count}; imported-owner={imported.OwnerDocument != document}");

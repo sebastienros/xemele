@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Xemele' or '$(MSBuildProjectName)' == 'Xemele.Tool'">
+    <IsPackable>true</IsPackable>
+    <Authors>Xemele contributors</Authors>
+    <Description>Managed net10.0 XML and HTML toolkit with streaming, XPath, validation and controlled resource resolution.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/sebastienros/xemele</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- User guide is packaged; missing per-member XML comments are explicitly documented. -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <RuntimeFrameworkVersion>10.0.11</RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Xemele' or '$(MSBuildProjectName)' == 'Xemele.Tool'">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

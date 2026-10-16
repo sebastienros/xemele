@@ -1,0 +1,80 @@
+using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) return 2;
+bool measure = mode == "--measure";
+string revision = Environment.GetEnvironmentVariable("XEMELE_LEXICAL_REVISION") ?? throw new Exception("revision required");
+if (revision.Length != 40 || Environment.Version.ToString() != "10.0.11") throw new Exception("pinned runtime/revision required");
+const string ns = "http://relaxng.org/ns/structure/1.0";
+string Root(string library, string name = "r", string child = "<empty/>") =>
+    "<element xmlns='" + ns + "' name='" + name + "' datatypeLibrary='" + library + "'>" + child + "</element>";
+var rows = new List<object>();
+long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var cold = Compile(XmlDocument.Parse(Root("http:ok")));
+long coldBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldBefore : 0;
+rows.Add(new { name = "cold-owned-parse-compile", bytes = measure ? (long?)coldBytes : null, consumed = cold.Patterns.Count });
+byte[]? positive = null;
+Probe("positive-control", () => { positive = new byte[128]; positive[0] = 1; return positive[0]; });
+var ascii = XmlDocument.Parse(Root("http:ok"));
+var historical = XmlDocument.Parse(Root("foo:/a?q=[]", "aี一·"));
+var projected = XmlDocument.Parse(Root("foo:é space😀"));
+var buildType = typeof(RelaxNgCompiler).GetNestedType("Build", BindingFlags.NonPublic)!;
+var normalizeOptions = new SchemaCompileOptions { MaxOperations = null, Limits = new() { EvaluationWork = null } };
+var build = Activator.CreateInstance(buildType, BindingFlags.Instance | BindingFlags.NonPublic, null,
+    [normalizeOptions, new SchemaCompileOperation(normalizeOptions)], null)!;
+var normalize = buildType.GetMethod("Library", BindingFlags.Instance | BindingFlags.NonPublic)!
+    .CreateDelegate<Func<string, XmlLocation, string>>(build);
+var longAscii = XmlDocument.Parse(Root("foo:" + new string('a', 4096)));
+var longUnicode = XmlDocument.Parse(Root("foo:" + new string('界', 4096) + "😀"));
+var malformed = XmlDocument.Parse(Root("foo:" + new string('a', 4096) + "%xx"));
+var badName = XmlDocument.Parse(Root("http:ok", "ี"));
+Probe("owned-ascii-graph", () => Compile(ascii).Patterns.Count > 0 ? 1 : 0);
+Probe("owned-historical-name-graph", () => Compile(historical).Patterns.Count > 0 ? 1 : 0);
+Probe("owned-projected-library-identity", () => normalize("foo:é space😀", default) == "foo:%C3%A9%20space%F0%9F%98%80" ? 1 : 0);
+Probe("owned-projected-library-graph", () => Compile(projected).Patterns.Count > 0 ? 1 : 0);
+Probe("owned-long-ascii-graph", () => Compile(longAscii).Patterns.Count > 0 ? 1 : 0);
+Probe("owned-long-unicode-graph", () => Compile(longUnicode).Patterns.Count > 0 ? 1 : 0);
+Probe("owned-malformed-percent-rejection", () => Reject(malformed));
+Probe("owned-historical-start-rejection", () => Reject(badName));
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new RngCompiledSchema[16];
+for (int i = 0; i < retained.Length; i++) retained[i] = Compile(projected);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(positive); GC.KeepAlive(cold);
+File.WriteAllText(output, JsonSerializer.Serialize(new {
+    mode, sourceRevision = revision, runtime = Environment.Version.ToString(),
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(),
+    tiered = Environment.GetEnvironmentVariable("DOTNET_TieredCompilation"),
+    serverGc = System.Runtime.GCSettings.IsServerGC, rows,
+    retainedGraphCount = retained.Length,
+    retainedApproximateBytes = measure ? (long?)(retainedAfter - retainedBefore) : null,
+    processWorkingSet = measure ? (long?)Environment.WorkingSet : null,
+    note = "Owned compiler graph/context/adapter/diagnostic/string allocations; prepared DOMs and closures outside warm counters. No primitive zero, timing, speedup or cross-architecture claim. Retained/RSS are process-local."
+}, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine("PASS: " + rows.Count + " consumed routes; " + (measure ? "allocation measurement" : "counters disabled"));
+return 0;
+
+void Probe(string name, Func<int> action)
+{
+    for (int i = 0; i < 16; i++) if (action() != 1) throw new Exception(name + " warm");
+    long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    int consumed = 0;
+    for (int i = 0; i < 64; i++) consumed += action();
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    if (consumed != 64 || measure && bytes <= 0) throw new Exception(name + " control");
+    rows.Add(new { name, iterations = 64, consumed, bytes = measure ? (long?)bytes : null,
+        bytesPerOperation = measure ? (double?)bytes / 64 : null });
+}
+static RngCompiledSchema Compile(XmlDocument document)
+{
+    var options = new SchemaCompileOptions { MaxOperations = null, Limits = new() { EvaluationWork = null } };
+    return new RelaxNgCompiler().Compile(document, options, new SchemaCompileOperation(options));
+}
+static int Reject(XmlDocument document)
+{
+    try { Compile(document); throw new Exception("accepted invalid"); }
+    catch (SchemaCompileException e) { if (e.Diagnostics[0].Code != "RNG.SchemaRestriction") throw; return 1; }
+}

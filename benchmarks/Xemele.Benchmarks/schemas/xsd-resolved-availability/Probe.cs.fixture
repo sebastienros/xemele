@@ -1,0 +1,70 @@
+// Source only until root releases exact source and prepared binary identities.
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele.Validation;
+using Xemele.Benchmarks.M8XsdResolvedAvailability;
+if (args is not [var mode, var output] || mode is not ("--disabled" or "--measure")) throw new ArgumentException("--disabled|--measure output.json");
+bool measure = mode == "--measure";
+string phase = Environment.GetEnvironmentVariable("XEMELE_RESOLVED_PHASE") ?? throw new ArgumentException("phase required");
+if (phase is not ("baseline" or "proposed")) throw new ArgumentException("unknown phase");
+long coldThread = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long coldGlobal = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+var fixture = new ResolvedFixture();
+long coldThreadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldThread : 0;
+long coldGlobalBytes = measure ? GC.GetTotalAllocatedBytes(true) - coldGlobal : 0;
+var rows = new List<object>(); var retained = new object[ResolvedFixture.Routes.Length][];
+for (int route = 0; route < ResolvedFixture.Routes.Length; route++)
+{
+    long firstThread = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long firstGlobal = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+    var first = fixture.Run(route);
+    long firstThreadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - firstThread : 0;
+    long firstGlobalBytes = measure ? GC.GetTotalAllocatedBytes(true) - firstGlobal : 0;
+    fixture.ConsumeSchema(first, route); GC.KeepAlive(first);
+    for (int i = 0; i < 8; i++) { var warmup = fixture.Run(route); fixture.ConsumeSchema(warmup, route); GC.KeepAlive(warmup); }
+    var values = new object[32]; var distribution = new long[32];
+    long workBefore = fixture.Inspections, componentsBefore = fixture.RetainedComponents;
+    long beforeThread = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long beforeGlobal = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+    for (int i = 0; i < values.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        values[i] = fixture.Run(route);
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    long threadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - beforeThread : 0;
+    long globalBytes = measure ? GC.GetTotalAllocatedBytes(true) - beforeGlobal : 0;
+    long chargedWork = fixture.Inspections - workBefore, chargedComponents = fixture.RetainedComponents - componentsBefore;
+    if (route < 3 && (phase == "proposed" ? chargedWork != 0 || chargedComponents != 0 : chargedWork <= 0 || chargedComponents <= 0)) throw new InvalidOperationException("Independent charged-work witness failed.");
+    if (measure && (route < 3 && phase == "proposed" ? threadBytes != 0 : threadBytes <= 0)) throw new InvalidOperationException("Allocation oracle failed.");
+    foreach (var value in values) fixture.ConsumeSchema(value, route);
+    retained[route] = values;
+    rows.Add(new { route, name = ResolvedFixture.Routes[route], size = ResolvedFixture.Sizes[route % 3], operations = 32, firstThreadBytes, firstGlobalBytes, threadBytes, globalBytes, distribution, chargedWork, chargedComponents });
+}
+long positiveThread = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long positiveGlobal = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+var positive = new byte[4096];
+long positiveThreadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveThread : 0;
+long positiveGlobalBytes = measure ? GC.GetTotalAllocatedBytes(true) - positiveGlobal : 0;
+if (measure && (positiveThreadBytes < positive.Length || positiveGlobalBytes < positive.Length)) throw new InvalidOperationException("Positive allocation control failed.");
+long heapBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retainedSchemas = new object[8]; for (int i = 0; i < retainedSchemas.Length; i++) retainedSchemas[i] = fixture.Run(3 + i % 3);
+long heapAfter = measure ? GC.GetTotalMemory(true) : 0;
+foreach (var value in retainedSchemas) fixture.ConsumeSchema(value, 3);
+var directory = new DirectoryInfo(AppContext.BaseDirectory);
+while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Xemele.slnx"))) directory = directory.Parent;
+string original = Path.Combine(directory?.FullName ?? throw new InvalidOperationException("Repository not found."), "tests/fixtures/M8-xsd-resolved-availability/msData/annotations/annotZ002.xsd");
+string originalOutcome;
+try { using var input = File.OpenRead(original); var schema = XmlSchema.Compile(input, ResolvedFixture.Options() with { BaseUri = new Uri(original) }); GC.KeepAlive(schema); originalOutcome = "VALID"; }
+catch (SchemaCompileException error) when (error.Diagnostics.Any(d => d.Code == "SCHEMA.Limit")) { originalOutcome = "SCHEMA.Limit"; }
+if (originalOutcome != (phase == "baseline" ? "SCHEMA.Limit" : "VALID")) throw new InvalidOperationException("Unchanged original outcome differs from phase expectation.");
+GC.KeepAlive(retainedSchemas); GC.KeepAlive(retained); GC.KeepAlive(positive); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, phase, countersEnabled = measure, status = "passed", runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription, serverGc = System.Runtime.GCSettings.IsServerGC,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_MISSING_SOURCE_REVISION"),
+    productSha256 = Hash(typeof(XmlSchema).Assembly.Location), probeSha256 = Hash(typeof(ResolvedFixture).Assembly.Location), originalSha256 = Hash(original), originalOutcome,
+    coldThreadBytes, coldGlobalBytes, positiveThreadBytes, positiveGlobalBytes, retainedResults = 192, retainedSchemas = 8, consumed = fixture.Consumed,
+    heapBefore, heapAfter, heapDelta = heapAfter - heapBefore, rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 6 routes consumed; phase {phase}; original {originalOutcome}; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)));

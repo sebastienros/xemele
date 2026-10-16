@@ -1,0 +1,16 @@
+namespace Usage;
+internal sealed class OfflineResolver : Xemele.XmlResourceResolver
+{
+    public override Xemele.XmlResolvedResource? Resolve(Xemele.XmlResourceRequest request, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return new(new MemoryStream([60, 114, 47, 62]), new Uri("https://fixture.invalid/final/entity.xml"));
+    }
+    internal async Task Use()
+    {
+        var request = new Xemele.XmlResourceRequest(new Uri("https://fixture.invalid/original/entity.xml"), null, Xemele.XmlResourceKind.ExternalEntity)
+            { PublicId = "fixture", SystemId = "entity.xml" };
+        await using var resource = await ResolveAsync(request, default);
+        _ = resource?.SourceUri;
+    }
+}

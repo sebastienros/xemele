@@ -1,0 +1,19 @@
+namespace NormalizationProbe;
+public interface IMarker { }
+public class Base { }
+#if MUTATED
+public sealed class Sample<T> : Base where T : struct
+{
+    public const int Constant = 2;
+    public string Text { get; set; } = "";
+    public void Call(int value = 2) { }
+    public void Added() { }
+}
+#else
+public class Sample<T> : Base, IMarker where T : class
+{
+    public const int Constant = 1;
+    public string? Text { get; protected set; }
+    public virtual void Call(int value = 1) { }
+}
+#endif

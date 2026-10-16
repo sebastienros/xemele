@@ -1,0 +1,188 @@
+name: Publish
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+permissions:
+  contents: read
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      prerelease: ${{ steps.plan.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate release tag
+        id: plan
+        run: python -B tools/Packaging/tool.py plan --ref "$GITHUB_REF" --github-output "$GITHUB_OUTPUT"
+  checks:
+    needs: plan
+    uses: ./.github/workflows/build.yml
+  package:
+    needs: plan
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            rid: linux-x64
+          - os: macos-15
+            rid: osx-arm64
+          - os: windows-2025
+            rid: win-x64
+          - os: ubuntu-24.04
+            rid: any
+    runs-on: ${{ matrix.os }}
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      NUGET_PACKAGES: ${{ matrix.os == 'ubuntu-24.04' && '/mnt/nuget/packages' || format('{0}/.nuget/packages', github.workspace) }}
+      NUGET_HTTP_CACHE_PATH: ${{ github.workspace }}/.nuget/http-cache
+      NUGET_SCRATCH: ${{ github.workspace }}/.nuget/scratch
+      NUGET_PLUGINS_CACHE_PATH: ${{ github.workspace }}/.nuget/plugins
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Prepare Linux NuGet package directory
+        if: runner.os == 'Linux'
+        shell: bash
+        run: sudo install -d -o "$(id -u)" -g "$(id -g)" "$NUGET_PACKAGES"
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+          check-latest: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Check packaging contracts
+        run: python -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_packaging.py' -v
+      - name: Build packages and smoke-test archive payload
+        env:
+          VERSION: ${{ needs.plan.outputs.version }}
+          RID: ${{ matrix.rid }}
+        shell: bash
+        run: python -B tools/Packaging/tool.py build --rid "$RID" --version "$VERSION" --output artifacts/tool-release
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: tool-${{ matrix.rid }}
+          path: |
+            artifacts/tool-release/${{ matrix.rid }}/packages/*.nupkg
+            artifacts/tool-release/${{ matrix.rid }}/archives/*
+          if-no-files-found: error
+  verify:
+    needs: [plan, package]
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            rid: linux-x64
+          - os: macos-15
+            rid: osx-arm64
+          - os: windows-2025
+            rid: win-x64
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+          check-latest: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: tool-*
+          merge-multiple: true
+          path: artifacts/tool-release
+      - name: Verify automatic tool selection and extracted archive execution
+        env:
+          VERSION: ${{ needs.plan.outputs.version }}
+          RID: ${{ matrix.rid }}
+        shell: bash
+        run: python -B tools/Packaging/tool.py verify --rid "$RID" --version "$VERSION" --feed artifacts/tool-release/packages --archives artifacts/tool-release/archives
+  publish:
+    needs: [plan, checks, verify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      attestations: write
+      id-token: write
+    environment: release
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      NUGET_PACKAGES: /mnt/nuget/packages
+      NUGET_HTTP_CACHE_PATH: ${{ github.workspace }}/.nuget/http-cache
+      NUGET_SCRATCH: ${{ github.workspace }}/.nuget/scratch
+      NUGET_PLUGINS_CACHE_PATH: ${{ github.workspace }}/.nuget/plugins
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Prepare Linux NuGet package directory
+        shell: bash
+        run: sudo install -d -o "$(id -u)" -g "$(id -g)" "$NUGET_PACKAGES"
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+          check-latest: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: tool-*
+          merge-multiple: true
+          path: artifacts/tool-release
+      - name: Attest packages and CLI archives
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-path: |
+            artifacts/tool-release/packages/*.nupkg
+            artifacts/tool-release/archives/*
+      - name: NuGet login
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: sebastienros
+      - name: Publish implementation packages before the tool router
+        env:
+          VERSION: ${{ needs.plan.outputs.version }}
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$NUGET_API_KEY" || { echo "::error::Missing NuGet login token"; exit 1; }
+          for rid in linux-x64 osx-arm64 win-x64 any; do
+            dotnet nuget push "artifacts/tool-release/packages/Xemele.Tool.$rid.$VERSION.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+          done
+          dotnet nuget push "artifacts/tool-release/packages/Xemele.$VERSION.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+          dotnet nuget push "artifacts/tool-release/packages/Xemele.Tool.$VERSION.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+      - name: Publish standalone CLI archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          PRERELEASE: ${{ needs.plan.outputs.prerelease }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_options=()
+          if [[ "$PRERELEASE" == true ]]; then release_options=(--prerelease); fi
+          gh release create "v$VERSION" artifacts/tool-release/archives/* --verify-tag --title "Xemele $VERSION" --generate-notes "${release_options[@]}"

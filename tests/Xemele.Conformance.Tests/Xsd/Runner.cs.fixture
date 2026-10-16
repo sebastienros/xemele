@@ -1,0 +1,398 @@
+using System.Text.Json;
+using System.Xml.Linq;
+using Xemele;
+using Xemele.Validation;
+using ProductSchema = Xemele.Validation.XmlSchema;
+namespace XsdCorpus;
+internal record Observation(string Outcome, string Detail, string[] Codes, object[] Resources, bool HintOrderingProfile = false);
+internal static class Runner
+{
+    internal const string Origin = "https://w3c-xsd.test/source/";
+    internal static string Root = "";
+    internal static HashSet<string>? OriginalPaths;
+    internal static readonly XmlResourceLimits Limits = new() { DocumentCharacters = 67_108_864, Depth = 1024, AttributesPerElement = 4096, TokenCharacters = 16_777_216, InternedNames = 262144, ExternalBytes = 67_108_864, ExternalResources = 1024, InclusionDepth = 128, Diagnostics = 1024, EvaluationWork = 100_000_000 };
+    internal static string PathFor(Uri uri)
+    {
+        using (var map = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "external-resources.json"))))
+            foreach (var resource in map.RootElement.EnumerateArray())
+                if (resource.GetProperty("urls").EnumerateArray().Any(u => u.GetString() == uri.AbsoluteUri))
+                    return Path.Combine(Path.GetDirectoryName(Root)!, resource.GetProperty("path").GetString()!);
+        if (uri.Scheme != "https" || uri.Host != "w3c-xsd.test" || !uri.AbsolutePath.StartsWith("/source/", StringComparison.Ordinal)) throw new IOException("Unmapped resource URI: " + uri);
+        string path = Path.GetFullPath(Path.Combine(Root, Uri.UnescapeDataString(uri.AbsolutePath[8..])));
+        if (!path.StartsWith(Root + Path.DirectorySeparatorChar, StringComparison.Ordinal)) throw new IOException("Resource escapes root: " + uri);
+        if (!File.Exists(path)) throw new FileNotFoundException("Missing original resource: " + uri, path);
+        return path;
+    }
+    internal static Uri UriFor(string name) => Uri.TryCreate(name, UriKind.Absolute, out var uri) ? uri : new Uri(Origin + name);
+    internal static IEnumerable<JsonElement> Instances(JsonElement group) => group.GetProperty("instances").EnumerateArray().Concat(group.GetProperty("supplementalInstances").EnumerateArray());
+    internal sealed record SchemaInput(string Location, string Namespace, bool Hint, string Element, string BaseUri);
+    internal sealed record InstancePlan(SchemaInput[] Inputs, bool Augmented, string[] Limitations);
+    internal static bool VerifiedHintOrdering(JsonElement row, InstancePlan plan)
+    {
+        if (row.GetProperty("id").GetString() is not ("msMeta/Additional_w3c.xml#g159/i0:addB156.i" or "msMeta/Additional_w3c.xml#g161/i0:addB158.i" or "msMeta/Additional_w3c.xml#g162/i0:addB159.i" or "msMeta/Additional_w3c.xml#g164/i0:addB161.i" or "msMeta/Additional_w3c.xml#g165/i0:addB162.i" or "msMeta/Additional_w3c.xml#g167/i0:addB164.i" or "msMeta/Additional_w3c.xml#g169/i0:addB166.i")) return false;
+        string profilePath = Path.Combine(Path.GetDirectoryName(Root)!, "verified-hint-ordering-profile.json");
+        if (!File.Exists(profilePath)) return false;
+        using var profile = JsonDocument.Parse(File.ReadAllText(profilePath));
+        var original = profile.RootElement.GetProperty("cases").EnumerateArray().SingleOrDefault(c => c.GetProperty("id").GetString() == row.GetProperty("id").GetString());
+        if (original.ValueKind == JsonValueKind.Undefined || row.GetProperty("expected").GetString() != "invalid") return false;
+        string document = Documents(row).Single();
+        if (!original.GetProperty("documents").TryGetProperty(document, out var digest)) return false;
+        using (var input = File.OpenRead(PathFor(UriFor(document))))
+            if (Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(input)).ToLowerInvariant() != digest.GetString()) return false;
+        string file = Path.GetFileName(document);
+        bool unqualifiedFirst = file is "test93490_7.xml" or "test93490_8.xml" or "test93490_10.xml";
+        string[] required = unqualifiedFirst ? ["test93490_5.xsd", "test93490_1.xsd", "test93490_3.xsd"] :
+            file is "test93490_4.xml" or "test93490_5.xml" ? ["test93490_1.xsd", "test93490_3.xsd"] : ["test93490_1.xsd"];
+        string[] namespaces = unqualifiedFirst ? ["", "foo", "bar"] : ["foo", "bar"];
+        if (plan.Inputs.Length != required.Length) return false;
+        for (int i = 0; i < required.Length; i++)
+        {
+            string path = "msData/additional/" + required[i]; var input = plan.Inputs[i];
+            if (!input.Hint || input.Namespace != namespaces[i] || UriFor(input.Location) != UriFor(path)) return false;
+            using var stream = File.OpenRead(PathFor(UriFor(path)));
+            if (Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(stream)).ToLowerInvariant() != profile.RootElement.GetProperty("authored_schema_pins").GetProperty(path).GetString()) return false;
+        }
+        return true;
+    }
+    internal static InstancePlan InstanceInputs(JsonElement row, string[] originals, List<object> journal)
+    {
+        var originalInputs = originals.Select(name => new SchemaInput(name, TargetNamespace(UriFor(name)), false, "metadata", UriFor(name).AbsoluteUri)).ToArray();
+        var inputs = originalInputs.ToList(); var known = originalInputs.Select(i => i.Namespace).ToHashSet(StringComparer.Ordinal);
+        var used = new Dictionary<string, int>(StringComparer.Ordinal); var limits = new List<string>();
+        var source = UriFor(Documents(row).Single());
+        try
+        {
+            using var stream = File.OpenRead(PathFor(source));
+            using var reader = System.Xml.XmlReader.Create(stream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
+            var bases = new Dictionary<int, Uri>(); int index = 0;
+            while (reader.Read())
+            {
+                if (reader.NodeType != System.Xml.XmlNodeType.Element) continue;
+                var basis = reader.Depth == 0 ? source : bases[reader.Depth - 1];
+                if (reader.GetAttribute("base", "http://www.w3.org/XML/1998/namespace") is { } xb) basis = new Uri(basis, xb);
+                bases[reader.Depth] = basis; string element = "element[" + index + "]/{" + reader.NamespaceURI + "}" + reader.LocalName;
+                const string xsi = "http://www.w3.org/2001/XMLSchema-instance";
+                void Hint(string ns, string location)
+                {
+                    var uri = new Uri(basis, location); bool supplied = known.Contains(ns);
+                    journal.Add(new { kind = "authored-instance-hint", namespaceUri = ns, location, uri = uri.AbsoluteUri, element, baseUri = basis.AbsoluteUri, policy = supplied ? "namespace already supplied; hint retained without fetch" : "first hint for namespace; explicit precompilation" });
+                    if (used.TryGetValue(ns, out int previous) && previous < index) limits.Add("Namespace " + ns + " was used at element " + previous + " before hint at " + element + "; explicit precompilation cannot reproduce ordered discovery.");
+                    if (supplied) return;
+                    known.Add(ns); inputs.Add(new(uri.AbsoluteUri, ns, true, element, basis.AbsoluteUri));
+                }
+                if (reader.GetAttribute("schemaLocation", xsi) is { } locations)
+                {
+                    var tokens = locations.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+                    if (tokens.Length % 2 != 0) throw new IOException("Odd xsi:schemaLocation hint list at " + element);
+                    for (int i = 0; i < tokens.Length; i += 2) Hint(tokens[i], tokens[i + 1]);
+                }
+                if (reader.GetAttribute("noNamespaceSchemaLocation", xsi) is { } unqualified) Hint("", unqualified);
+                used.TryAdd(reader.NamespaceURI, index);
+                if (reader.GetAttribute("type", xsi) is { } type)
+                { int colon = type.IndexOf(':'); used.TryAdd(colon < 0 ? reader.LookupNamespace("") ?? "" : reader.LookupNamespace(type[..colon]) ?? "", index); }
+                if (reader.MoveToFirstAttribute())
+                { do { if (reader.NamespaceURI.Length > 0 && reader.NamespaceURI != xsi && reader.NamespaceURI != "http://www.w3.org/2000/xmlns/") used.TryAdd(reader.NamespaceURI, index); } while (reader.MoveToNextAttribute()); reader.MoveToElement(); }
+                index++;
+            }
+        }
+        catch (System.Xml.XmlException e)
+        {
+            journal.Add(new { kind = "instance-hint-preparation-warning", detail = e.Message, policy = "unchanged original bytes and metadata schemas; no partial hint graph" });
+            return new(originalInputs, false, []);
+        }
+        var plan = new InstancePlan(inputs.ToArray(), inputs.Count != originalInputs.Length, limits.ToArray());
+        journal.Add(new { kind = "explicit-instance-schema-inputs", inputs = plan.Inputs, limitations = plan.Limitations });
+        foreach (var hint in plan.Inputs.Where(i => i.Hint))
+        {
+            string actual;
+            try { actual = TargetNamespace(UriFor(hint.Location)); }
+            catch (System.Xml.XmlException e)
+            {
+                journal.Add(new { kind = "hint-schema-preparation-error", input = hint, detail = e.Message, policy = "probe unchanged original schema through selected engine; instance remains unassessed" });
+                throw new HintSchemaPreparationException(hint, e);
+            }
+            if (actual != hint.Namespace) throw new HintNamespaceException("Authored hint namespace '" + hint.Namespace + "' disagrees with original schema targetNamespace '" + actual + "' at " + hint.Location + " (" + hint.Element + ").");
+        }
+        return plan;
+    }
+    internal sealed class HintNamespaceException(string message) : Exception(message);
+    internal sealed class HintSchemaPreparationException(SchemaInput input, Exception cause) : Exception(cause.Message, cause)
+    { internal SchemaInput Input { get; } = input; }
+    internal static Observation ProbeHintSchema(HintSchemaPreparationException failure, Resolver resolver, CancellationToken token)
+    {
+        Observation probe;
+        try
+        {
+            var source = UriFor(failure.Input.Location); using var stream = File.OpenRead(PathFor(source));
+            ProductSchema.Compile(stream, new() { BaseUri = source, Resolver = resolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = token });
+            probe = new("schema-valid", "", [], resolver.Requests.ToArray());
+        }
+        catch (Exception e) { probe = Failure(e, resolver, token); }
+        return probe with { Outcome = probe.Outcome == "schema-invalid" ? "schema-unavailable" : probe.Outcome == "schema-valid" ? "instance-hint-preparation-limitation" : probe.Outcome,
+            Detail = "Hint namespace preparation failed: " + failure.Message + "; unchanged original schema probe: " + probe.Outcome + ": " + probe.Detail + "; instance assessment not executed" };
+    }
+    internal static string TargetNamespace(Uri source)
+    {
+        string path = PathFor(source);
+        try
+        {
+            using var stream = File.OpenRead(path);
+            using var reader = System.Xml.XmlReader.Create(stream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null });
+            while (reader.Read() && reader.NodeType != System.Xml.XmlNodeType.Element) { }
+            return reader.GetAttribute("targetNamespace") ?? "";
+        }
+        catch (System.Xml.XmlException e) when (e.Message.Contains("Version number '1.1' is invalid", StringComparison.Ordinal))
+        {
+            // Independent metadata facts compensate only for the staging reader's
+            // version refusal. Neither engine's original schema/instance bytes change.
+            using var facts = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "metadata-namespaces.json")));
+            string relative = Path.GetRelativePath(Root, path).Replace(Path.DirectorySeparatorChar, '/');
+            if (!facts.RootElement.TryGetProperty(relative, out var fact)) throw;
+            using var bytes = File.OpenRead(path);
+            string hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes)).ToLowerInvariant();
+            if (hash != fact.GetProperty("sha256").GetString()) throw new IOException("Independent namespace fact source hash mismatch: " + relative);
+            return fact.GetProperty("namespace").GetString()!;
+        }
+    }
+    internal static (Stream Input, Uri Source) InstanceInput(InstancePlan plan)
+    {
+        if (!plan.Augmented) return Input(plan.Inputs.Select(i => i.Location).ToArray());
+        XNamespace xs = "http://www.w3.org/2001/XMLSchema";
+        var wrapper = new XElement(xs + "schema", new XAttribute("targetNamespace", "urn:xemele:xsd-corpus:wrapper"));
+        foreach (var input in plan.Inputs)
+        {
+            var import = new XElement(xs + "import", new XAttribute("schemaLocation", UriFor(input.Location).AbsoluteUri));
+            if (input.Namespace.Length > 0) import.Add(new XAttribute("namespace", input.Namespace));
+            wrapper.Add(import);
+        }
+        return (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(wrapper.ToString())), new Uri(Origin + "__instance_wrapper__.xsd"));
+    }
+    internal static string[] Documents(JsonElement row) => row.GetProperty("documents").EnumerateArray().Select(e => e.GetString()!).ToArray();
+    internal static (Stream Input, Uri Source) Input(string[] documents)
+    {
+        if (documents.Length == 1) { var u = UriFor(documents[0]); return (File.OpenRead(PathFor(u)), u); }
+        // xsts.xsd explicitly permits ordered imports in an otherwise unused namespace.
+        XNamespace xs = "http://www.w3.org/2001/XMLSchema";
+        var wrapper = new XElement(xs + "schema", new XAttribute("targetNamespace", "urn:xemele:xsd-corpus:wrapper"));
+        foreach (string name in documents)
+        {
+            var u = UriFor(name); string? ns;
+            try { using var input = File.OpenRead(PathFor(u)); ns = XDocument.Load(input).Root?.Attribute("targetNamespace")?.Value; }
+            catch (System.Xml.XmlException) { return (File.OpenRead(PathFor(u)), u); }
+            var import = new XElement(xs + "import", new XAttribute("schemaLocation", u.AbsoluteUri));
+            if (ns is not null) import.Add(new XAttribute("namespace", ns)); wrapper.Add(import);
+        }
+        return (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(wrapper.ToString())), new Uri(Origin + "__wrapper__.xsd"));
+    }
+    internal static bool AuthoredUnavailable(Uri uri)
+    {
+        if (uri.Scheme != "https" || uri.Host != "w3c-xsd.test" || !uri.AbsolutePath.StartsWith("/source/", StringComparison.Ordinal))
+        {
+            using var map = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "external-resources.json")));
+            return !map.RootElement.EnumerateArray().Any(r => r.GetProperty("urls").EnumerateArray().Any(u => u.GetString() == uri.AbsoluteUri));
+        }
+        if (OriginalPaths is null) { using var inputs = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "resources.json"))); OriginalPaths = inputs.RootElement.EnumerateArray().Select(r => r.GetProperty("path").GetString()!).ToHashSet(StringComparer.Ordinal); }
+        return !OriginalPaths.Contains(Uri.UnescapeDataString(uri.AbsolutePath[8..]));
+    }
+    internal static bool VerifiedOptionalMissing(XmlResourceRequest request)
+    {
+        if (request.Kind != XmlResourceKind.Schema || request.Referrer is null) return false;
+        (string Path, string SystemId, string Sha256)[] originals =
+        [
+            ("msData/datatypes/Facets/anyURI/anyURI_a002.xsd", "名前空間URI", "6fe2295e58bc2c226444741bfb0db225a1903e6a0aadfe87502f5e8fbf095ab7"),
+            ("msData/datatypes/Facets/anyURI/anyURI_a004.xsd", "http://127.0.0.1/must%20not%20resolve.xyzzy", "fba5b2235649ec219bc35c9ecef3d5d54e8876c6146a8b712a1c54537717fa4d"),
+            ("msData/schema/schD7_a.xsd", "not-exist.xsd", "dd187c8233f8eff1af2c5f2624e10120a2763c38b03cef51cb0df7b0767a7e4f"),
+            ("msData/schema/schG8_a.xsd", "not-exist", "f49e2f7bf71f025e46e435f13ad4ca10fb657234805cdb9eacaf8d1e7628cd93")
+        ];
+        foreach (var original in originals)
+        {
+            var principal = UriFor(original.Path);
+            if (request.Referrer != principal || request.SystemId != original.SystemId || request.Uri != new Uri(principal, original.SystemId)) continue;
+            if (!AuthoredUnavailable(request.Uri)) return false;
+            if (AuthoredUnavailable(principal)) throw new IOException("Optional principal absent from original catalog: " + principal);
+            // Catalog absence is distinct from a missing declared file. Never acquire an instance or use the network.
+            if (request.Uri.Scheme == "https" && request.Uri.Host == "w3c-xsd.test" &&
+                File.Exists(Path.Combine(Root, Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]))))
+                throw new IOException("Uncatalogued optional resource exists: " + request.Uri);
+            using var source = File.OpenRead(PathFor(principal));
+            if (Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(source)).ToLowerInvariant() != original.Sha256)
+                throw new IOException("Optional principal differs from pinned original: " + principal);
+            return true;
+        }
+        return false;
+    }
+    internal static string FileHash(string path)
+    {
+        using var stream = File.OpenRead(path);
+        return Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(stream)).ToLowerInvariant();
+    }
+    internal static bool OrdinalExists(string relative)
+    {
+        string current = Root;
+        foreach (string segment in relative.Split('/'))
+        {
+            if (!Directory.Exists(current)) return false;
+            string? exact = Directory.EnumerateFileSystemEntries(current).SingleOrDefault(p => Path.GetFileName(p).Equals(segment, StringComparison.Ordinal));
+            if (exact is null) return false;
+            current = exact;
+        }
+        return true;
+    }
+    internal static bool VerifiedCandidateMissing(XmlResourceRequest request, JsonElement? context)
+    {
+        if (!context.HasValue || context.Value.ValueKind != JsonValueKind.Object) return false;
+        var row = context.Value;
+        if (!row.TryGetProperty("id", out var id)) return false;
+        if (id.GetString() is not ("msMeta/Annotations_w3c.xml#g12/s:annotA013" or "msMeta/Annotations_w3c.xml#g13/s:annotA014" or "msMeta/Annotations_w3c.xml#g47/s:annotB025" or "msMeta/DataTypes_w3c.xml#g1336/s:anyURI_a001_1336" or "msMeta/DataTypes_w3c.xml#g1341/s:anyURI_a006_1341" or "msMeta/DataTypes_w3c.xml#g1343/s:anyURI_a008_1343" or "msMeta/DataTypes_w3c.xml#g1344/s:anyURI_a009_1344" or "msMeta/Schema_w3c.xml#g13/s:schB8" or "msMeta/Schema_w3c.xml#g20/s:schD8" or "msMeta/Schema_w3c.xml#g30/s:schE9" or "msMeta/Schema_w3c.xml#g59/s:schH9" or "msMeta/Schema_w3c.xml#g126/s:schZ012_b" or "msMeta/Schema_w3c.xml#g127/s:schZ012_c")) return false;
+        string corpus = Path.GetDirectoryName(Root)!;
+        string factsPath = Path.Combine(corpus, "optional-adapter-obligations.json");
+        if (FileHash(factsPath) != "c31bb84daf80b6c6e5678bff68a17d4eed619c870f9b5808eb9fc5ea3c9ec6f6") throw new IOException("Optional obligation facts changed");
+        using var facts = JsonDocument.Parse(File.ReadAllText(factsPath));
+        var binding = facts.RootElement.GetProperty("cases").EnumerateArray().Single(c => c.GetProperty("id").GetString() == id.GetString());
+        if (JsonSerializer.Serialize(row) != JsonSerializer.Serialize(binding.GetProperty("schema_row"))) throw new IOException("Optional schema context differs from exact original: " + id.GetString());
+        foreach (string file in new[] { "inventory", "catalog" })
+            if (FileHash(Path.Combine(corpus, file == "inventory" ? "inventory.json" : "resources.json")) != facts.RootElement.GetProperty(file + "_sha256").GetString()) throw new IOException("Optional " + file + " changed");
+        void Pin(string name, string checksum)
+        {
+            if (FileHash(PathFor(UriFor(name))) != checksum) throw new IOException("Optional original hash changed: " + name);
+        }
+        Pin(binding.GetProperty("metadata").GetString()!, binding.GetProperty("metadata_sha256").GetString()!);
+        foreach (var doc in binding.GetProperty("documents").EnumerateObject()) Pin(doc.Name, doc.Value.GetString()!);
+        // The annotation-rejected a001 obligation remains inactive even for exact 0/123 callbacks.
+        if (!binding.GetProperty("mapping_active").GetBoolean()) return false;
+        foreach (var callback in binding.GetProperty("candidate_absence_bindings").EnumerateArray())
+        {
+            if (request.Kind != XmlResourceKind.Schema || request.Referrer?.AbsoluteUri != callback.GetProperty("referrer").GetString() || request.SystemId != callback.GetProperty("systemId").GetString() || request.Uri.AbsoluteUri != callback.GetProperty("resolvedUri").GetString()) continue;
+            if (callback.GetProperty("substantiveRedefine").GetBoolean() || callback.GetProperty("directive").GetString() is not ("include" or "import" or "redefine")) throw new IOException("Ineligible optional directive");
+            Pin(callback.GetProperty("principal").GetString()!, callback.GetProperty("principal_sha256").GetString()!);
+            if (!AuthoredUnavailable(request.Uri)) throw new IOException("Optional resource no longer absent from exact catalog");
+            if (request.Uri.Scheme == "https" && request.Uri.Host == "w3c-xsd.test" && request.Uri.AbsolutePath.StartsWith("/source/", StringComparison.Ordinal))
+            {
+                string relative = Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]);
+                if (OrdinalExists(relative)) throw new IOException("Uncatalogued exact optional resource exists: " + relative);
+                // An ordinal absent authored name must never open a case-insensitive alias.
+            }
+            return true;
+        }
+        return false;
+    }
+    internal sealed class Resolver(JsonElement? context = null) : XmlResourceResolver
+    {
+        internal readonly List<object> Requests = [];
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            if (request.Kind != XmlResourceKind.Schema) throw new IOException("Unexpected resource purpose");
+            bool absent = AuthoredUnavailable(request.Uri);
+            Requests.Add(new { resolution = absent ? "legacy-null-denied" : "pinned-input", uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
+            return absent ? null : new(File.OpenRead(PathFor(request.Uri)), request.Uri);
+        }
+        public override XmlResourceResolution ResolveResult(XmlResourceRequest request, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            if (request.Kind != XmlResourceKind.Schema) throw new IOException("Unexpected resource purpose");
+            bool absent = AuthoredUnavailable(request.Uri);
+            bool candidate = VerifiedCandidateMissing(request, context);
+            bool optional = absent && (VerifiedOptionalMissing(request) || candidate);
+            Requests.Add(new { resolution = optional ? "explicit-unavailable" : absent ? "denied-unmapped-absence" : "pinned-input", uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
+            if (absent) return optional ? XmlResourceResolution.Unavailable : XmlResourceResolution.Denied;
+            return XmlResourceResolution.FromResource(new(File.OpenRead(PathFor(request.Uri)), request.Uri));
+        }
+    }
+    internal static Observation Failure(Exception e, Resolver resolver, CancellationToken token)
+    {
+        if (e is OperationCanceledException) return new(token.IsCancellationRequested ? "timeout" : "cancellation", e.Message, [], resolver.Requests.ToArray());
+        if (e is SchemaCompileException sc)
+        {
+            bool refusal = sc.Diagnostics.Any(d => d.Code.Contains("Limit", StringComparison.OrdinalIgnoreCase) || d.Code.Contains("Resource", StringComparison.OrdinalIgnoreCase));
+            return new(refusal ? "incomplete-refusal" : "schema-invalid", string.Join("; ", sc.Diagnostics.Select(d => d.Code + ": " + d.Message)), sc.Diagnostics.Select(d=>d.Code).ToArray(), resolver.Requests.ToArray());
+        }
+        if (e is HintNamespaceException) return new("instance-hint-namespace-mismatch", e.Message, [], resolver.Requests.ToArray());
+        return new(e is IOException ? "harness-resource-error" : "harness-exception", e.GetType().FullName + ": " + e.Message, [], resolver.Requests.ToArray());
+    }
+    internal static bool? Oracle(string? expected, string actual, string kind) => expected switch
+    {
+        "valid" => actual == (kind == "schema" ? "schema-valid" : "instance-valid"),
+        "invalid" => actual == (kind == "schema" ? "schema-invalid" : "instance-invalid"),
+        "invalid-latent" when kind == "schema" => actual is "schema-valid" or "schema-invalid",
+        "runtime-schema-error" => actual == "instance-invalid" || actual == "schema-invalid",
+        "implementation-defined" or "implementation-dependent" or "indeterminate" => actual is "schema-valid" or "schema-invalid" or "instance-valid" or "instance-invalid" ? null : false,
+        _ => false
+    };
+    public static int Main(string[] args)
+    {
+        if (args.Length == 1 && args[0] == "--controls") return Controls.Run();
+        if (args.Length == 2 && args[0] == "--hint-profile-controls") return Controls.HintProfile(args[1]);
+        if (args.Length == 2 && args[0] == "--optional-profile-controls") return Controls.OptionalProfile(args[1]);
+        Root = Path.GetFullPath(args[0]); using var inventory = JsonDocument.Parse(File.ReadAllText(args[1]));
+        string set = args[2], engine = args[3]; using var output = new StreamWriter(args[4], append: true) { AutoFlush = true };
+        int from = args.Length > 5 ? int.Parse(args[5], System.Globalization.CultureInfo.InvariantCulture) : 0, index = -1;
+        foreach (var group in inventory.RootElement.GetProperty("groups").EnumerateArray())
+        {
+            if (group.GetProperty("metadata").GetString() != set) continue; index++; if (index < from) continue;
+            Console.WriteLine("START " + index); Console.Out.Flush();
+            var schemaRow = group.GetProperty("schema");
+            bool needed = schemaRow.ValueKind != JsonValueKind.Null && schemaRow.GetProperty("classification").GetString() == "applicable" || Instances(group).Any(r => r.GetProperty("classification").GetString() == "applicable");
+            if (!needed)
+            {
+                foreach (var excluded in (schemaRow.ValueKind == JsonValueKind.Null ? Array.Empty<JsonElement>() : new[] { schemaRow }).Concat(Instances(group)))
+                    Emit(excluded, new(excluded.GetProperty("classification").GetString()!, excluded.GetProperty("reason").GetString()!, [], []), engine, output);
+                continue;
+            }
+            if (engine == "bcl") { BclEngine.Run(group, output); continue; }
+            var sr = group.GetProperty("schema"); var resolver = new Resolver(sr); ProductSchema? schema = null; Observation compile;
+            using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+            {
+                try
+                {
+                    var documents = sr.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Documents(sr);
+                    var input = Input(documents); using var stream = input.Input;
+                    schema = ProductSchema.Compile(stream, new() { BaseUri = input.Source, Resolver = resolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
+                    if (!stream.CanRead) throw new InvalidOperationException("Compile disposed caller stream");
+                    compile = new("schema-valid", "", [], resolver.Requests.ToArray());
+                }
+                catch (Exception e) { compile = Failure(e, resolver, timeout.Token); }
+            }
+            if (sr.ValueKind != JsonValueKind.Null) Emit(sr, compile, engine, output);
+            foreach (var row in Instances(group))
+            {
+                if (row.GetProperty("classification").GetString() != "applicable") { Emit(row, new(row.GetProperty("classification").GetString()!, row.GetProperty("reason").GetString()!, [], []), engine, output); continue; }
+                Observation actual;
+                if (schema is null) actual = new("schema-unavailable", compile.Outcome + ": " + compile.Detail, compile.Codes, compile.Resources);
+                else
+                {
+                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds((row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 60 : 30));
+                    long work = (row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 20_000_000_000 : 100_000_000;
+                    var instanceResolver = new Resolver(sr); var preparation = new List<object>();
+                    try
+                    {
+                        using var input = File.OpenRead(PathFor(UriFor(Documents(row).Single())));
+                        var originals = sr.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Documents(sr);
+                        var plan = InstanceInputs(row, originals, preparation); var validationSchema = schema;
+                        if (plan.Augmented)
+                        {
+                            var prepared = InstanceInput(plan); using var preparedStream = prepared.Input;
+                            validationSchema = ProductSchema.Compile(preparedStream, new() { BaseUri = prepared.Source, Resolver = instanceResolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
+                        }
+                        bool hintOrderingProfile = VerifiedHintOrdering(row, plan);
+                        if (hintOrderingProfile) preparation.Add(new { kind = "verified-product-hint-ordering-profile", instanceUri = UriFor(Documents(row).Single()).AbsoluteUri, policy = "exact original/schema hash binding; first authored schemas only; actual product assessment, no instance acquisition; skip corner remains project interpretation" });
+                        var result = validationSchema.Validate(input, new() { Limits = Limits with { EvaluationWork = work }, MaxOperations = work, CancellationToken = timeout.Token });
+                        if (!input.CanRead) throw new InvalidOperationException("Validation disposed caller stream");
+                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [.. preparation, .. instanceResolver.Requests], hintOrderingProfile);
+                        if (plan.Limitations.Length > 0 && !hintOrderingProfile) actual = actual with { Outcome = "instance-hint-ordering-limitation", Detail = string.Join("; ", plan.Limitations) + "; supplemental engine result: " + actual.Outcome + ": " + actual.Detail };
+                    }
+                    catch (Exception e) { actual = e is HintSchemaPreparationException hintFailure ? ProbeHintSchema(hintFailure, instanceResolver, timeout.Token) : Failure(e, instanceResolver, timeout.Token); if (actual.Outcome == "schema-invalid") actual = actual with { Outcome = "schema-unavailable" }; actual = actual with { Resources = [.. preparation, .. actual.Resources] }; }
+                }
+                Emit(row, actual, engine, output);
+            }
+        }
+        return 0;
+    }
+    internal static void Emit(JsonElement row, Observation actual, string engine, StreamWriter output)
+    {
+        string cl = row.GetProperty("classification").GetString()!, kind = row.GetProperty("kind").GetString()!;
+        string? expected = row.GetProperty("expected").GetString();
+        // Inapplicable metadata never becomes a semantic pass, even if a schema was needed by an instance.
+        output.WriteLine(JsonSerializer.Serialize(new { id = row.GetProperty("id").GetString(), engine, classification = cl, kind, expected, actual = actual.Outcome, detail = actual.Detail, codes = actual.Codes, resources = actual.Resources, hintOrderingProfile = actual.HintOrderingProfile, passed = cl == "applicable" ? Oracle(expected, actual.Outcome, kind) : (bool?)null }));
+    }
+}

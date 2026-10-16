@@ -1,0 +1,12 @@
+using System.Text;
+using Xemele;
+using Xemele.Interop;
+if (Environment.Version.ToString() != "10.0.11") throw new Exception("Wrong actual framework " + Environment.Version);
+using var input = new MemoryStream(Encoding.UTF8.GetBytes("<root><child xml:id='picked'>value</child></root>"));
+using var reader = Xemele.Streaming.XmlReader.Create(input);
+using var adapter = new XemeleXmlReaderAdapter(reader);
+int elements = 0;
+while (await adapter.ReadAsync()) if (adapter.NodeType == System.Xml.XmlNodeType.Element) elements++;
+var navigator = new XemeleXPathNavigatorAdapter(XmlDocument.Parse("<root><child xml:id='picked'>value</child></root>"));
+if (elements != 2 || (string)navigator.Evaluate("string(/root/child)") != "value" || !navigator.MoveToId("picked")) throw new Exception("Adapter sample failed");
+Console.WriteLine("PASS: independent BCL adapters sample; 2 reader elements, XPath value and xml:id; actual framework " + Environment.Version);

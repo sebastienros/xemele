@@ -1,0 +1,21 @@
+namespace Usage;
+internal static class GrammarOnly
+{
+    internal static void Use()
+    {
+        using var parser = new Xemele.Parsing.Dtd.DtdParser(Xemele.Parsing.Dtd.DtdSubsetKind.Internal, new());
+        var step = parser.Append("<!ENTITY e 'text'>", [], true, default);
+        if (step.Step == Xemele.Parsing.Dtd.DtdParseStep.NeedEntity) parser.PushEntity(new Uri("https://fixture.invalid/entity.dtd"));
+        _ = parser.Model.GeneralEntities;
+        using var nested = new Xemele.Parsing.Dtd.DtdParser(Xemele.Parsing.Dtd.DtdSubsetKind.Internal, new(), new Xemele.XmlLocation(null, 3, 17, null));
+    }
+}
+internal static class ExternalProlog
+{
+    internal static Xemele.Parsing.Dtd.XmlTextDeclaration? Frame()
+    {
+        using var framer = new Xemele.Parsing.Dtd.XmlTextDeclarationFramer(new(), new Uri("https://fixture.invalid/final.dtd"));
+        var result = framer.Append("<?xml encoding='UTF-8'?>", [], false, default);
+        return result.Declaration;
+    }
+}

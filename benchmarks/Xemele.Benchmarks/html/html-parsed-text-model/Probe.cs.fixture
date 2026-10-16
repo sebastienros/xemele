@@ -1,0 +1,11 @@
+using Xemele.Html;
+static long Measure(Action work) { long before=GC.GetAllocatedBytesForCurrentThread();work();return GC.GetAllocatedBytesForCurrentThread()-before; }
+if(args.Length!=1 || args[0]!="--measure") throw new ArgumentException("--measure required");
+var owner=new HtmlDocument(new(){TokenCharacters=1});var text=owner.CreateParsedText("😀long");string merged=new('x',8192);long sink=0;
+for(int i=0;i<1024;i++){text.SetParsedText(merged);sink+=owner.CreateParsedText("x").Value.Length;}
+for(int batch=0;batch<8;batch++)Console.WriteLine($"parsed-update-{batch}: {Measure(()=>{for(int i=0;i<4096;i++)text.SetParsedText(merged);})} B / 4096");
+Console.WriteLine($"positive: {Measure(()=>GC.KeepAlive(new byte[1024]))} B");
+Console.WriteLine($"public-owned-text: {Measure(()=>{for(int i=0;i<1000;i++)sink+=owner.CreateText("x").Value.Length;})} B / 1000");
+Console.WriteLine($"parsed-owned-text: {Measure(()=>{for(int i=0;i<1000;i++)sink+=owner.CreateParsedText(merged).Value.Length;})} B / 1000");
+Console.WriteLine($"parsed-copy-text: {Measure(()=>{for(int i=0;i<1000;i++)sink+=owner.ImportParsed(text).Value.Length;})} B / 1000");
+Console.WriteLine($"sink={sink}");GC.KeepAlive(owner);

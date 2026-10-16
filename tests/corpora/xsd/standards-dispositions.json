@@ -1,0 +1,37 @@
+{
+  "dispositions": [
+    {
+      "id": "msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119",
+      "originalExpected": "invalid",
+      "originalFixture": "msData/datatypes/Facets/Schemas/time_maxInclusive007.xsd",
+      "disposition": "exact standards-ambiguity exception",
+      "originalOracleMustRemainFailed": true,
+      "countAsPass": false,
+      "reason": "Recurring UTC time normalization dispute; existing internally consistent policy retained; no other case exception authorized.",
+      "fixtureSha256": "66c11256195b54e87e4af57d3ec3773398a21310da8dceab753f7baf78bbdd33"
+    },
+    {
+      "id": "msMeta/Errata10_w3c.xml#g18/s:errF001",
+      "originalExpected": "valid",
+      "originalFixture": "msData/errata10/errF001.xsd",
+      "originalStatus": "queried",
+      "adjudicatedExpected": "invalid",
+      "disposition": "Second Edition clause4.3.1.4/2.2 and E2-66 superseding E2-35",
+      "originalOracleMustRemainFailed": true,
+      "sources": [
+        "https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#length-coss",
+        "https://www.w3.org/2001/05/xmlschema-errata.html#E2-66",
+        "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4681"
+      ],
+      "reason": "No ancestor maxLength without length supplies unchanged maximum; separate standards oracle, no product change.",
+      "fixtureSha256": "1a2485b85be6ef584242d06d1911580f6f7c68dcc539deb5034e52abdeb6ce46"
+    },
+    {
+      "id": "msMeta/Errata10_w3c.xml#g18/i0:errF001.i",
+      "originalExpected": "invalid",
+      "disposition": "dependent instance unexecuted because adjudicated schema invalid",
+      "countAsPass": false,
+      "reason": "Retain schema-unavailable; never infer invalid-instance pass from rejected schema."
+    }
+  ]
+}

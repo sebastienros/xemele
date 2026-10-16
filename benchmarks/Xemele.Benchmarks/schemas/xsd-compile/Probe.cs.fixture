@@ -1,0 +1,110 @@
+// Allocation-only probe follows the verified M8-model warmed-distribution driver.
+// --control does not invoke allocation/retention counters or timers.
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure output.");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+bool measure = mode == "--measure";
+long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldBefore : 0;
+var rows = new List<object>();
+for (int route = 0; route < Fixture.Names.Length; route++)
+{
+    for (int warm = 0; warm < 32; warm++) fixture.Run(route);
+    var distribution = new long[64];
+    long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        fixture.Run(route);
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    if (measure && (route < 2 ? bytes != 0 || distribution.Any(b => b != 0) : bytes <= 0 || distribution.Any(b => b <= 0))) throw new InvalidOperationException("Allocation ownership control failed: " + Fixture.Names[route]);
+    rows.Add(new { route, name = Fixture.Names[route], operations = 64, bytes, distribution });
+}
+long positiveBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveBefore : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new XsdCompiledSchema[32];
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.NewGraph();
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    serverGc = System.Runtime.GCSettings.IsServerGC, sourceRevision = Environment.GetEnvironmentVariable("XEMELE_XSD_REVISION"),
+    assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location),
+    inputSha256 = HashText(Fixture.Input), resourceSha256 = HashText(Fixture.Resource), coldSetupBytes, positiveBytes,
+    retainedBefore, retainedAfter, retainedGraphs = retained.Length, rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: {Fixture.Names.Length} consumed cases, 32 warm + 64 operations each; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+static string HashText(string value) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
+
+internal sealed class Fixture
+{
+    internal static readonly string[] Names = ["sealed global component lookup", "sealed datatype definition lookup", "verified model principal parsing baseline", "owned graph compilation from parsed document", "principal parsing plus owned graph", "external composition plus owned graph", "owned invalid-schema diagnostics"];
+    internal const string Input = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:p' xmlns:p='urn:p'><xs:group name='g'><xs:sequence><xs:element name='根' type='xs:string' minOccurs='0' maxOccurs='99999999999999999999999999999999'/><xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded' processContents='lax'/></xs:sequence></xs:group><xs:simpleType name='S'><xs:restriction base='xs:QName'><xs:enumeration value='p:item'/></xs:restriction></xs:simpleType><xs:complexType name='T'><xs:group ref='p:g'/><xs:attribute name='q' type='p:S' default='p:item'/></xs:complexType><xs:element name='root' type='p:T'/></xs:schema>";
+    internal const string Resource = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='external' type='xs:string'/></xs:schema>";
+    private const string Composition = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:include schemaLocation='urn:xsd:child'/><xs:include schemaLocation='urn:xsd:child'/></xs:schema>";
+    private const string Invalid = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='a' type='missing'/></xs:schema>";
+    private readonly XmlDocument source;
+    private readonly XsdCompiledSchema graph;
+    private readonly SchemaCompileOptions unlimited = new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null }, BaseUri = new("urn:xsd:principal") };
+    private readonly XmlResourceResolver resolver = new Resolver();
+    internal Fixture()
+    {
+        source = new SchemaCompileContext(unlimited).Parse(Input).Document;
+        graph = NewGraph();
+        if (!graph.GlobalElements.ContainsKey(new("urn:p", "root"))) throw new InvalidOperationException("Fixture graph control failed.");
+    }
+    internal XsdCompiledSchema NewGraph() => new XmlSchemaCompiler().Compile(source, unlimited, new SchemaCompileOperation(unlimited));
+    internal void Run(int route)
+    {
+        switch (route)
+        {
+            case 0:
+                if (!graph.GlobalElements.TryGetValue(new("urn:p", "root"), out int id) || graph.Elements[id].Name.LocalName != "root") throw new InvalidOperationException();
+                break;
+            case 1:
+                if (graph.Datatypes.FindType(new("urn:p", "S")) is not { Variety: XmlDatatypeVariety.Atomic, Facets.Count: 1 }) throw new InvalidOperationException();
+                break;
+            case 2:
+                var parsed = new SchemaCompileContext(unlimited).Parse(Input);
+                if (parsed.Document.RootElement.LocalName != "schema") throw new InvalidOperationException();
+                GC.KeepAlive(parsed); break;
+            case 3:
+                Consume(NewGraph(), new("urn:p", "root")); break;
+            case 4:
+                var context = new SchemaCompileContext(unlimited);
+                Consume(new XmlSchemaCompiler().Compile(context.Parse(Input).Document, context.Options, context.Operation), new("urn:p", "root")); break;
+            case 5:
+                var composition = new SchemaCompileContext(unlimited with { Resolver = resolver });
+                Consume(new XmlSchemaCompiler().Compile(composition.Parse(Composition).Document, composition.Options, composition.Operation), new("", "external")); break;
+            case 6:
+                var invalid = new SchemaCompileContext(unlimited);
+                try { new XmlSchemaCompiler().Compile(invalid.Parse(Invalid).Document, invalid.Options, invalid.Operation); throw new InvalidOperationException("Invalid schema accepted."); }
+                catch (SchemaCompileException failure) { if (!failure.Diagnostics.Any(d => d.Code == "XSD.SchemaRestriction")) throw; GC.KeepAlive(failure); }
+                break;
+            default: throw new ArgumentOutOfRangeException(nameof(route));
+        }
+    }
+    private static void Consume(XsdCompiledSchema model, SchemaName name)
+    {
+        if (!model.GlobalElements.ContainsKey(name) || model.Types.Count < 40 || model.Datatypes.FindType(new("http://www.w3.org/2001/XMLSchema", "anySimpleType")) is null) throw new InvalidOperationException();
+        GC.KeepAlive(model);
+    }
+    private sealed class Resolver : XmlResourceResolver
+    {
+        private readonly byte[] bytes = Encoding.UTF8.GetBytes(Resource);
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
+        { token.ThrowIfCancellationRequested(); if (request.Kind != XmlResourceKind.Schema) throw new InvalidOperationException(); return new(new MemoryStream(bytes, false), new("urn:xsd:child")); }
+    }
+}

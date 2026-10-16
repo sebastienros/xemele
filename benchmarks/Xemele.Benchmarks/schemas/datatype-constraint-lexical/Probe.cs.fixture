@@ -1,0 +1,77 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele.Validation;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException();
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture(); fixture.Run(1);
+long coldBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+for (int route = 0; route < Fixture.Names.Length; route++)
+{
+    for (int warm = 0; warm < 16; warm++) fixture.Run(route);
+    long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < 64; i++) fixture.Run(route);
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    if (measure && bytes <= 0) throw new InvalidOperationException("Allocation boundary failed.");
+    rows.Add(new { route, name = Fixture.Names[route], bytes, operations = 64 });
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new DatatypeConstraintRepresentation[16];
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Create(2);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription,
+ architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+ serverGc = System.Runtime.GCSettings.IsServerGC, coldBytes, coldOperations = 1, positiveBytes,
+ retainedBefore, retainedAfter, retainedCount = retained.Length,
+ sourceRevision = Environment.GetEnvironmentVariable("XEMELE_CONSTRAINT_REVISION"),
+ assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location),
+ inputSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join("\n", fixture.Inputs)))), rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: cold setup/first result +9 warm consumed routes,16warmups/one64-call aggregate each; counters {(measure ? "enabled" : "disabled")}; no timing.");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+sealed class Fixture
+{
+    internal static readonly string[] Names = ["owned text constraint", "owned int constraint", "owned long decimal constraint", "owned double constraint", "owned binary constraint", "owned temporal constraint", "owned QName constraint", "owned list/union constraint", "actual-type default assessment"];
+    internal readonly string[] Inputs = ["abc", "01", new string('9', 1024) + ".0100", "1.7976931348623157e308", new string('A', 1024), "1234567890123456789012345678901234567890123456789012345678901234567890-03-01T00:30:00." + new string('1', 1024) + "000+01:00", " p:local ", " 1\t02  0 ", "01"];
+    private readonly SchemaCompileOperation operation = new(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+    private readonly SchemaNamespaceContext context = new(new Dictionary<string, string> { ["p"] = "urn:declaration" }, "", null);
+    private readonly XmlFacetEvaluator evaluator = new();
+    private readonly XmlDatatypeRegistry registry;
+    private readonly XmlDatatypeDefinition[] types;
+    private object? consumed;
+    internal Fixture()
+    {
+        var small = new XmlDatatypeDefinition(new("urn:probe", "Small"), XmlDatatypeVariety.Atomic, DatatypeTypes.Name("int"), null, [], [new(XmlFacetKind.Pattern, "[0-9]", false, context, default)], [], false, default);
+        var union = new XmlDatatypeDefinition(new("urn:probe", "Union"), XmlDatatypeVariety.Union, DatatypeTypes.Name("anySimpleType"), null, [DatatypeTypes.Name("boolean"), DatatypeTypes.Name("decimal")], [], [], false, default);
+        var list = new XmlDatatypeDefinition(new("urn:probe", "List"), XmlDatatypeVariety.List, DatatypeTypes.Name("anySimpleType"), union.Name, [], [], [], false, default);
+        registry = new([small, union, list], operation);
+        types = [registry.FindType(DatatypeTypes.Name("string"))!, registry.FindType(DatatypeTypes.Name("int"))!, registry.FindType(DatatypeTypes.Name("decimal"))!, registry.FindType(DatatypeTypes.Name("double"))!, registry.FindType(DatatypeTypes.Name("base64Binary"))!, registry.FindType(DatatypeTypes.Name("dateTime"))!, registry.FindType(DatatypeTypes.Name("QName"))!, list, small];
+        foreach (var type in types) if (!evaluator.ValidateDefinition(type, registry, operation)) throw new InvalidOperationException();
+    }
+    internal DatatypeConstraintRepresentation Create(int route)
+    {
+        var type = route == 8 ? types[1] : types[route];
+        if (!DatatypeConstraintRepresentation.TryCreate(type, Inputs[route], context, registry, evaluator, operation, out var rep, out _)) throw new InvalidOperationException();
+        return rep!;
+    }
+    internal void Run(int route)
+    {
+        var rep = Create(route);
+        if (route == 0 && rep.Lexical != "abc" || route is 1 or 8 && rep.Lexical != "1" || route == 6 && rep.Lexical != "p:local" || route == 7 && rep.Lexical != "true 2.0 false") throw new InvalidOperationException();
+        if (route == 8)
+        {
+            if (!evaluator.TryValidate(types[8], rep.Lexical, rep.Context, registry, operation, out var actual, out _) || actual!.TypeName != types[8].Name || !registry.Find(DatatypeTypes.XsdNamespace)!.ValueEquals(rep.DeclaredValue, actual, operation)) throw new InvalidOperationException();
+            consumed = actual;
+        }
+        else consumed = rep;
+        GC.KeepAlive(consumed);
+    }
+}

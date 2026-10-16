@@ -1,0 +1,10 @@
+using Xemele.Streaming;
+internal static class InvalidLifetime
+{
+    internal static async Task AcrossAwait(Xemele.Streaming.XmlReader reader)
+    {
+        var borrowed = reader.ValueSpan;
+        await Task.Yield();
+        Console.WriteLine(borrowed.Length); // Must fail CS4007.
+    }
+}

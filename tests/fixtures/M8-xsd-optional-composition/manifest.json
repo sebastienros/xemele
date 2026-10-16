@@ -1,0 +1,231 @@
+{
+  "source": "https://github.com/w3c/xsdtests",
+  "revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "cases": [
+    {
+      "id": "anyURI_a002_1337",
+      "group": "anyURI_a002_1337",
+      "kind": "schemaTest",
+      "documents": [
+        "msData/datatypes/Facets/anyURI/anyURI_a002.xsd"
+      ],
+      "expected": [
+        {
+          "validity": "valid"
+        }
+      ],
+      "current": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "prior": [],
+      "metadata": "metadata/anyURI_a002_1337.xml.fragment"
+    },
+    {
+      "id": "anyURI_a002_1337.v",
+      "group": "anyURI_a002_1337",
+      "kind": "instanceTest",
+      "documents": [
+        "msData/datatypes/Facets/anyURI/anyURI_a002.xml"
+      ],
+      "expected": [
+        {
+          "validity": "valid"
+        }
+      ],
+      "current": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "prior": [],
+      "metadata": "metadata/anyURI_a002_1337.xml.fragment"
+    },
+    {
+      "id": "anyURI_a004_1339",
+      "group": "anyURI_a004_1339",
+      "kind": "schemaTest",
+      "documents": [
+        "msData/datatypes/Facets/anyURI/anyURI_a004.xsd"
+      ],
+      "expected": [
+        {
+          "validity": "valid"
+        }
+      ],
+      "current": [
+        {
+          "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4126",
+          "status": "stable",
+          "date": "2010-07-05"
+        }
+      ],
+      "prior": [
+        {
+          "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4126",
+          "status": "queried",
+          "date": "2007-01-02"
+        },
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "metadata": "metadata/anyURI_a004_1339.xml.fragment"
+    },
+    {
+      "id": "anyURI_a004_1339.i",
+      "group": "anyURI_a004_1339",
+      "kind": "instanceTest",
+      "documents": [
+        "msData/datatypes/Facets/anyURI/anyURI_a004.xml"
+      ],
+      "expected": [
+        {
+          "validity": "invalid"
+        }
+      ],
+      "current": [
+        {
+          "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4126",
+          "status": "queried",
+          "date": "2010-07-09"
+        }
+      ],
+      "prior": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "metadata": "metadata/anyURI_a004_1339.xml.fragment"
+    },
+    {
+      "id": "schD7",
+      "group": "schD7",
+      "kind": "schemaTest",
+      "documents": [
+        "msData/schema/schD7_a.xsd"
+      ],
+      "expected": [
+        {
+          "validity": "valid"
+        }
+      ],
+      "current": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "prior": [],
+      "metadata": "metadata/schD7.xml.fragment"
+    },
+    {
+      "id": "schD7.v",
+      "group": "schD7",
+      "kind": "instanceTest",
+      "documents": [
+        "msData/schema/schD7.xml"
+      ],
+      "expected": [
+        {
+          "validity": "valid"
+        }
+      ],
+      "current": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "prior": [],
+      "metadata": "metadata/schD7.xml.fragment"
+    },
+    {
+      "id": "schG8",
+      "group": "schG8",
+      "kind": "schemaTest",
+      "documents": [
+        "msData/schema/schG8_a.xsd"
+      ],
+      "expected": [
+        {
+          "validity": "valid"
+        }
+      ],
+      "current": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "prior": [],
+      "metadata": "metadata/schG8.xml.fragment"
+    },
+    {
+      "id": "schG8.v",
+      "group": "schG8",
+      "kind": "instanceTest",
+      "documents": [
+        "msData/schema/schG8.xml"
+      ],
+      "expected": [
+        {
+          "validity": "valid"
+        }
+      ],
+      "current": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "prior": [],
+      "metadata": "metadata/schG8.xml.fragment"
+    }
+  ],
+  "missing": {
+    "anyURI_a002_1337": [
+      "名前空間URI"
+    ],
+    "anyURI_a004_1339": [
+      "http://127.0.0.1/must%20not%20resolve.xyzzy"
+    ],
+    "schD7": [
+      "not-exist.xsd"
+    ],
+    "schG8": [
+      "not-exist"
+    ]
+  },
+  "metadata_sources": {
+    "msMeta/DataTypes_w3c.xml": "20cefe2551319c1658e16e59604f3152f7c619f0e991045a0cd5e680e5cc616b",
+    "msMeta/Schema_w3c.xml": "486c831895933c4f795eaef1ff0f8033a068ce04eaa1ff3753609ba0c00672d4"
+  },
+  "derived_a004": {
+    "expected": "valid",
+    "source": "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4126",
+    "basis": "Pinned group documentation and W3C4126 state that failed URIs do not make schema or instance invalid. Original instance INVALID is retained."
+  },
+  "sha256": {
+    "00COPYRIGHT": "7eed412023877d15a3900b6802afb9e6365c0ea0a71a1456c5bf5f3a591e7fb2",
+    "metadata/anyURI_a002_1337.xml.fragment": "19ddcd9b191323b57a3fef771f06895bce5687fa81dc1a718071a0bda3a3dd30",
+    "metadata/anyURI_a004_1339.xml.fragment": "92c0dcbea411316d0b002ce86928b933b91ffbed87ef2f24cd4a8045b74852ec",
+    "metadata/schD7.xml.fragment": "f1449997ad0253e370c222da89e3f9b8337e8154a42861c57fe9aba2321d23d1",
+    "metadata/schG8.xml.fragment": "12437904b51e5fd27a0c139751815f7f28f0280eb713d6dc4141479e5b633d68",
+    "msData/datatypes/Facets/anyURI/anyURI_a002.xml": "07fbb087f162aa3ca46a31534c5c82d15f6a5f9f9a7a05bffd11990d36f4ddf2",
+    "msData/datatypes/Facets/anyURI/anyURI_a002.xsd": "6fe2295e58bc2c226444741bfb0db225a1903e6a0aadfe87502f5e8fbf095ab7",
+    "msData/datatypes/Facets/anyURI/anyURI_a004.xml": "d6aacc4d4184946821a4fc76593e2fd84e55fd5dc93b0844ac39a0478e7d4b61",
+    "msData/datatypes/Facets/anyURI/anyURI_a004.xsd": "fba5b2235649ec219bc35c9ecef3d5d54e8876c6146a8b712a1c54537717fa4d",
+    "msData/schema/schD7.xml": "612cd6f6970e14e0eecc123fa3e932fec19dd2514ca852d6a24a7f51f202b0e0",
+    "msData/schema/schD7_a.xsd": "dd187c8233f8eff1af2c5f2624e10120a2763c38b03cef51cb0df7b0767a7e4f",
+    "msData/schema/schD7_c.xsd": "d8fd401e2a35f53c5892204a7ec547b108c197d33aea1ffe19f76af00e4a23ae",
+    "msData/schema/schG8.xml": "d9b6081e24cda4a6da3c6743990becbbbe9799dc0b02d3122e19fd7194fcdc89",
+    "msData/schema/schG8_a.xsd": "f49e2f7bf71f025e46e435f13ad4ca10fb657234805cdb9eacaf8d1e7628cd93",
+    "msData/schema/schG8_c.xsd": "194a152b0a9437f69808da81be019fefd1bc376374dcf3ee447d521db6e13c81"
+  }
+}

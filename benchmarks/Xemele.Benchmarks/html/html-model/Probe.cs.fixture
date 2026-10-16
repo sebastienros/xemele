@@ -1,0 +1,30 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Html;
+using Xemele.Benchmarks.HtmlModel;
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+if(RuntimeInformation.FrameworkDescription!=".NET 10.0.11")throw new Exception("Actual pinned runtime required.");
+if(args[0] is "--discover" or "--benchmark")
+{
+ var config=ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());var suite=BenchmarkConverter.TypeToBenchmarks(typeof(ModelBenchmarks),config);
+ if(suite.BenchmarksCases.Length!=12||suite.BenchmarksCases.Any(c=>c.Job.Run.WarmupCount!=3||c.Job.Run.IterationCount!=3||c.Job.Run.LaunchCount!=1||c.Job.Infrastructure.Toolchain!=InProcessNoEmitToolchain.Instance))throw new Exception("12 ShortRun NoEmit cases required.");Console.WriteLine("12 ShortRun NoEmit cases; no builds/generation.");if(args[0]=="--discover")return;var summary=BenchmarkRunner.Run(suite);if(summary.Reports.Length!=12||summary.Reports.Any(r=>!r.Success||r.ResultStatistics is null))throw new Exception("Benchmark failure.");return;
+}
+if(args[0]!="--measure")throw new ArgumentException();
+long before=GC.GetAllocatedBytesForCurrentThread();HtmlNamedReferences.TryGet("amp;",out var consumed);Print("cold-table-initialization",GC.GetAllocatedBytesForCurrentThread()-before,1);
+before=GC.GetAllocatedBytesForCurrentThread();var control=new byte[1024];var allocated=GC.GetAllocatedBytesForCurrentThread()-before;if(allocated==0)throw new Exception("positive allocation control");Print("positive-control",allocated,1);GC.KeepAlive(control);
+foreach(var input in new[]{"amp;","CounterClockwiseContourIntegral;","notin;","notit;","zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz;","é;","amp=",""})
+{
+ for(int i=0;i<1000;i++){HtmlNamedReferences.TryGet(input,out consumed);HtmlNamedReferences.Match(input,true,out _,out consumed);HtmlForeignNames.AdjustSvgAttribute(input.AsSpan());}
+ for(int batch=0;batch<16;batch++){before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<4096;i++){HtmlNamedReferences.TryGet(input,out consumed);HtmlNamedReferences.Match(input,true,out _,out consumed);HtmlForeignNames.AdjustSvgAttribute(input.AsSpan());}allocated=GC.GetAllocatedBytesForCurrentThread()-before;Print("steady-borrowed-"+input,allocated,4096);if(allocated!=0)throw new Exception("Borrowed matcher allocated.");}
+}
+var doc=ModelBenchmarks.OwnedGraph();var root=doc.RootElement;var text=doc.CreateText("x");root.AppendChild(text);var attribute=new HtmlAttribute("class","replace");root.SetAttribute(attribute);for(int i=0;i<1000;i++){text.Remove();root.AppendChild(text);root.SetAttribute(attribute);consumed=root.GetAttribute("CLASS");consumed=root.GetAttribute("ClAsS");if(root.RemoveAttribute("MiSsInG"))throw new Exception();}
+before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<4096;i++){text.Remove();root.AppendChild(text);}allocated=GC.GetAllocatedBytesForCurrentThread()-before;Print("steady-existing-node-mutation",allocated,4096);if(allocated!=0)throw new Exception("Existing node mutation allocated.");
+before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<4096;i++){consumed=root.GetAttribute("CLASS");consumed=root.GetAttribute("ClAsS");if(root.RemoveAttribute("MiSsInG"))throw new Exception();}allocated=GC.GetAllocatedBytesForCurrentThread()-before;Print("steady-uppercase-attribute-query",allocated,4096);if(allocated!=0)throw new Exception("Attribute query allocated.");
+for(int i=0;i<10;i++)ModelBenchmarks.OwnedGraph();before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<100;i++)doc=ModelBenchmarks.OwnedGraph();Print("owned-graph",GC.GetAllocatedBytesForCurrentThread()-before,100);
+before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<100;i++)root.SetAttribute(attribute);Print("owned-attribute-snapshot-replacement",GC.GetAllocatedBytesForCurrentThread()-before,100);
+GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapBefore=GC.GetTotalMemory(false);var retained=new HtmlDocument[100];for(int i=0;i<100;i++)retained[i]=ModelBenchmarks.OwnedGraph();GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapAfter=GC.GetTotalMemory(false);Console.WriteLine(JsonSerializer.Serialize(new{domain="retained-whole-heap-inclusive-doc-array-runtime-roots",beforeBytes=heapBefore,afterBytes=heapAfter,inclusiveDeltaBytes=heapAfter-heapBefore,denominatorDocuments=100}));GC.KeepAlive(retained);GC.KeepAlive(doc);GC.KeepAlive(consumed);
+static void Print(string domain,long numeratorBytes,int denominatorOperations)=>Console.WriteLine(JsonSerializer.Serialize(new{domain,numeratorBytes,denominatorOperations}));

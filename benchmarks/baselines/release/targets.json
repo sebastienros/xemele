@@ -1,0 +1,67 @@
+{
+  "protocol": "docs/performance.md",
+  "targets": [
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "libxml2",
+      "threshold": 0.8
+    },
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "xmloxide",
+      "threshold": 0.8
+    },
+    {
+      "workload": "utf8-owned-dom",
+      "reference": "BCL XmlDocument",
+      "threshold": 1.0
+    },
+    {
+      "workload": "forward-read-sax",
+      "reference": "BCL XmlReader",
+      "threshold": 1.0
+    },
+    {
+      "workload": "dom-utf8-serialize",
+      "reference": "libxml2",
+      "threshold": 0.9
+    },
+    {
+      "workload": "dom-utf8-serialize",
+      "reference": "xmloxide",
+      "threshold": 0.9
+    },
+    {
+      "workload": "compiled-xpath",
+      "reference": "libxml2",
+      "threshold": 0.8
+    },
+    {
+      "workload": "compiled-xpath",
+      "reference": "xmloxide",
+      "threshold": 0.8
+    },
+    {
+      "workload": "retained-dom",
+      "reference": "BCL XmlDocument",
+      "maximumRatio": 0.75
+    },
+    {
+      "workload": "streaming-live-1gib",
+      "maximumBytes": 8388608
+    },
+    {
+      "workload": "concrete-traversal",
+      "managedBytesPerOperation": 0
+    }
+  ],
+  "primaryFixtureFloor": 0.5,
+  "investigateRegressionPercent": 5,
+  "blockConfirmedRegressionPercent": 10,
+  "benchmarkAttributes": [
+    "MemoryDiagnoser",
+    "ShortRunJob"
+  ],
+  "dedicatedTimingRequired": true,
+  "allocationIsolationRequired": false
+}

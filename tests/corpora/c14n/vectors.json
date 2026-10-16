@@ -1,0 +1,381 @@
+[
+  {
+    "id": "inclusive10-unused-context",
+    "mode": 0,
+    "xml": "<r xmlns:p='urn:p'><x/></r>",
+    "expected": "<r xmlns:p=\"urn:p\"><x></x></r>",
+    "origin": "preserved M5-c14n repository-authored fixture",
+    "referenceModes": [
+      0,
+      2
+    ],
+    "expectedUtf8Sha256": "bf1df4a5e4adfaf43a151bf5abab51fc906e5baa3fda8b00c51c2c17bf141a93"
+  },
+  {
+    "id": "inclusive11-unused-context",
+    "mode": 1,
+    "xml": "<r xmlns:p='urn:p'><x/></r>",
+    "expected": "<r xmlns:p=\"urn:p\"><x></x></r>",
+    "origin": "preserved M5-c14n repository-authored fixture",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "bf1df4a5e4adfaf43a151bf5abab51fc906e5baa3fda8b00c51c2c17bf141a93"
+  },
+  {
+    "id": "exclusive10-unused-context",
+    "mode": 2,
+    "xml": "<r xmlns:p='urn:p'><x/></r>",
+    "expected": "<r><x></x></r>",
+    "origin": "preserved M5-c14n repository-authored fixture",
+    "referenceModes": [
+      0,
+      2
+    ],
+    "expectedUtf8Sha256": "e748455120be58670b0690fb2e186ebba1c443e8a3febb3bfe2dc5b69ff033b3"
+  },
+  {
+    "id": "exclusive10-explicit-prefix",
+    "mode": 2,
+    "prefixes": [
+      "p"
+    ],
+    "xml": "<r xmlns:p='urn:p'><x/></r>",
+    "expected": "<r xmlns:p=\"urn:p\"><x></x></r>",
+    "origin": "preserved M5-c14n repository-authored fixture",
+    "referenceModes": [
+      0,
+      2
+    ],
+    "expectedUtf8Sha256": "bf1df4a5e4adfaf43a151bf5abab51fc906e5baa3fda8b00c51c2c17bf141a93"
+  },
+  {
+    "id": "comment-control",
+    "mode": 0,
+    "comments": true,
+    "xml": "<!--a--><r/><!--b-->",
+    "expected": "<!--a-->\n<r></r>\n<!--b-->",
+    "origin": "preserved M5-c14n repository-authored fixture",
+    "referenceModes": [
+      0,
+      2
+    ],
+    "expectedUtf8Sha256": "b56bd3ff08f3cba00ecb29c9d8b71cee1bb2c96e782a0c1d002c2336122763ee"
+  },
+  {
+    "id": "xml11-base-fixup",
+    "mode": 1,
+    "xml": "<r xml:base='../'><x xml:base='../'/></r>",
+    "expression": "(//node() | //@*)[ancestor-or-self::x]",
+    "expected": "<x xml:base=\"../../\"></x>",
+    "origin": "preserved M5-c14n repository-authored fixture",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "d14798ef2f3bbbbfb1d7f1a9089b4f660e0b16db2f1651e7a4826601c682afd5"
+  },
+  {
+    "id": "authored-escape-0-False",
+    "mode": 0,
+    "comments": false,
+    "xml": "<?pre p?><!--a--><r z='2' a='&quot;&amp;&lt;&#x9;&#xA;&#xD;'>\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;<![CDATA[<>]]><!--b--></r><?post?>",
+    "expected": "<?pre p?>\n<r a=\"&quot;&amp;&lt;&#x9;&#xA;&#xD;\" z=\"2\">\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;&lt;&gt;</r>\n<?post?>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "117f76f810eb7ae587165d9b379afeb87205788e614c238f7f5618d426e1671f"
+  },
+  {
+    "id": "authored-escape-0-True",
+    "mode": 0,
+    "comments": true,
+    "xml": "<?pre p?><!--a--><r z='2' a='&quot;&amp;&lt;&#x9;&#xA;&#xD;'>\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;<![CDATA[<>]]><!--b--></r><?post?>",
+    "expected": "<?pre p?>\n<!--a-->\n<r a=\"&quot;&amp;&lt;&#x9;&#xA;&#xD;\" z=\"2\">\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;&lt;&gt;<!--b--></r>\n<?post?>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "61b02a70bd3e2c92eff1706bb7db35a2d50f1fc8ee67606f95a126bf060e13b3"
+  },
+  {
+    "id": "authored-escape-1-False",
+    "mode": 1,
+    "comments": false,
+    "xml": "<?pre p?><!--a--><r z='2' a='&quot;&amp;&lt;&#x9;&#xA;&#xD;'>\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;<![CDATA[<>]]><!--b--></r><?post?>",
+    "expected": "<?pre p?>\n<r a=\"&quot;&amp;&lt;&#x9;&#xA;&#xD;\" z=\"2\">\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;&lt;&gt;</r>\n<?post?>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "117f76f810eb7ae587165d9b379afeb87205788e614c238f7f5618d426e1671f"
+  },
+  {
+    "id": "authored-escape-1-True",
+    "mode": 1,
+    "comments": true,
+    "xml": "<?pre p?><!--a--><r z='2' a='&quot;&amp;&lt;&#x9;&#xA;&#xD;'>\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;<![CDATA[<>]]><!--b--></r><?post?>",
+    "expected": "<?pre p?>\n<!--a-->\n<r a=\"&quot;&amp;&lt;&#x9;&#xA;&#xD;\" z=\"2\">\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;&lt;&gt;<!--b--></r>\n<?post?>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "61b02a70bd3e2c92eff1706bb7db35a2d50f1fc8ee67606f95a126bf060e13b3"
+  },
+  {
+    "id": "authored-escape-2-False",
+    "mode": 2,
+    "comments": false,
+    "xml": "<?pre p?><!--a--><r z='2' a='&quot;&amp;&lt;&#x9;&#xA;&#xD;'>\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;<![CDATA[<>]]><!--b--></r><?post?>",
+    "expected": "<?pre p?>\n<r a=\"&quot;&amp;&lt;&#x9;&#xA;&#xD;\" z=\"2\">\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;&lt;&gt;</r>\n<?post?>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "117f76f810eb7ae587165d9b379afeb87205788e614c238f7f5618d426e1671f"
+  },
+  {
+    "id": "authored-escape-2-True",
+    "mode": 2,
+    "comments": true,
+    "xml": "<?pre p?><!--a--><r z='2' a='&quot;&amp;&lt;&#x9;&#xA;&#xD;'>\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;<![CDATA[<>]]><!--b--></r><?post?>",
+    "expected": "<?pre p?>\n<!--a-->\n<r a=\"&quot;&amp;&lt;&#x9;&#xA;&#xD;\" z=\"2\">\u6839\ud83d\ude00&lt;&amp;&gt;&#xD;&lt;&gt;<!--b--></r>\n<?post?>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "61b02a70bd3e2c92eff1706bb7db35a2d50f1fc8ee67606f95a126bf060e13b3"
+  },
+  {
+    "id": "authored-default-0-False",
+    "mode": 0,
+    "comments": false,
+    "xml": "<r xmlns='urn:d' xmlns:p='urn:p'><x/><n xmlns=''/></r>",
+    "expected": "<r xmlns=\"urn:d\" xmlns:p=\"urn:p\"><x></x><n xmlns=\"\"></n></r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "cffa22263e3999e93e8fe97d16eae653cff2d947985d8b4a56b0c89b569b9f3a"
+  },
+  {
+    "id": "authored-default-0-True",
+    "mode": 0,
+    "comments": true,
+    "xml": "<r xmlns='urn:d' xmlns:p='urn:p'><x/><n xmlns=''/></r>",
+    "expected": "<r xmlns=\"urn:d\" xmlns:p=\"urn:p\"><x></x><n xmlns=\"\"></n></r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "cffa22263e3999e93e8fe97d16eae653cff2d947985d8b4a56b0c89b569b9f3a"
+  },
+  {
+    "id": "authored-default-1-False",
+    "mode": 1,
+    "comments": false,
+    "xml": "<r xmlns='urn:d' xmlns:p='urn:p'><x/><n xmlns=''/></r>",
+    "expected": "<r xmlns=\"urn:d\" xmlns:p=\"urn:p\"><x></x><n xmlns=\"\"></n></r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "cffa22263e3999e93e8fe97d16eae653cff2d947985d8b4a56b0c89b569b9f3a"
+  },
+  {
+    "id": "authored-default-1-True",
+    "mode": 1,
+    "comments": true,
+    "xml": "<r xmlns='urn:d' xmlns:p='urn:p'><x/><n xmlns=''/></r>",
+    "expected": "<r xmlns=\"urn:d\" xmlns:p=\"urn:p\"><x></x><n xmlns=\"\"></n></r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "cffa22263e3999e93e8fe97d16eae653cff2d947985d8b4a56b0c89b569b9f3a"
+  },
+  {
+    "id": "authored-default-2-False",
+    "mode": 2,
+    "comments": false,
+    "xml": "<r xmlns='urn:d' xmlns:p='urn:p'><x/><n xmlns=''/></r>",
+    "expected": "<r xmlns=\"urn:d\"><x></x><n xmlns=\"\"></n></r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "76282846413fa6a9fe449f326d858e890bca8b4775134f2f95cc34e44039de84"
+  },
+  {
+    "id": "authored-default-2-True",
+    "mode": 2,
+    "comments": true,
+    "xml": "<r xmlns='urn:d' xmlns:p='urn:p'><x/><n xmlns=''/></r>",
+    "expected": "<r xmlns=\"urn:d\"><x></x><n xmlns=\"\"></n></r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "76282846413fa6a9fe449f326d858e890bca8b4775134f2f95cc34e44039de84"
+  },
+  {
+    "id": "authored-normalize-0-False",
+    "mode": 0,
+    "comments": false,
+    "xml": "<!DOCTYPE r [<!ENTITY e 'E'><!ATTLIST r a NMTOKENS '  x   y  '>]><r>&e;<![CDATA[ & ]]>\r\n</r>",
+    "expected": "<r a=\"x y\">E &amp; \n</r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "6785665b05ba57adbce521cbd53fd071716b006a68b4623d8c0e881c65bb79eb"
+  },
+  {
+    "id": "authored-normalize-0-True",
+    "mode": 0,
+    "comments": true,
+    "xml": "<!DOCTYPE r [<!ENTITY e 'E'><!ATTLIST r a NMTOKENS '  x   y  '>]><r>&e;<![CDATA[ & ]]>\r\n</r>",
+    "expected": "<r a=\"x y\">E &amp; \n</r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "6785665b05ba57adbce521cbd53fd071716b006a68b4623d8c0e881c65bb79eb"
+  },
+  {
+    "id": "authored-normalize-1-False",
+    "mode": 1,
+    "comments": false,
+    "xml": "<!DOCTYPE r [<!ENTITY e 'E'><!ATTLIST r a NMTOKENS '  x   y  '>]><r>&e;<![CDATA[ & ]]>\r\n</r>",
+    "expected": "<r a=\"x y\">E &amp; \n</r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "6785665b05ba57adbce521cbd53fd071716b006a68b4623d8c0e881c65bb79eb"
+  },
+  {
+    "id": "authored-normalize-1-True",
+    "mode": 1,
+    "comments": true,
+    "xml": "<!DOCTYPE r [<!ENTITY e 'E'><!ATTLIST r a NMTOKENS '  x   y  '>]><r>&e;<![CDATA[ & ]]>\r\n</r>",
+    "expected": "<r a=\"x y\">E &amp; \n</r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "6785665b05ba57adbce521cbd53fd071716b006a68b4623d8c0e881c65bb79eb"
+  },
+  {
+    "id": "authored-normalize-2-False",
+    "mode": 2,
+    "comments": false,
+    "xml": "<!DOCTYPE r [<!ENTITY e 'E'><!ATTLIST r a NMTOKENS '  x   y  '>]><r>&e;<![CDATA[ & ]]>\r\n</r>",
+    "expected": "<r a=\"x y\">E &amp; \n</r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "6785665b05ba57adbce521cbd53fd071716b006a68b4623d8c0e881c65bb79eb"
+  },
+  {
+    "id": "authored-normalize-2-True",
+    "mode": 2,
+    "comments": true,
+    "xml": "<!DOCTYPE r [<!ENTITY e 'E'><!ATTLIST r a NMTOKENS '  x   y  '>]><r>&e;<![CDATA[ & ]]>\r\n</r>",
+    "expected": "<r a=\"x y\">E &amp; \n</r>",
+    "origin": "repository-authored normative-rule vector",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "6785665b05ba57adbce521cbd53fd071716b006a68b4623d8c0e881c65bb79eb"
+  },
+  {
+    "id": "authored-subset-xml-0",
+    "mode": 0,
+    "xml": "<a xmlns:p='urn:p' xml:lang='en' xml:id='I' xml:base='top/'><b xml:base='near/'><p:x/></b></a>",
+    "expression": "(//node() | //@* | //namespace::*)[ancestor-or-self::*[local-name()='x']]",
+    "expected": "<p:x xmlns:p=\"urn:p\" xml:base=\"near/\" xml:id=\"I\" xml:lang=\"en\"></p:x>",
+    "origin": "repository-authored XML inheritance/base distinction",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "8ca3cc4ce87061838d58a219c81355128fdcaad46b87d50322e6f934a1da6426"
+  },
+  {
+    "id": "authored-subset-xml-1",
+    "mode": 1,
+    "xml": "<a xmlns:p='urn:p' xml:lang='en' xml:id='I' xml:base='top/'><b xml:base='near/'><p:x/></b></a>",
+    "expression": "(//node() | //@* | //namespace::*)[ancestor-or-self::*[local-name()='x']]",
+    "expected": "<p:x xmlns:p=\"urn:p\" xml:base=\"top/near/\" xml:lang=\"en\"></p:x>",
+    "origin": "repository-authored XML inheritance/base distinction",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "470d0597aa5a0d64263c1b62259ef085713c8d0d7b4c450d6bc9595b31a063fa"
+  },
+  {
+    "id": "authored-subset-xml-2",
+    "mode": 2,
+    "xml": "<a xmlns:p='urn:p' xml:lang='en' xml:id='I' xml:base='top/'><b xml:base='near/'><p:x/></b></a>",
+    "expression": "(//node() | //@* | //namespace::*)[ancestor-or-self::*[local-name()='x']]",
+    "expected": "<p:x xmlns:p=\"urn:p\"></p:x>",
+    "origin": "repository-authored XML inheritance/base distinction",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "85969719f9eef349b57d5b67410fa08f57df276fad48b0d18b68e7d03bcbd2c5"
+  },
+  {
+    "id": "w3c-c14n11-3.8-E11-01",
+    "mode": 1,
+    "xml": "<!DOCTYPE doc [<!ATTLIST e2 xml:space (default|preserve) 'preserve'><!ATTLIST e3 id ID #IMPLIED>]><doc xmlns='http://www.ietf.org' xmlns:w3c='http://www.w3.org' xml:base='something/else'>\n   <e1>\n      <e2 xmlns='' xml:id='abc' xml:base='bar/'>\n         <e3 id='E3' xml:base='foo'/>\n      </e2>\n   </e1>\n</doc>",
+    "expression": "(//node() | //@* | //namespace::*)[local-name()='e1' or (parent::*[local-name()='e1'] and not(self::text() or local-name()='e2')) or ancestor-or-self::*[local-name()='e3']]",
+    "expected": "<e1 xmlns=\"http://www.ietf.org\" xmlns:w3c=\"http://www.w3.org\" xml:base=\"something/else\"><e3 xmlns=\"\" id=\"E3\" xml:base=\"bar/foo\" xml:space=\"preserve\"></e3></e1>",
+    "origin": "W3C C14N1.1 section3.8 (XPath equivalent local-name adaptation); official E11-01 output correction",
+    "source": "https://www.w3.org/TR/2008/REC-xml-c14n11-20080502/#Example-DocSubsets",
+    "erratum": "https://www.w3.org/2008/05/xml-c14n11-errata",
+    "referenceModes": [],
+    "expectedUtf8Sha256": "9d9b781ac135f3f8d4539722bc2fb952709c75c6dc493325bdbe8a6328552cf4"
+  },
+  {
+    "id": "w3c-exclusive-2.1-0",
+    "mode": 0,
+    "xml": "<n0:pdu xmlns:n0=\"http://a.example\"><n1:elem1 xmlns:n1=\"http://b.example\">\n    content\n</n1:elem1></n0:pdu>",
+    "expression": "(//node() | //@* | //namespace::*)[ancestor-or-self::*[local-name()='elem1']]",
+    "expected": "<n1:elem1 xmlns:n0=\"http://a.example\" xmlns:n1=\"http://b.example\">\n    content\n</n1:elem1>",
+    "origin": "W3C Exclusive1.0 section2.1 re-enveloping example (indentation held identical in input/output)",
+    "source": "https://www.w3.org/TR/2002/REC-xml-exc-c14n-20020718/#sec-Enveloping",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "0d2ca2fe91682c56002f7d3d1b651afa00593a7b27530372e2ecb1d68ca64931"
+  },
+  {
+    "id": "w3c-exclusive-2.1-2",
+    "mode": 2,
+    "xml": "<n0:pdu xmlns:n0=\"http://a.example\"><n1:elem1 xmlns:n1=\"http://b.example\">\n    content\n</n1:elem1></n0:pdu>",
+    "expression": "(//node() | //@* | //namespace::*)[ancestor-or-self::*[local-name()='elem1']]",
+    "expected": "<n1:elem1 xmlns:n1=\"http://b.example\">\n    content\n</n1:elem1>",
+    "origin": "W3C Exclusive1.0 section2.1 re-enveloping example (indentation held identical in input/output)",
+    "source": "https://www.w3.org/TR/2002/REC-xml-exc-c14n-20020718/#sec-Enveloping",
+    "referenceModes": [
+      2
+    ],
+    "expectedUtf8Sha256": "c47dbfc441aa5627b44c62d218904c2ac91c5c653b0c9df62685543e2328d468"
+  },
+  {
+    "id": "w3c-inclusive10-3.1-False",
+    "mode": 0,
+    "comments": false,
+    "xml": "<?xml version=\"1.0\"?>\n<?xml-stylesheet   href=\"doc.xsl\"\n   type=\"text/xsl\"   ?>\n<!DOCTYPE doc SYSTEM \"doc.dtd\">\n<doc>Hello, world!<!-- Comment 1 --></doc>\n<?pi-without-data     ?>\n<!-- Comment 2 -->\n<!-- Comment 3 -->",
+    "external": {
+      "https://corpus.invalid/doc.dtd": ""
+    },
+    "expected": "<?xml-stylesheet href=\"doc.xsl\"\n   type=\"text/xsl\"   ?>\n<doc>Hello, world!</doc>\n<?pi-without-data?>",
+    "origin": "W3C C14N1.0 section3.1; explicit empty offline external subset",
+    "source": "https://www.w3.org/TR/2001/REC-xml-c14n-20010315#Example-OutsideDoc",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "69411bccf40cdc1856d9b02918e6341c10b3525246c3c88e1bebb98830d468e5"
+  },
+  {
+    "id": "w3c-inclusive10-3.1-True",
+    "mode": 0,
+    "comments": true,
+    "xml": "<?xml version=\"1.0\"?>\n<?xml-stylesheet   href=\"doc.xsl\"\n   type=\"text/xsl\"   ?>\n<!DOCTYPE doc SYSTEM \"doc.dtd\">\n<doc>Hello, world!<!-- Comment 1 --></doc>\n<?pi-without-data     ?>\n<!-- Comment 2 -->\n<!-- Comment 3 -->",
+    "external": {
+      "https://corpus.invalid/doc.dtd": ""
+    },
+    "expected": "<?xml-stylesheet href=\"doc.xsl\"\n   type=\"text/xsl\"   ?>\n<doc>Hello, world!<!-- Comment 1 --></doc>\n<?pi-without-data?>\n<!-- Comment 2 -->\n<!-- Comment 3 -->",
+    "origin": "W3C C14N1.0 section3.1; explicit empty offline external subset",
+    "source": "https://www.w3.org/TR/2001/REC-xml-c14n-20010315#Example-OutsideDoc",
+    "referenceModes": [
+      0
+    ],
+    "expectedUtf8Sha256": "dbbe661a4ff59bb9120a4911365cf14328b6a218c22087b283caf27f3c278204"
+  }
+]

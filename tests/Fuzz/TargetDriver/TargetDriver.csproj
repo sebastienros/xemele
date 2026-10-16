@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RuntimeFrameworkVersion>10.0.11</RuntimeFrameworkVersion>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Xemele.Conformance.Tests/Streaming/Equivalence.cs" Link="Deterministic/Equivalence.cs" />
+    <Compile Include="../../Xemele.Conformance.Tests/Streaming/NormalizedEvents.cs" Link="Deterministic/NormalizedEvents.cs" />
+    <PackageReference Include="SharpFuzz" Version="2.3.0" />
+    <ProjectReference Include="../../../src/Xemele/Xemele.csproj" />
+  </ItemGroup>
+</Project>

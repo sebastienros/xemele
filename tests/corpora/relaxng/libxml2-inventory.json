@@ -1,0 +1,337 @@
+{
+  "suite": "libxml2 numbered historical RELAX NG regressions",
+  "upstream": "https://gitlab.gnome.org/GNOME/libxml2",
+  "revision": "96498992efa48d52b0e8b83058bd88dbdaf153c1",
+  "selection": "All top-level test/relaxng files with numeric bug-ID basename (number.rng, number_?.xml, and their number-suffixed resources); examples and OASIS suite are outside this source family, not feature exclusions.",
+  "license": "MIT",
+  "missingCases": 0,
+  "missingResources": 0,
+  "cases": [
+    {
+      "id": "libxml2-302836",
+      "schemaExpected": "accepted",
+      "schema": {
+        "path": "libxml2/test/relaxng/302836.rng",
+        "sha256": "3fcae31f6422b52fe7a0093d634fa42c26465121220eb724654d6c8f565aac4c",
+        "bytes": 795
+      },
+      "instances": [
+        {
+          "id": "libxml2-302836_0",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/302836_0.err",
+            "sha256": "591c7746118b6eba893241aeb439c920dcf35b36a6bdec6ea3f8312272ae66e5",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/302836_0.xml",
+          "sha256": "db5bcb4c71a97d5dc69270bd2429798a43a73f98a7a0ca7c9b4cd3a326327760",
+          "bytes": 207
+        }
+      ],
+      "classification": "applicable",
+      "reason": "Numbered historical RNG XML regression. Original runtest.c rngTest compiles this schema and checks authored result/relaxng instance predicates."
+    },
+    {
+      "id": "libxml2-307377",
+      "schemaExpected": "accepted",
+      "schema": {
+        "path": "libxml2/test/relaxng/307377.rng",
+        "sha256": "f13531e0b274db9f5862762f92eadc730f280fdb9d98e7bb71dc39c9711fa0d1",
+        "bytes": 341
+      },
+      "instances": [
+        {
+          "id": "libxml2-307377_0",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/307377_0.err",
+            "sha256": "4b0a6448abdb98aa1c1be6ec7cfc75382fa7d8ffdb16ef18eb53f6dae98d0d4d",
+            "bytes": 164
+          },
+          "path": "libxml2/test/relaxng/307377_0.xml",
+          "sha256": "558b037e8c16a72c82b80f60b1fc6f9136334d8d95f72d160f04a5a451d847a1",
+          "bytes": 29
+        },
+        {
+          "id": "libxml2-307377_1",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/307377_1.err",
+            "sha256": "e5b75b1a8a403c2f50f60d8732fa71b3011f64b8ec9dca3a794a507fc7190c84",
+            "bytes": 259
+          },
+          "path": "libxml2/test/relaxng/307377_1.xml",
+          "sha256": "8fdcd2aca1147ac0e9746d8044594e2b05badd8ed90e5c5f634d145d230d18ef",
+          "bytes": 29
+        },
+        {
+          "id": "libxml2-307377_2",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/307377_2.err",
+            "sha256": "f0f1a878077a3f06cdb2906c8ad248e4e085efcb863f86098a511c9b58db4976",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/307377_2.xml",
+          "sha256": "2bad2ec609a6ff82f545de3de118cd4ed83c2b7c49a51eb5f97b02e1463eeced",
+          "bytes": 23
+        }
+      ],
+      "classification": "applicable",
+      "reason": "Numbered historical RNG XML regression. Original runtest.c rngTest compiles this schema and checks authored result/relaxng instance predicates."
+    },
+    {
+      "id": "libxml2-492317",
+      "schemaExpected": "accepted",
+      "schema": {
+        "path": "libxml2/test/relaxng/492317.rng",
+        "sha256": "c13a9f695e90ffba36849c9d1d298559f04a44b87b4c8056d0e64ce0c47cb228",
+        "bytes": 466
+      },
+      "instances": [
+        {
+          "id": "libxml2-492317_0",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/492317_0.err",
+            "sha256": "ee5e9e77fc6f28cfbbba563e0a50a42eff073d8bc151a099415b5503503ae32e",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/492317_0.xml",
+          "sha256": "51a2968f63f2569ab7516864887c0c52ea62834dc3ffd758ffeac1254d840e33",
+          "bytes": 47
+        },
+        {
+          "id": "libxml2-492317_1",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/492317_1.err",
+            "sha256": "99e8c9e17ee839af31b401520444582d4840cf253217d8b9389fed3c0d803b6e",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/492317_1.xml",
+          "sha256": "7fbd96b03f8fda5bfc4c4841a88f53655ef7a6e6ef8c3cf13f8d0e51b266f417",
+          "bytes": 47
+        },
+        {
+          "id": "libxml2-492317_2",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/492317_2.err",
+            "sha256": "ee73acedbc1b8ada7048d4a5e73c5230f6bee610cc98173d2ddf119e4ec85b1d",
+            "bytes": 273
+          },
+          "path": "libxml2/test/relaxng/492317_2.xml",
+          "sha256": "7ec4209f2cd100116d41dd085444d25e34b3eba250ce3ce4d80e830d5c6f00b8",
+          "bytes": 44
+        }
+      ],
+      "classification": "applicable",
+      "reason": "Numbered historical RNG XML regression. Original runtest.c rngTest compiles this schema and checks authored result/relaxng instance predicates."
+    },
+    {
+      "id": "libxml2-558452",
+      "schemaExpected": "accepted",
+      "schema": {
+        "path": "libxml2/test/relaxng/558452.rng",
+        "sha256": "48379cf7160ad1a9b2749bde1c7cae62ca505bea40b854f715722edd628cca90",
+        "bytes": 451
+      },
+      "instances": [
+        {
+          "id": "libxml2-558452_0",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/558452_0.err",
+            "sha256": "33c5f09b0088e895e4e17223b4d35e04c14b6c8308b78495e225f6b40110dae4",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/558452_0.xml",
+          "sha256": "a33ab7ad1309699187347a96c4e1e4a79bc538fa1a1d14546019a36ccdc59bdf",
+          "bytes": 65
+        },
+        {
+          "id": "libxml2-558452_1",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/558452_1.err",
+            "sha256": "cd258179b5f8a7ea49c6d679a533182886c1f4722c6b400d25689505d0fbaa6e",
+            "bytes": 151
+          },
+          "path": "libxml2/test/relaxng/558452_1.xml",
+          "sha256": "95e410816e6090146c03233aa90b334dc0a9951af59d684d8c7167eeb87c151d",
+          "bytes": 35
+        },
+        {
+          "id": "libxml2-558452_2",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/558452_2.err",
+            "sha256": "1f0406690f0c50d454b1f6368eecaf5e3031f252c522a5280c2a1662502d9b6b",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/558452_2.xml",
+          "sha256": "c9109ac7c112d1e534f1daf18ad28ed9292ebca7d205b46f1aaf30e2bcd71106",
+          "bytes": 45
+        },
+        {
+          "id": "libxml2-558452_3",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/558452_3.err",
+            "sha256": "3642984de30aae06e4811ab26801b70776fcbd086b8e03d2599eb019b26f17d6",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/558452_3.xml",
+          "sha256": "ad8c9953c4fd0ff5a1dec64c7c6302be46540ead3ea64b6827b7448c48164b85",
+          "bytes": 55
+        },
+        {
+          "id": "libxml2-558452_4",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/558452_4.err",
+            "sha256": "a0f1486b26eff062328d32ef15e238482ea7a5c3820acda6f810d025b62a2e3c",
+            "bytes": 151
+          },
+          "path": "libxml2/test/relaxng/558452_4.xml",
+          "sha256": "cb87950186a8d88a7c9bd9d4fc6da5df77df76b8499054c5dc8dacbcb2561125",
+          "bytes": 75
+        }
+      ],
+      "classification": "applicable",
+      "reason": "Numbered historical RNG XML regression. Original runtest.c rngTest compiles this schema and checks authored result/relaxng instance predicates."
+    },
+    {
+      "id": "libxml2-565219",
+      "schemaExpected": "accepted",
+      "schema": {
+        "path": "libxml2/test/relaxng/565219.rng",
+        "sha256": "44e3e05c88f26523e7d606956f77335c1e8a97690fda73e8a978eda07f6d3215",
+        "bytes": 279
+      },
+      "instances": [
+        {
+          "id": "libxml2-565219_0",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/565219_0.err",
+            "sha256": "80f26ac3bb12c410a8e1c1c1ece7dc746dd304e3f2b983ef5c5ba780152616ec",
+            "bytes": 175
+          },
+          "path": "libxml2/test/relaxng/565219_0.xml",
+          "sha256": "2ee9f219c39876da6fe6a394248f529b3addd1753d46c6d6c9077d106d1e5b84",
+          "bytes": 31
+        },
+        {
+          "id": "libxml2-565219_1",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/565219_1.err",
+            "sha256": "cb285f041478bf04be753c44a335f0ec34d2a75bd54764bfc5424ceef0c3f8cc",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/565219_1.xml",
+          "sha256": "03751785bf65de2c43077fc658ac32f5428e2ad2142fc9b176c7372a51d5c307",
+          "bytes": 7
+        },
+        {
+          "id": "libxml2-565219_2",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/565219_2.err",
+            "sha256": "8f67c45f258711d39f7bfd2db646d081cb911003b2515d04b02a2cf417dff900",
+            "bytes": 175
+          },
+          "path": "libxml2/test/relaxng/565219_2.xml",
+          "sha256": "2ee9f219c39876da6fe6a394248f529b3addd1753d46c6d6c9077d106d1e5b84",
+          "bytes": 31
+        }
+      ],
+      "classification": "applicable",
+      "reason": "Numbered historical RNG XML regression. Original runtest.c rngTest compiles this schema and checks authored result/relaxng instance predicates."
+    },
+    {
+      "id": "libxml2-595792",
+      "schemaExpected": "accepted",
+      "schema": {
+        "path": "libxml2/test/relaxng/595792.rng",
+        "sha256": "b579a17f79ea8b9ef27e095596159a0a64119d9506f17d02bcb8cacb7c2a4fe0",
+        "bytes": 215
+      },
+      "instances": [
+        {
+          "id": "libxml2-595792_0",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/595792_0.err",
+            "sha256": "292de52150829ff25da2e144faf51c4eb3e11b94248f981960fe79257831d511",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/595792_0.xml",
+          "sha256": "bc724488601159e8f5057d8e08f667335e66d851ce40df4795102ac1c92ebcf9",
+          "bytes": 50
+        }
+      ],
+      "classification": "applicable",
+      "reason": "Numbered historical RNG XML regression. Original runtest.c rngTest compiles this schema and checks authored result/relaxng instance predicates."
+    },
+    {
+      "id": "libxml2-710744",
+      "schemaExpected": "accepted",
+      "schema": {
+        "path": "libxml2/test/relaxng/710744.rng",
+        "sha256": "c8a76dfc2b33687a732db2c8a40d6d159f2394f6181ea925a4dd9c6725a82f36",
+        "bytes": 411
+      },
+      "instances": [
+        {
+          "id": "libxml2-710744_1",
+          "expected": "valid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/710744_1.err",
+            "sha256": "e6451891963bfc6fbd05f53d49de0c894824c99fe48afe61393f3f0e9b9e3284",
+            "bytes": 38
+          },
+          "path": "libxml2/test/relaxng/710744_1.xml",
+          "sha256": "aeb06471d8c63e2f109a4cb093d1f8f01b775be4f838784fb4e3fb44c123ef36",
+          "bytes": 70
+        },
+        {
+          "id": "libxml2-710744_2",
+          "expected": "invalid",
+          "oracle": {
+            "path": "libxml2/result/relaxng/710744_2.err",
+            "sha256": "365325f85e4bbdbfcda3077dc9a7dffb409fde8d801b7e85bc4221fc219d01bc",
+            "bytes": 156
+          },
+          "path": "libxml2/test/relaxng/710744_2.xml",
+          "sha256": "6c3d3259253353286ab64b733869322aab064e7e4bac3f06cbd5c4ecc39833a7",
+          "bytes": 114
+        }
+      ],
+      "classification": "applicable",
+      "reason": "Numbered historical RNG XML regression. Original runtest.c rngTest compiles this schema and checks authored result/relaxng instance predicates."
+    }
+  ],
+  "resources": [
+    {
+      "path": "libxml2/test/relaxng/595792-ext.rng",
+      "sha256": "51ce0ec85a295b1b9737dcca072b6c775fff04b056c8a7ada7a7fb306334d0b1",
+      "bytes": 243
+    }
+  ],
+  "sources": [
+    {
+      "path": "libxml2/Copyright",
+      "sha256": "5d4873884a890122a4b9b20ad56ac6f7da1d796a5bfcf04a427970ac96217626",
+      "bytes": 1314
+    },
+    {
+      "path": "libxml2/runtest.c",
+      "sha256": "4c0e05c3ba71326d40e08e96247b1d540eb9a676a8262c797faec646032fc4fc",
+      "bytes": 160811
+    }
+  ]
+}

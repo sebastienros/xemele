@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>xemele</ToolCommandName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(XemelePlatformToolPackages)' == 'true'">
+    <ToolPackageRuntimeIdentifiers>linux-x64;osx-arm64;win-x64;any</ToolPackageRuntimeIdentifiers>
+    <PublishAot Condition="'$(RuntimeIdentifier)' != 'any'">true</PublishAot>
+    <SelfContained Condition="'$(RuntimeIdentifier)' == 'any'">false</SelfContained>
+    <UseAppHost Condition="'$(RuntimeIdentifier)' == 'any'">false</UseAppHost>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Xemele/Xemele.csproj" />
+    <InternalsVisibleTo Include="Xemele.Tests" />
+  </ItemGroup>
+</Project>

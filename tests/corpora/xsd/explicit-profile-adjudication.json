@@ -1,0 +1,114 @@
+{
+  "status": "Independent standards interpretation; original expectations retained",
+  "upstream_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "profile": "W3C XSD1.0 Second Edition, frozen AppendixF surrogate-block exclusions and NOTATION publication rules",
+  "review": "Independent reviewer then root inspected normative text, unchanged original schema syntax, metadata and hashes. No product outcome used to derive expected validity.",
+  "sources": [
+    "https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#regexs",
+    "https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#NOTATION"
+  ],
+  "policy": "Preserve every original expected/status/outcome and original failure. Report derived profile agreement separately; dependent instances remain unexecuted/nonpass. This adjudicates original oracles against explicit pinned text; no runtime waiver or schema rewrite.",
+  "cases": [
+    {
+      "id": "msMeta/Particles_w3c.xml#g812/s:particlesZ007",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/particles/particlesZ007.xsd": "4af6ae8d3a6ba8197da1a61644ac0c184f5504fe71b9a3400a451978fe7158eb"
+      },
+      "profile_expected": "invalid",
+      "reason": "Union directly names bare NOTATION without an enumerated derived datatype, contrary to Second Edition section3.2.19.",
+      "dependent_instances": [
+        {
+          "id": "msMeta/Particles_w3c.xml#g812/i0:particlesZ007.i",
+          "original_expected": "invalid",
+          "documents": {
+            "msData/particles/particlesZ007.xml": "2f0537ba6020a6f89121ee9300ca06e1418f8ee3363cd19b5ae881c944e09a65"
+          },
+          "profile_assessment": "unassessed: invalid schema prerequisite; not an invalid-instance pass"
+        }
+      ]
+    },
+    {
+      "id": "msMeta/Regex_w3c.xml#g694/s:reM77",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/regex/reM77.xsd": "e994bc0141c8038f12ef7a7574c7e1b198abdbe2e98a8a957d46a4d087d04b74"
+      },
+      "profile_expected": "invalid",
+      "reason": "Excluded surrogate block escape under Second Edition Appendix F.",
+      "dependent_instances": [
+        {
+          "id": "msMeta/Regex_w3c.xml#g694/i0:reM77.i",
+          "original_expected": "invalid",
+          "documents": {
+            "msData/regex/reM77.xml": "8e2598984416e0ed95812689d6402aff057245fb241f87fef1db15e654c9442d"
+          },
+          "profile_assessment": "unassessed: invalid schema prerequisite; not an invalid-instance pass"
+        }
+      ]
+    },
+    {
+      "id": "msMeta/Regex_w3c.xml#g789/s:reN75",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/regex/reN75.xsd": "ae1ad5d8ca8ddbdac5088a3cd0c3f266a7e1621d158d4cef8002ceed045212ca"
+      },
+      "profile_expected": "invalid",
+      "reason": "Excluded surrogate block escape under Second Edition Appendix F.",
+      "dependent_instances": [
+        {
+          "id": "msMeta/Regex_w3c.xml#g789/i0:reN75.i",
+          "original_expected": "invalid",
+          "documents": {
+            "msData/regex/reN75.xml": "1fcca6844399780132692267f3b148119bb5081bf3f98dbfe79b1ffc00f5ac51"
+          },
+          "profile_assessment": "unassessed: invalid schema prerequisite; not an invalid-instance pass"
+        }
+      ]
+    },
+    {
+      "id": "msMeta/Regex_w3c.xml#g2572/s:HighSurrogates",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "date": "2006-07-16",
+          "status": "accepted"
+        }
+      ],
+      "documents": {
+        "msData/regex/HighSurrogates.xsd": "3c2dc4fc5bbf607d6dd586d5c734fb88a5bcf8cf54840675184abe50f3f57769"
+      },
+      "profile_expected": "invalid",
+      "reason": "Excluded surrogate block escape under Second Edition Appendix F.",
+      "dependent_instances": [
+        {
+          "id": "msMeta/Regex_w3c.xml#g2572/i0:HighSurrogates.i",
+          "original_expected": "invalid",
+          "documents": {
+            "msData/regex/HighSurrogates.xml": "261645d9471f1e98edfb00b4577613a6712f01361af3d5068f707aaabc072c1e"
+          },
+          "profile_assessment": "unassessed: invalid schema prerequisite; not an invalid-instance pass"
+        }
+      ]
+    }
+  ],
+  "required_checks": "Original four schema rejections plus both escape polarities for three excluded blocks, legal neighboring blocks and a separate enumerated-NOTATION union positive. Preserve existing task evidence and original bytes."
+}

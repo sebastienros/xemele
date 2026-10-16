@@ -1,0 +1,19 @@
+using System.Reflection;
+using Xemele;
+using Xemele.Parsing.Syntax;
+var product = Assembly.LoadFrom(args[0]);
+int count = Preservation.Compare(args[0]);
+var shape = typeof(Preservation).GetMethod("Shape", BindingFlags.NonPublic | BindingFlags.Static)!;
+Type[] types = [typeof(XmlAttributeValuePart), typeof(XmlKnownAttributeText), typeof(XmlUnknownAttributeReference),
+    typeof(XmlIncompleteAttributeDefault), typeof(XmlIncompleteAttributeValue), typeof(XmlIncompleteAttributeDefaultView),
+    typeof(XmlIncompleteAttributeView), typeof(IXmlIncompleteAttributeSink), typeof(XmlNode), typeof(XmlAttribute),
+    typeof(XmlNamespaceDeclaration), typeof(XmlAttributes), typeof(XmlNamespaceDeclarations), typeof(XmlNodeChildren), typeof(XmlUnresolvedReference)];
+foreach (var frozen in types)
+{
+    var actual = product.GetType(frozen.FullName!, true)!;
+    var expectedShape = (string[])shape.Invoke(null, [frozen])!;
+    var actualShape = (string[])shape.Invoke(null, [actual])!;
+    if (!expectedShape.SequenceEqual(actualShape)) throw new Exception("Independent frozen shape mismatch: " + frozen.FullName);
+    count++;
+}
+Console.WriteLine("Matched " + count + " independent frozen internal/public/union shapes.");

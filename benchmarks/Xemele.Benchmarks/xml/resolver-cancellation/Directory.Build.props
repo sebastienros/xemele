@@ -1,0 +1,8 @@
+<Project>
+  <Import Project="../../../../Directory.Build.props" />
+  <!-- Keep standalone generated C# outside the parent benchmark's default glob. -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)../../../artifacts/M2-resolver-cancellation/standalone-obj/</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)../../../artifacts/M2-resolver-cancellation/standalone-bin/</BaseOutputPath>
+  </PropertyGroup>
+</Project>

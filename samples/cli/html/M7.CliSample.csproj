@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><RuntimeFrameworkVersion>10.0.11</RuntimeFrameworkVersion><RollForward>Disable</RollForward></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../src/Xemele/Xemele.csproj" />
+    <Compile Include="../../../src/Xemele.Tool/CommandRegistry.cs" Link="CommandRegistry.cs" />
+    <Compile Include="../../../src/Xemele.Tool/Commands/Xml/*.cs" Link="Xml/%(Filename)%(Extension)" />
+    <Compile Include="../../../src/Xemele.Tool/Commands/Html/*.cs" Link="Html/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

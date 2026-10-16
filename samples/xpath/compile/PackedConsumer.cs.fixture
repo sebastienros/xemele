@@ -1,0 +1,12 @@
+using System.Reflection;
+using Xemele.XPath;
+var assembly = typeof(XPathValue).Assembly;
+var compilerType = assembly.GetType("Xemele.XPath.Internal.XPathCompiler", true)!;
+var contextType = assembly.GetType("Xemele.XPath.Internal.XPathStaticContext", true)!;
+var context = contextType.GetMethod("FromOptions",BindingFlags.Static|BindingFlags.NonPublic)!.Invoke(null,[null,default(CancellationToken)]);
+var compiler = Activator.CreateInstance(compilerType,true)!;
+var ast = compilerType.GetMethod("Compile")!.Invoke(compiler,["//book[@id='b1']/title",context,default(CancellationToken)])!;
+if (ast.GetType().Name != "XPathPath" || !(bool)ast.GetType().GetProperty("Absolute")!.GetValue(ast)!) throw new Exception("Packed compiler result.");
+var steps = (System.Collections.ICollection)ast.GetType().GetProperty("Steps")!.GetValue(ast)!;
+if(steps.Count!=3) throw new Exception("Packed compiler steps.");
+Console.WriteLine("PASS: packed internal compiler path, three expanded steps; public model string="+XPathValue.FromString("根😀").AsString());

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName></PropertyGroup>
+<ItemGroup>
+<ProjectReference Include="../../../../../src/Xemele/Xemele.csproj" Condition="'$(OutcomesXmlOnly)' != 'true'"/>
+<ProjectReference Include="../../../../SourceSubsets/M8-xsd-facade/XmlOnly.csproj" Condition="'$(OutcomesXmlOnly)' == 'true'"/>
+</ItemGroup>
+</Project>

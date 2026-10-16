@@ -1,0 +1,16 @@
+using Xemele;
+using Xemele.Validation;
+const string xs = "http://www.w3.org/2001/XMLSchema";
+var schema = XmlSchema.Compile($"<xs:schema xmlns:xs='{xs}'><xs:element name='good' type='xs:int'/><xs:element name='bad' substitutionGroup='absent'/></xs:schema>");
+foreach (string instance in new[] { "<good>7</good>", "<bad/>" })
+{
+    var text = schema.Validate(instance); var dom = schema.Validate(XmlDocument.Parse(instance));
+    using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(instance)); var bytes = schema.Validate(stream);
+    foreach (var result in new[] { text, dom, bytes })
+    {
+        if (instance.Contains("good", StringComparison.Ordinal)) { if (!result.IsComplete || !result.IsValid) throw new InvalidOperationException("Resolved consumer failed."); }
+        else if (result.IsComplete || result.IsValid || result.Diagnostics.Count != 1 || result.Diagnostics[0].Code != "XSD.MissingComponent") throw new InvalidOperationException("Missing consumer failed.");
+    }
+    if (!stream.CanRead) throw new InvalidOperationException("Caller stream closed.");
+}
+Console.WriteLine("Consumer: 6 results consumed; resolved and missing states preserved.");

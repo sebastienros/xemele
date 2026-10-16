@@ -1,0 +1,66 @@
+{
+  "sourceUrl": "https://html.spec.whatwg.org/multipage/parsing.html#processing-instruction-open-state",
+  "sourceSha256": "34e193906e6898ae7faf576a8d4c0f8de619a86ec99d85a3baeb2713171f1dbf",
+  "upstreamFile": "tokenizer/domjs.test",
+  "upstreamSha256": "3273e7861bbdb094571e4b0813ffdd934fe2bfd65864600fef62e8e3b807131a",
+  "reason": "Mandatory PI-open state rejects the normalized LF as an invalid first target character; original lexical comment expectations remain unchanged. Only these exact three upstream error arrays disagree.",
+  "cases": [
+    {
+      "index": 0,
+      "state": "Data state",
+      "input": "<?\r",
+      "originalErrors": [
+        {
+          "code": "unexpected-question-mark-instead-of-tag-name",
+          "line": 1,
+          "col": 2
+        }
+      ],
+      "currentErrors": [
+        {
+          "code": "invalid-first-character-of-processing-instruction-target",
+          "line": 1,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "state": "Data state",
+      "input": "<?\r\n",
+      "originalErrors": [
+        {
+          "code": "unexpected-question-mark-instead-of-tag-name",
+          "line": 1,
+          "col": 2
+        }
+      ],
+      "currentErrors": [
+        {
+          "code": "invalid-first-character-of-processing-instruction-target",
+          "line": 1,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "state": "Data state",
+      "input": "<?\r\n\n",
+      "originalErrors": [
+        {
+          "code": "unexpected-question-mark-instead-of-tag-name",
+          "line": 1,
+          "col": 2
+        }
+      ],
+      "currentErrors": [
+        {
+          "code": "invalid-first-character-of-processing-instruction-target",
+          "line": 1,
+          "col": 3
+        }
+      ]
+    }
+  ]
+}
