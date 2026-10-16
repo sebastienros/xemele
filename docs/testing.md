@@ -51,8 +51,9 @@ for tests using another already-provisioned corpus location.
 
 `dotnet test --solution Xemele.slnx -c Release --no-build` includes corpus
 infrastructure and foundation contract tests as well as the product suites.
-The SDK pin supplies runtime 10.0.11; test projects declare that runtime with
-roll-forward disabled instead of downloading or rewriting runtime configs.
+The SDK pin supplies runtime 10.0.11; test projects and the BCL reference runner
+declare that runtime with roll-forward disabled instead of downloading or
+rewriting runtime configs.
 Allocation-test runtime settings are declared by test projects. Protocol failure
 fixtures run as actual managed child processes, including malformed UTF-8,
 overflow, timeout and cancellation controls.

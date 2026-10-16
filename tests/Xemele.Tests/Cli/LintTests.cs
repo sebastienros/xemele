@@ -16,7 +16,7 @@ public sealed class LintTests : IDisposable
         var path = Path.Combine(directory, name);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllText(path, content, new UTF8Encoding(false));
-        return path;
+        return Path.GetFullPath(path);
     }
 
     private static (int Code, string Output, string Error) Run(string[] args, byte[]? input = null)
