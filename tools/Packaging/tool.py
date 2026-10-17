@@ -18,7 +18,7 @@ VERSION_PATTERN = r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?
 COMMANDS = {
     'parse', 'format', 'xpath', 'validate-dtd', 'canonicalize', 'catalog', 'xinclude',
     'html-legacy', 'html5', 'html-fragment', 'html-select',
-    'validate-rng', 'validate-xsd', 'validate-schematron',
+    'validate-rng', 'validate-xsd', 'validate-schematron', 'lint',
 }
 
 
