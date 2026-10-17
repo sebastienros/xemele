@@ -183,6 +183,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          release_options=()
-          if [[ "$PRERELEASE" == true ]]; then release_options=(--prerelease); fi
-          gh release create "v$VERSION" artifacts/tool-release/archives/* --verify-tag --title "Xemele $VERSION" --generate-notes "${release_options[@]}"
+          # A release created in the GitHub UI pushes the tag that triggers this workflow; attach archives to it.
+          if gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "v$VERSION" artifacts/tool-release/archives/* --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            release_options=()
+            if [[ "$PRERELEASE" == true ]]; then release_options=(--prerelease); fi
+            gh release create "v$VERSION" artifacts/tool-release/archives/* --repo "$GITHUB_REPOSITORY" --verify-tag --title "Xemele $VERSION" --generate-notes "${release_options[@]}"
+          fi
