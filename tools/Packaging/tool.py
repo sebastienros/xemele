@@ -214,7 +214,10 @@ def verify_installation(args):
         selected = args.rid if args.rid in NATIVE_RIDS else 'any'
         require(list(installed.glob(f'.store/xemele.tool/*/xemele.tool.{selected}/*/tools/*/*/DotnetToolSettings.xml')),
                 f'Installer did not select {selected}')
-        smoke([installed / ('xemele.exe' if os.name == 'nt' else 'xemele')])
+        # Native AOT tools may install a link or launcher instead of an apphost shim, so resolve like a shell would.
+        shim = shutil.which('xemele', path=str(installed))
+        require(shim, f'Installed command not found; tool path contains: {sorted(p.name for p in installed.iterdir())}')
+        smoke([shim])
         archive_rid = selected
         extension = '.zip' if archive_rid in ('any', 'win-x64') else '.tar.gz'
         archive = args.archives / f'xemele-{args.version}-{archive_rid}{extension}'
