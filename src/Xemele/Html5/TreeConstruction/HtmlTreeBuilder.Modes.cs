@@ -2,7 +2,7 @@ namespace Xemele.Html;
 
 internal sealed partial class HtmlTreeBuilder
 {
-    private bool ProcessHtml(Token t)
+    private bool ProcessHtml(in Token t)
     {
         bool start = t.Kind == HtmlTokenKind.StartTag, end = t.Kind == HtmlTokenKind.EndTag;
         var white = t.Kind == HtmlTokenKind.Character && mode != Mode.InBody && mode != Mode.Text && mode != Mode.InTable && mode != Mode.InTableText && White(t.Data);
@@ -158,7 +158,7 @@ internal sealed partial class HtmlTreeBuilder
                 {
                     Push(head!);
                     var again = InHead(t);
-                    stack.Remove(head!);
+                    RemoveOpen(head!);
                     return again;
                 }
                 if (end && n == "template")
@@ -556,7 +556,7 @@ internal sealed partial class HtmlTreeBuilder
                 throw new InvalidOperationException("Unknown insertion mode.");
         }
     }
-    private bool InHead(Token t)
+    private bool InHead(in Token t)
     {
         bool start = t.Kind == HtmlTokenKind.StartTag, end = t.Kind == HtmlTokenKind.EndTag;
         var n = t.Name;

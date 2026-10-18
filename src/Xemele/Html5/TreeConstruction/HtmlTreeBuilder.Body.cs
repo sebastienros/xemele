@@ -2,7 +2,7 @@ namespace Xemele.Html;
 
 internal sealed partial class HtmlTreeBuilder
 {
-    private bool InBody(Token t)
+    private bool InBody(in Token t)
     {
         var n = t.Name;
         switch (t.Kind)
@@ -72,7 +72,7 @@ internal sealed partial class HtmlTreeBuilder
                             }
 
                             Implied();
-                            stack.Remove(pointer);
+                            RemoveOpen(pointer);
                         }
                         else
                         {
@@ -156,7 +156,7 @@ internal sealed partial class HtmlTreeBuilder
                 return false;
         }
     }
-    private bool BodyStart(Token t)
+    private bool BodyStart(in Token t)
     {
         var n = t.Name;
         switch (n)
@@ -185,6 +185,11 @@ internal sealed partial class HtmlTreeBuilder
 
                 FlushObservedText(stack[1]);
                 stack[1].Remove();
+                for (var i = 1; i < stack.Count; i++)
+                {
+                    Closed(stack[i]);
+                }
+
                 stack.RemoveRange(1, stack.Count - 1);
                 Insert(t);
                 mode = Mode.InFrameset;
@@ -285,7 +290,7 @@ internal sealed partial class HtmlTreeBuilder
                 {
                     Adoption("a");
                     formatting.Remove(old);
-                    stack.Remove(old);
+                    RemoveOpen(old);
                 }
                 Reconstruct();
                 AddFormatting(Insert(t));

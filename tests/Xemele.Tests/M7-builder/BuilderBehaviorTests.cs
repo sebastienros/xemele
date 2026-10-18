@@ -217,4 +217,36 @@ public sealed class BuilderBehaviorTests
         Assert.Equal("FoO", fragment.FirstChild!.LocalName);
         Assert.Equal("😀", fragment.FirstChild.Value);
     }
+    [Theory]
+    [InlineData("<p><b>one<i>two</b>three</i>four")]
+    [InlineData("<b>1<b>2<b>3<b>4</b>5<p>6</b>7")]
+    [InlineData("<nobr>a<nobr>b</nobr>c<a href=x>1<a>2</a>3")]
+    [InlineData("<ruby>r<rb>b<rt>t<rtc>c<rp>p</ruby><button>b<p>q</button><button>c<button>d")]
+    [InlineData("<select><option>o<optgroup>g</select><input><hr><select><select>s")]
+    [InlineData("<table>x<tr><td>c<b>d</table>y<template><b>t<table><tr>u</template>v")]
+    [InlineData("<form><div>f</form><form>g</div></p><li>1<li>2<dd>3<dt>4")]
+    [InlineData("<i><span><b><em><u><s><p>x</b>y</i>z<em>w")]
+    public void UnlimitedDeepNestingKeepsTreeConstructionResults(string content)
+    {
+        // Open-element membership and per-name open counts replace stack scans. Plain div ancestors
+        // are not scope boundaries, so content parsed inside thousands of them must build exactly the
+        // subtree it builds inside one.
+        var unlimited = new Html5ParseOptions { Limits = new() { Depth = null } };
+        var expected = Innermost(Html5Parser.Parse("<div>" + content, unlimited));
+        foreach (var depth in (int[])[2, 300, 5000])
+        {
+            Assert.Equal(expected, Innermost(Html5Parser.Parse(string.Concat(Enumerable.Repeat("<div>", depth)) + content, unlimited)));
+        }
+
+        static string Innermost(HtmlDocument document)
+        {
+            var node = document.RootElement.Children[1];
+            while (node.FirstChild is { LocalName: "div" } child && child.NextSibling is null)
+            {
+                node = child;
+            }
+
+            return HtmlSerializer.Serialize(node);
+        }
+    }
 }
