@@ -300,4 +300,71 @@ public sealed class TokenizerBehaviorTests
         Assert.Equal(0, builder.Length);
         Assert.Equal("", builder.ToString());
     }
+    [Fact]
+    public void AttributeReferencesMatchThePerScalarPath()
+    {
+        // The whole-tag fast path resolves error-free terminated references inline. Feeding one character
+        // at a time keeps every tag incomplete, so the per-scalar state machine is the oracle for tokens,
+        // token locations, diagnostics and quotas.
+        string[] references =
+        [
+            "&amp;", "&lt;", "&gt;", "&quot;", "&nbsp;", "&apos;", "&copy;", "&not;", "&notin;", "&notit;", "&Afr;", "&NotEqualTilde;",
+            "&CounterClockwiseContourIntegral;", "&CounterClockwiseContourIntegralx;", "&xyz;", "&amp", "&amp=", "&ampx", "&ampx;", "&AMP;",
+            "&am;", "&;", "&", "&&amp;", "&amp;&amp;", "&#39;", "&#x27;", "&#X27;", "&#0039;", "&#x1F600;", "&#128512;", "&#65", "&#;", "&#x;",
+            "&#0;", "&#13;", "&#x80;", "&#x9F;", "&#xD800;", "&#xFDD0;", "&#xFFFE;", "&#x10FFFF;", "&#x110000;", "&#99999999;", "&#00000065;",
+            "&#x0000041;", "&#1114111;", "&#x7F;", "&#9;", "&#10;", "&#32;", "&# 1;", "&\u0001;", "&amp;\u0001", "&amp;\r", "&amp;\u00A0", "&amp;😀",
+        ];
+        string[] shapes = ["<a v=\"x{0}y\">", "<a v='{0}'>", "<a v={0}>", "<a v={0} w>", "<a v=\"{0}\" w=\"{0}{0}\"/>", "<a\nv=\"{0}\"\nw='{0}'>", "<a v=\"{0}\"x>", "<a v=\"{0}\" v=\"{0}\">"];
+        var cases = 0;
+        foreach (var reference in references)
+        {
+            var value = System.Text.RegularExpressions.Regex.Unescape(reference);
+            foreach (var shape in shapes)
+            {
+                var input = "t" + string.Format(System.Globalization.CultureInfo.InvariantCulture, shape, value) + "u";
+                foreach (var limits in (XmlResourceLimits[])[new(), new() { TokenCharacters = 3 }, new() { ExpandedCharacters = 4 }])
+                {
+                    Assert.True(Run(input, limits, false) == Run(input, limits, true), input);
+                    cases++;
+                }
+            }
+        }
+        Assert.Equal(references.Length * shapes.Length * 3, cases);
+
+        static string Run(string input, XmlResourceLimits limits, bool perCharacter)
+        {
+            var tokens = new List<HtmlToken>();
+            var log = new System.Text.StringBuilder();
+            var tokenizer = new HtmlTokenizer(tokens.Add, new() { Limits = limits }) { ParseError = (code, location) => log.Append(code).Append('@').Append(location).Append(';') };
+            try
+            {
+                if (perCharacter)
+                {
+                    for (var i = 0; i < input.Length; i++)
+                    {
+                        tokenizer.Feed(input.AsSpan(i, 1));
+                    }
+                }
+                else
+                {
+                    tokenizer.Feed(input);
+                }
+
+                tokenizer.Complete();
+            }
+            catch (InvalidOperationException e)
+            {
+                log.Append("throws ").Append(e.Message);
+            }
+            foreach (var token in tokens)
+            {
+                log.Append('|').Append(token.Kind).Append(' ').Append(token.Name).Append(' ').Append(token.Location).Append(' ').Append(token.SelfClosing).Append(' ').Append(token.Data);
+                foreach (var attribute in token.Attributes)
+                {
+                    log.Append(' ').Append(attribute.LocalName).Append('=').Append(attribute.Value);
+                }
+            }
+            return log.ToString();
+        }
+    }
 }

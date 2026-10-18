@@ -1,11 +1,13 @@
+using System.Buffers;
 using System.Text;
 
 namespace Xemele.Html;
 
 // Whole-tag fast path for the Data state. A tag is consumed here only when the complete tag lies in
 // the current input and every scalar of it takes the error-free path of the state machine; any other
-// shape (errors, references, CR, control or non-ASCII markup characters, duplicate attributes, quota or
-// cancellation boundaries, a tag split across chunks) is left untouched for the per-scalar path.
+// shape (errors, references other than error-free terminated ones, CR, control or non-ASCII markup
+// characters, duplicate attributes, quota or cancellation boundaries, a tag split across chunks) is left
+// untouched for the per-scalar path.
 internal sealed partial class HtmlTokenizer
 {
     private static readonly Dictionary<string, string>.AlternateLookup<ReadOnlySpan<char>> KnownNames = CreateKnownNames();
@@ -34,10 +36,15 @@ internal sealed partial class HtmlTokenizer
         return table.GetAlternateLookup<ReadOnlySpan<char>>();
     }
 
+    // Reused lowering scratch: unlike a per-call stackalloc it is not zeroed on every name (the assembly does
+    // not skip locals init). NameString makes no callbacks, so a nested parse on this thread cannot observe it.
+    [ThreadStatic]
+    private static char[]? nameScratch;
+
     // Lower-cases an ASCII name and returns the shared instance for well-known names.
     private static string NameString(ReadOnlySpan<char> name)
     {
-        var buffer = name.Length <= 64 ? stackalloc char[64] : new char[name.Length];
+        Span<char> buffer = name.Length <= 64 ? nameScratch ??= new char[64] : new char[name.Length];
         var lower = buffer[..name.Length];
         for (var i = 0; i < name.Length; i++)
         {
@@ -50,17 +57,19 @@ internal sealed partial class HtmlTokenizer
     private static bool TagNameChar(char c) => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '-' or '_' or ':' or '.';
     private static bool SpaceChar(char c) => c is '\t' or '\n' or '\f' or ' ';
 
-    private bool TryReference(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets, ref int index)
+    // Recognizes an error-free terminated reference at rest[0] == '&': a named reference whose longest match is the
+    // whole name through ';', or a numeric reference of at most seven digits ending in ';' that needs no replacement.
+    // Either form resolves without a parse error, and the attribute no-semicolon rule cannot apply to it.
+    private static bool TerminatedReference(ReadOnlySpan<char> rest, out string? named, out int number, out int consumed, out int scalars)
     {
-        var rest = input[index..];
+        named = null;
+        number = 0;
+        consumed = scalars = 0;
         if (rest.Length < 3)
         {
             return false;
         }
 
-        string? named = null;
-        int consumed, scalars;
-        var number = 0;
         if (rest[1] == '#')
         {
             int p = 2, radix = 10;
@@ -87,36 +96,59 @@ internal sealed partial class HtmlTokenizer
 
             consumed = p + 1;
             scalars = 1;
+            return true;
         }
-        else
+
+        // The most frequent names skip the trie; each value equals what HtmlNamedReferences.Match returns.
+        var common = rest[1..];
+        (named, consumed) = common.StartsWith("amp;") ? ("&", 5)
+            : common.StartsWith("quot;") ? ("\"", 6)
+            : common.StartsWith("lt;") ? ("<", 4)
+            : common.StartsWith("gt;") ? (">", 4)
+            : common.StartsWith("nbsp;") ? ("\u00A0", 6)
+            : ((string?)null, 0);
+        if (named is not null)
         {
-            var p = 1;
-            while (p < rest.Length && p <= 32 && Alnum(rest[p]))
-            {
-                p++;
-            }
+            scalars = 1;
+            return true;
+        }
 
-            if (p == 1 || p >= rest.Length || rest[p] != ';')
-            {
-                return false;
-            }
+        var q = 1;
+        while (q < rest.Length && q <= 32 && Alnum(rest[q]))
+        {
+            q++;
+        }
 
-            consumed = p + 1;
-            if (!HtmlNamedReferences.Match(rest[1..consumed], out var matched, out named) || matched != consumed - 1)
-            {
-                return false;
-            }
+        if (q == 1 || q >= rest.Length || rest[q] != ';')
+        {
+            return false;
+        }
 
-            scalars = 0;
-            for (var i = 0; i < named.Length; i++)
+        consumed = q + 1;
+        if (!HtmlNamedReferences.Match(rest[1..consumed], out var matched, out var value) || matched != consumed - 1)
+        {
+            return false;
+        }
+
+        named = value;
+        for (var i = 0; i < value.Length; i++)
+        {
+            scalars++;
+            if (char.IsHighSurrogate(value[i]) && i + 1 < value.Length && char.IsLowSurrogate(value[i + 1]))
             {
-                scalars++;
-                if (char.IsHighSurrogate(named[i]) && i + 1 < named.Length && char.IsLowSurrogate(named[i + 1]))
-                {
-                    i++;
-                }
+                i++;
             }
         }
+        return true;
+    }
+
+    private bool TryReference(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets, ref int index)
+    {
+        if (!TerminatedReference(input[index..], out var named, out var number, out var consumed, out var scalars))
+        {
+            return false;
+        }
+
         var units = named is null ? (number > 0xFFFF ? 2 : 1) : named.Length;
         var flushAt = limits.TokenCharacters is int textCap ? Math.Min(1024, textCap) : 1024;
         if (characters.Length + units >= flushAt)
@@ -163,6 +195,85 @@ internal sealed partial class HtmlTokenizer
         }
         index += consumed;
         return true;
+    }
+
+    // Scans an attribute value up to its first stop other than a terminated reference. Plain runs and
+    // error-free terminated references are taken; anything else (a bare or unterminated '&', an
+    // erroneous reference, a control or bad non-ASCII character) fails so the per-scalar path runs.
+    private bool TryAttributeValue(ReadOnlySpan<char> tail, SearchValues<char> stops, out int stop, out string value, out int scalars)
+    {
+        value = "";
+        scalars = 0;
+        stop = tail.IndexOfAny(stops);
+        if (stop < 0)
+        {
+            return false;
+        }
+
+        if (tail[stop] != '&')
+        {
+            if (PlainLength(tail[..stop]) != stop)
+            {
+                return false;
+            }
+
+            if (stop > 0)
+            {
+                value = new string(tail[..stop]);
+            }
+
+            scalars = stop;
+            return true;
+        }
+
+        // A tag in the Data state has no attribute in progress; a value left by a duplicate attribute is stale.
+        attrValue.Clear();
+        var start = 0;
+        while (true)
+        {
+            var segment = tail[start..stop];
+            if (PlainLength(segment) != segment.Length)
+            {
+                goto fail;
+            }
+
+            attrValue.Append(segment);
+            scalars += segment.Length;
+            if (tail[stop] != '&')
+            {
+                break;
+            }
+
+            if (!TerminatedReference(tail[stop..], out var named, out var number, out var consumed, out var referenceScalars))
+            {
+                goto fail;
+            }
+
+            if (named is not null)
+            {
+                attrValue.Append(named);
+            }
+            else
+            {
+                attrValue.AppendScalar(number);
+            }
+
+            scalars += referenceScalars;
+            start = stop + consumed;
+            var next = tail[start..].IndexOfAny(stops);
+            if (next < 0)
+            {
+                goto fail;
+            }
+
+            stop = start + next;
+        }
+        value = attrValue.ToStringAndClear();
+        return true;
+    fail:
+        attrValue.Clear();
+        scalars = 0;
+        return false;
     }
 
     private bool TryTag(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets, ref int index)
@@ -285,18 +396,17 @@ internal sealed partial class HtmlTokenizer
                 goto fail;
             }
 
-            ReadOnlySpan<char> value;
+            string value;
+            int scalars;
             var quote = rest[q];
             if (quote is '"' or '\'')
             {
                 var tail = rest[(q + 1)..];
-                var stop = tail.IndexOfAny(quote == '"' ? DoubleStops : SingleStops);
-                if (stop < 0 || tail[stop] != quote)
+                if (!TryAttributeValue(tail, quote == '"' ? DoubleStops : SingleStops, out var stop, out value, out scalars) || tail[stop] != quote)
                 {
                     goto fail;
                 }
 
-                value = tail[..stop];
                 p = q + 1 + stop + 1;
                 if (p >= rest.Length || !(SpaceChar(rest[p]) || rest[p] is '/' or '>'))
                 {
@@ -305,23 +415,18 @@ internal sealed partial class HtmlTokenizer
             }
             else
             {
-                var stop = rest[q..].IndexOfAny(UnquotedStops);
-                if (stop <= 0 || !(SpaceChar(rest[q + stop]) || rest[q + stop] == '>'))
+                var tail = rest[q..];
+                if (!TryAttributeValue(tail, UnquotedStops, out var stop, out value, out scalars) || stop == 0 || !(SpaceChar(tail[stop]) || tail[stop] == '>'))
                 {
                     goto fail;
                 }
 
-                value = rest.Slice(q, stop);
                 p = q + stop;
             }
-            if (PlainLength(value) != value.Length)
-            {
-                goto fail;
-            }
 
-            attributeChars += value.Length;
-            valueChars += value.Length;
-            attributes.Add(new(attributeName, value.Length == 0 ? "" : new string(value)));
+            attributeChars += scalars;
+            valueChars += scalars;
+            attributes.Add(new(attributeName, value));
         }
         {
             var length = p;

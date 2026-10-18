@@ -682,6 +682,9 @@ public sealed class HtmlNode
         this.value = value;
     }
     internal HtmlNode? TemplateHost;
+    // Set only while the node is on the stack of open elements of the tree builder that created it;
+    // the byte fits existing object padding, so the node does not grow.
+    internal bool Open;
     internal HtmlNode? StructuralParent => Parent ?? TemplateHost;
     private HtmlNode? parent;
     /// <summary>Gets the parent container, or null when detached or when this is a template-content fragment.</summary>

@@ -5,7 +5,7 @@ internal sealed partial class HtmlTreeBuilder
     private static bool MathText(HtmlNode n) => n.NamespaceUri == HtmlForeignNames.MathMlNamespace && n.LocalName is "mi" or "mo" or "mn" or "ms" or "mtext";
     private static bool Integration(HtmlNode n) => n.NamespaceUri == HtmlForeignNames.SvgNamespace && n.LocalName is "foreignObject" or "desc" or "title" ||
         n.NamespaceUri == HtmlForeignNames.MathMlNamespace && n.LocalName == "annotation-xml" && n.GetAttribute("encoding") is { } encoding && (HtmlAscii.Equals(encoding, "text/html") || HtmlAscii.Equals(encoding, "application/xhtml+xml"));
-    private bool Foreign(Token token)
+    private bool Foreign(in Token token)
     {
         var n = Adjusted;
         if (n.NamespaceUri == HtmlDocument.HtmlNamespace || token.Kind == HtmlTokenKind.EndOfFile)
@@ -30,7 +30,7 @@ internal sealed partial class HtmlTreeBuilder
 
         return true;
     }
-    private bool ProcessForeign(Token token)
+    private bool ProcessForeign(in Token token)
     {
         switch (token.Kind)
         {
@@ -103,7 +103,7 @@ internal sealed partial class HtmlTreeBuilder
                 return false;
         }
     }
-    private static bool HasFontAttribute(Token token)
+    private static bool HasFontAttribute(in Token token)
     {
         foreach (var a in token.AttributeList)
         {

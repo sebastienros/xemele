@@ -2,7 +2,7 @@ namespace Xemele.Html;
 
 internal sealed partial class HtmlTreeBuilder
 {
-    private bool InTable(Token t)
+    private bool InTable(in Token t)
     {
         var n = t.Name;
         bool start = t.Kind == HtmlTokenKind.StartTag, end = t.Kind == HtmlTokenKind.EndTag;
@@ -120,7 +120,7 @@ internal sealed partial class HtmlTreeBuilder
         foster = false;
         return again;
     }
-    private bool InTableBody(Token t)
+    private bool InTableBody(in Token t)
     {
         var n = t.Name;
         bool start = t.Kind == HtmlTokenKind.StartTag, end = t.Kind == HtmlTokenKind.EndTag;
@@ -167,7 +167,7 @@ internal sealed partial class HtmlTreeBuilder
 
         return InTable(t);
     }
-    private bool InRow(Token t)
+    private bool InRow(in Token t)
     {
         var n = t.Name;
         bool start = t.Kind == HtmlTokenKind.StartTag, end = t.Kind == HtmlTokenKind.EndTag;

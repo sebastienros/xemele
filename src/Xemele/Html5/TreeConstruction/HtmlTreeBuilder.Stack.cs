@@ -6,8 +6,8 @@ internal sealed partial class HtmlTreeBuilder
     {
         Normal, List, Button, Table
     }
-    private bool InScope(string name, Scope scope = Scope.Normal) => FindScope(null, name, scope);
-    private bool InScope(HtmlNode node, Scope scope = Scope.Normal) => FindScope(node, null, scope);
+    private bool InScope(string name, Scope scope = Scope.Normal) => OpenCount(name) != 0 && FindScope(null, name, scope);
+    private bool InScope(HtmlNode node, Scope scope = Scope.Normal) => node.Open && FindScope(node, null, scope);
     private bool FindScope(HtmlNode? sought, string? name, Scope scope)
     {
         var boundary = scope switch
@@ -64,13 +64,13 @@ internal sealed partial class HtmlTreeBuilder
     }
     private void Reconstruct()
     {
-        if (formattingField is null || formattingField.Count == 0 || formattingField[^1] is null || stack.Contains(formattingField[^1]!))
+        if (formattingField is null || formattingField.Count == 0 || formattingField[^1] is null || formattingField[^1]!.Open)
         {
             return;
         }
 
         var i = formattingField.Count - 1;
-        while (i > 0 && formattingField[i - 1] is { } before && !stack.Contains(before))
+        while (i > 0 && formattingField[i - 1] is { } before && !before.Open)
         {
             i--;
         }
@@ -168,7 +168,7 @@ internal sealed partial class HtmlTreeBuilder
                 GenericEnd(name);
                 return;
             }
-            var formattingIndex = stack.IndexOf(formattingElement);
+            var formattingIndex = formattingElement.Open ? stack.LastIndexOf(formattingElement) : -1;
             if (formattingIndex < 0)
             {
                 formatting.Remove(formattingElement);
@@ -222,11 +222,14 @@ internal sealed partial class HtmlTreeBuilder
                 if (activeIndex < 0)
                 {
                     stack.RemoveAt(cursor);
+                    Closed(node);
                     continue;
                 }
                 var replacement = node.Clone(false);
                 formatting[activeIndex] = replacement;
                 stack[cursor] = replacement;
+                Closed(node);
+                Opened(replacement);
                 if (last == furthest)
                 {
                     bookmark = activeIndex + 1;
@@ -256,8 +259,9 @@ internal sealed partial class HtmlTreeBuilder
             }
 
             formatting.Insert(bookmark, newFormatting);
-            stack.Remove(formattingElement);
-            stack.Insert(stack.IndexOf(furthest) + 1, newFormatting);
+            RemoveOpen(formattingElement);
+            stack.Insert(stack.LastIndexOf(furthest) + 1, newFormatting);
+            Opened(newFormatting);
         }
     }
     private void ClearTo(string kind)
@@ -341,24 +345,7 @@ internal sealed partial class HtmlTreeBuilder
             }
         }
     }
-    private bool HasTemplate
-    {
-        get
-        {
-            if (templatesField is null or { Count: 0 })
-            {
-                return false;
-            }
-            for (var i = stack.Count - 1; i >= 0; i--)
-            {
-                if (Html(stack[i], "template"))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+    private bool HasTemplate => openTemplates != 0;
     private bool ParsingTemplate => HasTemplate || context is not null && Html(context, "template");
     private void CloseTemplate(bool cleanupPatch = true)
     {

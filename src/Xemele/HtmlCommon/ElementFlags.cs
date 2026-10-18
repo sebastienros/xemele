@@ -13,6 +13,8 @@ internal enum HtmlElementFlags : byte
     Special = 16,
     ImpliedEnd = 32,
     ImpliedThorough = 64,
+    // Tree construction keeps an open-element count for this name so a scope query can fail in O(1).
+    ScopeCounted = 128,
 }
 
 internal static class HtmlElementFlagTable
@@ -39,15 +41,19 @@ internal static class HtmlElementFlagTable
 
     private static HtmlElementFlags Html(string name)
     {
-        const HtmlElementFlags S = HtmlElementFlags.Special, B = HtmlElementFlags.ScopeBoundary, T = HtmlElementFlags.TableBoundary, I = HtmlElementFlags.ImpliedEnd, H = HtmlElementFlags.ImpliedThorough;
+        const HtmlElementFlags S = HtmlElementFlags.Special, B = HtmlElementFlags.ScopeBoundary, T = HtmlElementFlags.TableBoundary, I = HtmlElementFlags.ImpliedEnd, H = HtmlElementFlags.ImpliedThorough, C = HtmlElementFlags.ScopeCounted;
         return name switch
         {
-            "applet" or "marquee" or "object" or "select" => S | B,
+            "applet" or "marquee" or "object" => S | B,
+            "select" => S | B | C,
             "caption" or "td" or "th" => S | B | H,
-            "html" or "table" or "template" => S | B | T,
+            "html" or "table" => S | B | T,
+            "template" => S | B | T | C,
             "ol" or "ul" => S | HtmlElementFlags.ListBoundary,
-            "button" => S | HtmlElementFlags.ButtonBoundary,
-            "dd" or "dt" or "li" or "p" => S | I,
+            "button" => S | HtmlElementFlags.ButtonBoundary | C,
+            "dd" or "dt" or "li" => S | I,
+            "p" => S | I | C,
+            "nobr" or "ruby" => C,
             "optgroup" or "option" or "rb" or "rp" or "rt" or "rtc" => I,
             "colgroup" or "tbody" or "tfoot" or "thead" or "tr" => S | H,
             "address" or "area" or "article" or "aside" or "base" or "basefont" or "bgsound" or "blockquote" or "body" or "br" or "center" or "col" or "details" or "dir" or "div" or "dl" or "embed" or "fieldset" or "figcaption" or "figure" or "footer" or "form" or "frame" or "frameset" or "h1" or "h2" or "h3" or "h4" or "h5" or "h6" or "head" or "header" or "hgroup" or "hr" or "iframe" or "img" or "input" or "keygen" or "link" or "listing" or "main" or "menu" or "meta" or "nav" or "noembed" or "noframes" or "noscript" or "param" or "plaintext" or "pre" or "script" or "search" or "section" or "source" or "style" or "summary" or "textarea" or "title" or "track" or "wbr" or "xmp" => S,

@@ -8,7 +8,7 @@ internal sealed partial class HtmlTreeBuilder
     private sealed record Patch(HtmlNode Parent, HtmlNode Start, HtmlNode? End);
     private Dictionary<HtmlNode, Patch>? patchesField;
     private Dictionary<HtmlNode, Patch> patches => patchesField ??= [];
-    private void InsertTemplate(Token token)
+    private void InsertTemplate(in Token token)
     {
         FlushText();
         var (Parent, Before) = Location();

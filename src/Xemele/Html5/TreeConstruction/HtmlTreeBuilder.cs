@@ -19,6 +19,7 @@ internal sealed partial class HtmlTreeBuilder
     private readonly HtmlDocument document;
     private readonly Html5ParseOptions options;
     private readonly List<HtmlNode> stack = [];
+    private int openParagraphs, openSelects, openButtons, openNobrs, openRubies, openTemplates;
     private List<HtmlNode?>? formattingField;
     private List<HtmlNode?> formatting => formattingField ??= [];
     private List<Mode>? templatesField;
@@ -157,22 +158,89 @@ internal sealed partial class HtmlTreeBuilder
         }
 
         stack.Add(node);
+        Opened(node);
     }
+    // Every stack mutation goes through Opened/Closed so membership (HtmlNode.Open) and the
+    // per-name open counts stay exact; both turn otherwise O(depth) stack scans into O(1) checks.
+    private void Opened(HtmlNode node)
+    {
+        node.Open = true;
+        if ((node.Flags & HtmlElementFlags.ScopeCounted) != 0)
+        {
+            CountOpen(node.LocalName, 1);
+        }
+    }
+    private void Closed(HtmlNode node)
+    {
+        node.Open = false;
+        if ((node.Flags & HtmlElementFlags.ScopeCounted) != 0)
+        {
+            CountOpen(node.LocalName, -1);
+        }
+    }
+    private void CountOpen(string name, int delta)
+    {
+        switch (name)
+        {
+            case "p":
+                openParagraphs += delta;
+                break;
+            case "select":
+                openSelects += delta;
+                break;
+            case "button":
+                openButtons += delta;
+                break;
+            case "nobr":
+                openNobrs += delta;
+                break;
+            case "ruby":
+                openRubies += delta;
+                break;
+            case "template":
+                openTemplates += delta;
+                break;
+        }
+    }
+    // Number of open HTML elements with this name, or 1 when the name is not counted.
+    private int OpenCount(string name) => name switch
+    {
+        "p" => openParagraphs,
+        "select" => openSelects,
+        "button" => openButtons,
+        "nobr" => openNobrs,
+        "ruby" => openRubies,
+        "template" => openTemplates,
+        _ => 1,
+    };
     private void Pop()
     {
         var node = Current;
         stack.RemoveAt(stack.Count - 1);
+        Closed(node);
         PoppedFormControl(node);
+    }
+    private void RemoveOpen(HtmlNode node)
+    {
+        if (!node.Open)
+        {
+            return;
+        }
+
+        stack.RemoveAt(stack.LastIndexOf(node));
+        Closed(node);
     }
     private void PopThrough(HtmlNode node)
     {
-        var index = stack.LastIndexOf(node);
-        if (index >= 0)
+        if (!node.Open)
         {
-            while (stack.Count > index)
-            {
-                Pop();
-            }
+            return;
+        }
+
+        var index = stack.LastIndexOf(node);
+        while (stack.Count > index)
+        {
+            Pop();
         }
     }
     private void PopThrough(string name)
@@ -196,17 +264,20 @@ internal sealed partial class HtmlTreeBuilder
         HtmlNode? before = null;
         if (foster && target.NamespaceUri == HtmlDocument.HtmlNamespace && target.LocalName is "table" or "tbody" or "tfoot" or "thead" or "tr")
         {
+            // Only the nearer of the last template and the last table matters, so stop at the first one.
             int template = -1, table = -1;
             for (var i = stack.Count - 1; i >= 0; i--)
             {
-                if (template < 0 && Html(stack[i], "template"))
+                if (Html(stack[i], "template"))
                 {
                     template = i;
+                    break;
                 }
 
-                if (table < 0 && Html(stack[i], "table"))
+                if (Html(stack[i], "table"))
                 {
                     table = i;
+                    break;
                 }
             }
             if (template >= 0 && (table < 0 || template > table))
@@ -264,7 +335,7 @@ internal sealed partial class HtmlTreeBuilder
             Parent.AppendParsed(node);
         }
     }
-    private HtmlNode Insert(Token token, string? ns = null)
+    private HtmlNode Insert(in Token token, string? ns = null)
     {
         ns ??= HtmlDocument.HtmlNamespace;
         if (ns == HtmlDocument.HtmlNamespace)
@@ -422,15 +493,15 @@ internal sealed partial class HtmlTreeBuilder
             }
         }
     }
-    private void Misc(Token token, HtmlNode? target = null) => InsertNode(token.Kind == HtmlTokenKind.Comment ? document.CreateComment(token.Data) : document.CreateProcessingInstruction(token.Name, token.Data), target);
-    private void Text(Token token, HtmlTokenizerState state)
+    private void Misc(in Token token, HtmlNode? target = null) => InsertNode(token.Kind == HtmlTokenKind.Comment ? document.CreateComment(token.Data) : document.CreateProcessingInstruction(token.Name, token.Data), target);
+    private void Text(in Token token, HtmlTokenizerState state)
     {
         Insert(token);
         Tokenizer.SetState(state, token.Name);
         original = mode;
         mode = Mode.Text;
     }
-    internal void Process(Token token)
+    internal void Process(in Token token)
     {
         if (token.Kind == HtmlTokenKind.Character && mode is not Mode.InBody and not Mode.Text and not Mode.InTable and not Mode.InTableText and not Mode.InCaption and not Mode.InTableBody and not Mode.InRow and not Mode.InCell and not Mode.InTemplate)
         {
@@ -449,14 +520,15 @@ internal sealed partial class HtmlTreeBuilder
         }
         ProcessCore(token);
     }
-    private void ProcessCore(Token token)
+    private void ProcessCore(in Token token)
     {
         if (skipLf)
         {
             skipLf = false;
             if (token.Kind == HtmlTokenKind.Character && token.Data.StartsWith('\n'))
             {
-                token = token with { Data = token.Data[1..] };
+                ProcessCore(token with { Data = token.Data[1..] });
+                return;
             }
         }
         for (var reprocess = 0; ; reprocess++)
