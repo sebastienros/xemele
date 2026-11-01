@@ -43,9 +43,9 @@ jobs:
           global-json-file: global.json
           check-latest: false
       - name: Restore
-        run: dotnet restore Xemele.slnx -p:Configuration=Release -p:VersionSuffix=preview-${{ github.run_number }} --disable-build-servers -m:1 -p:UseSharedCompilation=false
+        run: dotnet restore Xemele.slnx -p:Configuration=Release -p:VersionSuffix=preview.${{ github.run_number }} --disable-build-servers -m:1 -p:UseSharedCompilation=false
       - name: Build
-        run: dotnet build Xemele.slnx -c Release --no-restore -p:VersionSuffix=preview-${{ github.run_number }} --disable-build-servers -m:1 -p:UseSharedCompilation=false
+        run: dotnet build Xemele.slnx -c Release --no-restore -p:VersionSuffix=preview.${{ github.run_number }} --disable-build-servers -m:1 -p:UseSharedCompilation=false
       - name: Compare compiled runtime API and verify foundation contracts
         run: dotnet run --project tools/Build -c Release --no-build --no-restore -- verify
       - name: Discover and execute MTP tests and verify failure exit codes
@@ -57,10 +57,10 @@ jobs:
           DOTNET_GCConcurrent: '0'
         run: dotnet run --project tools/Build -c Release --no-build --no-restore -- test
       - name: Pack runtime
-        run: dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore -p:VersionSuffix=preview-${{ github.run_number }} -p:DirectoryBuildTargetsPath="${{ github.workspace }}/tools/Packaging/Release.targets" --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
+        run: dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore -p:VersionSuffix=preview.${{ github.run_number }} -p:DirectoryBuildTargetsPath="${{ github.workspace }}/tools/Packaging/Release.targets" --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
       - name: Pack preview tool
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.os == 'ubuntu-latest'
-        run: dotnet pack src/Xemele.Tool/Xemele.Tool.csproj -c Release --no-build --no-restore -p:VersionSuffix=preview-${{ github.run_number }} -p:DirectoryBuildTargetsPath="${{ github.workspace }}/tools/Packaging/Release.targets" --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
+        run: dotnet pack src/Xemele.Tool/Xemele.Tool.csproj -c Release --no-build --no-restore -p:VersionSuffix=preview.${{ github.run_number }} -p:DirectoryBuildTargetsPath="${{ github.workspace }}/tools/Packaging/Release.targets" --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
       - name: Push preview packages to Feedz
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.os == 'ubuntu-latest'
         shell: bash
@@ -71,6 +71,14 @@ jobs:
           test -n "$FEEDZ_IO_API_KEY" || { echo "::error::Missing Feedz API key"; exit 1; }
           for package in artifacts/packages/*.nupkg; do
             dotnet nuget push "$package" --api-key "$FEEDZ_IO_API_KEY" --source https://f.feedz.io/sebastienros/xemele/nuget/index.json --skip-duplicate
+          done
+          # Previews used to be versioned <prefix>-preview-<run number>, which NuGet orders as text (preview-999 is
+          # newer than preview-1000) and above every <prefix>-preview.<run number>. Delete them so they don't shadow newer builds.
+          for package in artifacts/packages/*.nupkg; do
+            id=$(basename "$package" | sed -E 's/\.[0-9]+\.[0-9]+\.[0-9]+-.*$//' | tr '[:upper:]' '[:lower:]')
+            for version in $(curl -fsS "https://f.feedz.io/sebastienros/xemele/nuget/v3/packages/$id/index.json" | jq -r '.versions[] | select(test("-preview-[0-9]+$"))'); do
+              dotnet nuget delete "$id" "$version" --api-key "$FEEDZ_IO_API_KEY" --source https://f.feedz.io/sebastienros/xemele/nuget/index.json --non-interactive
+            done
           done
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
