@@ -11,7 +11,7 @@ and serialize all kinds of XML documents without any dependency, as fast as poss
 | Source | Purpose | Package feed |
 | --- | --- | --- |
 | `v*.*.*` tags | Versioned releases | [![NuGet.org stable version](https://img.shields.io/nuget/v/Xemele.svg?label=nuget.org)](https://www.nuget.org/packages/Xemele) |
-| `main` branch | Active development | [![Feedz preview version](https://img.shields.io/endpoint?url=https%3A%2F%2Ff.feedz.io%2Fsebastienros%2Fxemele%2Fshield%2FXemele%2Flatest)](https://f.feedz.io/sebastienros/xemele/nuget/index.json) |
+| `main` branch | Active development | [![Feedz preview version](https://img.shields.io/endpoint?url=https%3A%2F%2Ff.feedz.io%2Fsebastienros%2Fxemele%2Fshield%2FXemele%2Flatest)](https://feedz.io/org/sebastienros/repository/xemele/packages/Xemele) |
 
 For preview packages add Feedz alongside NuGet.org:
 

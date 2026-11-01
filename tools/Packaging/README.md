@@ -75,8 +75,8 @@ executes the MTP runner, corpus, and offline CLI checks.
 On pushes to `main`, the Linux job packs the runtime library and portable CLI
 after its checks, then publishes them to Feedz using `FEEDZ_IO_API_KEY`.
 Pull requests and maintenance branches do not publish. Versions use
-`VersionPrefix` from `Directory.Build.props` and `VersionSuffix=preview-RUN_NUMBER`,
-for example `0.9.0-preview-123`. The default local compatibility version remains
+`VersionPrefix` from `Directory.Build.props` and `VersionSuffix=preview.RUN_NUMBER`,
+for example `0.9.0-preview.123`. The default local compatibility version remains
 `0.9.0-rc.1`. Like Parlot, SDK installation and checkout actions are pinned, with
 isolated NuGet paths and checkout credentials not persisted.
 
