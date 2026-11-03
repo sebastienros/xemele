@@ -98,6 +98,11 @@ in tools/ApiBaseline/; contract fixtures are not shipped runtime baselines.
 ## Clean-checkout CI prerequisites
 
 The SDK selected by `global.json` is the only ordinary build/test prerequisite.
+Its `latestFeature` policy allows stable SDKs at or above the declared minimum
+within the same major/minor version (currently .NET 10.0); prerelease SDKs are
+disabled. Both Python API and corpus-CLI maintenance checks validate this same
+policy rather than requiring one exact SDK patch/feature band. Invalid versions
+and unsupported policy changes fail explicitly before their build/test checks.
 Test-project builds run the managed `tools/Build` corpus provisioner automatically.
 It bounds and verifies the immutable archive download, extracts exactly 3,386
 inventoried resources into ignored manifest paths, and checks every fixture byte.

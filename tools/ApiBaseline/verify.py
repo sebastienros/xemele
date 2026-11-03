@@ -16,6 +16,7 @@ FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompil
 LOG = []
 sys.path.insert(0, str(ROOT / 'tools/ApiBaseline'))
 from compare import compose
+from sdk_policy import validate_sdk
 
 
 def run(*args, expected=0):
@@ -141,8 +142,7 @@ def main():
     LOG.append('Tested source revision: ' + run('git', 'rev-parse', 'HEAD').strip())
     frozen = sorted(GOLDENS.glob('*')) + sorted((ROOT / 'docs/api').glob('*.txt'))
     frozen_hashes = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in frozen if path.is_file()}
-    expected = json.loads((ROOT / 'global.json').read_text())['sdk']['version']
-    assert run('dotnet', '--version').strip() == expected
+    validate_sdk(ROOT, run('dotnet', '--version').strip())
     run('dotnet', '--info')
     run('dotnet', 'build', ROOT / 'src/Xemele/Xemele.csproj', *FLAGS)
     run('dotnet', 'build', ROOT / 'tools/ApiBaseline/Checker/ApiCheck.csproj', *FLAGS)

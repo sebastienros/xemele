@@ -11,6 +11,9 @@ import tempfile
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'tools/ApiBaseline'))
+from sdk_policy import validate_sdk
+
 ARTIFACTS = ROOT / 'artifacts/corpus-cli'
 TEST_PROJECT = 'tests/CorpusManager/Xemele.CorpusInfrastructure.Tests.csproj'
 PROFILE = 'xml-well-formedness-bootstrap-v1'
@@ -71,7 +74,7 @@ def main():
         ARTIFACTS.mkdir(parents=True, exist_ok=True)
         LOG.append(f'Host: {platform.platform()} {platform.machine()}\n')
         run(['git', 'rev-parse', 'HEAD'])
-        assert run(['dotnet', '--version']).stdout.strip() == '10.0.400'
+        validate_sdk(ROOT, run(['dotnet', '--version']).stdout.strip())
         for project in ['tools/CorpusManager', TEST_PROJECT]:
             run(['dotnet', 'restore', project, '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false'])
             run(['dotnet', 'build', project, '-c', 'Release', '--no-restore',
